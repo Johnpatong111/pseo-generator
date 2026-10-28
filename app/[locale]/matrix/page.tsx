@@ -13,6 +13,7 @@ import {
 } from "../../../lib/comparisons";
 import { BRAND_NAME } from "../../../lib/locales";
 import { CATEGORY_IDS, categoryCopy, getComparisonCategories } from "../../../lib/taxonomy";
+import { absoluteSiteUrl } from "../../../lib/site-url";
 
 interface MatrixPageProps {
   params: Promise<{ locale: string }>;
@@ -141,10 +142,15 @@ export async function generateMetadata({ params }: MatrixPageProps): Promise<Met
     title: text.title,
     description: text.description,
     alternates: {
-      canonical: `/${localeParam}/matrix`,
+      canonical: absoluteSiteUrl(`/${localeParam}/matrix`),
       languages: {
-        ...Object.fromEntries(LOCALES.map((locale) => [locale, `/${locale}/matrix`])),
-        "x-default": "/en/matrix",
+        ...Object.fromEntries(
+          LOCALES.map((locale) => [
+            locale,
+            absoluteSiteUrl(`/${locale}/matrix`),
+          ]),
+        ),
+        "x-default": absoluteSiteUrl("/en/matrix"),
       },
     },
     openGraph: {

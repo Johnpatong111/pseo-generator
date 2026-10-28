@@ -9,6 +9,7 @@ import {
   type Locale,
 } from "../../lib/comparisons";
 import { BRAND_DESCRIPTION } from "../../lib/locales";
+import { absoluteSiteUrl } from "../../lib/site-url";
 
 const copy = {
   pl: {
@@ -184,10 +185,12 @@ export async function generateMetadata({
     title: copy[locale].title,
     description: BRAND_DESCRIPTION[locale],
     alternates: {
-      canonical: `/${locale}`,
+      canonical: absoluteSiteUrl(`/${locale}`),
       languages: {
-        ...Object.fromEntries(LOCALES.map((option) => [option, `/${option}`])),
-        "x-default": "/en",
+        ...Object.fromEntries(
+          LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}`)]),
+        ),
+        "x-default": absoluteSiteUrl("/en"),
       },
     },
   };

@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { getComparisons, isLocale, LOCALES, type Locale } from "../../lib/comparisons";
 import { BRAND_DESCRIPTION, BRAND_NAME, BRAND_TAGLINE } from "../../lib/locales";
-import { SITE_URL } from "../../lib/site-url";
+import { absoluteSiteUrl, SITE_URL } from "../../lib/site-url";
 import "../globals.css";
 
 const comparisonSlugsByLocale: Record<Locale, string[]> = {
@@ -41,8 +41,10 @@ export async function generateMetadata({
     },
     alternates: {
       languages: {
-        ...Object.fromEntries(LOCALES.map((option) => [option, `/${option}`])),
-        "x-default": "/en",
+        ...Object.fromEntries(
+          LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}`)]),
+        ),
+        "x-default": absoluteSiteUrl("/en"),
       },
     },
   };

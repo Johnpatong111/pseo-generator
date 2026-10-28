@@ -13,6 +13,7 @@ import {
   getComparisonCategories,
   type CategoryId,
 } from "../../../../lib/taxonomy";
+import { absoluteSiteUrl } from "../../../../lib/site-url";
 
 interface CategoryPageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -79,15 +80,17 @@ export async function generateMetadata({
     title: `${category.name} — ${category.description.split(".")[0]}`,
     description: category.description,
     alternates: {
-      canonical: `/${localeParam}/category/${categoryParam}`,
+      canonical: absoluteSiteUrl(
+        `/${localeParam}/category/${categoryParam}`,
+      ),
       languages: {
         ...Object.fromEntries(
           LOCALES.map((locale) => [
             locale,
-            `/${locale}/category/${categoryParam}`,
+            absoluteSiteUrl(`/${locale}/category/${categoryParam}`),
           ]),
         ),
-        "x-default": `/en/category/${categoryParam}`,
+        "x-default": absoluteSiteUrl(`/en/category/${categoryParam}`),
       },
     },
     openGraph: {

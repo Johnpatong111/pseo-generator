@@ -14,6 +14,8 @@ import {
   type Comparison,
   type Locale,
 } from "../../../../lib/comparisons";
+import { getComparisonCategories } from "../../../../lib/taxonomy";
+import { absoluteSiteUrl } from "../../../../lib/site-url";
 
 interface ComparisonPageProps {
   params: Promise<{
@@ -267,22 +269,27 @@ function getScores(comparison: Comparison) {
 
 function getRelatedComparisons(comparison: Comparison, locale: Locale) {
   const tools = comparison.slug.split("-vs-");
+  const categories = getComparisonCategories(comparison.slug);
 
   return getLocalizedComparisons(locale)
     .filter((candidate) => candidate.slug !== comparison.slug)
     .map((candidate) => ({
       comparison: candidate,
+      sharedCategories: getComparisonCategories(candidate.slug).filter(
+        (category) => categories.includes(category),
+      ).length,
       sharedTools: candidate.slug
         .split("-vs-")
         .filter((tool) => tools.includes(tool)).length,
     }))
-    .filter(({ sharedTools }) => sharedTools > 0)
+    .filter(({ sharedCategories }) => sharedCategories > 0)
     .sort(
       (left, right) =>
+        right.sharedCategories - left.sharedCategories ||
         right.sharedTools - left.sharedTools ||
         left.comparison.slug.localeCompare(right.comparison.slug),
     )
-    .slice(0, 6)
+    .slice(0, 8)
     .map(({ comparison: related }) => related);
 }
 
@@ -329,12 +336,12 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     return {};
   }
 
-  const canonical = getComparisonUrl(localeParam, slug);
+  const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
     LOCALES.flatMap((locale) => {
       const translatedSlug = getLocalizedSlug(locale, slug);
       return translatedSlug
-        ? [[locale, getComparisonUrl(locale, translatedSlug)]]
+        ? [[locale, absoluteSiteUrl(getComparisonUrl(locale, translatedSlug))]]
         : [];
     }),
   );
@@ -347,7 +354,9 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
       canonical,
       languages: {
         ...languages,
-        "x-default": defaultSlug ? getComparisonUrl("en", defaultSlug) : "/en",
+        "x-default": absoluteSiteUrl(
+          defaultSlug ? getComparisonUrl("en", defaultSlug) : "/en",
+        ),
       },
     },
     openGraph: {
@@ -361,7 +370,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 }
 
 function getStructuredData(comparison: Comparison, locale: Locale) {
-  const pageUrl = getComparisonUrl(locale, comparison.slug);
+  const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
 
   return {
