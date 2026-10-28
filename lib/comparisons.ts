@@ -50,6 +50,78 @@ export interface Comparison {
   faq: ComparisonFaq[];
 }
 
+let codeExamplesByTechnology: Map<string, string> | undefined;
+
+const fallbackCodeExamples: Record<string, string> = {
+  graphql: `const response = await fetch("https://api.example.com/graphql", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ query: "{ __typename }" }),
+});
+const { data, errors } = await response.json();
+if (!response.ok || errors) throw new Error(JSON.stringify(errors));
+console.log(data);`,
+  rest: `const response = await fetch("https://api.example.com/v1/resources");
+if (!response.ok) {
+  throw new Error(\`Request failed: \${response.status}\`);
+}
+const resources = await response.json();
+console.log(resources);`,
+  python: `def main():
+    print("Hello, world!")
+
+
+if __name__ == "__main__":
+    main()`,
+  javascript: `function main() {
+  console.log("Hello, world!");
+}
+
+main();`,
+  supabase: `import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY,
+);
+const { data, error } = await supabase.from("your_table").select("*");
+if (error) throw error;
+console.log(data);`,
+  appwrite: `import { Client, Databases } from "appwrite";
+
+const client = new Client()
+  .setEndpoint(process.env.APPWRITE_ENDPOINT)
+  .setProject(process.env.APPWRITE_PROJECT_ID);
+const databases = new Databases(client);
+const result = await databases.listDocuments(
+  process.env.APPWRITE_DATABASE_ID,
+  process.env.APPWRITE_COLLECTION_ID,
+);
+console.log(result.documents);`,
+  firebase: `import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const snapshot = await getDocs(collection(db, "your_collection"));
+console.log(snapshot.docs.map((document) => document.data()));`,
+  vite: `npm create vite@latest my-app -- --template vanilla
+cd my-app
+npm install
+npm run dev`,
+  webpack: `const path = require("node:path");
+
+module.exports = {
+  mode: "development",
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+    clean: true,
+  },
+};`,
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -227,4 +299,49 @@ export function getComparisonBySlug(
   locale: Locale = "pl",
 ): Comparison | undefined {
   return getComparisons(locale).find((comparison) => comparison.slug === slug);
+}
+
+export function getComparisonCodeExamples(
+  comparison: Comparison,
+): ComparisonCodeExamples | undefined {
+  const [toolAId, toolBId] = comparison.slug.split("-vs-");
+  if (!toolAId || !toolBId) {
+    return comparison.codeExamples;
+  }
+
+  if (!codeExamplesByTechnology) {
+    codeExamplesByTechnology = new Map(
+      Object.entries(fallbackCodeExamples),
+    );
+    for (const locale of ["de", "fr"] as const) {
+      for (const candidate of getLocalizedComparisons(locale)) {
+        const [candidateAId, candidateBId] = candidate.slug.split("-vs-");
+        if (candidate.codeExamples?.tech1Snippet && candidateAId) {
+          codeExamplesByTechnology.set(
+            candidateAId,
+            codeExamplesByTechnology.get(candidateAId) ??
+              candidate.codeExamples.tech1Snippet,
+          );
+        }
+        if (candidate.codeExamples?.tech2Snippet && candidateBId) {
+          codeExamplesByTechnology.set(
+            candidateBId,
+            codeExamplesByTechnology.get(candidateBId) ??
+              candidate.codeExamples.tech2Snippet,
+          );
+        }
+      }
+    }
+  }
+
+  const tech1Snippet =
+    comparison.codeExamples?.tech1Snippet ??
+    codeExamplesByTechnology.get(toolAId);
+  const tech2Snippet =
+    comparison.codeExamples?.tech2Snippet ??
+    codeExamplesByTechnology.get(toolBId);
+
+  return tech1Snippet && tech2Snippet
+    ? { tech1Snippet, tech2Snippet }
+    : comparison.codeExamples;
 }

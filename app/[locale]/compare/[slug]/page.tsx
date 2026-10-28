@@ -6,6 +6,7 @@ import ArchitectureDiagram from "../../../../components/ArchitectureDiagram";
 import CodeComparison from "../../../../components/CodeComparison";
 import ComparisonActions from "../../../../components/ComparisonActions";
 import {
+  getComparisonCodeExamples,
   getComparisonBySlug,
   getComparisons,
   getLocalizedComparisons,
@@ -15,7 +16,11 @@ import {
   type ComparisonCriterion,
   type Locale,
 } from "../../../../lib/comparisons";
-import { getComparisonCategories } from "../../../../lib/taxonomy";
+import {
+  categoryCopy,
+  getComparisonCategories,
+  type CategoryId,
+} from "../../../../lib/taxonomy";
 import { absoluteSiteUrl } from "../../../../lib/site-url";
 
 interface ComparisonPageProps {
@@ -47,6 +52,7 @@ const copy = {
     winner: "przewaga",
     home: "Strona główna",
     comparison: "Porównania",
+    breadcrumb: "Okruszki nawigacyjne",
     quickVerdict: "Szybki werdykt",
     recommendation: "Najważniejsze wnioski",
     contents: "Spis treści",
@@ -88,6 +94,7 @@ const copy = {
     winner: "advantage",
     home: "Home",
     comparison: "Comparisons",
+    breadcrumb: "Breadcrumb",
     quickVerdict: "Quick verdict",
     recommendation: "The bottom line",
     contents: "On this page",
@@ -129,6 +136,7 @@ const copy = {
     winner: "ventaja",
     home: "Inicio",
     comparison: "Comparativas",
+    breadcrumb: "Ruta de navegación",
     quickVerdict: "Veredicto rápido",
     recommendation: "Conclusión",
     contents: "En esta página",
@@ -170,6 +178,7 @@ const copy = {
     winner: "Vorteil",
     home: "Startseite",
     comparison: "Vergleiche",
+    breadcrumb: "Brotkrumennavigation",
     quickVerdict: "Kurzfazit",
     recommendation: "Die wichtigsten Erkenntnisse",
     contents: "Auf dieser Seite",
@@ -211,6 +220,7 @@ const copy = {
     winner: "Avantage",
     home: "Accueil",
     comparison: "Comparatifs",
+    breadcrumb: "Fil d’Ariane",
     quickVerdict: "Verdict rapide",
     recommendation: "L’essentiel",
     contents: "Sur cette page",
@@ -252,6 +262,7 @@ const copy = {
     winner: string;
     home: string;
     comparison: string;
+    breadcrumb: string;
     quickVerdict: string;
     recommendation: string;
     contents: string;
@@ -555,7 +566,11 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   };
 }
 
-function getStructuredData(comparison: Comparison, locale: Locale) {
+function getStructuredData(
+  comparison: Comparison,
+  locale: Locale,
+  category?: { id: CategoryId; name: string },
+) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
   const title = getComparisonTitle(comparison, locale);
@@ -593,12 +608,24 @@ function getStructuredData(comparison: Comparison, locale: Locale) {
             "@type": "ListItem",
             position: 1,
             name: text.home,
-            item: `/${locale}`,
+            item: absoluteSiteUrl(`/${locale}`),
           },
+          ...(category
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: category.name,
+                  item: absoluteSiteUrl(
+                    `/${locale}/category/${category.id}`,
+                  ),
+                },
+              ]
+            : []),
           {
             "@type": "ListItem",
-            position: 2,
-            name: text.comparison,
+            position: category ? 3 : 2,
+            name: `${comparison.toolA.name} vs ${comparison.toolB.name}`,
             item: pageUrl,
           },
         ],
@@ -635,12 +662,19 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const relatedComparisons = getRelatedComparisons(comparison, locale);
   const title = getComparisonTitle(comparison, locale);
   const comparisonCriteria = getComparisonCriteria(comparison, locale);
+  const codeExamples = getComparisonCodeExamples(comparison);
+  const primaryCategory = getComparisonCategories(slug)[0];
+  const category = primaryCategory
+    ? {
+        id: primaryCategory,
+        name: categoryCopy[locale][primaryCategory].name,
+      }
+    : undefined;
   const contextCriteria = comparisonCriteria.slice(0, 2);
   const scores = getScores(comparison);
-  const structuredData = JSON.stringify(getStructuredData(comparison, locale)).replace(
-    /</g,
-    "\\u003c",
-  );
+  const structuredData = JSON.stringify(
+    getStructuredData(comparison, locale, category),
+  ).replace(/</g, "\\u003c");
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-8 sm:py-16">
@@ -648,6 +682,35 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: structuredData }}
       />
+      <nav aria-label={text.breadcrumb} className="mb-8">
+        <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <li>
+            <Link
+              href={`/${locale}`}
+              className="underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
+            >
+              {text.home}
+            </Link>
+          </li>
+          {category && (
+            <>
+              <li aria-hidden="true">/</li>
+              <li>
+                <Link
+                  href={`/${locale}/category/${category.id}`}
+                  className="underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
+                >
+                  {category.name}
+                </Link>
+              </li>
+            </>
+          )}
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" className="font-medium text-slate-900 dark:text-white">
+            {comparison.toolA.name} vs {comparison.toolB.name}
+          </li>
+        </ol>
+      </nav>
       <article>
         <header className="mb-8 max-w-4xl">
           <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
@@ -871,7 +934,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                     </a>
                   </li>
                 ))}
-                {comparison.codeExamples && (
+                {codeExamples && (
                   <li>
                     <a
                       href="#code-examples"
@@ -994,12 +1057,12 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               locale={locale}
             />
 
-            {comparison.codeExamples && (
+            {codeExamples && (
               <CodeComparison
                 toolA={comparison.toolA.name}
                 toolB={comparison.toolB.name}
-                tech1Snippet={comparison.codeExamples.tech1Snippet}
-                tech2Snippet={comparison.codeExamples.tech2Snippet}
+                tech1Snippet={codeExamples.tech1Snippet}
+                tech2Snippet={codeExamples.tech2Snippet}
                 labels={{
                   title: text.codeExamples,
                   copy: text.copyCode,
