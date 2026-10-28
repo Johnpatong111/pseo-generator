@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   },
   description: BRAND_DESCRIPTION.pl,
   metadataBase: SITE_URL,
+  verification: {
+    google: "lym6T1Z2Y7UtjQHUfUw2h55uj4kV-x5QdHIkh7-ykV8",
+  },
 };
 
 export default function HomeLayout({

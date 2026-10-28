@@ -36,6 +36,9 @@ export async function generateMetadata({
     },
     description: BRAND_DESCRIPTION[locale],
     metadataBase: SITE_URL,
+    verification: {
+      google: "lym6T1Z2Y7UtjQHUfUw2h55uj4kV-x5QdHIkh7-ykV8",
+    },
     alternates: {
       languages: {
         ...Object.fromEntries(LOCALES.map((option) => [option, `/${option}`])),
