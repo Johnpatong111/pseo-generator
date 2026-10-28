@@ -1,0 +1,98 @@
+{
+  "slug": "nomad-vs-podman",
+  "meta": {
+    "title": "Nomad vs Podman (2026): ¿Qué solución elegir?",
+    "description": "Comparamos Nomad y Podman en 2026: orquestación de clústeres frente a gestión de contenedores sin daemon. Descubre sus diferencias, ventajas y cuál encaja mejor en tu caso."
+  },
+  "toolA": {
+    "name": "Nomad"
+  },
+  "toolB": {
+    "name": "Podman"
+  },
+  "verdict": "Nomad es la opción más natural si necesitas orquestar cargas de trabajo heterogéneas (contenedores, binarios y trabajos por lotes) en un clúster y valoras un único binario sin dependencias externas. Podman encaja mejor si quieres ejecutar y gestionar contenedores en una o pocas máquinas con un modelo sin daemon y compatible con Docker. No son sustitutos directos: Podman suele convivir con un orquestador como Nomad, y elegir uno u otro depende más del problema (clúster frente a host) que de sus funciones aisladas.",
+  "comparison": [
+    {
+      "category": "Propósito y modelo de uso",
+      "toolA": "Nomad es un orquestador de cargas de trabajo diseñado para programar tareas sobre un conjunto de nodos gestionados por agentes, no solo contenedores. Permite describir trabajos declarativos con bloques para servicios, lotes o trabajos efímeros y asignar recursos entre distintos tipos de ejecutables.",
+      "toolB": "Podman es una herramienta de gestión de contenedores orientada a ejecutar, construir y mantener contenedores e imágenes en uno o varios hosts. Su modelo es más próximo al de Docker: se centra en el ciclo de vida del contenedor individual y en herramientas asociadas como Podman Compose o Quadlet.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Arquitectura y dependencia de daemon",
+      "toolA": "Nomad se apoya en un binario único que actúa como servidor o cliente según su configuración, y requiere un clúster de servidores para la coordinación y la programación. Su arquitectura está pensada para tolerancia a fallos y alta disponibilidad desde el diseño del plano de control.",
+      "toolB": "Podman funciona sin un daemon central: cada invocación se ejecuta como un proceso del usuario y puede operar en modo rootless. Esa ausencia de servicio permanente simplifica la seguridad y el uso en estaciones o servidores pequeños, aunque no ofrece por sí sola coordinación entre nodos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Tipos de cargas de trabajo admitidas",
+      "toolA": "Nomad puede ejecutar contenedores Docker o Podman, pero también binarios, tareas Java o trabajos por lotes con distintos drivers. Esa versatilidad lo hace útil cuando la infraestructura no es homogénea o cuando conviven servicios persistentes y procesos puntuales.",
+      "toolB": "Podman está especializado en contenedores OCI y en su ecosistema de imágenes, con soporte para pods al estilo Kubernetes y para la construcción de imágenes sin daemon. No está pensado para orquestar binarios que no se ejecuten como contenedores ni para programar trabajos distribuidos.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Curva de aprendizaje y herramientas",
+      "toolA": "Nomad emplea el lenguaje HCL para definir trabajos y ofrece una CLI y una API propias, además de integración con el ecosistema HashiCorp. Su curva de aprendizaje es mayor porque exige entender conceptos de clúster, asignación de recursos y políticas de trabajo.",
+      "toolB": "Podman mantiene una interfaz de línea de comandos muy parecida a la de Docker, lo que reduce la fricción para quienes ya conocen ese ecosistema. Además, herramientas como Podman Desktop o Compose facilitan el uso en desarrollo local sin necesidad de aprender un lenguaje de definición nuevo.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Alta disponibilidad y escalado",
+      "toolA": "Nomad distribuye tareas entre nodos y puede reubicar trabajos cuando un cliente falla, con opciones de reinicio y actualización controlada según la configuración del clúster. Su enfoque permite escalar horizontalmente añadiendo clientes, aunque el dimensionamiento del plano de control requiere planificación.",
+      "toolB": "Podman no incluye orquestación multinodo ni reubicación automática de contenedores entre máquinas; el escalado se gestiona de forma manual o mediante herramientas externas. En un único host sí puede gestionar varios contenedores y pods, pero la alta disponibilidad queda fuera de su alcance directo.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Seguridad y aislamiento",
+      "toolA": "Nomad controla el acceso mediante ACL y tokens, y aplica políticas de recursos y de trabajo según la configuración del clúster. El aislamiento efectivo depende en gran medida del driver y del sistema operativo subyacente, por lo que conviene revisar la configuración de cada entorno.",
+      "toolB": "Podman destaca por su soporte de modo rootless, que reduce el impacto de una posible escalada de privilegios al ejecutar contenedores sin root. También admite opciones de aislamiento como namespaces y sellado de secciones del sistema, aunque la seguridad final depende de la configuración de cada contenedor.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Integración con el ecosistema y portabilidad",
+      "toolA": "Nomad se integra de forma natural con otros productos de HashiCorp y expone una API para automatizar flujos, pero su ecosistema es más específico que el de Docker o Kubernetes. Los trabajos definidos en HCL no son directamente portables a otras plataformas sin adaptación.",
+      "toolB": "Podman es compatible con imágenes OCI y con buena parte de los comandos y flujos de Docker, lo que facilita migrar entre motores de contenedores. Esa portabilidad ayuda a mover cargas entre desarrollo, pruebas y producción sin reescribir la definición de la imagen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Casos de uso y mantenimiento operativo",
+      "toolA": "Nomad resulta adecuado para equipos que ya operan un clúster y necesitan programar servicios y lotes con una sola herramienta. Su mantenimiento exige gestionar servidores, clientes, actualizaciones y políticas, lo que implica una carga operativa mayor que la de un simple motor de contenedores.",
+      "toolB": "Podman es una opción práctica para desarrollo local, pruebas, servidores pequeños y flujos CI/CD donde no se requiere un clúster. Su mantenimiento suele ser más ligero en una sola máquina, aunque en entornos grandes conviene combinarlo con un orquestador o con herramientas de automatización.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Nomad y Podman son herramientas que compiten directamente?",
+      "a": "No exactamente. Nomad es un orquestador de cargas de trabajo en clúster, mientras que Podman es un motor de contenedores para ejecutar y gestionar contenedores en máquinas concretas. Pueden usarse juntos: Nomad puede lanzar contenedores Podman como driver, por lo que la elección depende de si necesitas coordinar muchos nodos o solo gestionar contenedores en uno o pocos hosts."
+    },
+    {
+      "q": "¿Podman puede sustituir a Nomad en un entorno de producción distribuido?",
+      "a": "Podman no incluye de forma nativa la programación de tareas entre nodos, la reubicación automática ni la alta disponibilidad del plano de control que sí ofrece Nomad. Para un entorno distribuido necesitarías añadir herramientas de orquestación o automatización externas. Si tu entorno es de un único host o de pocos servidores con despliegues controlados, Podman puede ser suficiente."
+    },
+    {
+      "q": "¿Qué herramienta recomienda para equipos que vienen de Docker?",
+      "a": "Podman suele ser la transición más sencilla porque su CLI es muy similar a la de Docker y acepta imágenes OCI. Además, herramientas como Podman Compose o Podman Desktop reducen la fricción inicial. Nomad requiere aprender HCL y conceptos de clúster, lo que supone un cambio mayor si solo necesitas ejecutar contenedores."
+    },
+    {
+      "q": "¿Nomad es más adecuado para cargas que no son contenedores?",
+      "a": "Sí, Nomad está diseñado para ejecutar distintos tipos de trabajos, como binarios, tareas Java o procesos por lotes, además de contenedores. Esa flexibilidad lo diferencia de Podman, que se centra en contenedores OCI. Si tu infraestructura mezcla servicios contenedorizados con ejecutables tradicionales, Nomad ofrece un modelo unificado para describirlos."
+    },
+    {
+      "q": "¿Podman es más seguro que Nomad por funcionar sin daemon?",
+      "a": "El modo rootless de Podman reduce la superficie de ataque al evitar un daemon con privilegios elevados, algo relevante en estaciones de trabajo y servidores pequeños. Nomad también ofrece controles de acceso y políticas, pero la seguridad efectiva depende de la configuración de cada entorno y del driver utilizado. No puede afirmarse que una sea siempre más segura que la otra sin analizar el caso concreto."
+    },
+    {
+      "q": "¿Puedo usar Podman dentro de un clúster Nomad?",
+      "a": "Sí, Nomad incluye un driver para Podman que permite lanzar contenedores gestionados por Podman como parte de un trabajo de Nomad. Esto combina la programación entre nodos de Nomad con el modelo sin daemon de Podman. La disponibilidad y el comportamiento exacto de ese driver dependen de la versión de Nomad y de la configuración del cliente, por lo que conviene revisar la documentación oficial."
+    },
+    {
+      "q": "¿Qué opción tiene una curva de aprendizaje más suave?",
+      "a": "Podman suele ser más fácil de adoptar para quien ya conoce Docker, gracias a su CLI compatible y a herramientas de escritorio. Nomad exige entender conceptos de clúster, asignación de recursos y el lenguaje HCL, lo que incrementa el tiempo de aprendizaje. Ahora bien, si tu objetivo es orquestar muchos nodos, esa inversión inicial puede compensar a medio plazo."
+    },
+    {
+      "q": "¿Cómo afecta la versión y la configuración a esta comparación?",
+      "a": "Tanto Nomad como Podman evolucionan con nuevas versiones, y funciones como el driver de Podman, las opciones de seguridad o el soporte de pods pueden variar según la versión instalada. También influyen la configuración del clúster, el sistema operativo y la carga de trabajo. Antes de decidir, conviene consultar la documentación oficial de la versión concreta que vayas a utilizar y probar en un entorno representativo."
+    }
+  ]
+}

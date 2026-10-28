@@ -1,0 +1,96 @@
+{
+  "slug": "typeorm-vs-prisma",
+  "meta": {
+    "title": "TypeORM vs Prisma (2026): welche Lösung passt besser?",
+    "description": "TypeORM und Prisma im Vergleich 2026: Architektur, Typsicherheit, Migrationen, Performance und Ökosystem – eine sachliche Entscheidungshilfe für TypeScript-Projekte."
+  },
+  "toolA": {
+    "name": "TypeORM"
+  },
+  "toolB": {
+    "name": "Prisma"
+  },
+  "verdict": "TypeORM eignet sich vor allem für Teams, die einen klassischen, dekoratorbasierten ORM mit Active-Record- und Data-Mapper-Mustern, Entity-Ansatz und breiter Datenbankunterstützung inklusive flexibler Query-API bevorzugen. Prisma punktet durch ein deklaratives Schema, generierte Typen und einen komfortablen Migrations-Workflow, was besonders in neuen TypeScript-Projekten und bei hoher Typdisziplin hilft. Die beste Wahl hängt von Team-Erfahrung, Datenbankstrategie und gewünschtem Workflow ab; in bestehenden TypeORM-Codebasen kann ein Wechsel teurer sein als der Nutzen.",
+  "comparison": [
+    {
+      "category": "Architektur und Datenmodellierung",
+      "toolA": "TypeORM definiert Entitäten als Klassen mit Decorators oder über eine Schema-DSL und unterstützt sowohl Active-Record- als auch Data-Mapper-Muster. Das Modell lebt direkt im TypeScript-Code, was Flexibilität bei dynamischen Anforderungen erlaubt, aber ohne sorgfältige Organisation schnell unübersichtlich werden kann. Ob Entitäten automatisch synchronisiert werden, hängt von Konfiguration und Migrationsstrategie ab und sollte in Produktion nie ungeprüft erfolgen.",
+      "toolB": "Prisma verwendet eine deklarative Schema-Datei als Single Source of Truth und generiert daraus einen typsicheren Client. Das Modell ist zentral beschrieben und Werkzeuge wie Formatierung und Validierung ergeben sich aus diesem Schema; bestehende Datenbanken lassen sich per Introspection einlesen. Der Ansatz ist stark schema-getrieben, was die Nachvollziehbarkeit erhöht, aber bei sehr dynamischen Modellen oder ungewöhnlichen Datenbankfeatures an Grenzen stoßen kann.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Typsicherheit und Entwicklererfahrung",
+      "toolA": "TypeORM nutzt TypeScript-Typen auf Entitäten und Repositories, wobei die Typgenauigkeit bei komplexen QueryBuilder-Ausdrücken und Relationen je nach Version und Verschachtelungstiefe abnimmt. Der Editor-Support ist solide, verlangt aber häufiger explizite Typannotationen oder Casts, wenn Ergebnisse stark transformiert werden. Die Lernkurve ist für Teams mit ORM-Erfahrung meist moderat, hängt jedoch stark von der Vertrautheit mit Decorators und Repository-Mustern ab.",
+      "toolB": "Prisma generiert aus dem Schema einen vollständig typisierten Client, sodass Feldnamen, Relationen und Filter bereits zur Compile-Zeit geprüft werden. Autovervollständigung und Fehlermeldungen gelten gemeinhin als sehr eingängig, und die API ist bewusst eingeschränkt, um Typgenauigkeit zu erhalten. Für sehr komplexe Abfragen mit dynamischen Joins kann die typisierte API an Grenzen stoßen; hier sind Rohabfragen mit eigener Typisierung nötig.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Migrationen und Schema-Evolution",
+      "toolA": "TypeORM bietet Migrationen als TypeScript-Klassen, die per CLI erzeugt und ausgeführt werden, sowie optionalen Schema-Sync für Entwicklungsumgebungen. Migrationen können automatisch aus Entitätsänderungen generiert oder manuell geschrieben werden, was Kontrolle erlaubt, aber auch Sorgfalt verlangt, da generierte Vorschläge geprüft werden müssen. Die Qualität hängt stark von Konfiguration, Dialekt und der Disziplin im Team ab.",
+      "toolB": "Prisma Migrate erzeugt SQL-Migrationen aus dem Schema und protokolliert den Verlauf in der Datenbank. Der Workflow ist eng an das deklarative Schema gekoppelt und damit reproduzierbarer, allerdings sind einzelne Schritte wie Shadow-Datenbanken oder das Auflösen von Drift je nach Umgebung konfigurationsabhängig. Für Teams, die einen klaren, schema-zentrierten Ablauf wünschen, ist das Modell meist einfacher nachzuvollziehen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Datenbank- und Plattformunterstützung",
+      "toolA": "TypeORM unterstützt eine breite Palette relationaler Datenbanken wie PostgreSQL, MySQL, MariaDB, SQLite, MSSQL und Oracle sowie einige NoSQL-Optionen. Diese Breite ist ein Vorteil in heterogenen Umgebungen und bei älteren Bestandssystemen, wobei nicht jedes Feature auf jedem Dialekt identisch funktioniert und die Reife je nach Treiber variiert. Prüfen Sie die jeweilige Version und Konfiguration, bevor Sie sich auf ein spezielles Feature verlassen.",
+      "toolB": "Prisma konzentriert sich auf eine kuratierte Auswahl relationaler Datenbanken wie PostgreSQL, MySQL, MariaDB, SQL Server und SQLite, wobei der Funktionsumfang je nach Datenbank und Prisma-Version unterschiedlich ausfällt. Die Abdeckung ist für viele Web- und Service-Projekte ausreichend, stößt aber bei exotischen Datenbanken oder sehr speziellen Features früher an Grenzen. MongoDB wird unterstützt, unterscheidet sich jedoch konzeptionell vom relationalen Workflow.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Abfrage-API und Flexibilität",
+      "toolA": "TypeORM bietet Repository-Methoden, QueryBuilder und die Möglichkeit, rohe SQL-Abfragen präzise einzusetzen. Der QueryBuilder ist mächtig und erlaubt komplexe Joins, Unterabfragen und dynamische Bedingungen, verlangt aber mehr Sorgfalt bei der Typsicherheit und ist weniger deklarativ. Für ungewöhnliche Abfragen oder bestehende SQL-Logik bleibt viel Spielraum.",
+      "toolB": "Prisma stellt eine deklarative, typisierte Abfrage-API mit Filtern, Relationen und Selects bereit, die sich gut in den generierten Client einfügt. Sehr komplexe Abfragen lassen sich über Rohabfragen lösen, verlieren dann aber einen Teil der Typsicherheit. Die API ist konsistenter, aber weniger frei formbar als ein QueryBuilder im klassischen Sinn.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance und Laufzeitverhalten",
+      "toolA": "Das Laufzeitverhalten von TypeORM hängt stark von Konfiguration, verwendetem Dialekt, QueryBuilder-Nutzung und Caching-Strategien ab; pauschale Aussagen sind unseriös. In der Praxis sind explizite QueryBuilder-Abfragen und ein bewusstes Eager- vs. Lazy-Loading wichtig, um unnötige Joins oder N+1-Situationen zu vermeiden. Messen Sie mit realer Arbeitslast, bevor Sie Performance-Entscheidungen treffen.",
+      "toolB": "Prisma generiert einen Client und setzt Abfragen je nach Version unterschiedlich um; auch hier bestimmen Datenbankschema, Indizes, Abfragemuster und Konfiguration das Ergebnis. Für einfache CRUD-Muster ist der Ansatz meist komfortabel, bei sehr speziellen Zugriffsmustern können Rohabfragen nötig sein. Verbindliche Aussagen zur Performance erfordern eigene Messungen mit der konkreten Version und Umgebung.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ökosystem, Reife und Betrieb",
+      "toolA": "TypeORM ist seit Jahren verbreitet, besitzt eine große Community und zahlreiche Integrationen, was die Fehlersuche erleichtert, aber auch zu veralteten Beispielen führt. Durch die flexible Architektur gibt es unterschiedliche Empfehlungen zu Best Practices, die je nach Version und Dialekt abweichen können. Für langfristige Wartung ist ein klares internes Muster wichtig.",
+      "toolB": "Prisma hat ein aktives Ökosystem mit Fokus auf TypeScript und bietet Werkzeuge wie Studio, Formatierung und Migrationsworkflow. Die Dokumentation ist vergleichsweise strukturiert; dennoch sind Features, Preise und Limits von Version und Tarif abhängig und sollten vor Produktentscheidungen anhand der offiziellen Angaben geprüft werden. Für Teams, die einen geführten Workflow schätzen, ist der Einstieg oft niedrigschwellig.",
+      "winner": "toolB"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import 'reflect-metadata';\nimport { DataSource, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';\n\n@Entity()\nclass Greeting {\n  @PrimaryGeneratedColumn()\n  id!: number;\n\n  @Column()\n  message!: string;\n}\n\nconst dataSource = new DataSource({\n  type: 'sqlite',\n  database: ':memory:',\n  entities: [Greeting],\n  synchronize: true,\n});\n\nasync function main() {\n  await dataSource.initialize();\n  const repo = dataSource.getRepository(Greeting);\n  await repo.save(repo.create({ message: 'Hello, World!' }));\n  const [greeting] = await repo.find();\n  console.log(greeting.message);\n  await dataSource.destroy();\n}\n\nmain();",
+    "tech2Snippet": "import { PrismaClient } from '@prisma/client';\n\nconst prisma = new PrismaClient();\n\nasync function main() {\n  const greetings = await prisma.$queryRawUnsafe<{ message: string }[]>(\n    \"SELECT 'Hello, World!' AS message\"\n  );\n  console.log(greetings[0].message);\n}\n\nmain().finally(() => prisma.$disconnect());"
+  },
+  "faq": [
+    {
+      "q": "Welches Tool eignet sich besser für ein neues TypeScript-Projekt?",
+      "a": "Für ein neues TypeScript-Projekt mit klarer relationaler Datenbank und dem Wunsch nach starker Typisierung ist Prisma häufig die einfachere Wahl, weil Schema, generierter Client und Migrationsworkflow eng zusammenwirken. TypeORM kann sinnvoller sein, wenn Sie bewusst ein klassisches ORM mit Entitäten und QueryBuilder wünschen oder eine Datenbank außerhalb der von Prisma gut abgedeckten Auswahl nutzen. Prüfen Sie in jedem Fall die konkrete Datenbankversion und die Anforderungen an komplexe Abfragen."
+    },
+    {
+      "q": "Wie unterscheiden sich die Migrationsstrategien von TypeORM und Prisma?",
+      "a": "TypeORM erzeugt Migrationen aus Entitätsänderungen oder erlaubt manuelle TypeScript-Migrationen und bietet zusätzlich Schema-Synchronisierung für Entwicklungsphasen. Prisma Migrate leitet SQL-Migrationen aus der Schema-Datei ab und protokolliert den Verlauf in der Datenbank. Welcher Workflow besser passt, hängt von Teamgröße, Review-Prozess und Umgebung ab; in Produktion sollten generierte Änderungen stets geprüft und nicht ungesehen übernommen werden."
+    },
+    {
+      "q": "Ist Prisma schneller als TypeORM?",
+      "a": "Pauschale Leistungsaussagen sind nicht belastbar, weil Ergebnisse von Version, Datenbankschema, Indizes, Konfiguration und Abfragemustern abhängen. Beide Tools können in typischen Web-Projekten performant arbeiten, wenn Abfragen bewusst formuliert und N+1-Muster vermieden werden. Führen Sie eigene Messungen mit Ihrer realen Arbeitslast durch, statt sich auf allgemeine Vergleiche zu verlassen."
+    },
+    {
+      "q": "Welche Datenbanken werden von den Tools unterstützt?",
+      "a": "TypeORM deckt eine breite Auswahl relationaler Datenbanken ab, darunter PostgreSQL, MySQL, MariaDB, SQLite, SQL Server und Oracle, wobei der Funktionsumfang je Dialekt variiert. Prisma unterstützt eine kuratierte Auswahl wie PostgreSQL, MySQL, MariaDB, SQL Server und SQLite sowie MongoDB. Prüfen Sie die konkrete Version und die benötigten Datenbankfeatures, bevor Sie sich festlegen, da nicht alle Funktionen überall gleich verfügbar sind."
+    },
+    {
+      "q": "Wie steht es um Typsicherheit bei komplexen Abfragen?",
+      "a": "Prisma bietet einen generierten Client mit sehr weitreichender Typisierung, sodass Feldnamen und Filter zur Compile-Zeit geprüft werden; bei sehr dynamischen Abfragen sind Rohabfragen mit manueller Typisierung nötig. TypeORM typisiert Entitäten und Repositories, verliert aber bei komplexen QueryBuilder-Ausdrücken je nach Konstruktion an Präzision. Für Teams mit hoher Typdisziplin ist Prisma oft angenehmer, während TypeORM mehr Freiheit bei ungewöhnlichen Abfragen lässt."
+    },
+    {
+      "q": "Kann ich TypeORM oder Prisma in einer bestehenden Datenbank einsetzen?",
+      "a": "Beide Ansätze lassen sich grundsätzlich mit bestehenden Datenbanken verbinden; bei Prisma ist dafür häufig eine Introspection nötig, um das Schema abzubilden. TypeORM kann Entitäten an bestehende Tabellen anpassen, erfordert aber sorgfältige Konfiguration, damit Migrationen und Synchronisierung keine ungewollten Änderungen erzeugen. Prüfen Sie vorab, ob spezielle Datenbankfeatures, Trigger oder Prozeduren vollständig abgebildet werden können."
+    },
+    {
+      "q": "Welche Rolle spielen Ökosystem und Dokumentation bei der Wahl?",
+      "a": "Beide Projekte haben eine aktive Community und umfangreiche Dokumentation, unterscheiden sich aber im Stil: Prisma führt stärker durch einen schema-zentrierten Workflow, TypeORM lässt mehr Architekturfreiheit und damit auch mehr eigene Entscheidungen zu. Die Verfügbarkeit von Beispielen und Integrationen ist ein Praxisfaktor, ersetzt aber keine Prüfung der konkreten Version und des Support-Status. Für langfristige Wartbarkeit ist ein teamintern dokumentiertes Muster oft entscheidender als die Menge an Tutorials."
+    },
+    {
+      "q": "Wann lohnt sich ein Wechsel zwischen TypeORM und Prisma?",
+      "a": "Ein Wechsel lohnt sich vor allem, wenn ein konkretes Problem wiederholt auftritt, etwa mangelnde Typgenauigkeit, ein unklarer Migrationsprozess oder fehlende Datenbankunterstützung. Da ein Wechsel Datenmodell, Abfragen und Tests betrifft, sollte er mit einer Machbarkeitsprüfung und einem schrittweisen Plan verbunden sein. In stabilen Bestandssystemen kann der Nutzen kleiner sein als der Aufwand; entscheiden Sie anhand realer Anforderungen und nicht allein aufgrund von Trendvergleichen."
+    }
+  ]
+}

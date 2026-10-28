@@ -1,0 +1,102 @@
+{
+  "slug": "terraform-vs-kubernetes",
+  "meta": {
+    "title": "Terraform vs Kubernetes (2026): quelle solution choisir ?",
+    "description": "Terraform et Kubernetes ne jouent pas le même rôle : infrastructure as code contre orchestration de conteneurs. Découvrez leurs différences, cas d'usage et comment les combiner en 2026."
+  },
+  "toolA": {
+    "name": "Terraform"
+  },
+  "toolB": {
+    "name": "Kubernetes"
+  },
+  "verdict": "Terraform excelle pour provisionner et gérer l'infrastructure cloud de manière déclarative, tandis que Kubernetes orchestre des charges conteneurisées à l'exécution. Ils sont complémentaires : utilisez Terraform pour créer les clusters et les ressources sous-jacentes, puis Kubernetes pour déployer et opérer les applications. Le choix dépend de votre besoin : infrastructure ou orchestration applicative.",
+  "comparison": [
+    {
+      "category": "Rôle principal et modèle d'exécution",
+      "toolA": "Terraform est un outil d'infrastructure as code (IaC) qui permet de décrire et de provisionner des ressources (réseaux, machines virtuelles, bases de données, clusters) via des fichiers de configuration déclaratifs. Il applique un plan pour atteindre l'état désiré et peut gérer des fournisseurs cloud variés grâce à un écosystème de providers. Son exécution est généralement déclenchée par un pipeline ou un opérateur, pas en continu sur les charges applicatives.",
+      "toolB": "Kubernetes est une plateforme d'orchestration de conteneurs qui gère le déploiement, la mise à l'échelle et la disponibilité des applications conteneurisées sur un cluster de nœuds. Il repose sur une boucle de contrôle continue qui réconcilie l'état observé avec l'état désiré, défini via des manifestes ou des API. Il ne provisionne pas l'infrastructure sous-jacente (sauf via des extensions comme Cluster API, qui reste un cas particulier).",
+      "winner": "tie"
+    },
+    {
+      "category": "Langage et approche de configuration",
+      "toolA": "Terraform utilise le langage HCL (HashiCorp Configuration Language), conçu pour être lisible et déclaratif, avec des blocs, des expressions et des modules réutilisables. HCL est spécifique à l'écosystème Terraform, mais il reste accessible aux équipes infra et DevOps. La configuration décrit des ressources et leurs dépendances, et Terraform calcule un plan d'exécution.",
+      "toolB": "Kubernetes s'appuie sur des manifestes YAML (ou JSON) déclaratifs, souvent organisés en ressources comme Pods, Deployments, Services, ConfigMaps. L'API Kubernetes est vaste et typée, et des outils comme Kustomize ou Helm ajoutent des couches de templating et de gestion de paquets. La syntaxe YAML est simple en apparence, mais la richesse des objets et des bonnes pratiques peut rendre la courbe d'apprentissage plus raide.",
+      "winner": "tie"
+    },
+    {
+      "category": "Gestion de l'état et idempotence",
+      "toolA": "Terraform conserve un fichier d'état (state) qui mappe les ressources déclarées aux objets réels, ce qui permet de calculer les différences et d'appliquer des changements de manière idempotente. La gestion de l'état est cruciale : stockage distant, verrouillage et sauvegarde sont recommandés pour éviter les conflits. Terraform peut importer des ressources existantes et propose des commandes comme plan et apply pour contrôler les modifications.",
+      "toolB": "Kubernetes maintient en interne l'état du cluster via etcd, et les contrôleurs réconcilient en continu l'état réel avec l'état désiré. L'idempotence est assurée par le modèle déclaratif : appliquer plusieurs fois le même manifeste conduit au même résultat. Il n'y a pas de fichier d'état utilisateur à gérer, mais la compréhension des contrôleurs et des stratégies de déploiement (RollingUpdate, etc.) est nécessaire pour maîtriser les changements.",
+      "winner": "tie"
+    },
+    {
+      "category": "Écosystème et intégration multi-cloud",
+      "toolA": "Terraform dispose d'un large catalogue de providers officiels et communautaires pour AWS, Azure, Google Cloud, ainsi que pour de nombreux services SaaS et infrastructures sur site. Cet écosystème permet de gérer des ressources hétérogènes avec un seul outil et un langage commun. La communauté fournit également des modules réutilisables, ce qui accélère la mise en place de bonnes pratiques.",
+      "toolB": "Kubernetes est supporté par tous les grands fournisseurs cloud via des offres managées (EKS, AKS, GKE) et peut être déployé sur site avec des distributions comme kubeadm, k3s ou OpenShift. Son écosystème d'outils (Helm, Operators, Service Mesh, CI/CD) est vaste et standardisé. En revanche, Kubernetes ne vise pas à provisionner des ressources cloud non conteneurisées ; il faut des outils complémentaires pour cela.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "Terraform s'appuie sur les mécanismes d'authentification des providers (clés API, rôles IAM, variables d'environnement) et recommande de protéger l'état, qui peut contenir des secrets. Des fonctionnalités comme les variables sensibles, le chiffrement du backend et l'intégration avec des coffres-forts de secrets sont disponibles, mais la sécurité dépend fortement de la configuration et des pratiques d'équipe. Les versions récentes introduisent des améliorations, mais il convient de vérifier la documentation de la version utilisée.",
+      "toolB": "Kubernetes intègre nativement un modèle de sécurité riche : RBAC pour les autorisations, Network Policies pour le trafic, Secrets (avec des limites) et Pod Security Standards. L'authentification peut être déléguée à des fournisseurs d'identité via OIDC, et l'audit logging permet de tracer les actions. La sécurité d'un cluster dépend toutefois de la configuration, des mises à jour et des politiques appliquées ; les offres managées ajoutent des contrôles mais ne dispensent pas d'une bonne hygiène.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Courbe d'apprentissage et complexité opérationnelle",
+      "toolA": "Terraform demande de comprendre HCL, la notion d'état, les providers et les bonnes pratiques de modularisation. Pour une équipe infra, la prise en main est généralement progressive, surtout avec des exemples et des modules existants. La complexité augmente avec le nombre de ressources et la gestion multi-environnements, mais l'outil reste relativement ciblé sur le provisionnement.",
+      "toolB": "Kubernetes a une courbe d'apprentissage réputée plus abrupte en raison de la multitude de concepts (Pods, Services, Ingress, Volumes, contrôleurs) et de la nécessité de comprendre le réseau, le stockage et la sécurité. L'exploitation d'un cluster en production exige des compétences en administration système et une surveillance continue. Les offres managées réduisent la charge, mais ne suppriment pas la complexité applicative.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cas d'usage typiques et complémentarité",
+      "toolA": "Terraform est particulièrement adapté pour créer des environnements cloud reproductibles, gérer des réseaux, des bases de données, des clusters Kubernetes eux-mêmes, et appliquer des politiques d'infrastructure. Il est souvent utilisé dans les pipelines CI/CD pour provisionner ou mettre à jour l'infrastructure avant le déploiement applicatif. Il peut aussi gérer des ressources SaaS et des configurations DNS.",
+      "toolB": "Kubernetes est le choix de référence pour exécuter des applications conteneurisées à grande échelle, avec des besoins de mise à l'échelle automatique, de découverte de services, de déploiements progressifs et de résilience. Il est idéal pour les architectures microservices et les plateformes internes. Il ne remplace pas un outil d'IaC pour l'infrastructure sous-jacente, mais il peut être provisionné par Terraform.",
+      "winner": "tie"
+    },
+    {
+      "category": "Maturité, communauté et support en 2026",
+      "toolA": "Terraform est un projet mature, avec une large communauté et un support commercial via HashiCorp. Depuis le changement de licence (BSL) et l'apparition d'alternatives comme OpenTofu, il convient de vérifier les implications pour votre organisation. La documentation est abondante et les mises à jour régulières, mais l'adoption de la version et des providers doit être planifiée.",
+      "toolB": "Kubernetes est un projet gradué de la CNCF, avec une gouvernance ouverte et des cycles de release fréquents. La communauté est très active et les offres managées sont proposées par tous les grands clouds. La maturité est élevée, mais les versions évoluent rapidement et il est recommandé de suivre les politiques de support des fournisseurs pour les mises à jour.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"eu-west-3\"\n}\n\nresource \"aws_s3_bucket\" \"hello\" {\n  bucket = \"mon-bucket-hello-world-2026\"\n}",
+    "tech2Snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: hello-world\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: hello-world\n  template:\n    metadata:\n      labels:\n        app: hello-world\n    spec:\n      containers:\n      - name: hello\n        image: nginx:alpine\n        ports:\n        - containerPort: 80"
+  },
+  "faq": [
+    {
+      "q": "Terraform et Kubernetes sont-ils concurrents ou complémentaires ?",
+      "a": "Ils sont complémentaires : Terraform sert à provisionner l'infrastructure (y compris un cluster Kubernetes) tandis que Kubernetes orchestre les applications conteneurisées sur ce cluster. Dans une architecture typique, Terraform crée le réseau, les nœuds et le cluster, puis Kubernetes déploie les charges applicatives. Il est donc courant de les utiliser ensemble plutôt que de les opposer."
+    },
+    {
+      "q": "Quel outil choisir pour un projet de microservices ?",
+      "a": "Pour des microservices conteneurisés, Kubernetes est généralement le choix naturel pour le déploiement, la mise à l'échelle et la résilience. Toutefois, vous aurez besoin d'un outil d'IaC comme Terraform pour préparer l'infrastructure sous-jacente et éventuellement les services managés. La décision dépend de la maturité de votre équipe et de la complexité des charges."
+    },
+    {
+      "q": "Terraform peut-il remplacer Kubernetes pour déployer des applications ?",
+      "a": "Non, Terraform n'est pas conçu pour orchestrer des conteneurs à l'exécution ; il peut créer des ressources Kubernetes (via le provider Kubernetes) mais ne gère pas la boucle de contrôle, la mise à l'échelle automatique ou la découverte de services. Kubernetes reste nécessaire pour l'orchestration applicative. Utiliser Terraform pour déployer des manifestes Kubernetes est possible mais déconseillé pour des applications dynamiques."
+    },
+    {
+      "q": "Kubernetes peut-il remplacer Terraform pour gérer l'infrastructure ?",
+      "a": "Kubernetes ne vise pas à provisionner des ressources cloud non conteneurisées (bases de données managées, réseaux, etc.) ; il existe des extensions comme Cluster API ou Crossplane, mais elles ne couvrent pas tous les cas et ajoutent de la complexité. Terraform reste plus adapté pour l'IaC multi-cloud. Kubernetes peut toutefois gérer certaines ressources via des opérateurs, mais cela reste spécifique."
+    },
+    {
+      "q": "Quelles compétences sont nécessaires pour chacun ?",
+      "a": "Pour Terraform, il faut comprendre HCL, la gestion d'état, les providers et les bonnes pratiques de modularisation. Pour Kubernetes, il faut maîtriser les concepts de Pods, Services, Ingress, ainsi que le réseau, le stockage et la sécurité. Les deux demandent une culture DevOps et une connaissance de l'environnement cloud ciblé."
+    },
+    {
+      "q": "Quel impact sur les coûts ?",
+      "a": "Terraform est open source (licence BSL depuis la version 1.6, avec OpenTofu comme alternative) et n'engendre pas de coût de licence direct, mais l'infrastructure provisionnée peut avoir un coût. Kubernetes est également open source, mais son exploitation (nœuds, stockage, réseau, outils managés) peut représenter un coût significatif. Les offres managées ajoutent des frais de service. Il est essentiel d'évaluer le coût total de possession."
+    },
+    {
+      "q": "Comment débuter avec Terraform et Kubernetes en 2026 ?",
+      "a": "Pour Terraform, commencez par installer la CLI, écrire un fichier HCL simple et utiliser un backend local pour tester. Pour Kubernetes, utilisez un cluster local comme kind ou minikube, puis déployez un manifeste simple. Les deux outils disposent de tutoriels officiels et de communautés actives ; privilégiez des environnements de test avant la production."
+    },
+    {
+      "q": "Quelles sont les limites respectives à connaître ?",
+      "a": "Terraform peut devenir complexe à grande échelle, surtout avec de nombreux environnements et la gestion de l'état ; il ne gère pas l'orchestration en temps réel. Kubernetes a une courbe d'apprentissage élevée et une complexité opérationnelle importante, et il ne couvre pas le provisionnement d'infrastructure non conteneurisée. Les deux nécessitent une gouvernance et des pratiques de sécurité rigoureuses."
+    }
+  ]
+}

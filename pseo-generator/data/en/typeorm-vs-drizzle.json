@@ -1,0 +1,98 @@
+{
+  "slug": "typeorm-vs-drizzle",
+  "meta": {
+    "title": "TypeORM vs Drizzle ORM (2026): Which option should you choose?",
+    "description": "TypeORM vs Drizzle ORM compared for 2026: schema style, migrations, TypeScript types, performance overhead, ecosystem maturity, and which fits your project."
+  },
+  "toolA": {
+    "name": "TypeORM"
+  },
+  "toolB": {
+    "name": "Drizzle ORM"
+  },
+  "verdict": "Choose TypeORM if you want a mature, decorator-driven ORM with a broad feature surface, an entity-centric model, and extensive legacy support, especially in NestJS or Angular-style codebases. Choose Drizzle ORM if you prefer a lightweight, TypeScript-first query builder that stays close to SQL, with explicit schemas and strong type inference. Drizzle suits teams comfortable with SQL and modern bundlers; TypeORM suits teams wanting convention and built-in abstractions.",
+  "comparison": [
+    {
+      "category": "Schema definition and modeling style",
+      "toolA": "TypeORM models tables as decorated entity classes using @Entity, @Column, and relation decorators, optionally combined with the Data Mapper or Active Record pattern. This class-based approach appeals to teams from Spring, Hibernate, or Angular backgrounds, but it often requires TypeScript decorators and reflect-metadata configuration, and the generated types can feel indirect when reading query results.",
+      "toolB": "Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and relations. There are no decorators or runtime reflection requirements, so the schema is explicit, tree-shakeable, and readable as code. Types are inferred directly from the schema definition, which many developers find easier to trace and refactor.",
+      "winner": "toolB"
+    },
+    {
+      "category": "TypeScript type safety and inference",
+      "toolA": "TypeORM provides typed repositories and query builders, but entity typing relies on decorators and metadata, and some query shapes return broader or looser types that require casting or partial selectors. Recent versions have improved typing, yet edge cases with relations, raw queries, and partial selections can still require care depending on configuration and version.",
+      "toolB": "Drizzle ORM is designed around SQL-like type inference, so selected columns, joins, and partial results generally carry precise types without manual generics. Because the query builder mirrors SQL structure, TypeScript can often infer nullability from join types. Some advanced dynamic query composition still needs explicit typing, but the baseline experience is strongly type-safe.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Migrations and schema management",
+      "toolA": "TypeORM ships a migration system that can generate migration files from entity changes and run them via CLI, and synchronize mode can auto-apply schema changes in development. Generation quality varies by version and by how complex relationships or renames are, so reviewing generated SQL is advisable, and production use typically favors explicit migrations over synchronization.",
+      "toolB": "Drizzle Kit generates SQL migration files from schema diffs and provides a CLI for generate, migrate, and push workflows, plus introspection for existing databases. It outputs plain SQL that is easy to review and version-control, and drizzle-kit push supports fast prototyping. Complex rename detection and multi-dialect behavior depend on the dialect and version, so generated SQL should still be checked.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Query API and SQL control",
+      "toolA": "TypeORM offers both a repository API and a powerful QueryBuilder with joins, subqueries, and raw fragments, but the abstraction can produce SQL that is harder to predict for complex queries. Developers sometimes drop to raw queries when they need precise SQL control, which means mixing paradigms in larger codebases.",
+      "toolB": "Drizzle ORM is a thin, SQL-first query builder, so what you write closely maps to the generated SQL, including joins, CTEs, and window functions where supported. It also provides a sql template for raw fragments and supports prepared statements. Teams that know SQL usually find query behavior more predictable, though very abstract, repository-style patterns are less central to its design.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Runtime performance and overhead",
+      "toolA": "TypeORM carries more runtime machinery, including metadata storage and entity transformation, which can add overhead in hot paths and may matter for high-throughput services. Real-world performance depends heavily on query design, connection pooling, and how much work is done through the QueryBuilder versus raw SQL, so characterize it through your own load testing rather than assuming fixed numbers.",
+      "toolB": "Drizzle ORM is comparatively lightweight with minimal runtime abstraction, which can reduce per-query overhead and bundle size in serverless or edge deployments. Actual performance still depends on the driver, connection strategy, query shape, and workload, and in most applications database time dominates, so gains should be measured rather than assumed.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, maturity, and learning curve",
+      "toolA": "TypeORM is a long-standing project with broad adoption, many tutorials, integrations with frameworks such as NestJS, and support for multiple databases including PostgreSQL, MySQL, MariaDB, SQLite, and others depending on version and driver. Its learning curve is steeper because of entities, decorators, relations, and multiple APIs, but the large body of documentation and community answers helps.",
+      "toolB": "Drizzle ORM is newer and evolving quickly, with growing documentation, a typed SQL-like API, and support for major databases such as PostgreSQL, MySQL, SQLite, and serverless drivers. Its API is smaller and SQL-centric, which shortens onboarding for SQL-literate developers, but fewer legacy examples and rapid release changes mean teams should pin versions and follow migration notes.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Framework and database compatibility",
+      "toolA": "TypeORM integrates well with NestJS and frameworks that favor dependency injection and decorators, and it supports multiple relational databases and drivers, though exact feature parity differs by database and version. Configuration via DataSource and connection options is established, and some advanced database features may require raw SQL or driver-specific handling.",
+      "toolB": "Drizzle ORM supports PostgreSQL, MySQL, SQLite, and several serverless or edge drivers, and it works in Node.js, Bun, Deno, and edge runtimes depending on the adapter and version. It is schema-first and bundler-friendly, but feature coverage such as certain database-specific types or migration behaviors can vary by dialect, so verify support for your target database.",
+      "winner": "tie"
+    },
+    {
+      "category": "Validation, security, and operational considerations",
+      "toolA": "TypeORM does not act as a validation layer; input validation still belongs in DTOs and middleware such as class-validator. Parameter binding in the query builder helps reduce SQL injection risk, but raw queries and dynamic SQL require careful handling. Security also depends on migrations, least-privilege database roles, and keeping dependencies patched.",
+      "toolB": "Drizzle ORM similarly is not a validation library, and application input should still be validated before it reaches the database. Its sql template and query builder support parameterized values, which helps avoid injection when used correctly, while raw SQL fragments must be handled with care. Operational concerns such as connection pooling, TLS, and migration permissions remain your responsibility.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which ORM should I choose for a new TypeScript backend in 2026?",
+      "a": "For a new backend where the team knows SQL and values explicit schemas, precise types, and a lightweight footprint, Drizzle ORM is often the more natural fit, especially for serverless or edge deployments. If the team prefers a mature, decorator-based entity model with a wider set of built-in abstractions and established NestJS integration, TypeORM remains a reasonable choice. Validate against your target database and runtime, since support details vary by version."
+    },
+    {
+      "q": "Does Drizzle ORM perform better than TypeORM?",
+      "a": "Drizzle ORM generally has less runtime abstraction, which can reduce overhead in hot paths and improve bundle size in constrained runtimes, but database work usually dominates latency. Any performance difference depends on query design, driver, connection pooling, and workload, so benchmark your own representative queries rather than relying on general claims. Also note that TypeORM can be very fast when queries are well tuned and raw SQL is used appropriately."
+    },
+    {
+      "q": "Are TypeORM migrations reliable enough for production?",
+      "a": "TypeORM provides both schema synchronization and generated migrations, and production deployments typically rely on explicit migration files rather than synchronization. Generated migrations are a useful starting point, but complex renames, relationship changes, and dialect-specific behavior can require manual review and editing. Always inspect the generated SQL and test migrations against a production-like database before applying them."
+    },
+    {
+      "q": "How steep is the learning curve for each tool?",
+      "a": "TypeORM introduces entities, decorators, repositories, relations, and multiple query APIs, so newcomers often need time to understand the abstractions and metadata requirements. Drizzle ORM has a smaller, SQL-centric API that many developers with SQL experience learn quickly, though its rapid evolution means you should pin versions and read upgrade notes. Teams without SQL background may find TypeORM's repository conventions friendlier, while SQL-literate teams often prefer Drizzle."
+    },
+    {
+      "q": "Can I use these ORMs with PostgreSQL, MySQL, and SQLite?",
+      "a": "Both tools support major relational databases, but exact feature coverage, drivers, and migration behavior differ by dialect and version. TypeORM has long supported PostgreSQL, MySQL, MariaDB, SQLite, and others, while Drizzle ORM supports PostgreSQL, MySQL, SQLite, and several serverless drivers with runtime-specific adapters. Verify support for the specific database features and deployment runtime you need before committing."
+    },
+    {
+      "q": "Which is better for serverless and edge runtimes?",
+      "a": "Drizzle ORM is generally more bundler-friendly and lighter at runtime, and it offers adapters for serverless and edge environments depending on the database and version, which can make it easier to deploy in constrained runtimes. TypeORM can run in serverless environments too, but its metadata and decorator machinery may require additional configuration and can increase cold-start cost. Test in your actual deployment platform, since support depends on the driver and runtime."
+    },
+    {
+      "q": "Do these ORMs handle SQL injection safely?",
+      "a": "Both tools encourage parameterized queries through their query builders and template mechanisms, which reduces SQL injection risk when used correctly. Neither replaces application-level input validation, and both allow raw SQL that must be handled carefully. Keep dependencies patched, use least-privilege database roles, and avoid interpolating untrusted strings into raw query fragments."
+    },
+    {
+      "q": "Which ORM has better long-term community and ecosystem support?",
+      "a": "TypeORM has a longer track record, broader historical adoption, and many existing tutorials and integrations, which can help when maintaining legacy systems or finding answers to common problems. Drizzle ORM is newer but growing quickly, with active development and expanding documentation, though its pace can mean breaking changes across versions. Consider pinning versions, reviewing release notes, and evaluating maintenance activity for your chosen dialects before deciding."
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "slug": "openfga-vs-aws",
+  "meta": {
+    "title": "OpenFGA vs AWS (2026): Which option should you choose?",
+    "description": "Compare OpenFGA and AWS for authorization in 2026: architecture, hosting, scalability, security, cost, and developer experience to pick the right fit."
+  },
+  "toolA": {
+    "name": "OpenFGA"
+  },
+  "toolB": {
+    "name": "AWS"
+  },
+  "verdict": "OpenFGA is the stronger choice when you want a dedicated, open-source authorization engine you can self-host or run as a managed service and model fine-grained permissions with ReBAC. AWS is the better fit when you prefer to build authorization inside a mature cloud platform using IAM and managed services you already operate. Many teams combine them: OpenFGA for application-level permissions and AWS for infrastructure identity.",
+  "comparison": [
+    {
+      "category": "Core purpose and scope",
+      "toolA": "OpenFGA is an open-source authorization engine implementing fine-grained relationship-based access control (ReBAC) inspired by Google Zanzibar. It focuses narrowly on answering permission questions through an authorization model and relationship tuples, and it is not a general-purpose cloud platform.",
+      "toolB": "AWS is a broad cloud platform covering compute, storage, databases, networking, identity, and more. Its authorization story spans AWS Identity and Access Management (IAM), Cognito, and service-specific policies, which are designed for cloud resources and infrastructure identity rather than arbitrary application-level relationship graphs.",
+      "winner": "tie"
+    },
+    {
+      "category": "Authorization model expressiveness",
+      "toolA": "OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which suits complex multi-tenant and hierarchical permissions. It answers check, expand, and list-objects queries against relationship data, and model complexity should be validated against your read and write patterns.",
+      "toolB": "AWS IAM policies express allow and deny rules over AWS resources and actions, and Cognito handles user authentication and basic group-based authorization. These mechanisms are powerful for infrastructure and resource access, but expressing deep application-level relationship graphs generally requires custom logic in your own services.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Hosting and operational model",
+      "toolA": "OpenFGA can be self-hosted, for example with Docker or Kubernetes, and it also has managed offerings in the ecosystem, so you can choose between operating it yourself and paying for a managed service. Self-hosting means you own upgrades, backups, database tuning, and high availability, which is a real operational burden.",
+      "toolB": "AWS offers fully managed services with regional availability, built-in monitoring integrations, and mature operational tooling. You trade some control and portability for reduced operational overhead, and pricing depends heavily on the specific services and usage tiers you select.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scalability and latency",
+      "toolA": "OpenFGA is designed to serve high volumes of authorization checks and stores relationship data in a backing datastore such as PostgreSQL, MySQL, or an in-memory store depending on configuration. Actual latency and throughput depend on model design, datastore choice, caching, and deployment topology, so load testing your specific workload is important.",
+      "toolB": "AWS services scale through managed infrastructure and regional distribution, and IAM authorization checks are typically fast within AWS workloads. However, per-request authorization overhead, quotas, and throttling limits vary by service and should be reviewed for latency-sensitive designs.",
+      "winner": "tie"
+    },
+    {
+      "category": "Security, compliance, and identity integration",
+      "toolA": "OpenFGA enforces authorization centrally through a consistent model, which can reduce permission drift across services, and self-hosted deployments give you direct control over data residency and network isolation. You remain responsible for securing the API, configuring authentication for the server, and protecting the backing datastore, and compliance certifications depend on your own deployment rather than the software itself.",
+      "toolB": "AWS provides extensive compliance programs, encryption options, audit trails through services like CloudTrail, and integrations with enterprise identity providers. Security guarantees depend on correct IAM policy design, and overly broad permissions are a common risk, so least-privilege review remains essential.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Developer experience and ecosystem",
+      "toolA": "OpenFGA offers an HTTP and gRPC API, official SDKs for several languages, a modeling language, and tooling for testing and visualizing authorization models. Its community and documentation are active, but the project evolves quickly, so reviewing release notes before upgrading is advisable.",
+      "toolB": "AWS has extensive documentation, SDKs, certifications, and a large talent pool familiar with its services. The learning curve for IAM and service-specific authorization can be steep, and the breadth of options sometimes makes the correct pattern non-obvious for newcomers.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Vendor lock-in and portability",
+      "toolA": "OpenFGA is open source, and its models and relationship data can be exported, which supports portability across hosting environments including other clouds. Portability still requires engineering effort to migrate datastores and re-integrate services.",
+      "toolB": "AWS authorization mechanisms are tightly integrated with AWS services, and migrating application authorization logic to another cloud usually requires redesign rather than configuration changes. Managed service features and pricing structures also differ across providers.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cost structure",
+      "toolA": "The open-source software itself has no license fee, but self-hosting incurs infrastructure, datastore, and engineering time costs. Managed OpenFGA offerings have their own pricing tiers, which should be confirmed with the provider for your expected check volume and data size.",
+      "toolB": "AWS uses pay-as-you-go pricing across many services, and authorization-related costs depend on which services you use, request volumes, and support plans. Precise costs require modeling your architecture and usage, and prices can change, so consult current AWS pricing rather than relying on estimates.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is OpenFGA a replacement for AWS IAM?",
+      "a": "No. OpenFGA handles application-level, relationship-based authorization, while AWS IAM governs access to AWS resources and actions. Most organizations need both: IAM for infrastructure identity and a dedicated engine like OpenFGA for product permissions."
+    },
+    {
+      "q": "Can I run OpenFGA on AWS?",
+      "a": "Yes. OpenFGA can be deployed on AWS compute services with a supported datastore, and you remain responsible for scaling, backups, and security hardening. This combination lets you keep infrastructure on AWS while using OpenFGA for fine-grained application authorization."
+    },
+    {
+      "q": "Which option is easier to start with for a small team?",
+      "a": "AWS is often easier to adopt if your application already runs on AWS and needs only coarse-grained resource permissions, because managed services reduce operational work. OpenFGA is approachable for developers who need relationship-based permissions, but it requires planning your model and operating or paying for a deployment."
+    },
+    {
+      "q": "Does OpenFGA support multi-tenant authorization?",
+      "a": "OpenFGA models commonly represent tenants as objects with relations, which supports per-tenant isolation and delegation patterns. You should validate the model against your access patterns and test list-objects queries, since complex models can affect performance."
+    },
+    {
+      "q": "How does AWS handle fine-grained application permissions?",
+      "a": "AWS offers IAM policies, Cognito groups, and service-specific authorization features, but deep relationship graphs usually require custom application logic. Teams with complex hierarchical permissions often add a dedicated authorization service alongside AWS."
+    },
+    {
+      "q": "Which option is more portable across clouds?",
+      "a": "OpenFGA is generally more portable because it is open source and can run on multiple platforms with a supported datastore. AWS authorization is deeply tied to AWS services, so moving to another cloud typically requires redesigning access control."
+    },
+    {
+      "q": "What should I verify before choosing either option in 2026?",
+      "a": "Check current feature support, security guidance, and pricing for the specific versions and services you plan to use, since both evolve rapidly. Also confirm compliance requirements, latency targets, and operational ownership before committing."
+    },
+    {
+      "q": "Can OpenFGA and AWS be used together?",
+      "a": "Yes, and this is a common pattern: use AWS IAM for infrastructure and service-to-service identity, and OpenFGA for application-level relationships such as document sharing or team permissions. Integration requires consistent identity mapping between the two systems."
+    }
+  ]
+}

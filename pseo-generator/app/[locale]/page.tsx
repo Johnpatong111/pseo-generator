@@ -1,0 +1,250 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import ComparisonSearch from "../../components/ComparisonSearch";
+import StackWizard from "../../components/StackWizard";
+import {
+  getComparisons,
+  isLocale,
+  LOCALES,
+  type Locale,
+} from "../../lib/comparisons";
+import { BRAND_DESCRIPTION } from "../../lib/locales";
+
+const copy = {
+  pl: {
+    title: "Porównaj technologie backendowe i bazy danych",
+    description:
+      "Sprawdź szczegółowe porównania baz danych, frameworków i platform backendowych. Wybierz technologie dopasowane do swojego projektu.",
+    eyebrow: "Praktyczne porównania dla developerów",
+    heading: "Wybierz technologie odpowiednie dla swojego projektu",
+    intro: "Porównaj funkcje, wydajność, ekosystem i typowe zastosowania popularnych narzędzi.",
+    listings: "Wszystkie porównania",
+    cardLabel: "Porównanie technologii",
+    link: "Zobacz porównanie",
+    empty: "Porównania wkrótce pojawią się w tym języku.",
+    count: "porównań",
+    searchLabel: "Wyszukaj porównanie",
+    searchPlaceholder: "Wpisz nazwę technologii, np. PostgreSQL lub React…",
+    noResults: "Nie znaleziono porównań dla tej nazwy technologii.",
+    resultCountLabel: "Liczba pasujących porównań:",
+    notFound: "Nie znaleziono porównania:",
+    generateCta: "Kliknij, aby wygenerować raport AI",
+    generateTitle: "Wygeneruj porównanie technologii",
+    tech1Label: "Technologia 1",
+    tech2Label: "Technologia 2",
+    generate: "Wygeneruj porównanie",
+    generating: "Generowanie porównania…",
+    close: "Zamknij",
+    generateError: "Nie udało się wygenerować porównania. Spróbuj ponownie.",
+  },
+  en: {
+    title: "Compare backend technologies and databases",
+    description:
+      "Explore detailed comparisons of databases, frameworks, and backend platforms. Find the technologies that fit your project.",
+    eyebrow: "Practical comparisons for developers",
+    heading: "Choose the right technologies for your project",
+    intro: "Compare the features, performance, ecosystems, and use cases of popular tools.",
+    listings: "All comparisons",
+    cardLabel: "Technology comparison",
+    link: "View comparison",
+    empty: "Comparisons in this language will be available soon.",
+    count: "comparisons",
+    searchLabel: "Search comparisons",
+    searchPlaceholder: "Search for a technology, such as PostgreSQL or React…",
+    noResults: "No comparisons match that technology.",
+    resultCountLabel: "Matching comparisons:",
+    notFound: "No comparison found:",
+    generateCta: "Generate an AI report",
+    generateTitle: "Generate a technology comparison",
+    tech1Label: "Technology 1",
+    tech2Label: "Technology 2",
+    generate: "Generate comparison",
+    generating: "Generating comparison…",
+    close: "Close",
+    generateError: "Could not generate the comparison. Please try again.",
+  },
+  es: {
+    title: "Compara tecnologías backend y bases de datos",
+    description:
+      "Descubre comparativas detalladas de bases de datos, frameworks y plataformas backend. Encuentra las tecnologías adecuadas para tu proyecto.",
+    eyebrow: "Comparativas prácticas para desarrolladores",
+    heading: "Elige las tecnologías adecuadas para tu proyecto",
+    intro: "Compara las funciones, el rendimiento, los ecosistemas y los usos habituales de herramientas populares.",
+    listings: "Todas las comparativas",
+    cardLabel: "Comparativa de tecnologías",
+    link: "Ver comparativa",
+    empty: "Próximamente habrá comparativas disponibles en este idioma.",
+    count: "comparativas",
+    searchLabel: "Buscar comparativas",
+    searchPlaceholder: "Busca una tecnología, por ejemplo PostgreSQL o React…",
+    noResults: "No hay comparativas para esa tecnología.",
+    resultCountLabel: "Comparativas coincidentes:",
+    notFound: "No se encontró la comparativa:",
+    generateCta: "Generar un informe con IA",
+    generateTitle: "Genera una comparativa de tecnologías",
+    tech1Label: "Tecnología 1",
+    tech2Label: "Tecnología 2",
+    generate: "Generar comparativa",
+    generating: "Generando comparativa…",
+    close: "Cerrar",
+    generateError: "No se pudo generar la comparativa. Inténtalo de nuevo.",
+  },
+  de: {
+    title: "Technologien für Backend und Datenbanken vergleichen",
+    description:
+      "Entdecke detaillierte Vergleiche von Datenbanken, Frameworks und Backend-Plattformen. Finde die passende Technologie für dein Projekt.",
+    eyebrow: "Praxisnahe Vergleiche für Entwickler",
+    heading: "Finde die passenden Technologien für dein Projekt",
+    intro: "Vergleiche Funktionen, Leistung, Ökosysteme und typische Einsatzbereiche beliebter Tools.",
+    listings: "Alle Vergleiche",
+    cardLabel: "Technologievergleich",
+    link: "Vergleich ansehen",
+    empty: "Vergleiche in dieser Sprache folgen in Kürze.",
+    count: "Vergleiche",
+    searchLabel: "Vergleiche suchen",
+    searchPlaceholder: "Technologie suchen, zum Beispiel PostgreSQL oder React…",
+    noResults: "Keine Vergleiche für diese Technologie gefunden.",
+    resultCountLabel: "Passende Vergleiche:",
+    notFound: "Kein Vergleich gefunden:",
+    generateCta: "KI-Bericht erstellen",
+    generateTitle: "Technologievergleich erstellen",
+    tech1Label: "Technologie 1",
+    tech2Label: "Technologie 2",
+    generate: "Vergleich erstellen",
+    generating: "Vergleich wird erstellt…",
+    close: "Schließen",
+    generateError: "Der Vergleich konnte nicht erstellt werden. Bitte versuche es erneut.",
+  },
+  fr: {
+    title: "Comparez les technologies backend et les bases de données",
+    description:
+      "Découvrez des comparatifs détaillés de bases de données, frameworks et plateformes backend. Trouvez les technologies adaptées à votre projet.",
+    eyebrow: "Des comparatifs pratiques pour les développeurs",
+    heading: "Choisissez les technologies adaptées à votre projet",
+    intro: "Comparez les fonctionnalités, performances, écosystèmes et cas d’usage d’outils populaires.",
+    listings: "Tous les comparatifs",
+    cardLabel: "Comparatif de technologies",
+    link: "Voir le comparatif",
+    empty: "Les comparatifs dans cette langue seront bientôt disponibles.",
+    count: "comparatifs",
+    searchLabel: "Rechercher des comparatifs",
+    searchPlaceholder: "Recherchez une technologie, par exemple PostgreSQL ou React…",
+    noResults: "Aucun comparatif ne correspond à cette technologie.",
+    resultCountLabel: "Comparatifs correspondants :",
+    notFound: "Aucun comparatif trouvé :",
+    generateCta: "Générer un rapport IA",
+    generateTitle: "Générer un comparatif de technologies",
+    tech1Label: "Technologie 1",
+    tech2Label: "Technologie 2",
+    generate: "Générer le comparatif",
+    generating: "Génération du comparatif…",
+    close: "Fermer",
+    generateError: "Impossible de générer le comparatif. Veuillez réessayer.",
+  },
+} satisfies Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    eyebrow: string;
+    heading: string;
+    intro: string;
+    listings: string;
+    cardLabel: string;
+    link: string;
+    empty: string;
+    count: string;
+    searchLabel: string;
+    searchPlaceholder: string;
+    noResults: string;
+    resultCountLabel: string;
+    notFound: string;
+    generateCta: string;
+    generateTitle: string;
+    tech1Label: string;
+    tech2Label: string;
+    generate: string;
+    generating: string;
+    close: string;
+    generateError: string;
+  }
+>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return {};
+  }
+
+  return {
+    title: copy[locale].title,
+    description: BRAND_DESCRIPTION[locale],
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        ...Object.fromEntries(LOCALES.map((option) => [option, `/${option}`])),
+        "x-default": "/en",
+      },
+    },
+  };
+}
+
+export default async function LocalizedHomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: localeParam } = await params;
+  if (!isLocale(localeParam)) {
+    notFound();
+  }
+
+  const locale = localeParam;
+  const text = copy[locale];
+  const comparisons = getComparisons(locale);
+
+  return (
+    <main className="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+      <header className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+        <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
+          {text.eyebrow}
+        </p>
+        <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
+          {text.heading}
+        </h1>
+        <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
+          {text.intro}
+        </p>
+      </header>
+
+      <StackWizard
+        locale={locale}
+        comparisons={comparisons.map(({ slug, toolA, toolB }) => ({
+          slug,
+          toolA,
+          toolB,
+        }))}
+      />
+
+      <section aria-labelledby="comparisons-heading">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <h2
+            id="comparisons-heading"
+            className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+          >
+            {text.listings}
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {comparisons.length} {text.count}
+          </p>
+        </div>
+
+        <ComparisonSearch comparisons={comparisons} locale={locale} text={text} />
+      </section>
+    </main>
+  );
+}

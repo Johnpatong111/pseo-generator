@@ -1,0 +1,92 @@
+{
+  "slug": "mongodb-vs-cassandra",
+  "meta": {
+    "title": "MongoDB vs Apache Cassandra (2026): ¿Qué solución elegir?",
+    "description": "Comparamos MongoDB y Apache Cassandra en 2026: modelo de datos, escalado, consistencia, consultas, operación y ecosistema para elegir la base de datos adecuada."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "MongoDB encaja mejor en aplicaciones con esquemas flexibles, consultas variadas y necesidad de agilidad en el desarrollo, sobre todo si se usa MongoDB Atlas. Cassandra destaca cuando se priorizan escrituras masivas, disponibilidad continua y escalado lineal entre centros de datos. La elección depende del patrón de acceso: modela primero las consultas y luego elige.",
+  "comparison": [
+    {
+      "category": "Modelo de datos y flexibilidad del esquema",
+      "toolA": "MongoDB es una base de datos orientada a documentos que almacena registros BSON en colecciones, con esquemas flexibles y validación opcional por colección. Permite documentos anidados, arrays y estructuras que evolucionan sin migraciones rígidas, lo que facilita prototipos y aplicaciones con entidades heterogéneas.",
+      "toolB": "Apache Cassandra es una base de datos distribuida de tipo wide-column que organiza los datos en tablas con particiones y claves de agrupamiento definidas en el esquema. El esquema es más rígido y conviene diseñarlo a partir de las consultas previstas, ya que modelar por consulta suele implicar tablas específicas y cierta desnormalización.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Escalado y arquitectura distribuida",
+      "toolA": "MongoDB soporta replicación con conjuntos de réplicas y sharding horizontal para distribuir datos entre fragmentos, con opciones de zonas y equilibrio de carga. El escalado horizontal requiere planificación y, en despliegues autogestionados, más operación que en el servicio gestionado Atlas.",
+      "toolB": "Cassandra se diseñó para escalado lineal y sin nodo maestro: cada nodo es igual y los datos se distribuyen con un anillo de tokens y replicación por centro de datos. Añadir nodos suele ser relativamente sencillo y tolera fallos de nodos y centros de datos, aunque el rendimiento real depende de un modelado y ajuste cuidadosos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Consistencia y tolerancia a fallos",
+      "toolA": "MongoDB ofrece consistencia configurable mediante niveles de lectura y escritura, y desde la versión 4.0 dispone de transacciones multidocumento y sesiones causales. Los conjuntos de réplica permiten elecciones automáticas de primario y recuperación ante fallos, con matices según la configuración de mayoría y el número de miembros.",
+      "toolB": "Cassandra permite ajustar la consistencia por operación con niveles como ONE, QUORUM o ALL, y combina replicación entre centros de datos con detección de fallos. Está pensada para disponibilidad continua y escrituras siempre activas, aunque la consistencia fuerte exige quórums y puede afectar a la latencia y a la disponibilidad durante particiones.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Lenguaje de consultas y capacidades analíticas",
+      "toolA": "MongoDB emplea MQL y aggregation pipeline, con operadores ricos para filtrar, proyectar, agrupar, unir colecciones y realizar transformaciones. También admite índices secundarios, índices de texto, búsqueda geoespacial y, en versiones recientes, búsqueda vectorial en Atlas, lo que amplía casos de uso.",
+      "toolB": "Cassandra usa CQL, similar a SQL, con consultas eficientes cuando respetan la clave de partición y el orden de agrupamiento. Los filtros fuera de la clave suelen requerir índices especiales o tablas adicionales, y las agregaciones y uniones son limitadas, por lo que no es una base de datos pensada para analítica ad hoc compleja.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Rendimiento y patrón de carga",
+      "toolA": "MongoDB rinde bien en cargas mixtas de lectura y escritura con índices adecuados y un esquema guiado por consultas. Las escrituras pueden escalar con sharding, pero el rendimiento depende del tamaño del conjunto de trabajo, la memoria disponible, la configuración de write concern y la calidad de los índices.",
+      "toolB": "Cassandra está optimizada para escrituras de alto volumen y lecturas por clave de partición, con un modelo de almacenamiento log-structured que favorece la ingesta sostenida. Su rendimiento depende de una buena distribución de particiones, del tamaño de las mismas y de evitar consultas que obliguen a recorrer muchos nodos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Operación, despliegue y ecosistema",
+      "toolA": "MongoDB ofrece MongoDB Atlas como servicio gestionado, además de despliegues autogestionados con herramientas como mongodump, mongorestore y MongoDB Compass. Su ecosistema incluye controladores oficiales para muchos lenguajes y una comunidad amplia, aunque las funciones avanzadas pueden variar entre ediciones y versiones.",
+      "toolB": "Cassandra se despliega habitualmente en clústeres autogestionados o mediante servicios gestionados de terceros; su operación exige experiencia en ajuste de JVM, compactación, reparaciones y topología. El ecosistema es maduro en entornos de gran escala, pero las herramientas y la disponibilidad de servicios gestionados varían según el proveedor y la región.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Casos de uso recomendados",
+      "toolA": "MongoDB resulta adecuada para aplicaciones web y móviles con entidades cambiantes, catálogos de productos, gestores de contenido, sistemas de recomendación y APIs que requieren consultas variadas. También puede servir para datos de series temporales y búsqueda si se emplean las capacidades específicas de la plataforma y se validan con la carga real.",
+      "toolB": "Cassandra encaja en sistemas de mensajería, feeds de actividad, telemetría, registros de eventos y aplicaciones IoT con escrituras constantes y consultas por clave. No es la opción más natural para consultas ad hoc complejas ni para transacciones que abarquen muchas entidades, salvo que se diseñen tablas específicas.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué base de datos conviene para una aplicación nueva con requisitos cambiantes?",
+      "a": "Si el esquema todavía está evolucionando y las consultas no están cerradas, MongoDB suele ofrecer más flexibilidad gracias a los documentos y a la validación opcional. Cassandra exige definir antes las claves de partición y las consultas principales, por lo que un cambio de requisitos puede implicar rediseñar tablas. Conviene prototipar con la carga esperada y revisar el coste operativo de cada opción."
+    },
+    {
+      "q": "¿Cassandra es mejor que MongoDB para escrituras masivas?",
+      "a": "Cassandra se ha diseñado para ingesta sostenida y escalado lineal, y suele destacar en escrituras de alto volumen distribuidas entre nodos. MongoDB también puede escalar escrituras con sharding, pero el rendimiento depende del esquema, los índices y la configuración de consistencia. La respuesta fiable requiere medir con el patrón real de escritura y el tamaño de los documentos o filas."
+    },
+    {
+      "q": "¿MongoDB puede sustituir a Cassandra en un sistema multi-centro de datos?",
+      "a": "MongoDB soporta replicación entre centros de datos y zonas de sharding, pero su configuración y garantías dependen del despliegue y de los niveles de consistencia elegidos. Cassandra se concibió para topologías multi-centro con replicación por centro de datos y ajuste de consistencia por operación. Si la prioridad es disponibilidad continua ante fallos regionales, conviene evaluar ambas con pruebas de conmutación."
+    },
+    {
+      "q": "¿Qué implica operar Cassandra sin un servicio gestionado?",
+      "a": "Operar Cassandra implica gestionar la topología del clúster, el ajuste de la JVM, la compactación, las reparaciones y la monitorización de nodos. Estos aspectos requieren experiencia y afectan directamente al rendimiento y a la fiabilidad. Si el equipo no dispone de esa experiencia, un servicio gestionado puede reducir la carga operativa, aunque conviene revisar sus limitaciones y su disponibilidad regional."
+    },
+    {
+      "q": "¿MongoDB es adecuada para análisis y consultas ad hoc?",
+      "a": "MongoDB ofrece un lenguaje de consulta expresivo, aggregation pipeline e índices secundarios que facilitan muchos análisis operativos. Para analítica a gran escala puede ser necesario complementarla con herramientas especializadas o con opciones de la plataforma. Cassandra está más orientada a consultas por clave y no sustituye a un motor analítico tradicional."
+    },
+    {
+      "q": "¿Cómo afecta el modelado de datos al rendimiento en Cassandra?",
+      "a": "En Cassandra, el rendimiento depende en gran medida de elegir bien la clave de partición y de evitar particiones demasiado grandes o consultas que recorran muchos nodos. A menudo se modela una tabla por consulta y se acepta cierta desnormalización. Un mal modelado puede provocar latencias altas y problemas operativos difíciles de corregir sin rediseñar."
+    },
+    {
+      "q": "¿Qué opción tiene mejor ecosistema y soporte para desarrolladores?",
+      "a": "MongoDB cuenta con controladores oficiales, herramientas como Compass y una amplia documentación, además de su servicio Atlas. Cassandra tiene controladores maduros y una comunidad relevante en entornos de gran escala, aunque muchas herramientas y servicios gestionados dependen de terceros. La elección debe considerar el lenguaje del equipo, el soporte contractual y la experiencia disponible."
+    },
+    {
+      "q": "¿Se pueden usar ambas bases de datos en la misma arquitectura?",
+      "a": "Sí, es posible combinarlas: MongoDB para datos operativos con consultas variadas y Cassandra para eventos o telemetría de alto volumen. Esta arquitectura añade complejidad de operación, sincronización y consistencia entre sistemas. Solo tiene sentido si cada base de datos resuelve un patrón de acceso claramente distinto y el equipo puede asumir ese coste."
+    }
+  ]
+}

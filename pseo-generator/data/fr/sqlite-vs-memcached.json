@@ -1,0 +1,102 @@
+{
+  "slug": "sqlite-vs-memcached",
+  "meta": {
+    "title": "SQLite vs Memcached (2026) : quelle solution choisir ?",
+    "description": "SQLite et Memcached répondent à des besoins opposés : base relationnelle embarquée contre cache mémoire distribué. Comparatif 2026, critères, exemples et conseils."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "Choisissez SQLite pour stocker et interroger durablement des données locales avec SQL, sur mobile, poste de travail, IoT ou backend léger. Choisissez Memcached pour accélérer des lectures répétées en gardant des objets volatils en RAM derrière une application qui possède déjà sa source de vérité. Les deux peuvent coexister, mais ne sont pas interchangeables : Memcached ne remplace pas une base persistante, et SQLite n'est pas un cache distribué partagé entre serveurs.",
+  "comparison": [
+    {
+      "category": "Nature et modèle de données",
+      "toolA": "SQLite est une bibliothèque de base de données relationnelle intégrée qui stocke les données dans un fichier local et s'interroge en SQL. Elle gère tables, index, contraintes, transactions et vues, sans processus serveur séparé.",
+      "toolB": "Memcached est un serveur de cache clé-valeur en mémoire, sans schéma ni requête SQL. Il stocke des valeurs opaques associées à des clés textuelles, avec une durée de vie optionnelle, et ne prétend pas être une base de données durable.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistance et durabilité des données",
+      "toolA": "SQLite écrit sur disque et propose des garanties transactionnelles ACID, avec un mode journal configurable (rollback journal ou WAL). La durabilité dépend du réglage de synchronisation choisi et du système de fichiers sous-jacent.",
+      "toolB": "Memcached conserve les données en RAM ; un redémarrage, une éviction sous pression mémoire ou l'expiration d'une clé entraînent la perte de l'entrée. Il est donc inadapté comme source de vérité, même si certains redémarrages peuvent préserver la mémoire selon la configuration de l'hôte.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance et cas d'usage typiques",
+      "toolA": "SQLite offre des lectures rapides sur des jeux de données locaux et de bonnes performances en écriture sérialisée, particulièrement en mode WAL pour la concurrence lecture/écriture. Les performances varient selon la taille de la base, les index et le matériel.",
+      "toolB": "Memcached est optimisé pour des accès mémoire à très faible latence et peut répartir la charge sur plusieurs nœuds via un client de hachage. Ses gains dépendent fortement du taux de succès du cache et du coût des requêtes évitées.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Déploiement et exploitation",
+      "toolA": "SQLite ne nécessite aucune installation serveur : la bibliothèque s'intègre à l'application et le fichier de base peut être copié ou sauvegardé. L'exploitation est simple, mais les sauvegardes à chaud et les migrations demandent une certaine rigueur.",
+      "toolB": "Memcached s'exécute comme service réseau à administrer, dimensionner et surveiller (mémoire, connexions, taux de succès). Il faut prévoir la haute disponibilité côté client ou architecture, car le serveur lui-même ne réplique pas les données.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Concurrence et montée en charge",
+      "toolA": "SQLite autorise plusieurs lecteurs simultanés mais un seul écrivain à la fois ; le mode WAL améliore la concurrence en pratique. Pour des écritures massives ou multi-serveurs, une base cliente-serveur ou un partitionnement applicatif devient souvent plus adapté.",
+      "toolB": "Memcached est conçu pour de nombreux clients concurrents et se scale horizontalement en ajoutant des nœuds. La cohérence entre nœuds n'est pas garantie et la gestion des clés après ajout ou retrait de nœuds dépend du client.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité et contrôle d'accès",
+      "toolA": "SQLite s'appuie sur les permissions du système de fichiers et peut être chiffré via des extensions ou des builds spécifiques ; le chiffrement natif n'est pas inclus dans la version standard publique. L'authentification utilisateur n'est pas gérée par la bibliothèque.",
+      "toolB": "Memcached n'intègre pas de chiffrement TLS ni d'authentification robuste dans son cœur historique ; il doit être isolé sur un réseau de confiance ou protégé par des mécanismes externes. L'exposition directe à Internet est fortement déconseillée.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, langages et outillage",
+      "toolA": "SQLite bénéficie d'une large prise en charge par les langages, d'outils en ligne de commande et de navigateurs de bases. Son dialecte SQL est proche du standard, avec quelques particularités de typage dynamique à connaître.",
+      "toolB": "Memcached propose des clients dans de nombreux langages et un protocole texte ou binaire simple. L'outillage est plus restreint que celui d'une base SQL : pas de requêtes analytiques ni de schéma introspectable.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Coût, licence et indépendance",
+      "toolA": "SQLite est dans le domaine public, sans frais de licence, et s'intègre sans dépendance à un service externe. Le coût réel réside dans le développement, les sauvegardes et l'exploitation du stockage.",
+      "toolB": "Memcached est distribué sous licence BSD et reste gratuit, mais son coût d'exploitation inclut serveurs, mémoire, supervision et éventuelle redondance. Les offres managées ont leurs propres tarifs, à vérifier selon le fournisseur et la date.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "const Database = require('better-sqlite3');\nconst db = new Database('hello.db');\ndb.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT NOT NULL)');\ndb.prepare('INSERT INTO messages (text) VALUES (?)').run('Hello, World!');\nconsole.log(db.prepare('SELECT text FROM messages ORDER BY id DESC LIMIT 1').get());",
+    "tech2Snippet": "const Memcached = require('memcached');\nconst client = new Memcached('127.0.0.1:11211');\nclient.set('greeting', 'Hello, World!', 60, (err) => {\n  if (err) throw err;\n  client.get('greeting', (err, data) => {\n    if (err) throw err;\n    console.log(data);\n    client.end();\n  });\n});"
+  },
+  "faq": [
+    {
+      "q": "SQLite peut-il remplacer Memcached comme cache ?",
+      "a": "SQLite peut stocker des résultats intermédiaires et les relire rapidement, mais il ne remplace pas un cache mémoire distribué : chaque lecture passe par le stockage local et la concurrence en écriture reste limitée. Memcached est plus pertinent lorsque plusieurs serveurs applicatifs doivent partager un cache volatil à faible latence. Pour un cache local sur un seul processus, une simple structure en mémoire ou SQLite peut suffire selon le volume et la durée de vie souhaitée."
+    },
+    {
+      "q": "Memcached peut-il servir de base de données principale ?",
+      "a": "Non, Memcached n'offre ni persistance garantie, ni transactions, ni schéma, ni requêtes SQL. Une panne, une éviction mémoire ou une expiration de clé fait disparaître les données, ce qui est incompatible avec une source de vérité. Il faut conserver les données dans une base durable, par exemple SQLite pour un stockage local, et n'utiliser Memcached que comme accélérateur."
+    },
+    {
+      "q": "Laquelle des deux solutions est la plus adaptée à une application mobile ou embarquée ?",
+      "a": "SQLite est généralement le choix naturel pour une application mobile ou embarquée, car il s'intègre sans serveur et permet de conserver des données hors ligne avec SQL. Memcached suppose un service réseau et de la mémoire disponible, ce qui est peu compatible avec un terminal isolé ou contraint. La taille de la base, les besoins de synchronisation et les contraintes de stockage doivent néanmoins être évalués au cas par cas."
+    },
+    {
+      "q": "Comment choisir entre SQLite et Memcached pour un backend web ?",
+      "a": "Si le backend a besoin de persister des utilisateurs, des commandes ou des contenus, SQLite peut convenir pour une charge légère ou un déploiement mono-serveur, tandis que Memcached doit venir en complément pour mettre en cache des lectures coûteuses. Si plusieurs instances doivent partager un cache, Memcached est plus adapté, mais la base de référence reste une base durable. La décision dépend de la tolérance à la perte de cache, du volume de données et du nombre de serveurs."
+    },
+    {
+      "q": "Quelles sont les limites de concurrence de SQLite ?",
+      "a": "SQLite ne permet qu'un seul écrivain à la fois, même si le mode WAL améliore la coexistence des lectures et écritures. Sur des charges d'écriture concurrentes élevées ou avec plusieurs serveurs, des verrous et des conflits peuvent apparaître. Il est prudent de mesurer la charge réelle et, si nécessaire, de déplacer la persistance vers une base cliente-serveur plutôt que de forcer SQLite au-delà de son modèle."
+    },
+    {
+      "q": "Memcached est-il sécurisé pour un usage en production ?",
+      "a": "Memcached n'a pas été conçu comme un service exposé publiquement et ne fournit pas, dans son cœur historique, de chiffrement TLS ni d'authentification forte. Il doit être placé sur un réseau privé, protégé par des pare-feu et éventuellement encapsulé par des mécanismes externes. Les versions et modules récents peuvent ajouter des options, mais il convient de vérifier la documentation de la version déployée avant de conclure."
+    },
+    {
+      "q": "Peut-on utiliser SQLite et Memcached ensemble ?",
+      "a": "Oui, l'architecture courante consiste à conserver les données dans une base durable comme SQLite et à placer Memcached devant les lectures répétées pour réduire la charge. Il faut alors définir une stratégie d'invalidation et accepter qu'un cache puisse renvoyer une valeur obsolète pendant un court instant. Cette combinaison est pertinente uniquement si le coût des lectures évitées justifie la complexité supplémentaire."
+    },
+    {
+      "q": "Quels critères vérifier avant de choisir en 2026 ?",
+      "a": "Vérifiez d'abord la persistance attendue, le volume de données, le nombre de serveurs et la tolérance à la perte de cache. Contrôlez ensuite les fonctionnalités réelles de la version envisagée, notamment le chiffrement, la concurrence et le support de votre langage. Enfin, comparez le coût total d'exploitation, les sauvegardes et la supervision, car les tarifs et fonctionnalités des offres managées évoluent."
+    }
+  ]
+}

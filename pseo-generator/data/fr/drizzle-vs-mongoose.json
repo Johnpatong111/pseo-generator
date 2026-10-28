@@ -1,0 +1,96 @@
+{
+  "slug": "drizzle-vs-mongoose",
+  "meta": {
+    "title": "Drizzle ORM vs Mongoose (2026): quelle solution choisir ?",
+    "description": "Drizzle ORM contre Mongoose en 2026 : typage TypeScript, modélisation, migrations, MongoDB contre SQL. Comparatif détaillé et conseils pour choisir selon votre projet."
+  },
+  "toolA": {
+    "name": "Drizzle ORM"
+  },
+  "toolB": {
+    "name": "Mongoose"
+  },
+  "verdict": "Choisissez Drizzle ORM si votre projet repose sur une base SQL, que vous voulez un typage TypeScript strict, du SQL explicite et des migrations versionnées. Choisissez Mongoose si vous travaillez avec MongoDB et souhaitez un ODM mature, une validation de schéma centralisée et un écosystème historique éprouvé. Le choix dépend surtout du moteur de base de données imposé par votre architecture, pas d'un classement absolu.",
+  "comparison": [
+    {
+      "category": "Modèle de données et base ciblée",
+      "toolA": "Drizzle ORM est conçu pour les bases relationnelles SQL (PostgreSQL, MySQL, SQLite, et plusieurs variantes via des dialectes). Il s'appuie sur un schéma déclaré en TypeScript qui reflète les tables et colonnes réelles, ce qui rend explicite le mapping avec la base.",
+      "toolB": "Mongoose est un ODM orienté document, historiquement centré sur MongoDB. Il permet de définir des schémas de documents enrichis (validation, hooks, méthodes) et convient bien aux données imbriquées et flexibles.",
+      "winner": "tie"
+    },
+    {
+      "category": "Typage TypeScript et sécurité de compilation",
+      "toolA": "Drizzle produit des types inférés directement depuis le schéma, avec une forte protection à la compilation sur les colonnes, les filtres et les jointures. Le SQL généré reste lisible, ce qui facilite le débogage des requêtes typées.",
+      "toolB": "Mongoose offre des types TypeScript via des génériques et des définitions de schéma, mais la cohérence dépend en partie de la façon dont les modèles et interfaces sont synchronisés. Certaines responsabilités de validation restent à l'exécution plutôt qu'à la compilation.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Migrations et évolution du schéma",
+      "toolA": "Drizzle propose un outil de migration (drizzle-kit) qui génère des fichiers SQL à partir des différences de schéma, adapté à un versionnement en équipe. Ce flux correspond à des pratiques relationnelles classiques et reste contrôlable dans une CI.",
+      "toolB": "Mongoose ne fournit pas de système de migrations comparable intégré et standardisé pour MongoDB ; la gestion des évolutions repose souvent sur des scripts applicatifs ou des outils tiers. Cela peut suffire pour des schémas souples, mais demande de la rigueur dès que les données changent de structure.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Requêtes et expressivité du langage",
+      "toolA": "Drizzle s'appuie sur une API de requête typée proche du SQL, avec possibilité d'écrire du SQL brut lorsque nécessaire. La correspondance avec les requêtes relationnelles (jointures, agrégats) est directe et explicite.",
+      "toolB": "Mongoose propose des requêtes orientées documents via ses modèles (find, populate, aggregate). La logique de jointure se fait souvent par référencement de documents ou par agrégation, ce qui est adapté à MongoDB mais moins naturel pour des relations fortement structurées.",
+      "winner": "tie"
+    },
+    {
+      "category": "Validation et intégrité des données",
+      "toolA": "Drizzle s'appuie principalement sur les contraintes du schéma SQL et sur des validateurs associés (par exemple avec des bibliothèques externes comme Zod). L'intégrité est donc largement déléguée à la base et à la couche applicative.",
+      "toolB": "Mongoose intègre nativement un système de validation de documents (champs requis, types, validateurs personnalisés) exécuté côté application. Cela offre un garde-fou pratique pour MongoDB, même si cela ne remplace pas les contraintes d'une base relationnelle.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, maturité et documentation",
+      "toolA": "Drizzle est plus récent et son écosystème grandit rapidement, avec une documentation claire mais moins de retours d'expérience historiques que les outils établis. L'API évolue encore et certaines intégrations dépendent de la version.",
+      "toolB": "Mongoose bénéficie d'une longue présence dans l'écosystème Node.js et MongoDB, avec une documentation abondante et de nombreux exemples communautaires. Sa maturité est un atout pour les équipes qui cherchent des patterns éprouvés.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Performance et empreinte (sous réserve de configuration)",
+      "toolA": "Drizzle reste proche du SQL natif et génère des requêtes relativement prévisibles. Les performances dépendent surtout du moteur SQL, des index et de la qualité des requêtes, pas uniquement de l'ORM.",
+      "toolB": "Mongoose ajoute une couche d'abstraction documentaire et de validation, dont le coût varie selon l'usage (hooks, populate, agrégations). Il n'existe pas de conclusion générale : les mesures dépendent de la charge, de la modélisation et de la configuration.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import { drizzle } from 'drizzle-orm/node-postgres';\nimport { pgTable, serial, text } from 'drizzle-orm/pg-core';\nimport { Client } from 'pg';\n\nconst users = pgTable('users', {\n  id: serial('id').primaryKey(),\n  name: text('name').notNull(),\n});\n\nconst client = new Client({ connectionString: process.env.DATABASE_URL });\nawait client.connect();\nconst db = drizzle(client);\n\nawait db.insert(users).values({ name: 'Hello, World!' });",
+    "tech2Snippet": "import mongoose from 'mongoose';\n\nconst userSchema = new mongoose.Schema({\n  name: { type: String, required: true },\n});\n\nconst User = mongoose.model('User', userSchema);\n\nawait mongoose.connect(process.env.MONGODB_URI);\nawait User.create({ name: 'Hello, World!' });"
+  },
+  "faq": [
+    {
+      "q": "Faut-il choisir Drizzle ORM ou Mongoose selon le type de base de données ?",
+      "a": "Le premier critère est le moteur de base : Drizzle ORM cible des bases relationnelles SQL comme PostgreSQL, MySQL ou SQLite, tandis que Mongoose est un ODM pensé pour MongoDB. Si votre architecture impose MongoDB, Drizzle n'est pas la solution naturelle ; si vous avez besoin de jointures SQL et de migrations versionnées, Mongoose n'est pas conçu pour cela. Commencez donc par figer votre base, puis choisissez l'outil qui correspond à son modèle."
+    },
+    {
+      "q": "Drizzle ORM est-il adapté à une équipe qui débute en TypeScript ?",
+      "a": "Drizzle offre un typage fort et un SQL explicite, ce qui aide à comprendre ce qui se passe, mais il demande une certaine familiarité avec les concepts relationnels et TypeScript. Pour une équipe junior, la courbe d'apprentissage peut être plus marquée que celle d'un ODM très documenté. Il est prudent de prévoir un temps de formation et d'encadrer les requêtes par des revues de code."
+    },
+    {
+      "q": "Mongoose est-il toujours pertinent face à Drizzle en 2026 ?",
+      "a": "Oui, Mongoose reste pertinent si votre stockage est MongoDB et que vous voulez un ODM mature avec validation de documents, hooks et une grande base de documentation. Drizzle ne remplace pas un ODM documentaire : il vise les bases SQL. La pertinence dépend donc du moteur et du modèle de données, pas seulement de la popularité de l'outil."
+    },
+    {
+      "q": "Les migrations sont-elles réellement mieux gérées par Drizzle que par Mongoose ?",
+      "a": "Drizzle fournit un outil de migration qui génère des fichiers SQL à partir des changements de schéma, ce qui s'intègre bien dans un flux versionné. Mongoose ne propose pas de système de migrations standardisé comparable pour MongoDB, même si des scripts applicatifs ou des outils tiers peuvent combler ce besoin. La réponse dépend donc de votre tolérance à gérer les évolutions de documents manuellement."
+    },
+    {
+      "q": "Quel outil offre la meilleure validation des données ?",
+      "a": "Mongoose intègre une validation de documents côté application, avec des champs requis et des validateurs personnalisés, ce qui est pratique avec MongoDB. Drizzle s'appuie davantage sur les contraintes SQL et sur des validateurs externes comme Zod côté application. Pour une intégrité forte, une base relationnelle avec contraintes et une validation applicative complémentaire restent une approche robuste."
+    },
+    {
+      "q": "Peut-on utiliser Drizzle ORM avec MongoDB ?",
+      "a": "Drizzle ORM est conçu autour de bases SQL et de dialectes relationnels ; il ne s'agit pas d'un ODM documentaire pour MongoDB. Si vous devez travailler avec MongoDB, Mongoose ou un pilote natif sera plus adapté. Vérifiez toujours la documentation de la version utilisée, car le périmètre des dialectes peut évoluer."
+    },
+    {
+      "q": "Comment évaluer les performances entre les deux outils ?",
+      "a": "Il n'existe pas de réponse universelle : les performances dépendent du moteur de base, de la modélisation, des index, de la charge et de la configuration de l'application. Drizzle génère des requêtes SQL proches du natif, tandis que Mongoose ajoute une couche de validation et d'abstraction dont le coût varie selon l'usage. Réalisez vos propres mesures dans un environnement représentatif plutôt que de vous fier à des chiffres génériques."
+    },
+    {
+      "q": "Quel choix pour un projet full-stack TypeScript de taille moyenne ?",
+      "a": "Pour un projet full-stack TypeScript avec une base SQL, Drizzle ORM est souvent cohérent : typage inféré, requêtes explicites et migrations versionnées facilitent la maintenance. Si le projet repose sur MongoDB et que l'équipe veut des schémas de documents avec validation intégrée, Mongoose reste un choix solide. Évaluez aussi la familiarité de l'équipe avec SQL ou avec le modèle document, car cela influence directement la productivité."
+    }
+  ]
+}

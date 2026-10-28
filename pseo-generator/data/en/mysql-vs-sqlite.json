@@ -1,0 +1,88 @@
+{
+  "slug": "mysql-vs-sqlite",
+  "meta": {
+    "title": "MySQL vs SQLite (2026): Which option should you choose?",
+    "description": "Compare MySQL and SQLite for 2026: architecture, concurrency, scalability, security, and use cases. Learn which database fits your project best."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "Choose MySQL for multi-user, high-concurrency web applications and services that require a client-server architecture, strong access control, and horizontal scalability. Choose SQLite for embedded, single-user, or low-concurrency applications where simplicity, zero-configuration, and a small footprint matter most. Neither is universally better; the right choice depends on your deployment model, expected load, and operational constraints.",
+  "comparison": [
+    {
+      "category": "Architecture and deployment model",
+      "toolA": "MySQL is a client-server relational database management system. A separate server process handles connections from multiple clients over a network, which enables centralized data management, connection pooling, and independent scaling of the database tier. Deployment typically involves installing and configuring a server, managing users and privileges, and planning for backups and replication.",
+      "toolB": "SQLite is an embedded, serverless database engine that stores the entire database in a single cross-platform file. Applications link directly to the SQLite library and read/write the file without a separate server process, which simplifies deployment to a single file or in-memory database. This design is ideal for edge devices, mobile apps, and desktop software where zero administration is a priority.",
+      "winner": "tie"
+    },
+    {
+      "category": "Concurrency and write throughput",
+      "toolA": "MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the default storage engine) to allow simultaneous reads and writes across different rows. Under typical OLTP workloads, it can sustain high write throughput, and features such as replication and clustering can distribute load. Actual performance depends on configuration, hardware, schema design, and workload characteristics.",
+      "toolB": "SQLite uses database-level locking for writes: only one writer can modify the database at a time, while readers may proceed concurrently in WAL mode (write-ahead logging). This limits write concurrency for multi-user applications, but for read-heavy or single-writer workloads it performs well with very low overhead. Write throughput is generally lower than MySQL under concurrent write-heavy load.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scalability and data size limits",
+      "toolA": "MySQL is designed to scale vertically and horizontally through replication, sharding, and managed cloud services. It can handle very large datasets and high connection counts, though practical limits depend on hardware, schema, and operational expertise. Features like partitioning and online schema changes (with some limitations) support growth in production environments.",
+      "toolB": "SQLite supports databases up to 281 TB in theory, but practical limits are often determined by file system and memory constraints. It does not provide built-in replication or sharding, and scaling is typically achieved by partitioning data across multiple files or using it in read-only replicas. It is not intended for high-concurrency, multi-server deployments.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "MySQL provides a robust privilege system with authentication, role-based access control, and support for TLS-encrypted connections. It allows fine-grained permissions at the database, table, and column level, and integrates with external authentication plugins. Security depends on proper configuration, patching, and network hardening.",
+      "toolB": "SQLite relies on the file system's permissions for access control; it does not have built-in user accounts or network authentication. Security is therefore tied to the operating system's file protection and application-level controls. While suitable for embedded use, it is not designed for multi-user environments where distinct access levels are required.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Operational complexity and maintenance",
+      "toolA": "MySQL requires installation, configuration, tuning, backups, monitoring, and regular updates. Managed services (e.g., Amazon RDS, Google Cloud SQL) reduce operational burden but introduce cost and vendor dependence. Administration skills are typically needed for production deployments.",
+      "toolB": "SQLite requires no server setup or administration; the database is a single file that can be copied, backed up, and versioned like any other file. There are no user accounts, network configuration, or routine maintenance tasks. This simplicity makes it extremely low-effort to operate, especially for local or embedded applications.",
+      "winner": "toolB"
+    },
+    {
+      "category": "SQL feature set and compatibility",
+      "toolA": "MySQL supports a broad SQL standard with extensions, including stored procedures, triggers, views, window functions, CTEs, JSON functions, and full-text search (InnoDB). It offers multiple storage engines and advanced features like replication and partitioning. Compatibility with other databases may require adjustments due to syntax and behavioral differences.",
+      "toolB": "SQLite implements most of the SQL-92 standard and includes many modern features such as window functions, CTEs, JSON functions, and full-text search via the FTS5 extension. However, it lacks stored procedures and some advanced capabilities, and its type system is more flexible (dynamic typing). It is highly compatible for common queries but not a drop-in replacement for enterprise features.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Use cases and ecosystem",
+      "toolA": "MySQL is widely used for web applications, content management systems, e-commerce platforms, and SaaS products. It has extensive tooling, ORM support, and a large community, with strong integration in frameworks like Laravel, Django, and WordPress. It is a common choice for multi-user, networked applications.",
+      "toolB": "SQLite is ubiquitous in mobile apps (iOS, Android), desktop applications, browsers, and IoT devices. It is often used for testing, prototyping, and small-scale web applications with low concurrency. Its ecosystem includes bindings for nearly every programming language and tools for inspecting database files.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can I use SQLite for a high-traffic web application?",
+      "a": "SQLite can handle moderate read-heavy traffic, but its single-writer limitation makes it unsuitable for high-concurrency write-heavy web applications. For low-traffic sites or internal tools, it can work well with proper caching and WAL mode. If you expect many simultaneous writes or need horizontal scaling, MySQL is the safer choice."
+    },
+    {
+      "q": "Is MySQL more secure than SQLite?",
+      "a": "MySQL offers built-in authentication, role-based access control, and encryption in transit, which are valuable for multi-user environments. SQLite relies on file system permissions and application-level security, which can be sufficient for embedded or single-user scenarios. The more secure option depends on your threat model and deployment context."
+    },
+    {
+      "q": "Which database is easier to set up and maintain?",
+      "a": "SQLite is significantly easier because it requires no server installation or administration; the database is just a file. MySQL requires installation, configuration, user management, and ongoing maintenance. For rapid prototyping or embedded use, SQLite reduces operational overhead."
+    },
+    {
+      "q": "Does SQLite support concurrent writes?",
+      "a": "SQLite allows multiple readers concurrently in WAL mode, but only one writer can modify the database at a time. This means concurrent write transactions are serialized, which can become a bottleneck under heavy write load. MySQL's InnoDB engine supports row-level locking for greater write concurrency."
+    },
+    {
+      "q": "Can I migrate from SQLite to MySQL later?",
+      "a": "Yes, migration is possible but may require schema and query adjustments due to differences in data types, SQL syntax, and features like auto-increment behavior. Tools and ORMs can ease the process, but testing is essential. Planning for potential migration can influence initial schema design."
+    },
+    {
+      "q": "Which database is better for mobile or desktop applications?",
+      "a": "SQLite is the standard choice for mobile and desktop apps because it is embedded, lightweight, and requires no separate server. MySQL is not typically used in these environments due to its client-server architecture and resource requirements. SQLite's single-file design also simplifies backup and synchronization."
+    },
+    {
+      "q": "Does MySQL work well with cloud platforms?",
+      "a": "Yes, MySQL is widely supported by managed cloud database services such as Amazon RDS, Google Cloud SQL, and Azure Database for MySQL. These services handle provisioning, backups, and scaling, but they add cost and may impose limitations. Self-managed MySQL on cloud VMs is also common."
+    }
+  ]
+}

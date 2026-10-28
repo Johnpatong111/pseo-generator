@@ -1,0 +1,102 @@
+{
+  "slug": "llama-3-3-vs-gemma-3",
+  "meta": {
+    "title": "Llama 3.3 vs Gemma 3 (2026): Which option should you choose?",
+    "description": "Compare Llama 3.3 and Gemma 3 in 2026 on context, licensing, benchmarks, pricing approach, latency, and use cases to pick the right open-weight model."
+  },
+  "toolA": {
+    "name": "Llama 3.3"
+  },
+  "toolB": {
+    "name": "Gemma 3"
+  },
+  "verdict": "Choose Llama 3.3 if you want a large, widely supported open-weight model with a 128K context window and strong general reasoning, especially for self-hosted assistants and coding workflows. Choose Gemma 3 if you prefer a family of smaller, broadly deployable models (including multimodal variants) with permissive licensing and lighter hardware needs. Verify exact context limits, benchmark scores, and hosted API prices against Meta's and Google's current documentation, since all are version- and date-sensitive.",
+  "comparison": [
+    {
+      "category": "Context window and input handling",
+      "toolA": "Llama 3.3 is distributed with a 128K-token context window, which is useful for long documents, multi-file code review, and extended chat histories. Effective usable context can be lower than the advertised maximum once prompt formatting and output budget are allocated, so teams should test recall on their own long inputs before relying on the full window.",
+      "toolB": "Gemma 3 models are offered with substantially larger context windows than earlier Gemma generations; Google documents support up to 128K tokens for some sizes, but the exact limit varies by model variant. Practically, smaller Gemma 3 variants may handle long context less reliably than larger ones, so per-variant verification against official model cards is advisable.",
+      "winner": "tie"
+    },
+    {
+      "category": "Model sizes and open-weight availability",
+      "toolA": "Llama 3.3 is primarily shipped as a large open-weight model (notably the 70B instruct variant) under the Llama license, which carries acceptable-use and attribution terms. Weights are downloadable for self-hosting, and the model is also reachable through many hosted providers, giving significant deployment flexibility.",
+      "toolB": "Gemma 3 is released as a family of open-weight models spanning multiple smaller sizes, plus multimodal variants that accept images. The Gemma license permits broad commercial use with usage restrictions, and the smaller parameter counts make on-device and single-GPU deployment more practical.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Benchmark performance (MMLU and HumanEval)",
+      "toolA": "Published results for Llama 3.3 on MMLU and HumanEval appear in Meta's model card and related technical documentation, and the model is generally presented as a strong all-round performer for its size class. Because scores depend on prompting, evaluation harness, and few-shot settings, reported numbers should not be treated as directly comparable across vendors without checking methodology.",
+      "toolB": "Google publishes benchmark figures for Gemma 3 variants, including MMLU and HumanEval, in model cards and technical reports. Larger Gemma 3 sizes generally score higher than smaller ones, and multimodal variants are evaluated on additional benchmarks; exact scores are version-sensitive and should be confirmed against current official tables.",
+      "winner": "tie"
+    },
+    {
+      "category": "API pricing for hosted inference",
+      "toolA": "Llama 3.3 is offered through multiple third-party inference providers, each with its own per-million-token input and output pricing, plus options to self-host on your own hardware. Because providers compete and change rates, no single price applies; verify current per-1M-token pricing on the specific provider's pricing page before budgeting.",
+      "toolB": "Gemma 3 is available through Google's hosted services and various third-party providers, with pricing that varies by variant, region, and platform. Some smaller Gemma 3 models may be economical or even free at low usage tiers, but those terms are plan- and date-dependent and should be confirmed against official pricing documentation.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Latency and throughput",
+      "toolA": "As a large model, Llama 3.3 typically requires more compute per token than smaller models, so latency and throughput depend heavily on hardware, quantization, batching, and the serving stack. Hosted providers may optimize this, but real-world latency figures should be measured in your own environment rather than assumed.",
+      "toolB": "Gemma 3's smaller variants generally allow lower latency and higher throughput, making them attractive for interactive and edge deployments. The largest variant and multimodal inference demand more resources, so performance varies widely across the family and should be benchmarked per variant.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Multimodal and input modalities",
+      "toolA": "Llama 3.3 is primarily a text model in its documented releases, with image understanding not part of the core release described for this version. Teams needing vision should verify current multimodal offerings from Meta rather than assuming image support in Llama 3.3 itself.",
+      "toolB": "Gemma 3 includes multimodal variants capable of processing images alongside text, which is useful for document understanding, captioning, and visual question answering. Image support and resolution limits differ by variant, so check the specific model card for the size you plan to deploy.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, tooling, and integration",
+      "toolA": "Llama 3.3 benefits from broad ecosystem support, including inference servers, fine-tuning frameworks, and many hosted APIs, which eases integration into existing pipelines. Because providers implement their own chat templates and safety layers, behavior can differ between deployments of the same weights.",
+      "toolB": "Gemma 3 integrates well with Google's tooling and common open-source frameworks, and its smaller variants fit comfortably into local development and on-device workflows. Ecosystem maturity is strong but somewhat narrower than Llama's in terms of third-party provider coverage for the largest variants.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Practical use cases and hardware fit",
+      "toolA": "Llama 3.3 suits general assistants, long-document analysis, coding help, and RAG pipelines where strong reasoning matters and sufficient GPU memory or a hosted API is available. It is a reasonable default when you need one capable open-weight model across many tasks.",
+      "toolB": "Gemma 3 fits deployments where compute, memory, or latency are constrained, such as laptop and on-device assistants, lightweight chatbots, and image-aware applications using the multimodal variants. It is often the better choice for cost-sensitive or edge scenarios, provided the smaller model meets your quality bar.",
+      "winner": "toolB"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# Minimal Llama 3.3 example using the official Python SDK (hosted endpoint)\n# Install: pip install llama-api-client\nfrom llama_api_client import LlamaAPIClient\n\nclient = LlamaAPIClient(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.completions.create(\n    model=\"Llama-3.3-70B-Instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, world!\"}],\n)\nprint(response.completion_message.content.text)",
+    "tech2Snippet": "# Minimal Gemma 3 example using the Google Gen AI SDK\n# Install: pip install google-genai\nfrom google import genai\n\nclient = genai.Client(api_key=\"YOUR_API_KEY\")\nresponse = client.models.generate_content(\n    model=\"gemma-3-27b-it\",\n    contents=\"Hello, world!\",\n)\nprint(response.text)"
+  },
+  "faq": [
+    {
+      "q": "Which model is better for a self-hosted production assistant?",
+      "a": "If you have the GPU memory and serving expertise for a large model, Llama 3.3 offers strong general reasoning and a broad ecosystem of inference servers and fine-tuning tools. If your hardware budget is tighter or you want on-device deployment, the smaller Gemma 3 variants are usually easier to run and tune. Benchmark both on your own prompts and latency targets before committing."
+    },
+    {
+      "q": "Are Llama 3.3 and Gemma 3 both open-weight models?",
+      "a": "Yes, both are distributed as open-weight models, but under different licenses: Llama 3.3 uses the Llama license, and Gemma 3 uses the Gemma license. Each license includes acceptable-use and attribution requirements, so review the current license text for your commercial context before deployment."
+    },
+    {
+      "q": "How do their context windows compare?",
+      "a": "Llama 3.3 is documented with a 128K-token context window, and some Gemma 3 variants also support up to 128K tokens while others support less. Advertised limits are not guarantees of effective recall, so test long-document and multi-turn scenarios on the exact variant you plan to use and confirm limits in the official model card."
+    },
+    {
+      "q": "Which model is cheaper to run via an API?",
+      "a": "Pricing varies by provider, region, and model variant, so there is no single answer that stays accurate over time. Smaller Gemma 3 variants are often cheaper or even free at low usage tiers, while Llama 3.3 hosted pricing depends on the third-party provider you choose. Check current per-1M-token input and output pricing on the provider's official page before budgeting."
+    },
+    {
+      "q": "Can Gemma 3 process images while Llama 3.3 cannot?",
+      "a": "Gemma 3 includes multimodal variants that accept image input, which makes it suitable for document understanding and visual question answering. Llama 3.3 in its documented release is a text model, so teams needing vision should verify Meta's current multimodal offerings rather than assume image support in Llama 3.3."
+    },
+    {
+      "q": "How should I interpret MMLU and HumanEval scores for these models?",
+      "a": "Published MMLU and HumanEval numbers come from vendor model cards and technical reports, and they depend on prompting, few-shot settings, and evaluation harness. Scores across different vendors are not automatically comparable, so review methodology and confirm current figures before drawing conclusions. Treat benchmarks as one signal among several."
+    },
+    {
+      "q": "What hardware do I need to run each model locally?",
+      "a": "Llama 3.3 is a large model and typically needs a multi-GPU setup or aggressive quantization to run locally, while smaller Gemma 3 variants can run on a single consumer GPU or even on-device. Exact memory requirements depend on precision, quantization, and runtime, so verify against the model card and your serving stack."
+    },
+    {
+      "q": "Which model should I pick for an image-aware chatbot on limited hardware?",
+      "a": "A smaller multimodal Gemma 3 variant is generally the more practical starting point when hardware is constrained, since it combines image input with lower memory demands. If image understanding is not required and reasoning quality is the priority, Llama 3.3 may be the stronger choice when sufficient compute or a hosted API is available. Validate quality on your own sample tasks before deciding."
+    }
+  ]
+}

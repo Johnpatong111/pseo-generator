@@ -1,0 +1,98 @@
+{
+  "slug": "chroma-vs-qdrant",
+  "meta": {
+    "title": "Chroma vs Qdrant (2026): Which option should you choose?",
+    "description": "Compare Chroma and Qdrant for vector search in 2026: architecture, deployment, scaling, filtering, pricing models, and ecosystem, plus guidance on which fits your project."
+  },
+  "toolA": {
+    "name": "Chroma"
+  },
+  "toolB": {
+    "name": "Qdrant"
+  },
+  "verdict": "Choose Chroma for fast prototypes, notebooks, and small-to-medium RAG apps where developer experience matters most; it is the shortest path from zero to a working vector store. Choose Qdrant when you need production-grade scaling, advanced payload filtering, quantization controls, and fine-grained deployment options including self-hosting and managed cloud. Many teams start on Chroma and migrate to Qdrant as load and filtering requirements grow.",
+  "comparison": [
+    {
+      "category": "Architecture and core design",
+      "toolA": "Chroma is an open-source embedding database designed around a simple collection model of documents, embeddings, and metadata. It runs as an embedded library in Python or JavaScript, as a client-server service, or via its managed cloud offering, and it prioritizes simplicity over deep storage-engine tuning. Internally it relies on approximate nearest neighbor indexing and can persist to local storage, which keeps setup minimal for development.",
+      "toolB": "Qdrant is a vector database written in Rust and built specifically for similarity search at scale, with a storage engine designed around segment-based indexing and HNSW graphs. It exposes a REST and gRPC API and can run as a single node, a distributed cluster, or a managed cloud service. Its design emphasizes predictable performance, horizontal scaling, and control over indexing parameters.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ease of setup and developer experience",
+      "toolA": "Chroma is often the fastest option to get running: a short pip or npm install plus a few lines of code creates a persistent collection, and its Python-first API feels natural in notebooks and small scripts. The learning curve is shallow, and its integration with popular LLM frameworks reduces boilerplate. Documentation is approachable, though depth on advanced tuning is more limited.",
+      "toolB": "Qdrant is also straightforward to start via Docker or its cloud console, and its clients are well maintained across languages. However, operators typically need to understand collections, payload indexes, distance metrics, and resource sizing earlier, so the initial experience is more configuration-oriented. Advanced features such as sharding and quantization add setup choices that Chroma mostly hides.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scaling and performance characteristics",
+      "toolA": "Chroma handles small-to-medium workloads well and supports client-server deployment, but it is generally not positioned as a horizontally sharded, multi-node system for very large collections. Performance depends heavily on configuration, hardware, and the size and dimensionality of the dataset, so teams pushing high query throughput should validate results under realistic load before committing.",
+      "toolB": "Qdrant is designed for scale, with distributed deployment, sharding, replication, and configurable HNSW parameters that let teams trade recall for latency. It also supports quantization options to reduce memory footprint, which matters for large collections. Actual throughput and latency remain workload-dependent, so benchmarking on representative data is still the right approach.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Metadata filtering and query capabilities",
+      "toolA": "Chroma supports metadata filters combined with vector similarity queries, including equality and set-based conditions, which covers many common RAG retrieval patterns. Its query API is concise and easy to compose, though the filtering language is narrower than what dedicated search engines expose. Complex multi-field or nested filtering logic may require workarounds.",
+      "toolB": "Qdrant offers a rich payload filtering system with nested conditions, range filters, geo filters, and full-text options, and it can apply filters efficiently before or during search depending on the configuration. This makes it well suited to applications where retrieval must respect tenant, permission, or attribute constraints. The flexibility comes with a more verbose query syntax.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Deployment, self-hosting, and cloud options",
+      "toolA": "Chroma can be embedded in-process, run in a Docker container, or used through its managed cloud service, giving a smooth path from notebook to hosted deployment. Self-hosting is simple, but operating it at large scale is less commonly documented than for purpose-built distributed systems. Feature availability can differ between the embedded, server, and cloud modes.",
+      "toolB": "Qdrant provides a Docker image, Kubernetes-friendly deployment, and a managed Qdrant Cloud, so teams can self-host or offload operations. Its documentation covers single-node and distributed setups, and configuration is well defined through a config file and environment variables. Some managed-only conveniences and limits vary by plan and region.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, integrations, and framework support",
+      "toolA": "Chroma integrates with LangChain, LlamaIndex, and other retrieval frameworks, and its popularity in tutorials and RAG examples makes it easy to find working patterns. Its small API surface helps when swapping components in a prototype. The tradeoff is that fewer integrations target Chroma-specific advanced features.",
+      "toolB": "Qdrant maintains official clients for several languages and integrates with common LLM orchestration frameworks and data tooling. Because it exposes more advanced capabilities, integrations often surface features like filtering and hybrid search that Chroma users may not need. The ecosystem is active, though the volume of beginner tutorials is smaller.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Operations, observability, and security",
+      "toolA": "Chroma's embedded mode requires almost no operational overhead, while the server and cloud options add standard concerns such as persistence, authentication, and backups. Security and access control depend on the deployment mode and plan, so verifying the current documentation before production is essential. Observability tooling is relatively basic compared with mature database platforms.",
+      "toolB": "Qdrant exposes metrics, structured logging, and health endpoints, and its distributed mode adds monitoring for cluster state and replication. Authentication, API keys, and TLS are supported, with specifics depending on version and cloud plan. The broader operational surface is more capable but demands more attention from operators.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Licensing and cost model",
+      "toolA": "Chroma is open source under a permissive license for its core, and its cloud service follows usage-based pricing tiers. Self-hosting is therefore largely a matter of infrastructure cost, while managed plans introduce limits that should be checked against current pricing pages. Costs can vary with storage, compute, and request volume.",
+      "toolB": "Qdrant is open source under a permissive license, and Qdrant Cloud offers tiered and usage-based pricing, including options that may differ by cloud provider and region. Self-hosting avoids vendor fees but requires engineering time for operations. Because plans and prices change, confirm current terms rather than relying on comparisons.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which tool is better for a first RAG prototype in 2026?",
+      "a": "Chroma is usually the faster starting point because it installs as a library, persists locally, and needs very little configuration before you can query embeddings. That makes it well suited to notebooks, internal demos, and small applications where iteration speed matters more than operational depth. If you already know your prototype will need multi-tenant filtering or large-scale distributed search, starting on Qdrant may save a migration later."
+    },
+    {
+      "q": "When should I move from Chroma to Qdrant?",
+      "a": "Consider migrating when query latency or collection size outgrows what your Chroma deployment handles comfortably, or when you need distributed sharding, replication, and richer payload filtering. Teams also move when they want quantization controls to reduce memory use or when they need more mature observability for production. The right threshold depends on your data volume, query patterns, and hardware, so benchmark before deciding rather than assuming a fixed cutoff."
+    },
+    {
+      "q": "Does Qdrant support the metadata filtering I need for multi-tenant applications?",
+      "a": "Qdrant offers extensive payload filtering, including nested conditions, ranges, and geo filtering, and it can combine filters with vector search efficiently when indexes are configured appropriately. That makes it a strong fit for tenant isolation and permission-aware retrieval. Chroma also supports metadata filters, but its filter language is narrower, so validate that your specific conditions are expressible before committing."
+    },
+    {
+      "q": "Are Chroma and Qdrant both open source?",
+      "a": "Both projects have open-source cores under permissive licenses, and both also offer managed cloud services with their own terms and pricing. Self-hosting either tool shifts cost to infrastructure and engineering time rather than license fees. Because licensing details and cloud plan features can change, check the official repositories and pricing pages for the current state."
+    },
+    {
+      "q": "Can I run either tool entirely self-hosted?",
+      "a": "Yes, both can be self-hosted: Chroma via its server or embedded modes and Qdrant via Docker, Kubernetes, or manual deployment. Self-hosting gives you control over data residency and cost, but you become responsible for backups, upgrades, security, and monitoring. Qdrant's distributed mode is more documented for large-scale operations, while Chroma's self-hosting is simpler for smaller deployments."
+    },
+    {
+      "q": "Which option offers better performance at scale?",
+      "a": "Qdrant is generally the stronger choice for large-scale production workloads because of its distributed architecture, sharding, replication, and quantization options. Chroma is capable for small-to-medium collections and simpler deployments, but it is not typically positioned as a horizontally scaled cluster system. Real performance depends on dataset size, dimensionality, hardware, and index settings, so test both with representative data if scale is a core requirement."
+    },
+    {
+      "q": "How do their query APIs and client libraries compare?",
+      "a": "Chroma's API is compact and Python-first, which keeps retrieval code short and readable in prototypes. Qdrant offers official clients across multiple languages and a more expressive query model, including advanced filters and search parameters that require slightly more code. If your team works mainly in Python and values brevity, Chroma feels lighter; if you need cross-language support and fine-grained control, Qdrant is more complete."
+    },
+    {
+      "q": "What are the main limitations to watch for with each tool?",
+      "a": "Chroma's main limitations are around very large-scale distributed operation, narrower filtering, and less mature observability, so verify it against your production requirements. Qdrant's tradeoffs are a steeper operational and configuration learning curve and more decisions to make about sharding, replication, and indexing. Neither tool removes the need to benchmark on your own data and to check current documentation for feature and plan differences."
+    }
+  ]
+}

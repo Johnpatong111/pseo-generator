@@ -1,0 +1,98 @@
+{
+  "slug": "terraform-vs-pulumi",
+  "meta": {
+    "title": "Terraform vs Pulumi (2026): Which option should you choose?",
+    "description": "A practical 2026 comparison of Terraform and Pulumi covering languages, state management, ecosystems, testing, policy, and team fit to help you choose."
+  },
+  "toolA": {
+    "name": "Terraform"
+  },
+  "toolB": {
+    "name": "Pulumi"
+  },
+  "verdict": "Choose Terraform if you want the largest provider and module ecosystem, a mature declarative HCL workflow, and the broadest hiring pool for infrastructure-as-code roles. Choose Pulumi if your team prefers general-purpose languages, wants richer unit testing and abstraction, and is comfortable with a smaller but active ecosystem. Many organizations run both; standardize per team or workload rather than forcing one tool everywhere.",
+  "comparison": [
+    {
+      "category": "Configuration language and learning curve",
+      "toolA": "Terraform uses HCL, a purpose-built declarative language with a small surface area that is easy to read and review. Its learning curve is gentle for basic resources but becomes steeper with complex loops, conditionals, and dynamic blocks, where HCL can feel constrained. Because HCL is declarative, reviewers can often understand a change without knowing a general-purpose programming language, which helps with cross-team governance.",
+      "toolB": "Pulumi lets you write infrastructure in general-purpose languages such as TypeScript, Python, Go, C#, and Java, so teams can reuse existing skills, libraries, and tooling. This makes complex logic, abstraction, and testing more natural, but it also raises the bar for reviewers who must read code rather than configuration. The learning curve depends heavily on the chosen language; developers usually adapt quickly, while operations-only teams may find HCL more approachable.",
+      "winner": "tie"
+    },
+    {
+      "category": "Provider and ecosystem breadth",
+      "toolA": "Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche services, with a long history of community contributions. The Terraform Registry and provider documentation are extensive, and most vendors publish first-party providers. Coverage depth varies by provider, so verify the specific resources and version you need before committing.",
+      "toolB": "Pulumi maintains a broad provider set, largely bridged from the Terraform provider ecosystem, plus native providers for several platforms. Coverage is strong for major clouds and Kubernetes, but niche or newly released services may lag behind Terraform, and bridged providers can inherit upstream limitations. For unusual services, check the Pulumi Registry and provider changelogs for the exact resource support you require.",
+      "winner": "toolA"
+    },
+    {
+      "category": "State management and collaboration",
+      "toolA": "Terraform stores state in backends such as S3, Azure Blob Storage, Google Cloud Storage, or Terraform Cloud, with locking handled by the backend where supported. State is explicit and well understood, and mature patterns exist for workspaces, remote backends, and drift detection. Operations teams must still design backend security, locking, and state isolation carefully.",
+      "toolB": "Pulumi stores state in its own service or in self-managed backends such as S3, Azure Blob Storage, Google Cloud Storage, or local files, with concurrency control built into the CLI and service. It offers a hosted Pulumi Cloud option with features like stack history and policy enforcement, depending on plan. Self-managed backends require you to configure locking and access controls appropriately, so review the documentation for your chosen backend.",
+      "winner": "tie"
+    },
+    {
+      "category": "Testing, validation, and software engineering practices",
+      "toolA": "Terraform supports validation through `terraform validate`, `terraform plan`, formatting with `terraform fmt`, and policy checks via tools such as OPA, Sentinel, or Checkov. Native unit testing is limited, so teams often rely on plan-based assertions, integration tests, and third-party frameworks. This works well but can require more custom scaffolding for complex logic.",
+      "toolB": "Pulumi supports unit testing in the host language, including mocking providers and asserting on resource properties, which fits naturally into existing test suites and CI pipelines. It also supports policy as code through Pulumi CrossGuard, with availability depending on plan and edition. Teams already practicing test-driven development often find this workflow more integrated than Terraform's.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Abstraction, reuse, and multi-team scaling",
+      "toolA": "Terraform modules are the primary reuse mechanism, and they are widely shared through the registry and private registries. Composition is powerful but can become verbose for complex conditional logic, and module versioning discipline is essential. Organizations often standardize on module libraries and policy checks to keep many teams consistent.",
+      "toolB": "Pulumi enables reusable component resources and ordinary language packages, so teams can build typed abstractions with defaults, validation, and documentation. This can reduce duplication in large estates, but it also lets teams create complex internal frameworks that others must learn. Governance is important so abstraction does not obscure what infrastructure is actually being created.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Security, policy, and compliance",
+      "toolA": "Terraform integrates with policy engines such as OPA, Sentinel (in Terraform Cloud/Enterprise), and third-party scanners, and its plan output is a common review artifact. Secrets handling depends on backend and provider configuration, and state files can contain sensitive values, so encryption and access control matter. Sentinel availability is tied to HashiCorp commercial offerings.",
+      "toolB": "Pulumi offers CrossGuard policy as code and integrates with Pulumi Cloud features such as audit logs and role-based access, depending on plan. Because policies can be written in general-purpose languages, teams can express complex rules, but this also requires discipline and testing. Secrets are encrypted in Pulumi state, and self-managed backends rely on your own encryption and access controls.",
+      "winner": "tie"
+    },
+    {
+      "category": "CI/CD and automation fit",
+      "toolA": "Terraform has broad CI/CD support through its CLI, plan/apply workflow, and integrations with Terraform Cloud, Atlantis, and many pipeline tools. The saved plan artifact enables review-then-apply flows that are easy to audit. Pipeline design still requires care around credentials, state locking, and environment promotion.",
+      "toolB": "Pulumi provides a CLI plus automation APIs and supports CI/CD systems such as GitHub Actions, GitLab CI, and Jenkins, with Pulumi Cloud offering deployment and review features depending on plan. Because stacks are first-class, promotion across environments is explicit. Teams must still design credential handling and concurrency controls for parallel deployments.",
+      "winner": "tie"
+    },
+    {
+      "category": "Community, hiring, and long-term support",
+      "toolA": "Terraform has the largest community, the most tutorials, and the broadest hiring pool for infrastructure-as-code roles, making it a safe default for many organizations. HashiCorp's licensing changes in recent years affected some commercial users, so verify current license terms for your use case. Long-term support depends on the specific provider and version.",
+      "toolB": "Pulumi has an active and growing community with strong documentation and examples, but the hiring pool is smaller than Terraform's. Its open-source core and commercial offerings have evolved, so confirm current licensing and support terms for your organization. For teams already fluent in its supported languages, productivity can be high despite the smaller community.",
+      "winner": "toolA"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which tool is better for a small team new to infrastructure as code?",
+      "a": "A small team new to infrastructure as code will usually ramp up faster with Terraform because HCL is purpose-built, declarative, and widely documented. That said, if the team is already fluent in TypeScript or Python and wants to reuse existing testing practices, Pulumi can be a good fit. Evaluate both with a small pilot covering state setup, review workflow, and one real service before deciding."
+    },
+    {
+      "q": "Can Terraform and Pulumi be used together in the same organization?",
+      "a": "Yes, many organizations use both, often separating them by team, environment, or workload rather than mixing them within a single stack. The key risks are overlapping ownership of the same resources and inconsistent policy enforcement, so document boundaries and avoid managing the same resource from two tools. Shared state backends should be isolated, and access controls should reflect each tool's model."
+    },
+    {
+      "q": "How do the two tools handle secrets and sensitive state?",
+      "a": "Both tools can store sensitive values in state, so encryption, access control, and audit logging are essential regardless of choice. Terraform relies on backend encryption and provider configuration, while Pulumi encrypts secrets in its state and offers additional controls through Pulumi Cloud depending on plan. For either tool, verify how your chosen backend protects state and who can read it."
+    },
+    {
+      "q": "Which tool has better support for testing infrastructure changes?",
+      "a": "Pulumi generally offers a more integrated testing story because unit tests, mocks, and assertions can be written in the same general-purpose language as the infrastructure code. Terraform testing typically relies on plan inspection, validation, policy checks, and third-party frameworks, which works well but requires more custom setup. Teams with heavy compliance needs should also evaluate policy-as-code support in both tools."
+    },
+    {
+      "q": "Does Pulumi depend on Terraform providers?",
+      "a": "Many Pulumi providers are bridged from Terraform providers, which gives Pulumi broad coverage but can mean it inherits upstream behavior and limitations. Pulumi also maintains native providers for some platforms, so coverage and features can differ by provider. Check the Pulumi Registry for the specific resource and version you need rather than assuming parity with Terraform."
+    },
+    {
+      "q": "What should we check before choosing based on cost?",
+      "a": "Pricing for both tools depends on edition, scale, and whether you use a hosted service, so avoid assuming one is cheaper without checking current terms. Terraform's open-source CLI is free, while Terraform Cloud and Enterprise have paid tiers, and Pulumi's open-source CLI is free with Pulumi Cloud offering paid plans. Model your expected number of stacks, users, and policy features, then confirm current pricing directly with each vendor."
+    },
+    {
+      "q": "Which tool is more future-proof for multi-cloud environments?",
+      "a": "Terraform's provider breadth and module ecosystem make it a strong default for multi-cloud estates, especially where many SaaS and niche services are involved. Pulumi can handle multi-cloud well and offers useful abstractions, but provider coverage for less common services may lag. For either tool, validate the specific providers and resources your multi-cloud architecture depends on."
+    },
+    {
+      "q": "How do we migrate from one tool to the other?",
+      "a": "Migration is usually incremental: import existing resources into the target tool, reconcile state, and cut over one stack at a time with clear ownership. Both tools support importing existing infrastructure, but the effort depends on resource count, module complexity, and provider behavior. Plan for a period of parallel operation and avoid applying changes from both tools to the same resources."
+    }
+  ]
+}

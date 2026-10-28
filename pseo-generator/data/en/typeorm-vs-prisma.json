@@ -1,0 +1,98 @@
+{
+  "slug": "typeorm-vs-prisma",
+  "meta": {
+    "title": "TypeORM vs Prisma (2026): Which option should you choose?",
+    "description": "Compare TypeORM and Prisma in 2026 on migrations, type safety, performance, ecosystem support, and developer experience to pick the right ORM for your project."
+  },
+  "toolA": {
+    "name": "TypeORM"
+  },
+  "toolB": {
+    "name": "Prisma"
+  },
+  "verdict": "Choose TypeORM if you need mature support for many databases (including Microsoft SQL Server and Oracle), a decorator-based entity model that fits Angular/NestJS conventions, or flexible query building with the QueryBuilder. Choose Prisma if you want a schema-first workflow, generated type-safe client, and straightforward migrations for PostgreSQL, MySQL, or SQLite. Prisma favors developer ergonomics, while TypeORM offers broader legacy database compatibility and runtime flexibility.",
+  "comparison": [
+    {
+      "category": "Type safety and developer experience",
+      "toolA": "TypeORM uses TypeScript decorators and entity classes, so type information mainly comes from your class definitions and is checked at compile time. It provides a QueryBuilder and repository APIs, but some dynamic query patterns and relations can resolve to loosely typed results unless you annotate them carefully. Developer experience is generally good within NestJS or Angular, where decorators and dependency injection are already the norm.",
+      "toolB": "Prisma is schema-first: you define models in a Prisma schema, and the CLI generates a client whose queries are strongly typed based on that schema. This gives excellent autocompletion and compile-time validation for most CRUD and relation queries without manual type annotations. The trade-off is a generation step, so editors and CI need the client regenerated after schema changes.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Supported databases and portability",
+      "toolA": "TypeORM supports a broad set of relational databases, including PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle, and SAP HANA, and it also has community drivers for some NoSQL stores. This breadth makes it a practical choice for legacy enterprises that depend on SQL Server or Oracle. Feature parity varies by driver, so advanced capabilities should be verified for your specific database and version.",
+      "toolB": "Prisma supports PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, CockroachDB, and MongoDB, with additional options such as Prisma Postgres in newer releases. It does not offer the same breadth as TypeORM for Oracle or SAP HANA, and some database-specific features are abstracted behind Prisma's query engine. Teams tied to Oracle or unusual databases should confirm current support before committing.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Migrations and schema management",
+      "toolA": "TypeORM can generate migrations from entity changes and run them through its CLI, and you can also write migrations manually for fine-grained control. Because schema inference from decorators can miss certain constraints or indexes, generated migrations often need review and editing, especially on complex schemas. Teams that prefer explicit SQL control tend to appreciate this transparency.",
+      "toolB": "Prisma Migrate generates SQL migration files from the declarative schema and applies them with a clear development workflow, including a migration history table. The process is usually predictable for standard relational schemas, though advanced features like custom indexes, triggers, or database-specific types may require manually edited migration SQL. Prisma's shadow database requirement can add setup steps in some hosted environments.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Query flexibility and raw SQL",
+      "toolA": "TypeORM exposes a QueryBuilder that lets you compose complex joins, subqueries, and conditional filters while still returning entities or raw results. It also allows raw SQL through query methods, and its Active Record and Data Mapper patterns give teams different ways to structure data access. This flexibility suits reporting queries and legacy schemas that do not map neatly to simple CRUD.",
+      "toolB": "Prisma's client covers most relational queries with typed methods, and it offers raw SQL through tagged template queries that still return typed results when configured. However, highly dynamic or deeply nested analytical SQL can be harder to express than with a general-purpose query builder. Teams with heavy custom SQL may end up writing more raw queries than they expected.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance characteristics",
+      "toolA": "TypeORM runs in the Node.js process and translates entities and QueryBuilder calls into SQL, so performance depends on query design, relation loading strategy, and connection pooling configuration. Lazy and eager relations can cause N+1 query patterns if not handled deliberately, and large result sets should be paged or streamed. Concrete throughput numbers vary widely by workload and database, so you should benchmark your own queries.",
+      "toolB": "Prisma historically used a separate Rust-based query engine, while newer versions increasingly offer a TypeScript-based client and driver adapters; architecture varies by version and configuration. It batches some relation queries to reduce round trips, which helps common read patterns, but complex joins may still require raw SQL. As with TypeORM, real performance depends on schema design, indexes, and pooling, so independent benchmarks for your workload are more reliable than general claims.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ecosystem, tooling, and community",
+      "toolA": "TypeORM is a long-standing project with a large user base, extensive documentation, and integration guidance for NestJS, Express, and Angular. Its community has produced many modules and examples, though maintenance pace and issue backlog have drawn criticism at times depending on release cycle. It remains a pragmatic default for teams already standardized on NestJS.",
+      "toolB": "Prisma has a polished CLI, Prisma Studio for browsing data, and strong documentation, plus broad adoption in the TypeScript ecosystem. It is a company-backed open-source project, which means faster feature development, though some capabilities are tied to paid or hosted offerings such as Prisma Postgres and team features. Licensing and plan details should be checked against current terms.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Learning curve and team onboarding",
+      "toolA": "TypeORM requires comfort with decorators, entities, repositories, and relation configuration, and its pattern choices (Active Record versus Data Mapper) can confuse newcomers. Once learned, it behaves like a traditional ORM familiar to developers coming from Hibernate or Doctrine. Teams with existing TypeORM codebases often find onboarding straightforward because conventions are already established.",
+      "toolB": "Prisma's schema and generated client are easy to learn for basic CRUD, making initial onboarding fast for developers new to ORMs. Advanced topics such as relation filters, transactions, and migration edge cases take more time, and the generate step occasionally trips up beginners. Overall the learning curve is generally gentler for small to medium applications.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Transactions and concurrency control",
+      "toolA": "TypeORM provides transaction support through QueryRunner, transaction managers, and decorators such as @Transaction decorators in some integrations, supporting isolation levels configured per transaction. Its flexibility means correctness depends on developers choosing consistent transaction boundaries and handling retries. Complex concurrency requirements can be implemented but may require raw SQL or careful repository wiring.",
+      "toolB": "Prisma offers interactive transactions, sequential operations within a transaction, and batch transactions, with isolation level options depending on the database. The API is concise and typed, though long-running interactive transactions can hit timeouts and need tuning. For most application workloads it covers transactional needs cleanly, while unusual isolation or locking strategies may still require raw SQL.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which tool is better for a new NestJS project?",
+      "a": "TypeORM is a common choice for NestJS because its decorator-based entities integrate naturally with NestJS modules and dependency injection, and official documentation covers the integration. Prisma also works well with NestJS through a service that wraps the generated client, and many teams prefer its type safety. For a greenfield NestJS app on PostgreSQL or MySQL, Prisma often gives faster early development, while TypeORM may suit teams already familiar with its patterns."
+    },
+    {
+      "q": "Does Prisma support Oracle or SAP HANA?",
+      "a": "Prisma does not currently list Oracle or SAP HANA among its supported connectors, so teams depending on those databases generally cannot use Prisma without significant workarounds. TypeORM supports both through its drivers, though feature coverage can vary by database and version. If Oracle or SAP HANA is a hard requirement, verify current support in the official documentation and consider TypeORM."
+    },
+    {
+      "q": "Can I use raw SQL with both tools?",
+      "a": "Yes, both allow raw SQL. TypeORM exposes query methods and a QueryBuilder, and Prisma provides tagged template raw queries and executeRaw for statements. With Prisma, raw queries can still return typed results when you define the expected shape, but they bypass some of the client's validation. Teams with heavy custom reporting SQL should confirm the ergonomics of each approach for their specific queries."
+    },
+    {
+      "q": "Which tool has better migration support?",
+      "a": "Prisma Migrate offers a declarative, reproducible workflow: you edit the schema, generate a migration, review it, and apply it, with a migration history tracked in the database. TypeORM can generate migrations too, but because schema inference from entities can miss constraints, generated migrations often need manual review and editing. For straightforward relational schemas, Prisma's workflow is usually smoother, while TypeORM gives more direct control for complex or legacy databases."
+    },
+    {
+      "q": "Is Prisma faster than TypeORM?",
+      "a": "Claims about raw speed are workload-dependent, and both tools can be efficient or inefficient depending on schema design, indexes, relation loading, and connection pooling. Prisma's query engine architecture and batching behavior differ from TypeORM's in-process query building, so results vary by version and configuration. The reliable approach is to benchmark representative queries on your own database rather than relying on general comparisons."
+    },
+    {
+      "q": "How do the two handle database schema changes in teams?",
+      "a": "Prisma stores the schema as a single source of truth in schema.prisma, which makes reviews and diffs straightforward, and migrations are generated from it. TypeORM defines schema across entity files, so changes are spread across the codebase and generated migrations may need adjustment. Both require discipline in code review and CI, but Prisma's centralized schema tends to reduce drift for teams that follow its workflow."
+    },
+    {
+      "q": "What are the main licensing and cost considerations?",
+      "a": "Both TypeORM and Prisma are open-source projects with permissive licenses, and both can be used without paying for the core ORM or CLI. However, Prisma also offers hosted and team-oriented products such as Prisma Postgres and platform features whose pricing and terms change over time, so verify current plans before relying on them. TypeORM has no commercial tier, so costs are limited to your own infrastructure and support arrangements."
+    },
+    {
+      "q": "Which should I choose for a large legacy SQL Server database?",
+      "a": "TypeORM supports Microsoft SQL Server and gives you a QueryBuilder and raw SQL access that can accommodate existing schemas and stored procedures. Prisma also supports SQL Server, but its schema-first approach may require mapping legacy structures and manually handling features it abstracts away. For a complex legacy SQL Server system where flexibility matters, TypeORM is often the more practical starting point, provided you review its maintenance status and driver support."
+    }
+  ]
+}

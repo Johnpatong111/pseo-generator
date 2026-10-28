@@ -1,0 +1,98 @@
+{
+  "slug": "postgresql-vs-cassandra",
+  "meta": {
+    "title": "PostgreSQL vs Apache Cassandra (2026): które rozwiązanie wybrać?",
+    "description": "Porównujemy PostgreSQL i Apache Cassandra w 2026 roku. Sprawdź różnice w modelu danych, skalowaniu, spójności i zastosowaniach, aby wybrać bazę dla swojego projektu."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "PostgreSQL sprawdzi się w aplikacjach wymagających transakcji ACID, złożonych zapytań SQL, więzów integralności i elastycznego modelowania danych. Cassandra będzie lepsza dla systemów o bardzo dużej skali zapisu, rozproszonych geograficznie, gdzie dostępność i tolerancja partycji są ważniejsze niż spójność natychmiastowa. Wybór zależy od profilu obciążenia, wymagań dotyczących spójności i zespołu; obie bazy można też łączyć w architekturze poliglotycznej.",
+  "comparison": [
+    {
+      "category": "Model danych i język zapytań",
+      "toolA": "PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i rozszerzeniami. Oferuje także typy JSONB, tablice i typy złożone, co pozwala modelować dane półstrukturalne bez rezygnacji z relacyjności. Język zapytań jest deklaratywny i dobrze znany zespołom bazodanowym.",
+      "toolB": "Apache Cassandra to rozproszona baza szerokokolumnowa (ang. wide-column) z modelem opartym na partycjach i klastrach, bez pełnego SQL i bez złączeń. Zapytania w CQL przypominają SQL, ale wymagają projektowania tabel pod konkretne wzorce odczytu, co ogranicza elastyczność zapytań ad hoc. Nie obsługuje transakcji ACID w rozumieniu relacyjnym.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalowanie i wydajność przy dużym obciążeniu",
+      "toolA": "PostgreSQL skaluje się w górę (scale-up) oraz przez replikację odczytu i partycjonowanie, a w nowszych wersjach także przez funkcje równoległego przetwarzania zapytań. Przy ekstremalnie dużym obciążeniu zapisu może wymagać starannego projektowania, shardingu na poziomie aplikacji lub rozwiązań zewnętrznych. Wydajność zależy od konfiguracji, sprzętu i charakteru zapytań.",
+      "toolB": "Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do klastra bez przestojów, z automatycznym podziałem danych na partycje i replikacją. Dobrze radzi sobie z dużym wolumenem zapisów rozproszonych geograficznie, ale wydajność odczytów zależy od modelu danych i spójności. Konkretne wyniki zależą od wersji, konfiguracji i obciążenia.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Spójność i transakcje",
+      "toolA": "PostgreSQL oferuje pełne transakcje ACID z izolacją, w tym różne poziomy izolacji i możliwość obsługi wielu operacji w jednej transakcji. Gwarantuje spójność natychmiastową i integralność danych, co jest kluczowe w systemach finansowych i biznesowych. W wersjach klastrowych można uzyskać replikację synchroniczną, ale wiąże się to z kompromisem wydajności.",
+      "toolB": "Cassandra zapewnia spójność eventualną (ang. eventual consistency) z możliwością dostosowania poziomu spójności odczytu i zapisu (np. QUORUM). Obsługuje lekkie transakcje (LWT) oparte na Paxos, ale nie są one tak wydajne jak w bazach relacyjnych i dotyczą pojedynczych partycji. Nie zapewnia wielowierszowych transakcji ACID w pełnym zakresie.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Dostępność i odporność na awarie",
+      "toolA": "PostgreSQL w podstawowej konfiguracji jest systemem jednomaszynowym, a wysoką dostępność uzyskuje się przez replikację, failover i narzędzia zewnętrzne, takie jak Patroni czy repmgr. Wymaga to dodatkowej konfiguracji i utrzymania. Dostępność zależy od wdrożonej architektury i nie jest wbudowana w takim stopniu jak w Cassandra.",
+      "toolB": "Cassandra jest zaprojektowana jako system rozproszony o wysokiej dostępności, bez pojedynczego punktu awarii, z replikacją danych na wielu węzłach i automatycznym przełączaniem awaryjnym. Toleruje awarie węzłów i partycji sieciowych, co czyni ją odporną na awarie w środowiskach rozproszonych. Konkretny poziom dostępności zależy od liczby replik i konfiguracji klastra.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Elastyczność zapytań i analityka",
+      "toolA": "PostgreSQL obsługuje złożone zapytania SQL, złączenia, podzapytania, funkcje okna, CTE i rozszerzenia analityczne. Może pełnić rolę bazy transakcyjnej i analitycznej dla umiarkowanych wolumenów, a także integrować się z narzędziami BI. Elastyczność zapytań ad hoc jest dużą zaletą w aplikacjach biznesowych.",
+      "toolB": "Cassandra jest zoptymalizowana pod kątem szybkich zapisów i odczytów według klucza partycji, a nie pod złożone zapytania analityczne. Zapytania ad hoc są ograniczone, a złączenia i agregacje są możliwe tylko w ograniczonym zakresie lub wymagają zewnętrznych narzędzi. Do analityki często stosuje się dodatkowe warstwy, takie jak Spark.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Dojrzałość ekosystemu i wsparcie",
+      "toolA": "PostgreSQL ma długą historię, szeroki ekosystem rozszerzeń (np. PostGIS, TimescaleDB), liczne narzędzia ORM i wsparcie chmurowe u wielu dostawców. Dokumentacja jest obszerna, a społeczność aktywna. Wersje są regularnie wydawane z długoterminowym wsparciem, choć konkretne funkcje zależą od wersji.",
+      "toolB": "Apache Cassandra również jest dojrzałym projektem open source z aktywną społecznością i wsparciem komercyjnym (np. DataStax). Ekosystem jest jednak węższy niż w PostgreSQL, a narzędzia i integracje są bardziej wyspecjalizowane. Wsparcie chmurowe jest dostępne, ale zależy od dostawcy i planu.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Złożoność wdrożenia i utrzymania",
+      "toolA": "PostgreSQL jest stosunkowo prosty do wdrożenia w podstawowym zakresie, a administracja jest dobrze udokumentowana. Wysoka dostępność i skalowanie wymagają jednak dodatkowej wiedzy i narzędzi. Utrzymanie obejmuje typowe zadania, takie jak kopie zapasowe, vacuum i monitorowanie.",
+      "toolB": "Cassandra wymaga starannego planowania modelu danych pod kątem wzorców dostępu, a także konfiguracji klastra, replikacji i strojenia. Administracja rozproszonym klastrem jest bardziej złożona i wymaga specjalistycznej wiedzy. Złożoność wdrożenia zależy od skali i wymagań dotyczących spójności.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Zastosowania i scenariusze użycia",
+      "toolA": "PostgreSQL sprawdza się w systemach transakcyjnych, aplikacjach SaaS, systemach finansowych, e-commerce i aplikacjach wymagających złożonych zapytań oraz integralności danych. Jest dobrym wyborem, gdy potrzebna jest elastyczność modelowania i analityka w jednym systemie. Sprawdza się również jako baza ogólnego przeznaczenia.",
+      "toolB": "Cassandra jest często wybierana do systemów o bardzo dużej skali zapisu, takich jak telemetria, logi, dane z czujników IoT, wiadomości i rozproszone aplikacje geograficzne. Sprawdza się tam, gdzie dostępność i skalowanie poziome są priorytetem, a spójność natychmiastowa nie jest krytyczna. Decyzja zależy od profilu obciążenia i wymagań biznesowych.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Które narzędzie lepiej pasuje do projektu wymagającego transakcji finansowych?",
+      "a": "Do transakcji finansowych zwykle lepszy będzie PostgreSQL, ponieważ oferuje pełne transakcje ACID, więzy integralności i spójność natychmiastową. Cassandra nie zapewnia wielowierszowych transakcji ACID w pełnym zakresie, choć obsługuje lekkie transakcje na pojedynczych partycjach. Wybór warto poprzedzić analizą wymagań dotyczących spójności i wydajności."
+    },
+    {
+      "q": "Czy Cassandra nadaje się do analityki i raportowania?",
+      "a": "Cassandra nie jest zoptymalizowana pod złożone zapytania analityczne i złączenia, więc do raportowania często wymaga dodatkowych narzędzi, takich jak Spark. PostgreSQL lepiej radzi sobie z analityką w umiarkowanej skali dzięki pełnemu SQL i funkcjom okna. Jeśli analityka jest kluczowa, warto rozważyć oddzielną warstwę analityczną."
+    },
+    {
+      "q": "Jak wygląda skalowanie PostgreSQL w porównaniu do Cassandry?",
+      "a": "PostgreSQL skaluje się głównie w górę oraz przez replikację i partycjonowanie, a przy bardzo dużym obciążeniu zapisu może wymagać shardingu na poziomie aplikacji. Cassandra została zaprojektowana do skalowania poziomego przez dodawanie węzłów, co ułatwia obsługę dużych wolumenów danych. Oba rozwiązania wymagają starannego projektowania i konfiguracji."
+    },
+    {
+      "q": "Która baza jest łatwiejsza w utrzymaniu?",
+      "a": "PostgreSQL jest zazwyczaj prostszy w podstawowym wdrożeniu i administracji, a dokumentacja jest szeroko dostępna. Cassandra wymaga specjalistycznej wiedzy o modelowaniu danych i administracji klastrem rozproszonym. Ocena łatwości utrzymania zależy od doświadczenia zespołu i skali wdrożenia."
+    },
+    {
+      "q": "Czy można używać PostgreSQL i Cassandry razem?",
+      "a": "Tak, w architekturze poliglotycznej można połączyć obie bazy: PostgreSQL do danych transakcyjnych i relacyjnych, a Cassandrę do danych o dużym wolumenie zapisu i dostępie według klucza. Wymaga to jednak dodatkowej złożoności integracji i utrzymania. Decyzję warto poprzeć analizą kosztów i korzyści."
+    },
+    {
+      "q": "Jakie są ograniczenia Cassandry w zakresie spójności?",
+      "a": "Cassandra oferuje spójność eventualną, a poziom spójności można dostosować dla odczytów i zapisów, na przykład QUORUM. Nie zapewnia jednak spójności natychmiastowej w rozumieniu relacyjnym i może zwracać nieaktualne dane w niektórych scenariuszach. Ograniczenia te wynikają z rozproszonego modelu i są kompromisem za dostępność i skalowalność."
+    },
+    {
+      "q": "Czy PostgreSQL obsługuje dane JSON i półstrukturalne?",
+      "a": "Tak, PostgreSQL oferuje typy JSON i JSONB oraz tablice i typy złożone, co pozwala przechowywać dane półstrukturalne. Można je łączyć z relacyjnymi tabelami i indeksować. To elastyczne rozwiązanie dla aplikacji, które potrzebują zarówno schematu, jak i swobody w przechowywaniu dokumentów."
+    },
+    {
+      "q": "Która baza lepiej sprawdzi się w chmurze?",
+      "a": "Oba rozwiązania są dostępne jako usługi zarządzane u wielu dostawców chmurowych, ale szczegóły oferty, wersje i ograniczenia zależą od dostawcy i planu. PostgreSQL ma szerszy ekosystem i więcej opcji zarządzanych, podczas gdy Cassandra jest często oferowana w modelu rozproszonym. Wybór warto poprzeć analizą SLA, kosztów i wsparcia."
+    }
+  ]
+}

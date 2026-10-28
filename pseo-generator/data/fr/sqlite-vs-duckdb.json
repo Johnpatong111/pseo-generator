@@ -1,0 +1,102 @@
+{
+  "slug": "sqlite-vs-duckdb",
+  "meta": {
+    "title": "SQLite vs DuckDB (2026): quelle solution choisir ?",
+    "description": "SQLite ou DuckDB en 2026 ? Comparez OLTP et OLAP, transactions, analyse de colonnes, formats de fichiers, écosystème et limites pour choisir la base adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "SQLite reste la référence pour une base embarquée transactionnelle, légère et omniprésente, idéale pour les applications, le mobile et les petits services. DuckDB s'impose pour l'analyse locale de données volumineuses et les requêtes de type entrepôt de données. Le meilleur choix dépend du profil de charge : écritures fréquentes de lignes vers SQLite, agrégations et scans de colonnes vers DuckDB.",
+  "comparison": [
+    {
+      "category": "Modèle de stockage et architecture : évalue la façon dont chaque base organise les données sur disque et en mémoire, ce qui conditionne les usages.",
+      "toolA": "SQLite est une bibliothèque C qui stocke les données dans un unique fichier, avec un moteur en ligne orienté lignes et fonctionnant dans le processus de l'application hôte. Cette architecture embarquée supprime la nécessité d'un serveur, mais les performances en lecture analytique sur de gros volumes restent limitées par ce modèle orienté lignes.",
+      "toolB": "DuckDB est également une bibliothèque embarquée sans serveur, mais son moteur est orienté colonnes et vectorisé, conçu pour les charges analytiques. Le stockage se fait dans un fichier unique ou en mémoire, ce qui facilite l'intégration dans des notebooks et des pipelines de données sans infrastructure dédiée.",
+      "winner": "tie"
+    },
+    {
+      "category": "Charges transactionnelles (OLTP) : mesure l'aptitude à gérer de nombreuses écritures unitaires, mises à jour et lectures ponctuelles avec intégrité.",
+      "toolA": "SQLite est historiquement optimisé pour les charges transactionnelles : insertions ligne par ligne, mises à jour ciblées et requêtes courtes avec index. Son mode WAL améliore la concurrence lecture/écriture, même si les écritures restent globalement sérialisées dans un fichier.",
+      "toolB": "DuckDB cible l'analyse et non les charges OLTP intensives : les transactions ACID existent, mais les écritures ligne par ligne fréquentes et concurrentes ne constituent pas son terrain de prédilection. Il vaut mieux l'utiliser pour charger des lots de données puis les interroger, plutôt que pour un flux transactionnel soutenu.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analytique et requêtes de type OLAP : évalue les performances sur agrégations, jointures massives et scans de colonnes.",
+      "toolA": "SQLite exécute des agrégations et des jointures correctement, mais son modèle orienté lignes et l'absence de vectorisation le pénalisent souvent sur de gros volumes analytiques. Selon la taille des données et la configuration, certaines requêtes restent acceptables, mais ce n'est pas son point fort.",
+      "toolB": "DuckDB est spécifiquement conçu pour l'analytique : moteur vectorisé, exécution parallèle et prise en charge native de Parquet et CSV en font un outil efficace pour les agrégations et les jointures sur de grands jeux de données locaux. Les performances observées varient toutefois selon la mémoire disponible et la complexité des requêtes.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème et langages : examine la disponibilité des pilotes, la portabilité et l'intégration dans les applications.",
+      "toolA": "SQLite bénéficie d'une portabilité exceptionnelle : bibliothèque disponible dans quasiment tous les langages, présent sur mobile, navigateur et systèmes embarqués, avec un format de fichier stable et très répandu. Cet écosystème mature facilite l'adoption et la maintenance sur le long terme.",
+      "toolB": "DuckDB propose des liaisons officielles pour Python, R, Java, Node.js, C/C++ et d'autres langages, ainsi qu'une intégration appréciée dans les outils de science des données. Son écosystème est plus jeune que celui de SQLite, mais il progresse rapidement et couvre bien les besoins analytiques modernes.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Concurrence et accès multi-processus : compare la manière dont chaque moteur gère plusieurs connexions simultanées.",
+      "toolA": "SQLite autorise plusieurs lecteurs simultanés et un seul écrivain à la fois ; le mode WAL améliore le débit en permettant des lectures pendant une écriture. Pour des accès multi-processus légers, ce compromis fonctionne bien, mais les écritures très concurrentes restent un point de contention.",
+      "toolB": "DuckDB est pensé pour un processus à la fois : un seul processus peut ouvrir un fichier en écriture, ce qui limite les scénarios multi-utilisateurs concurrents. Pour des accès partagés, il faut passer par un serveur ou une architecture différente, ce qui constitue une contrainte à anticiper.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Formats de fichiers et sources externes : évalue la capacité à interroger directement des fichiers et à s'interfacer avec des sources de données.",
+      "toolA": "SQLite lit et écrit son propre format de fichier et peut charger des données via des extensions ou des outils externes, mais il n'interroge pas nativement Parquet ou CSV comme des tables. L'import préalable est généralement nécessaire pour l'analyse.",
+      "toolB": "DuckDB interroge directement des fichiers Parquet, CSV et JSON, et peut lire des bases SQLite via une extension. Cette souplesse réduit les étapes de préparation et facilite l'exploration de données hétérogènes dans un même environnement.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité et robustesse : examine le chiffrement, l'intégrité des fichiers et la maturité face aux défaillances.",
+      "toolA": "SQLite est très mature, avec une gestion éprouvée de l'intégrité des fichiers et une prise en charge optionnelle du chiffrement via des extensions ou des builds spécifiques. Sa longévité et son usage massif offrent une base de confiance élevée, mais les fonctionnalités de sécurité dépendent de la configuration choisie.",
+      "toolB": "DuckDB vise la simplicité et la fiabilité pour l'analytique locale, sans chiffrement natif de fichier à ce jour selon la documentation disponible ; la protection repose souvent sur les droits du système de fichiers. Il est donc important de vérifier les options de sécurité de la version utilisée avant de stocker des données sensibles.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cas d'usage et intégration dans les applications : évalue la facilité à adopter chaque outil selon le contexte projet.",
+      "toolA": "SQLite s'intègre naturellement dans les applications de bureau, mobiles, les tests et les prototypes, car il ne demande aucune administration et produit un fichier facile à sauvegarder. Il excelle comme stockage applicatif léger et fiable.",
+      "toolB": "DuckDB s'intègre bien dans les notebooks, scripts Python ou R et pipelines de données locales, où il remplace avantageusement des traitements sur dataframes pour des requêtes SQL expressives. Il est moins adapté comme base applicative transactionnelle de production.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\nconn.execute(\"CREATE TABLE hello (message TEXT)\")\nconn.execute(\"INSERT INTO hello VALUES (?)\", (\"Hello, World!\",))\nprint(conn.execute(\"SELECT message FROM hello\").fetchone()[0])\nconn.close()",
+    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect()\ncon.execute(\"CREATE TABLE hello (message VARCHAR)\")\ncon.execute(\"INSERT INTO hello VALUES ('Hello, World!')\")\nprint(con.execute(\"SELECT message FROM hello\").fetchone()[0])\ncon.close()"
+  },
+  "faq": [
+    {
+      "q": "Quel outil convient le mieux à une application mobile ou de bureau ?",
+      "a": "Pour une application mobile ou de bureau, SQLite est généralement le choix le plus pertinent : il est embarqué, sans serveur, très portable et dispose d'un format de fichier stable. DuckDB peut techniquement être intégré, mais son orientation analytique et ses contraintes d'accès concurrent le rendent moins naturel pour un stockage applicatif transactionnel. Évaluez toutefois la taille des données et les besoins de requêtes avant de trancher."
+    },
+    {
+      "q": "Puis-je utiliser DuckDB pour remplacer SQLite dans une API web ?",
+      "a": "C'est possible pour des charges principalement analytiques et peu concurrentes, mais DuckDB n'est pas conçu pour des écritures transactionnelles soutenues ni pour de multiples processus écrivant simultanément. Une API web qui gère de nombreuses insertions et mises à jour trouvera davantage de garanties avec SQLite ou une base serveur classique. Le choix dépend du profil réel de la charge et du niveau de concurrence attendu."
+    },
+    {
+      "q": "SQLite est-il adapté à l'analyse de gros fichiers de données ?",
+      "a": "SQLite peut exécuter des agrégations et des jointures, mais son moteur orienté lignes est généralement moins efficace que DuckDB sur des scans de colonnes et de gros volumes analytiques. Si l'essentiel du travail consiste à interroger des jeux de données volumineux, DuckDB offre une approche plus naturelle, notamment avec Parquet et CSV lus directement. À l'inverse, SQLite reste pertinent pour des analyses légères ou des données déjà stockées dans son fichier."
+    },
+    {
+      "q": "DuckDB peut-il lire des fichiers Parquet et CSV sans import préalable ?",
+      "a": "Oui, DuckDB peut interroger directement des fichiers Parquet, CSV et JSON comme s'il s'agissait de tables, ce qui simplifie l'exploration et réduit les étapes de préparation. Cette capacité est utile dans les pipelines analytiques et les notebooks, mais les performances dépendent de la taille des fichiers, du format et de la mémoire disponible. Vérifiez la documentation de votre version pour les options exactes de lecture."
+    },
+    {
+      "q": "Quelles sont les limites de concurrence de chaque outil ?",
+      "a": "SQLite autorise plusieurs lecteurs simultanés et un seul écrivain à la fois, avec le mode WAL qui améliore les lectures pendant une écriture ; les écritures très concurrentes restent donc limitées. DuckDB est plutôt destiné à un processus à la fois et ne gère pas nativement un accès multi-utilisateurs en écriture partagée. Pour un service multi-clients, une architecture serveur ou une autre base peut être nécessaire."
+    },
+    {
+      "q": "Lequel choisir pour un projet de data science ou de BI local ?",
+      "a": "Pour un projet de data science ou de BI local, DuckDB est souvent le choix le plus direct : son moteur vectorisé et sa lecture native de Parquet et CSV simplifient l'analyse SQL de données volumineuses. SQLite reste pertinent si les données sont déjà dans son format ou si l'application doit aussi servir de stockage transactionnel. Dans les deux cas, la mémoire disponible et la taille des jeux de données influencent les résultats."
+    },
+    {
+      "q": "SQLite et DuckDB sont-ils sûrs pour des données sensibles ?",
+      "a": "Les deux outils s'appuient fortement sur les droits du système de fichiers pour protéger les données ; SQLite propose des options de chiffrement via des extensions ou des builds spécifiques, tandis que DuckDB ne fournit pas de chiffrement natif de fichier selon la documentation disponible. Pour des données sensibles, il convient de vérifier les capacités exactes de la version utilisée et d'ajouter une couche de protection adaptée. Aucune garantie de sécurité ne doit être supposée sans vérification."
+    },
+    {
+      "q": "Peut-on migrer facilement de SQLite vers DuckDB, ou inversement ?",
+      "a": "DuckDB propose une extension permettant de lire une base SQLite, ce qui facilite la copie de données vers un environnement analytique. L'inverse est moins direct : il faut exporter puis importer, en tenant compte des différences de types et de contraintes. Une migration mérite des tests sur un échantillon représentatif avant toute bascule en production."
+    }
+  ]
+}

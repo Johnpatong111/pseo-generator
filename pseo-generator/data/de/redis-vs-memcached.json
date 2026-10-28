@@ -1,0 +1,102 @@
+{
+  "slug": "redis-vs-memcached",
+  "meta": {
+    "title": "Redis vs Memcached (2026): welche Lösung passt besser?",
+    "description": "Redis vs Memcached im Vergleich 2026: Datenmodelle, Persistenz, Clustering, Skalierung, Sicherheit und Betrieb. So treffen Sie die passende Wahl für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "Redis"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "Redis ist die vielseitigere Wahl: reichhaltige Datenstrukturen, Persistenz, Pub/Sub, Skripting und Cluster-Support machen es zum Allzweck-Speicher für Caching plus weitere Aufgaben. Memcached bleibt eine schlanke, bewährte und einfach zu betreibende Option, wenn ausschließlich verteiltes Key-Value-Caching mit geringem Overhead gefragt ist. Für reines Caching ist die Wahl oft abhängig von Team, Betriebsmodell und vorhandener Infrastruktur; für alles darüber hinaus ist Redis meist der flexiblere Weg.",
+  "comparison": [
+    {
+      "category": "Datenmodell und Datenstrukturen",
+      "toolA": "Redis bietet neben einfachen Strings eine breite Auswahl an Datenstrukturen wie Listen, Sets, sortierte Sets, Hashes, Bitmaps, HyperLogLog und Streams. Dadurch lassen sich Caching, einfache Warteschlangen, Leaderboards oder Zähler direkt im Speicher abbilden, ohne eine zusätzliche Datenbank. Der genaue Funktionsumfang hängt von der eingesetzten Redis-Version ab.",
+      "toolB": "Memcached ist bewusst als verteilter Key-Value-Speicher für flache Werte konzipiert und speichert im Kern Strings beziehungsweise Byte-Objekte. Komplexe Datenstrukturen müssen clientseitig serialisiert und verwaltet werden, was mehr Anwendungslogik bedeutet, aber das serverseitige Modell sehr berechenbar hält.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistenz und Datenverlust",
+      "toolA": "Redis kann Daten über RDB-Snapshots und AOF-Logs auf die Festplatte schreiben, wobei Grad der Dauerhaftigkeit, Fsync-Strategie und Latenz von der Konfiguration abhängen. Ein Neustart kann so ohne vollständigen Cache-Verlust erfolgen, wenn Persistenz aktiviert ist. Für einen reinen Cache-Betrieb lässt sich Persistenz auch abschalten, um Overhead zu vermeiden.",
+      "toolB": "Memcached ist ein reiner In-Memory-Cache ohne integrierte Persistenz; nach einem Neustart oder Prozessabbruch ist der Inhalt verloren. Das ist für klassisches Caching oft akzeptabel, weil Werte jederzeit aus der Quelle neu geladen werden können. Wer dauerhafte Daten benötigt, muss diese außerhalb von Memcached speichern.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalierung und Clustering",
+      "toolA": "Redis bietet verschiedene Wege zur Skalierung, darunter Replikation, Sentinel für Hochverfügbarkeit und Redis Cluster für Sharding über mehrere Knoten. Die Einrichtung ist funktional mächtig, erfordert aber sorgfältige Planung von Slot-Verteilung, Failover und Client-Konfiguration. Details unterscheiden sich je nach eingesetzter Redis-Version oder verwaltetem Dienst.",
+      "toolB": "Memcached skaliert horizontal sehr einfach, weil Clients typischerweise per konsistentem Hashing auf mehrere unabhängige Server verteilen. Der Server selbst kennt kein Sharding und keine Replikation; Ausfallsicherheit entsteht durch mehrere Instanzen und Client-Logik. Das macht den Betrieb schlank, verlagert aber Verantwortung in die Anwendung.",
+      "winner": "tie"
+    },
+    {
+      "category": "Leistung und Speicherverwaltung",
+      "toolA": "Redis arbeitet im Wesentlichen single-threaded bei der Befehlsausführung, kann aber für I/O und einige Hintergrundaufgaben Threads nutzen; die tatsächliche Leistung hängt stark von Arbeitslast, Datenstrukturen und Konfiguration ab. Redis verwaltet den Speicher selbst und erlaubt Eviction-Richtlinien, sodass das Verhalten bei Speicherdruck steuerbar bleibt. Pauschale Leistungsaussagen sind ohne konkreten Benchmark nicht seriös.",
+      "toolB": "Memcached ist multithreaded und für hohe Parallelität bei einfachen Get- und Set-Operationen ausgelegt. Der Speicher wird über einen Slab-Allocator verwaltet, was sehr effizient sein kann, aber bei stark variierenden Objektgrößen zu Fragmentierung führen kann. Auch hier gilt: konkrete Durchsatzwerte sind arbeitslast- und konfigurationsabhängig.",
+      "winner": "tie"
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Redis unterstützt Authentifizierung über ACLs mit Benutzern und Berechtigungen, TLS für Verbindungen und lässt sich über private Netze absichern. Ältere Konfigurationen ohne Passwort sollten nicht öffentlich erreichbar betrieben werden. Welche Schutzfunktionen verfügbar sind, richtet sich nach der eingesetzten Version und dem Betriebsmodell.",
+      "toolB": "Memcached kennt von Haus aus keine Benutzerverwaltung und keine eingebaute Verschlüsselung; in neueren Versionen ist SASL-Authentifizierung optional möglich, TLS dagegen nicht Standard. Der Schutz muss daher vor allem über Netzsegmentierung, Firewalls und Reverse-Proxys erfolgen. In offenen Netzen ist Memcached ohne zusätzliche Maßnahmen riskant.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ökosystem, Clients und Betrieb",
+      "toolA": "Redis verfügt über eine sehr breite Client-Landschaft für nahezu alle gängigen Programmiersprachen und Frameworks sowie viele verwaltete Angebote. Die Vielfalt an Befehlen und Modulen erhöht die Einstiegshürde leicht, bietet dafür aber viel Flexibilität im Betrieb. Verwaltete Varianten können Funktionen und Preise je nach Anbieter und Tarif einschränken.",
+      "toolB": "Memcached ist ebenfalls in vielen Sprachen gut unterstützt, besonders über das klassische textuelle Protokoll und verbreitete Client-Bibliotheken. Das Protokoll ist einfach, die Zahl der Befehle klein und der Betrieb dadurch oft leicht zu erlernen. Für reines Caching ist das Ökosystem meist völlig ausreichend.",
+      "winner": "tie"
+    },
+    {
+      "category": "Einsatz als reiner Cache",
+      "toolA": "Redis eignet sich sehr gut als Cache und bietet zusätzlich TTL, Eviction-Policies und vielfältige Datenstrukturen für Cache-Schlüssel. Allerdings kann der größere Funktionsumfang zu mehr Komplexität und unbeabsichtigter Nutzung als Primärspeicher führen. Bei reiner Cache-Nutzung sollte die Konfiguration bewusst auf diesen Zweck ausgerichtet werden.",
+      "toolB": "Memcached ist auf reines Caching spezialisiert und dadurch konzeptionell einfach: Werte mit TTL, Verteilung über mehrere Knoten, fertig. Diese Fokussierung erleichtert Betrieb und mentales Modell, bietet aber wenig Spielraum für zusätzliche Anwendungsfälle. Für Teams, die ausschließlich Cache brauchen, ist das oft ein Vorteil.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Warteschlangen, Pub/Sub und Echtzeitfunktionen",
+      "toolA": "Redis bietet Pub/Sub, Streams und Listen, mit denen sich einfache Warteschlangen und Echtzeit-Benachrichtigungen realisieren lassen. Für garantierte Zustellung und hohe Anforderungen an Messaging eignen sich spezialisierte Systeme besser, aber für viele Anwendungen sind die Bordmittel ausreichend. Funktionsumfang und Grenzen sind versionsabhängig.",
+      "toolB": "Memcached stellt keine Warteschlangen, kein Pub/Sub und keine Streams bereit und ist dafür auch nicht gedacht. Wer solche Funktionen benötigt, muss sie mit zusätzlicher Infrastruktur umsetzen. Damit ist Memcached für diese Kriterien klar nicht die passende Wahl.",
+      "winner": "toolA"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import redis\n\nclient = redis.Redis(host=\"localhost\", port=6379, decode_responses=True)\nclient.set(\"greeting\", \"Hallo, Welt!\")\nprint(client.get(\"greeting\"))",
+    "tech2Snippet": "from pymemcache.client.base import Client\n\nclient = Client((\"localhost\", 11211))\nclient.set(\"greeting\", \"Hallo, Welt!\")\nprint(client.get(\"greeting\").decode(\"utf-8\"))"
+  },
+  "faq": [
+    {
+      "q": "Welches Tool eignet sich besser für ein Projekt mit ausschließlich einfachem Caching?",
+      "a": "Wenn die Anforderung wirklich nur darin besteht, flache Schlüssel-Wert-Paare mit TTL über mehrere Knoten zu verteilen, ist Memcached oft die schlankere Wahl. Der Betrieb ist konzeptionell einfacher, und die Anwendung muss keine zusätzlichen Datenstrukturen erwarten. Für reines Caching kann aber auch Redis sinnvoll sein, insbesondere wenn später zusätzliche Funktionen hinzukommen sollen."
+    },
+    {
+      "q": "Wann ist Redis die bessere Wahl gegenüber Memcached?",
+      "a": "Redis lohnt sich, wenn neben Caching weitere Anforderungen bestehen, etwa Listen, sortierte Sets, Pub/Sub, Streams oder Persistenz. Auch wer Wert auf erweiterte Sicherheitsfunktionen wie ACLs und TLS legt, findet in Redis mehr eingebaute Möglichkeiten. Die konkrete Verfügbarkeit richtet sich nach Version und Betriebsmodell."
+    },
+    {
+      "q": "Ist Memcached sicher genug für den produktiven Einsatz?",
+      "a": "Memcached bringt von Haus aus keine vollständige Benutzerverwaltung und keine Verschlüsselung mit, was den Schutz stark vom Netzwerkdesign abhängig macht. In der Praxis sollte Memcached nur in privaten, durch Firewalls und Netzsegmentierung geschützten Umgebungen betrieben werden. SASL-Authentifizierung ist in neueren Versionen optional, TLS ist nicht Standard."
+    },
+    {
+      "q": "Kann Redis dauerhaft Daten speichern und Memcached nicht?",
+      "a": "Ja, Redis kann Persistenz über RDB-Snapshots und AOF konfigurieren, während Memcached keine integrierte Persistenz besitzt. Das bedeutet aber nicht, dass Redis automatisch ein vollwertiger Ersatz für eine Datenbank ist, denn Dauerhaftigkeit, Konsistenz und Latenz hängen stark von der Konfiguration ab. Memcached ist bewusst als flüchtiger Cache gedacht."
+    },
+    {
+      "q": "Welches Tool skaliert einfacher über mehrere Server?",
+      "a": "Memcached ist für horizontale Skalierung mit mehreren unabhängigen Instanzen ausgelegt, wobei der Client per Hashing verteilt. Redis bietet mit Redis Cluster und Sentinel mächtigere, aber auch komplexere Mechanismen für Sharding und Hochverfügbarkeit. Welche Lösung einfacher ist, hängt davon ab, ob die Anwendung oder die Infrastruktur die Verteilung übernehmen soll."
+    },
+    {
+      "q": "Beeinflusst die Wahl das Datenmodell in der Anwendung?",
+      "a": "Ja, deutlich: Memcached zwingt zu einem flachen Key-Value-Modell, bei dem komplexe Objekte clientseitig serialisiert werden. Redis erlaubt, Daten direkt als Listen, Hashes oder sortierte Sets abzulegen und serverseitig zu bearbeiten. Das kann die Anwendungslogik vereinfachen, erhöht aber die Bindung an Redis-spezifische Befehle."
+    },
+    {
+      "q": "Was sollte man bei der Speicherplanung beachten?",
+      "a": "Bei beiden Systemen sollte der Speicherbedarf realistisch geschätzt und das Eviction-Verhalten bewusst konfiguriert werden. Memcached nutzt einen Slab-Allocator, der bei stark schwankenden Objektgrößen Fragmentierung verursachen kann, während Redis eigene Eviction-Policies bietet. Konkrete Empfehlungen hängen von der Arbeitslast und der eingesetzten Version ab."
+    },
+    {
+      "q": "Gibt es eine pauschale Empfehlung für 2026?",
+      "a": "Eine pauschale Empfehlung wäre unseriös, weil beide Systeme ausgereift sind und ihre Stärken in unterschiedlichen Szenarien haben. Für reines, einfaches Caching ist Memcached oft ausreichend und leichtgewichtig, für vielseitige In-Memory-Anwendungsfälle ist Redis meist die flexiblere Wahl. Entscheidend sind Anforderungen, Betriebsmodell und die Erfahrung des Teams."
+    }
+  ]
+}

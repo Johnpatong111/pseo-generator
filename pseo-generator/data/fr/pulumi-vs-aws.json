@@ -1,0 +1,102 @@
+{
+  "slug": "pulumi-vs-aws",
+  "meta": {
+    "title": "Pulumi vs AWS (2026): quelle solution choisir ?",
+    "description": "Pulumi vs AWS en 2026 : comparatif des critères clés (langages, IaC, services managés, coûts, sécurité, verrouillage). Découvrez quelle option choisir selon votre équipe et votre projet cloud."
+  },
+  "toolA": {
+    "name": "Pulumi"
+  },
+  "toolB": {
+    "name": "AWS"
+  },
+  "verdict": "Pulumi est un outil d'infrastructure as code qui pilote AWS via des langages de programmation classiques, idéal si votre équipe est déjà à l'aise en TypeScript, Python ou Go et veut une logique conditionnelle riche. AWS est la plateforme cloud elle-même, incontournable si vous hébergez des charges sur ses services managés. Les deux ne s'opposent pas vraiment : on peut déployer AWS avec Pulumi. Choisissez Pulumi comme couche d'automatisation au-dessus d'AWS, et AWS comme fournisseur de services.",
+  "comparison": [
+    {
+      "category": "Positionnement et nature de l'outil",
+      "toolA": "Pulumi est un outil d'infrastructure as code (IaC) multi-cloud qui décrit des ressources via des langages de programmation généraux. Il s'utilise comme une couche d'automatisation posée au-dessus de fournisseurs comme AWS, Azure ou GCP, et ne remplace pas le cloud lui-même.",
+      "toolB": "AWS est une plateforme cloud qui fournit des services de calcul, stockage, réseau, base de données et sécurité, consommables via la console, l'API, le SDK ou la CLI. Ce n'est pas un outil d'IaC comparable, mais l'environnement cible sur lequel un outil comme Pulumi agit.",
+      "winner": "tie"
+    },
+    {
+      "category": "Langages et courbe d'apprentissage",
+      "toolA": "Pulumi propose des SDK en TypeScript, JavaScript, Python, Go, C# et Java, ce qui permet de réutiliser les compétences existantes des développeurs. La contrepartie est qu'il faut maîtriser à la fois le langage choisi et les concepts propres à Pulumi (projets, stacks, providers).",
+      "toolB": "AWS s'adresse aux utilisateurs via la console web, la CLI, les SDK et CloudFormation, ce dernier reposant sur des templates YAML ou JSON. La console abaisse la barrière d'entrée pour découvrir les services, tandis que CloudFormation impose d'apprendre son modèle déclaratif et ses limites.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Modèle de déclaration de l'infrastructure",
+      "toolA": "Pulumi décrit l'infrastructure dans du code impératif structuré en graphe de ressources, avec boucles, conditions et fonctions réutilisables. Le moteur calcule un plan de différentiel avant application, ce qui facilite les abstractions partagées entre équipes.",
+      "toolB": "AWS fournit CloudFormation, un modèle déclaratif où l'ordre de création est déduit des dépendances entre ressources. Les templates peuvent devenir verbeux sur de grandes architectures, et les fonctions intrinsèques remplacent les opérations de programmation habituelles.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Couverture des services managés AWS",
+      "toolA": "Pulumi s'appuie sur un provider AWS maintenu par l'éditeur, dont la couverture des services est généralement large mais peut accuser un décalage sur les nouveautés très récentes. Le rythme de disponibilité dépend de la mise à jour du provider, à vérifier pour chaque service sensible.",
+      "toolB": "AWS expose nativement tous ses services dès leur lancement via API, CLI, SDK et CloudFormation, sous réserve des contraintes propres à chaque service. C'est la voie la plus directe pour accéder aux fonctionnalités les plus récentes et aux intégrations natives.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Gestion d'état et collaboration",
+      "toolA": "Pulumi stocke l'état des stacks dans un backend, qui peut être le service Pulumi Cloud ou un stockage que vous hébergez (par exemple Amazon S3). Cette flexibilité permet d'aligner le stockage d'état sur vos politiques internes de sécurité et de résidence des données.",
+      "toolB": "AWS stocke l'état des stacks CloudFormation directement dans le service, sans backend à administrer. La contrepartie est une moindre liberté sur le lieu et le mode de stockage de cet état, et une gestion de l'historique liée aux fonctionnalités du service.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, extensibilité et intégrations",
+      "toolA": "Pulumi bénéficie d'un écosystème de providers couvrant de nombreux clouds et services, et permet d'écrire des providers personnalisés en code. Il s'intègre naturellement aux chaînes CI/CD et aux outils de test des langages supportés.",
+      "toolB": "AWS dispose d'un écosystème très vaste d'outils, de partenaires et de services, avec une documentation abondante et une intégration native à ses propres services (IAM, CloudWatch, CodePipeline, etc.). L'extensibilité passe plutôt par des services et API qupar des plugins.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité, identité et permissions",
+      "toolA": "Pulumi s'authentifie auprès d'AWS via les mécanismes standards (profils, variables d'environnement, rôles), ce qui permet d'appliquer le moindre privilège au niveau de la couche d'automatisation. La sécurité dépend toutefois de la configuration du backend d'état et du soin apporté aux secrets dans le code.",
+      "toolB": "AWS propose IAM, les rôles, les policies, KMS et CloudTrail pour gouverner finement les accès et auditer les actions. La sécurité effective dépend néanmoins de la conception des politiques et des bonnes pratiques appliquées par les équipes.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Coûts et verrouillage",
+      "toolA": "Pulumi propose une offre gratuite pour les petits usages et des offres payantes pour les équipes, dont les tarifs évoluent avec le temps et doivent être consultés à la source. Le code reste portable, mais les abstractions et le provider choisis peuvent créer une dépendance à l'outil.",
+      "toolB": "AWS facture à l'usage des services consommés, avec une tarification variable selon la région, le volume et le type de ressource. Largement adopté, AWS reste le cloud de référence du marché, mais ses services managés créent un verrouillage fonctionnel plus ou moins fort selon l'architecture.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst bucket = new aws.s3.Bucket(\"hello-bucket\", {\n  bucket: \"mon-bucket-hello-pulumi\",\n});\n\nexport const bucketName = bucket.id;",
+    "tech2Snippet": "AWSTemplateFormatVersion: '2010-09-09'\nResources:\n  HelloBucket:\n    Type: AWS::S3::Bucket\n    Properties:\n      BucketName: mon-bucket-hello-aws\nOutputs:\n  BucketName:\n    Value: !Ref HelloBucket"
+  },
+  "faq": [
+    {
+      "q": "Pulumi remplace-t-il AWS ?",
+      "a": "Non, Pulumi et AWS ne se situent pas au même niveau : Pulumi est un outil d'infrastructure as code, tandis qu'AWS est la plateforme cloud qui héberge vos ressources. On utilise généralement Pulumi pour automatiser la création et la gestion de ressources AWS, aux côtés des services AWS natifs. Dans un projet réel, les deux coexistent plutôt qu'ils ne s'opposent."
+    },
+    {
+      "q": "Quel outil choisir pour une équipe de développeurs déjà familière avec TypeScript ou Python ?",
+      "a": "Pulumi est souvent plus confortable pour une équipe qui maîtrise déjà un langage de programmation général, car elle peut réutiliser ses compétences, ses tests et ses outils de linting. CloudFormation reste pertinent si vous privilégiez un modèle déclaratif standard et une intégration native aux services AWS. Évaluez la taille de l'équipe, la tolérance à l'apprentissage et le besoin d'abstraction avant de trancher."
+    },
+    {
+      "q": "CloudFormation est-il toujours un choix pertinent en 2026 ?",
+      "a": "Oui, CloudFormation reste une option solide pour décrire des ressources AWS de façon déclarative, avec une intégration native au service et une couverture des nouveautés généralement rapide. Il peut toutefois devenir verbeux sur de grandes architectures et offre moins de souplesse de programmation que Pulumi. Le bon choix dépend de la complexité de votre infrastructure et de l'appétence de l'équipe pour le code."
+    },
+    {
+      "q": "Comment Pulumi gère-t-il l'état de l'infrastructure ?",
+      "a": "Pulumi conserve l'état des stacks dans un backend, qui peut être le service Pulumi Cloud ou un stockage que vous administrez, par exemple un bucket Amazon S3. Ce choix influe sur la sécurité, la résidence des données et le mode de collaboration entre équipes. Vérifiez les options de backend et de chiffrement avant de standardiser votre organisation sur l'outil."
+    },
+    {
+      "q": "Quelles sont les limites de Pulumi face à AWS ?",
+      "a": "Pulumi dépend d'un provider AWS dont le rythme de mise à jour peut être décalé par rapport aux annonces les plus récentes d'AWS. Par ailleurs, il faut maîtriser à la fois le langage de programmation choisi et les concepts propres à Pulumi, ce qui peut représenter une charge d'apprentissage. Enfin, la sécurité dépend fortement de la configuration du backend d'état et de la gestion des secrets."
+    },
+    {
+      "q": "Quelles sont les limites d'AWS comme solution d'infrastructure as code ?",
+      "a": "AWS n'est pas un outil d'IaC unique : CloudFormation, CDK et les SDK coexistent, et le choix de la couche d'automatisation reste à votre charge. Certains services managés créent un verrouillage fonctionnel plus ou moins fort selon l'architecture retenue. La facturation à l'usage peut aussi être difficile à prévoir sans suivi rigoureux des ressources consommées."
+    },
+    {
+      "q": "Peut-on utiliser Pulumi et AWS ensemble dans un projet ?",
+      "a": "Oui, c'est même un usage courant : Pulumi joue le rôle de couche d'automatisation et pilote la création de ressources AWS via son provider. Vous conservez ainsi l'accès aux services managés AWS tout en bénéficiant de la souplesse des langages de programmation. Cette combinaison demande toutefois de définir clairement les responsabilités entre l'outil et la plateforme."
+    },
+    {
+      "q": "Comment décider entre Pulumi et AWS pour un nouveau projet en 2026 ?",
+      "a": "Commencez par préciser si votre besoin porte sur l'hébergement et les services managés (AWS) ou sur l'automatisation de l'infrastructure (Pulumi), car les deux répondent à des questions différentes. Si vous déployez sur AWS, évaluez Pulumi comme couche d'IaC au-dessus de la plateforme, en tenant compte des compétences de l'équipe et de la couverture des services utilisés. Une preuve de concept limitée à un environnement de test aide à valider le choix sans engagement fort."
+    }
+  ]
+}

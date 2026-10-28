@@ -1,0 +1,98 @@
+{
+  "slug": "sqlite-vs-memcached",
+  "meta": {
+    "title": "SQLite vs Memcached (2026): Which option should you choose?",
+    "description": "SQLite is an embedded relational database; Memcached is a distributed in-memory cache. Compare their strengths, limits, and best-fit use cases in 2026."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "Choose SQLite when you need durable, transactional, queryable storage inside a single process or application, such as desktop apps, mobile apps, edge services, or small websites. Choose Memcached when your main problem is offloading read pressure from a slower backend by caching small, frequently accessed objects across multiple servers. They solve different problems and are often used together: SQLite as the source of truth and Memcached as an optional shared cache for horizontally scaled workloads.",
+  "comparison": [
+    {
+      "category": "Primary purpose and data model. This measures what kind of storage each tool provides and the abstraction it exposes to developers.",
+      "toolA": "SQLite is an embedded relational database engine that stores data in ordinary files using tables, rows, indexes, and SQL. It supports transactions, joins, constraints, views, and triggers, so it models structured data with relationships rather than opaque blobs.",
+      "toolB": "Memcached is a distributed in-memory key-value store designed for caching. It maps arbitrary string keys to serialized values with a maximum item size (1 MB by default) and offers no query language, persistence, or relational modeling.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistence and durability. This compares whether data survives process restarts, crashes, and host failures.",
+      "toolA": "SQLite writes to durable files and supports ACID transactions, with configurable journaling modes such as rollback journals and write-ahead logging. Durability depends on settings like synchronous mode and the underlying filesystem, so it can be tuned but is not unconditional.",
+      "toolB": "Memcached is volatile by design: data lives only in RAM and disappears on restart or eviction. It has no built-in disk persistence, replication, or write-ahead log, so it should never be treated as a system of record.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance profile and scaling model. This assesses where each tool is fast and how it scales beyond a single machine.",
+      "toolA": "SQLite is extremely fast for local reads and small transactional writes because it avoids network round trips. It scales well vertically but is limited to one writer at a time per database file, so write-heavy concurrent workloads need care; results vary by schema, indexes, and workload.",
+      "toolB": "Memcached is optimized for high-throughput, low-latency reads and writes over the network, and it scales horizontally by adding nodes with client-side consistent hashing. Its performance depends on item sizes, hit rate, network latency, and memory pressure.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Concurrency and multi-client access. This considers how each system handles simultaneous users and connections.",
+      "toolA": "SQLite supports many concurrent readers under write-ahead logging and serializes writers, which works well for modest write concurrency in a single process or host. Sharing a single database file across many machines over a network filesystem is not recommended, so multi-host access typically requires an application-level service.",
+      "toolB": "Memcached is a multithreaded server that handles many concurrent client connections over TCP or UDP and is designed for shared access from many application servers. Concurrent updates to the same key are last-write-wins, with no coordination or locking semantics beyond atomic increments.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Operational complexity and deployment. This covers setup, maintenance, and infrastructure footprint.",
+      "toolA": "SQLite requires no server, no daemon, and no configuration in the simplest case; the library is linked into the application and the database is a file. Operational tasks like backup, integrity checks, and schema migrations fall to the application or operator, though tooling is widely available.",
+      "toolB": "Memcached needs a running server process, memory allocation planning, and network configuration, and production use usually adds monitoring and a client library with hashing logic. Scaling out means managing multiple nodes, and the cache must be warmed or gracefully degraded after restarts.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Query flexibility and data features. This evaluates how much expressive power each tool gives for retrieving and manipulating data.",
+      "toolA": "SQLite offers a rich SQL dialect with joins, aggregate functions, window functions, common table expressions, JSON functions, full-text search via FTS5, and the R-tree extension. It also supports user-defined functions and collations, making it suitable for nontrivial application logic.",
+      "toolB": "Memcached exposes only get, set, add, replace, append, prepend, delete, increment, decrement, and multi-get operations on keys. Filtering, sorting, joining, and aggregation must happen in the client application, and values are treated as opaque bytes.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Caching behavior and memory management. This looks at how each tool handles cache-style workloads and memory limits.",
+      "toolA": "SQLite can serve as a cache by storing computed results in tables, but it lacks built-in TTL expiration and LRU eviction; you must implement invalidation in application logic. It can use an in-memory database, and the page cache can be tuned with PRAGMA settings.",
+      "toolB": "Memcached is purpose-built for caching, with configurable expiration times, LRU eviction when memory is full, and slab-based memory allocation. These features make it a natural fit for reducing load on databases and APIs, though eviction behavior depends on slab class utilization.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Licensing, ecosystem, and language support. This considers community maturity and integration options.",
+      "toolA": "SQLite is in the public domain and ships or is easily available in most programming languages and platforms, including mobile operating systems. Its ecosystem includes extensive documentation, bindings, and well-known tools such as the sqlite3 command-line shell.",
+      "toolB": "Memcached is open source under a permissive BSD-style license and is supported by client libraries in nearly every major language. It is widely deployed alongside web frameworks and caching layers, making integration straightforward for typical web stacks.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can SQLite and Memcached be used together?",
+      "a": "Yes, and they are often complementary: SQLite can act as the durable source of truth, while Memcached caches frequently requested results to absorb read traffic across multiple application servers. This makes sense when reads dominate and the dataset is small enough to cache, but you must implement cache invalidation carefully so clients do not serve stale data. For a single-process app, SQLite's own page cache may be sufficient and Memcached adds operational overhead."
+    },
+    {
+      "q": "Is SQLite suitable for a high-traffic web application?",
+      "a": "SQLite can work well for read-heavy sites with modest write concurrency, especially when the database is local to the application and writes are batched. Under heavy concurrent writes, the single-writer model becomes a bottleneck, and WAL mode helps readers but does not remove the writer limit. For large-scale multi-server deployments, a client-server database is usually a better fit, with Memcached optionally fronting it for cached reads."
+    },
+    {
+      "q": "When should I choose Memcached instead of SQLite?",
+      "a": "Choose Memcached when your primary goal is reducing latency and backend load by caching small, hot objects, and when you need a shared cache across many application servers. Memcached is not a database, so it should not hold data you cannot afford to lose. If your application can tolerate cache misses and recompute results, Memcached is a strong fit; if you need durable queries and transactions, SQLite or another database is required."
+    },
+    {
+      "q": "Does Memcached provide persistence or replication in 2026?",
+      "a": "As of 2026, Memcached remains a volatile in-memory cache without built-in durable persistence or cross-node replication; data is lost on restart and eviction. Third-party tools can snapshot or mirror caches, but these are external additions, not core guarantees. If durability or failover is a requirement, keep the system of record in a database and treat Memcached as a performance layer, with feature availability verified against your specific release."
+    },
+    {
+      "q": "Is SQLite secure enough for production use?",
+      "a": "SQLite is widely used in production and has a strong security record, and it offers optional encryption through extensions such as SQLCipher rather than built-in encryption. Security depends heavily on how you configure the application: file permissions, parameterized queries to prevent SQL injection, and restricted access to the database file matter greatly. Because SQLite has no network server, it removes a class of remote attack surface, but you must still protect the file and backups."
+    },
+    {
+      "q": "Which option is cheaper to run?",
+      "a": "SQLite has no server to host, so the main costs are application resources, storage, and backup handling; that often makes it cheaper for single-node workloads. Memcached requires memory on one or more servers plus operational effort for monitoring and scaling, and cloud pricing varies by provider, region, and instance type. Actual costs depend on your traffic, cache hit rate, and infrastructure choices, so compare quotes rather than assuming a fixed price."
+    },
+    {
+      "q": "What are the size and data-type limits of each tool?",
+      "a": "Memcached caps individual items at 1 MB by default, and the limit can be raised with the -I option within documented bounds, while keys are limited to 250 bytes. SQLite supports databases far larger than memory, and its limits such as maximum page count and SQL length are documented and generally generous for application use. If you need to cache large objects, consider chunking or a different cache; if you need complex queries over large data, SQLite is the more appropriate choice."
+    },
+    {
+      "q": "How do backup and recovery differ between SQLite and Memcached?",
+      "a": "SQLite databases can be backed up by copying the file while no writes occur, by using the online backup API, or by dumping with the command-line tool, with write-ahead logging requiring care to include the WAL file. Memcached has no backup concept in its core: recovery means restarting with an empty cache, optionally warmed by the application. Therefore, plan recovery around your durable store and treat cache repopulation as a normal performance event rather than data recovery."
+    }
+  ]
+}

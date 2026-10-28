@@ -1,0 +1,102 @@
+{
+  "slug": "cassandra-vs-scylladb",
+  "meta": {
+    "title": "Apache Cassandra vs ScyllaDB (2026) : quelle solution choisir ?",
+    "description": "Comparatif 2026 Cassandra vs ScyllaDB : architecture, compatibilité CQL, latence de queue, exploitation, coûts, sécurité et critères de choix pour votre base NoSQL distribuée."
+  },
+  "toolA": {
+    "name": "Apache Cassandra"
+  },
+  "toolB": {
+    "name": "ScyllaDB"
+  },
+  "verdict": "Cassandra reste le choix sûr pour les équipes qui veulent un écosystème Apache mature, une documentation abondante et un hébergement disponible chez de nombreux fournisseurs. ScyllaDB est pertinent quand la latence de queue sous forte charge et la densité par nœud sont critiques, à condition d'accepter une gouvernance éditeur et de valider les écarts de compatibilité CQL sur votre version. Aucun des deux ne convient si un modèle relationnel fort ou des transactions multi-lignes sont indispensables.",
+  "comparison": [
+    {
+      "category": "Modèle de données et compatibilité CQL",
+      "toolA": "Cassandra expose un modèle wide-column avec le langage CQL, des clés de partition et de clustering, et une compatibilité CQL large mais évolutive selon les versions. Les drivers officiels et l'écosystème d'outils sont nombreux, ce qui facilite l'intégration dans des stacks existantes.",
+      "toolB": "ScyllaDB reprend le modèle wide-column et une grande partie de CQL, avec des drivers compatibles, mais certains comportements, options de table ou fonctionnalités peuvent différer selon la version. Il faut donc tester les requêtes et migrations réelles plutôt que supposer une équivalence totale.",
+      "winner": "tie"
+    },
+    {
+      "category": "Architecture interne et performances sous charge",
+      "toolA": "Cassandra repose sur une architecture sans maître, un gossip et des tables de hachage répliquées, avec une JVM et un ramasse-miettes dont le comportement dépend fortement du dimensionnement et de la charge. Les performances varient selon la version, le matériel, le schéma et les réglages, et les benchmark publiés ne préjugent pas de votre cas.",
+      "toolB": "ScyllaDB utilise un modèle shard-per-core sans JVM, avec des mécanismes de contrôle de flux et d'ordonnancement conçus pour réduire les latences de queue lorsque la charge approche la saturation. Les gains observés dépendent du workload, du nombre de shards, du disque et de la configuration réseau, et doivent être mesurés sur votre propre banc d'essai.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Exploitation, réglages et journaux de compaction",
+      "toolA": "L'exploitation de Cassandra demande une surveillance fine du ramasse-miettes, des compactions, de la réparation et de la distribution des tokens. La communauté est vaste, les guides et retours d'expérience abondent, mais les incidents peuvent exiger une expertise pointue selon le volume de données.",
+      "toolB": "ScyllaDB simplifie certains aspects grâce à l'absence de JVM et à des outils d'administration dédiés, mais impose d'apprendre ses propres paramètres, son ordonnanceur et ses procédures de réparation. L'éditeur fournit un support commercial et une documentation ciblée, ce qui peut accélérer la mise en production pour une équipe prête à s'investir.",
+      "winner": "tie"
+    },
+    {
+      "category": "Écosystème, licences et hébergement",
+      "toolA": "Cassandra est un projet Apache sous licence Apache 2.0, avec une gouvernance communautaire et une large disponibilité chez des fournisseurs cloud et des hébergeurs managés. Cette ouverture limite le verrouillage fournisseur, même si la qualité des services managés varie fortement.",
+      "toolB": "ScyllaDB est développé par une entreprise qui propose une offre open source et des services commerciaux, avec une disponibilité d'hébergement plus concentrée. Les conditions exactes, fonctionnalités et niveaux de support dépendent de l'offre et de la version, à vérifier avant engagement.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Montée en charge et densité par nœud",
+      "toolA": "Cassandra scale horizontalement en ajoutant des nœuds et en répartissant les tokens, ce qui reste simple sur le plan conceptuel mais nécessite du streaming de données et une planification. La densité par nœud est limitée par la JVM, la mémoire et le disque, avec des seuils à calibrer selon le débit.",
+      "toolB": "ScyllaDB vise une meilleure utilisation des cœurs et de la mémoire par nœud, ce qui peut réduire le nombre de nœuds nécessaires selon le workload et le matériel. Cette densité accrue n'est pas systématique et dépend du schéma, des lectures, des écritures et de la taille des partitions.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité, authentification et chiffrement",
+      "toolA": "Cassandra propose une authentification et une autorisation configurables, ainsi que le chiffrement des communications et des données au repos via des mécanismes documentés. Les fonctionnalités précises et leur configuration dépendent de la version et des modules disponibles, avec des responsabilités d'exploitation à assumer.",
+      "toolB": "ScyllaDB fournit des mécanismes d'authentification, de contrôle d'accès et de chiffrement, avec des options qui évoluent selon les versions. Il convient de vérifier dans la documentation de la version retenue la couverture exacte et les prérequis opérationnels, notamment pour la rotation des certificats.",
+      "winner": "tie"
+    },
+    {
+      "category": "Écosystème de développement et outils",
+      "toolA": "Cassandra bénéficie de drivers officiels pour de nombreux langages, d'outils de migration, de collecteurs et de connecteurs largement documentés. Cette profondeur aide les équipes à trouver des exemples et du support communautaire, même si la qualité des contributions est inégale.",
+      "toolB": "ScyllaDB propose des drivers compatibles, des intégrations avec des framework de streaming et ses propres outils de diagnostic. Son écosystème est plus resserré, mais souvent bien aligné avec les cas d'usage à forte charge et les besoins de l'éditeur.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Coût total de possession",
+      "toolA": "Le coût dépend des serveurs, du stockage, du réseau et du temps d'expertise nécessaire pour régler et exploiter les nœuds. La disponibilité de multiples fournisseurs et d'une offre open source peut favoriser la négociation, mais les économies réelles dépendent de la main-d'œuvre et de la charge.",
+      "toolB": "Le coût dépend de l'offre choisie, de la densité obtenue par nœud et du support éventuel de l'éditeur. Une meilleure densité peut réduire le nombre d'instances, mais le prix des licences, du support et de la formation doit être intégré au calcul, sans extrapoler des tarifs non vérifiés.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import com.datastax.oss.driver.api.core.CqlSession;\n\npublic class HelloCassandra {\n    public static void main(String[] args) {\n        try (CqlSession session = CqlSession.builder()\n                .withKeyspace(\"demo\")\n                .build()) {\n            session.execute(\"INSERT INTO hello (id, message) VALUES (1, 'Hello, World!')\");\n            var row = session.execute(\"SELECT message FROM hello WHERE id = 1\").one();\n            System.out.println(row.getString(\"message\"));\n        }\n    }\n}",
+    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster([\"127.0.0.1\"])\nsession = cluster.connect(\"demo\")\n\nsession.execute(\"INSERT INTO hello (id, message) VALUES (1, 'Hello, World!')\")\nrow = session.execute(\"SELECT message FROM hello WHERE id = 1\").one()\nprint(row.message)\n\ncluster.shutdown()"
+  },
+  "faq": [
+    {
+      "q": "Cassandra et ScyllaDB sont-ils réellement interchangeables ?",
+      "a": "Ils partagent le modèle wide-column et une large compatibilité CQL, mais l'équivalence n'est pas totale : certains comportements, options de table et outils diffèrent selon les versions. Une migration doit inclure des tests de schéma, de requêtes et de charge, et une validation des drivers utilisés."
+    },
+    {
+      "q": "ScyllaDB est-il toujours plus rapide que Cassandra ?",
+      "a": "ScyllaDB est conçu pour réduire les latences de queue sous forte charge, mais les résultats dépendent du workload, du matériel, du schéma et de la configuration. Cassandra peut convenir si votre charge reste modérée ou si la latence n'est pas le critère principal, et aucun choix ne doit reposer sur un benchmark générique."
+    },
+    {
+      "q": "Quel impact la JVM a-t-elle sur l'exploitation de Cassandra ?",
+      "a": "La JVM impose de surveiller le ramasse-miettes, la mémoire et les pauses, ce qui peut affecter les latences sous certaines charges. Ce n'est pas rédhibitoire : un dimensionnement et des réglages adaptés à la version utilisée réduisent souvent les effets, mais cela ajoute de la charge d'exploitation."
+    },
+    {
+      "q": "Quels cas d'usage déconseillent ces deux bases ?",
+      "a": "Les deux bases visent des charges distribuées avec accès par clé de partition, et ne remplacent pas un SGBD relationnel pour des transactions multi-lignes fortes ou des jointures complexes. Si votre modèle est fortement relationnel ou nécessite des contraintes ACID strictes, une autre solution est probablement mieux adaptée."
+    },
+    {
+      "q": "Comment évaluer le coût total de possession en 2026 ?",
+      "a": "Intégrez les serveurs ou instances, le stockage, le réseau, la formation, le support et le temps d'exploitation, puis comparez à charge équivalente avec des tests sur votre propre environnement. Les tarifs et offres évoluent : aucune estimation ne doit être tirée d'un chiffre non vérifié ou d'une capture ancienne."
+    },
+    {
+      "q": "La sécurité est-elle suffisante par défaut sur Cassandra et ScyllaDB ?",
+      "a": "Les deux bases proposent des mécanismes d'authentification, d'autorisation et de chiffrement, mais leur activation et leur configuration dépendent de la version et de l'exploitation. Une revue de sécurité spécifique est recommandée, notamment pour les certificats, les rôles et les sauvegardes."
+    },
+    {
+      "q": "Comment migrer d'Apache Cassandra vers ScyllaDB ?",
+      "a": "La migration commence par une validation de compatibilité CQL et des drivers, puis par une phase de test sur une copie des données avec des requêtes réalistes. Prévoyez un plan de retour arrière, une évaluation de la réparation et des sauvegardes, et vérifiez la documentation de la version cible avant de basculer la production."
+    },
+    {
+      "q": "Quel choix pour une équipe qui débute sur une base distribuée ?",
+      "a": "Cassandra offre une communauté large et de nombreuses ressources, ce qui facilite l'apprentissage malgré la complexité de l'exploitation. ScyllaDB demande d'apprendre ses propres outils et son support éditeur, ce qui peut être intéressant si votre charge est élevée ou si vous disposez d'un accompagnement commercial."
+    }
+  ]
+}

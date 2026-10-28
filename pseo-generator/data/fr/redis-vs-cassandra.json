@@ -1,0 +1,102 @@
+{
+  "slug": "redis-vs-cassandra",
+  "meta": {
+    "title": "Redis vs Apache Cassandra (2026): quelle solution choisir ?",
+    "description": "Comparatif 2026 Redis vs Apache Cassandra : modèles de données, cohérence, scalabilité, cas d'usage et conseils pour choisir la base adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "Redis"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "Redis excelle pour le cache, les sessions, les files d'attente et les données ultra-rapides en mémoire, avec une persistance optionnelle. Cassandra est conçu pour des écritures massives distribuées et une tolérance aux pannes multi-régions, au prix d'un modèle de requête plus rigide. Choisissez Redis pour la latence et la simplicité, Cassandra pour l'échelle en écriture et la disponibilité continue.",
+  "comparison": [
+    {
+      "category": "Modèle de données et types supportés",
+      "toolA": "Redis est un magasin clé-valeur en mémoire proposant des structures riches : chaînes, listes, ensembles, ensembles triés, hachages, flux, HyperLogLog, bitmaps et structures géospatiales. Selon la version et les modules (Redis Stack, par exemple), des capacités de recherche, de JSON ou de séries temporelles peuvent être ajoutées, mais elles ne font pas partie du cœur historique. Cette richesse permet de modéliser simplement des cas comme des compteurs, des files d'attente ou des classements.",
+      "toolB": "Cassandra est une base de données large colonne distribuée, organisée en keyspaces, tables, partitions et clustering columns. Le modèle est proche du SQL pour la définition de schéma (CQL), mais les requêtes doivent être pensées à partir des partitions et des besoins de lecture, car les jointures et les agrégations ad hoc sont limitées. Elle convient mieux à des modèles dénormalisés et à des séries temporelles ou des événements massifs.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cohérence et transactions",
+      "toolA": "Redis offre une cohérence forte sur un nœud unique et, en mode cluster, une cohérence par clé avec des garanties dépendant de la configuration et du niveau de réplication. Les transactions MULTI/EXEC permettent de regrouper des commandes, et les scripts Lua offrent une exécution atomique côté serveur. La durabilité dépend de la politique de persistance (RDB, AOF) et du mode de réplication, avec un risque de perte de données en cas de défaillance selon les réglages.",
+      "toolB": "Cassandra privilégie la disponibilité et la tolérance au partitionnement (théorème CAP) et propose des niveaux de cohérence ajustables par requête (ONE, QUORUM, ALL, etc.). Les opérations par ligne sont atomiques et isolées par partition, mais il n'y a pas de transactions multi-partitions complètes comme dans une base relationnelle. La cohérence finale est la norme pour les lectures à faible niveau de cohérence, avec des mécanismes de réparation (read repair, hinted handoff) pour converger.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Performances et latence",
+      "toolA": "Redis garde les données en mémoire, ce qui permet des temps de réponse très faibles, souvent inférieurs à la milliseconde sur un réseau local, selon la charge et la taille des objets. Les opérations sont simples et le serveur est mono-thread pour l'exécution des commandes (dans les versions classiques), ce qui peut devenir un facteur limitant pour des charges très parallèles ou des commandes coûteuses. La latence dépend fortement de la taille du jeu de données et de la bande passante réseau.",
+      "toolB": "Cassandra est optimisée pour des débits d'écriture élevés et des lectures distribuées, avec une architecture sans point unique de défaillance. La latence varie selon le niveau de cohérence, la topologie du cluster et la conception des partitions ; elle peut être plus élevée que Redis pour des lectures ponctuelles, mais reste adaptée à des volumes massifs. Les performances dépendent beaucoup du dimensionnement, de la compaction et de la modélisation des données.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "Redis propose un mode cluster avec sharding des clés et réplication asynchrone, permettant de répartir la charge sur plusieurs nœuds. La scalabilité horizontale est possible mais nécessite une gestion des slots de hachage et des opérations multi-clés limitées. La montée en charge verticale reste souvent utilisée pour les jeux de données qui tiennent en mémoire, avec des limites liées à la RAM disponible.",
+      "toolB": "Cassandra est conçue dès l'origine pour la distribution : architecture peer-to-peer, réplication configurable par keyspace, et ajout de nœuds sans interruption. Elle peut gérer des volumes de données et des débits très importants sur plusieurs datacenters, avec une tolérance aux pannes réseau. La scalabilité est un point fort, mais elle exige une bonne planification des partitions et une surveillance régulière.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Persistance et durabilité",
+      "toolA": "Redis propose deux mécanismes de persistance : RDB (instantanés périodiques) et AOF (journal des écritures), configurables selon le niveau de durabilité souhaité. L'AOF peut être synchronisée à chaque écriture pour réduire le risque de perte, au prix de performances moindres. La persistance n'est pas activée par défaut dans tous les contextes, et la perte de données reste possible selon la configuration.",
+      "toolB": "Cassandra écrit d'abord dans un commit log sur disque, puis dans des memtables en mémoire, avant de flusher vers des SSTables. Ce mécanisme assure une durabilité des écritures une fois le commit log persisté, avec des garanties dépendant du niveau de cohérence et de la réplication. Les données sont stockées sur disque de manière durable, ce qui la destine à des volumes qui ne tiennent pas en mémoire.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Requêtes et langage",
+      "toolA": "Redis utilise un protocole texte et des commandes simples (GET, SET, LPUSH, ZADD, etc.), accessibles via de nombreux clients dans différents langages. Il ne propose pas de langage de requête déclaratif comme SQL ; les recherches complexes doivent être implémentées côté application ou via des modules complémentaires. Cette simplicité favorise la rapidité de développement pour des cas ciblés.",
+      "toolB": "Cassandra utilise CQL (Cassandra Query Language), un langage proche de SQL pour la définition et l'interrogation des données. Les requêtes doivent respecter le modèle de partitionnement : les filtres non indexés sur des colonnes hors clé de partition sont généralement interdits ou déconseillés. Cela impose une conception orientée requêtes, mais offre une expressivité plus grande que Redis pour des recherches structurées.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, exploitation et sécurité",
+      "toolA": "Redis bénéficie d'un écosystème très large, avec des clients dans presque tous les langages, des modules (RedisJSON, RediSearch, etc.) et des services managés chez de nombreux fournisseurs cloud. La sécurité repose sur l'authentification (ACL depuis Redis 6), TLS et des règles réseau, mais une configuration par défaut trop permissive a historiquement exposé des instances. L'exploitation est relativement simple pour un nœud unique, plus complexe en cluster.",
+      "toolB": "Cassandra est soutenue par une communauté active et des distributions commerciales (DataStax, par exemple), avec des outils de gestion et de surveillance. La sécurité inclut l'authentification, l'autorisation, le chiffrement des communications et des données au repos selon les versions et la configuration. L'exploitation d'un cluster Cassandra demande une expertise plus pointue : réglage de la compaction, gestion des réparations, surveillance de la latence et de l'espace disque.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Adéquation aux cas d'usage",
+      "toolA": "Redis est particulièrement adapté au cache, à la gestion de sessions, aux files d'attente légères, aux compteurs en temps réel, aux classements et aux systèmes de publication/abonnement. Il peut aussi servir de magasin principal pour des données volatiles ou de petite taille, mais il est moins adapté aux transactions complexes et aux requêtes analytiques. Son usage en mémoire le rend économique pour de petits volumes, mais coûteux pour de très gros jeux de données.",
+      "toolB": "Cassandra est recommandée pour des charges d'écriture massives, des séries temporelles, des journaux d'événements, des données IoT et des catalogues distribués à l'échelle mondiale. Elle brille lorsque la disponibilité continue et la tolérance aux pannes sont critiques, même au détriment de la cohérence immédiate. En revanche, elle n'est pas idéale pour des requêtes ad hoc complexes ou des transactions multi-lignes.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import redis\n\nr = redis.Redis(host='localhost', port=6379, db=0)\nr.set('hello', 'world')\nprint(r.get('hello').decode())",
+    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.set_keyspace('demo')\nsession.execute('CREATE TABLE IF NOT EXISTS hello (id int PRIMARY KEY, message text)')\nsession.execute('INSERT INTO hello (id, message) VALUES (1, %s)', ('world',))\nrow = session.execute('SELECT message FROM hello WHERE id = 1').one()\nprint(row.message)\ncluster.shutdown()"
+  },
+  "faq": [
+    {
+      "q": "Redis peut-il remplacer Cassandra pour stocker des données volumineuses ?",
+      "a": "Redis stocke les données principalement en mémoire, ce qui limite la taille du jeu de données à la RAM disponible et peut devenir coûteux pour de très gros volumes. Cassandra est conçue pour des données sur disque réparties sur plusieurs nœuds, ce qui la rend plus adaptée aux volumes massifs. Pour des données volumineuses avec un besoin de persistance durable, Cassandra est généralement plus appropriée, tandis que Redis reste pertinent comme couche de cache devant une base plus lourde."
+    },
+    {
+      "q": "Cassandra est-elle adaptée aux transactions ACID ?",
+      "a": "Cassandra ne propose pas de transactions ACID multi-partitions complètes comme une base relationnelle ; les opérations sont atomiques et isolées au niveau d'une ligne ou d'une partition. Les Lightweight Transactions (LWT) permettent des opérations conditionnelles avec une cohérence de type Paxos, mais elles ont un coût de performance plus élevé. Pour des besoins transactionnels complexes, une base relationnelle ou un autre système est souvent préférable."
+    },
+    {
+      "q": "Quel est le niveau de cohérence par défaut dans Cassandra ?",
+      "a": "Le niveau de cohérence par défaut dépend du driver et de la configuration du cluster ; il est souvent fixé à ONE ou LOCAL_QUORUM selon les versions et les bonnes pratiques. Un niveau plus élevé (QUORUM, ALL) augmente la cohérence mais peut réduire la disponibilité et la latence en cas de panne de nœuds. Il est recommandé de choisir le niveau de cohérence en fonction des exigences métier et de la topologie du cluster."
+    },
+    {
+      "q": "Redis est-il sécurisé par défaut ?",
+      "a": "Redis n'est pas sécurisé par défaut dans toutes les installations : l'authentification peut être désactivée et l'écoute réseau peut être trop permissive si mal configurée. Depuis Redis 6, les ACL permettent de définir des utilisateurs et des permissions fines, et TLS peut être activé pour chiffrer les communications. Il est essentiel de configurer un mot de passe, de restreindre l'accès réseau et de suivre les recommandations de sécurité officielles."
+    },
+    {
+      "q": "Peut-on utiliser Redis comme base de données principale ?",
+      "a": "Oui, Redis peut servir de base principale pour des cas où la latence est critique et où la persistance peut être configurée avec AOF ou RDB. Cependant, la durabilité et la cohérence dépendent des réglages, et le coût de la mémoire peut devenir élevé pour de grands volumes. Il est souvent utilisé comme cache ou magasin de données volatiles, avec une base durable en complément pour les données critiques."
+    },
+    {
+      "q": "Quels sont les principaux défis d'exploitation de Cassandra ?",
+      "a": "Cassandra nécessite une bonne compréhension du partitionnement, de la compaction et des réparations pour éviter les points chauds et les incohérences. La surveillance de la latence, de l'espace disque et des métriques de cluster est indispensable pour maintenir les performances. Une équipe formée et des outils de gestion adaptés sont recommandés pour exploiter un cluster en production."
+    },
+    {
+      "q": "Redis ou Cassandra pour un système de messagerie ou de file d'attente ?",
+      "a": "Redis propose des structures comme les listes, les flux (Streams) et la publication/abonnement, qui peuvent servir de base à des files d'attente légères ou à des bus d'événements. Cassandra peut stocker des messages de manière durable et scalable, mais elle n'offre pas nativement de mécanismes de consommation de type file d'attente avec accusé de réception. Pour des besoins de messagerie simples et rapides, Redis est souvent plus direct, tandis que Cassandra convient mieux à l'archivage massif de messages."
+    },
+    {
+      "q": "Comment choisir entre Redis et Cassandra en 2026 ?",
+      "a": "Le choix dépend des besoins : si la priorité est la latence, la simplicité et des structures de données variées pour du cache ou des sessions, Redis est souvent pertinent. Si le projet exige une scalabilité horizontale, une tolérance aux pannes multi-régions et des écritures massives avec une disponibilité continue, Cassandra est plus adaptée. Il est aussi possible de combiner les deux : Redis comme cache devant Cassandra pour accélérer les lectures fréquentes."
+    }
+  ]
+}

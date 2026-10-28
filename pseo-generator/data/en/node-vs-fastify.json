@@ -1,0 +1,92 @@
+{
+  "slug": "node-vs-fastify",
+  "meta": {
+    "title": "Node.js vs Fastify (2026): Which option should you choose?",
+    "description": "Compare Node.js and Fastify in 2026: performance, routing, plugins, validation, TypeScript support, and ecosystem fit to help you pick the right HTTP layer for your API."
+  },
+  "toolA": {
+    "name": "Node.js"
+  },
+  "toolB": {
+    "name": "Fastify"
+  },
+  "verdict": "Choose Node.js's built-in http module when you want zero dependencies, maximum control, or a minimal service where a framework adds little value. Choose Fastify when you need structured routing, schema-based validation, typed serialization, plugin encapsulation, and hooks without the weight of a larger framework. They are not mutually exclusive: Fastify runs on Node.js, so in most real APIs Fastify is the productive layer on top of the same runtime. Verify current version support, security advisories, and maintenance status for your target release before committing.",
+  "comparison": [
+    {
+      "category": "Core role and abstraction level",
+      "toolA": "Node.js is a JavaScript runtime whose standard library includes the low-level http, https, and http2 modules. These modules give you raw request and response objects, leaving routing, parsing, validation, and error handling to your own code or additional libraries. That control is valuable but means you build and maintain the conventions yourself, and consistency depends on your team's discipline.",
+      "toolB": "Fastify is a web framework that runs on Node.js and supplies routing, request lifecycle hooks, validation, serialization, logging integration, and a plugin system out of the box. It imposes a clear structure, so teams get predictable patterns and less boilerplate for common API concerns. It does not replace the runtime; it depends on a supported Node.js release and inherits the runtime's behavior and limits.",
+      "winner": "tie"
+    },
+    {
+      "category": "Performance and overhead",
+      "toolA": "The core http module has little framework overhead because it does not add routing trees, schema compilers, or hook pipelines. Throughput, latency, and memory use still depend heavily on your application code, the Node.js version, the operating system, and how you handle parsing and serialization. Hand-written routing and validation can be fast, but poorly optimized custom code can easily be slower than a tuned framework.",
+      "toolB": "Fastify is designed for low overhead, with optimized routing and schema-based serialization and validation that can reduce work on hot paths. Real-world performance depends on schema design, plugin usage, payload size, Node.js version, and configuration, so published benchmarks should be treated as directional rather than guaranteed. For many APIs, Fastify's defaults deliver solid throughput with less tuning effort than a hand-rolled setup.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Routing, plugins, and application structure",
+      "toolA": "Routing in the core http module requires manual URL matching, method handling, and middleware-style composition, often through third-party libraries or custom utilities. This flexibility suits unusual architectures or extremely small services, but large codebases can drift into inconsistent patterns across teams. You own the conventions, dependency choices, and upgrade paths for whatever you assemble.",
+      "toolB": "Fastify provides a mature router with parameterized paths, encapsulated plugin scopes, and lifecycle hooks for authentication, logging, and error handling. Encapsulation helps isolate features and avoid global state leaks, which is valuable in larger applications and multi-team repositories. The tradeoff is learning Fastify's idioms, since plugin ordering and scope rules shape how your app behaves.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Validation and serialization",
+      "toolA": "The runtime does not include a schema validator or typed serializer, so you typically add a library and wire it into request handling yourself. That gives freedom to choose formats and error shapes, but validation can become inconsistent if different handlers implement it differently. Serialization also requires deliberate choices to avoid sending unintended fields or slow conversions.",
+      "toolB": "Fastify integrates JSON Schema-based validation and response serialization, and can compile schemas for faster execution. Schemas can be reused for documentation and client generation, which improves consistency across endpoints. Correctness still depends on well-written schemas and attention to evolving payload shapes, and schema compilation has its own startup cost.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, maturity, and flexibility",
+      "toolA": "Node.js has the broadest ecosystem of packages and a large hiring pool, and nearly every server-side JavaScript library targets it. Its standard library is stable and widely documented, and long-term support releases provide predictable maintenance windows. The cost is that you often assemble many packages, each with its own quality and maintenance profile.",
+      "toolB": "Fastify has a focused ecosystem of official and community plugins covering common needs such as CORS, cookies, multipart handling, and database integrations. It is mature and actively maintained, but its plugin ecosystem is smaller than the Node.js package universe, so niche integrations may require custom work. Fastify also tracks Node.js releases, so runtime support boundaries matter.",
+      "winner": "toolA"
+    },
+    {
+      "category": "TypeScript and developer experience",
+      "toolA": "TypeScript support for core modules comes through the DefinitelyTyped ecosystem, and typing raw request and response objects is possible but verbose. Developers get maximum freedom and can adopt any tooling, yet they also carry responsibility for type safety around routing, validation, and plugins. Editor experience depends on the libraries you choose.",
+      "toolB": "Fastify ships its own TypeScript typings and supports typed route generics, schema-derived types, and typed plugin declarations. Many teams find this reduces friction when building typed APIs, though complex generics and plugin typing can still require care. The developer experience is generally smoother for structured APIs, provided the team follows Fastify's patterns.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Security posture and maintenance",
+      "toolA": "Security depends on Node.js release management: staying on a supported LTS line, applying patches promptly, and auditing the packages you add. The smaller your dependency graph, the easier it can be to reason about exposure, but hand-written parsing and validation code can introduce subtle flaws. Regular dependency scanning and version tracking remain essential regardless.",
+      "toolB": "Fastify benefits from Node.js security updates while adding its own release cadence and advisories that you must monitor. Its defaults, such as schema-based validation and encapsulated plugins, can encourage safer patterns, but misconfigured schemas or overly permissive plugins can weaken protections. Treat framework and plugin advisories as part of routine maintenance, and verify current support status for your version.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is Fastify a replacement for Node.js?",
+      "a": "No. Fastify is a framework that runs on top of the Node.js runtime, so you still deploy and maintain Node.js in production. The real choice is whether to use the built-in http module directly or adopt Fastify as a structured layer above it. Most teams building APIs with routing and validation find Fastify the more productive starting point, while minimalist services may not need it."
+    },
+    {
+      "q": "Which is faster, Node.js http or Fastify?",
+      "a": "The core http module adds almost no framework overhead, but Fastify's optimized router and schema-based serialization can outperform naive hand-written routing and validation in typical JSON APIs. Actual results vary with Node.js version, payloads, schema design, plugin usage, and configuration, so treat published benchmarks as directional. Measure your own workload before making a performance-driven decision."
+    },
+    {
+      "q": "Does Fastify require JSON Schema for validation?",
+      "a": "Fastify's built-in validation works through JSON Schema, which is compiled to validate requests and serialize responses. You can skip schemas and validate manually, but you then lose much of the framework's consistency and potential performance benefit. Teams that prefer another validation library can integrate it, though that requires custom wiring and careful error handling."
+    },
+    {
+      "q": "Is Fastify suitable for small projects or prototypes?",
+      "a": "Yes, Fastify can be a good fit even for small projects because a basic server with routes takes little code and gives you logging, validation, and error handling defaults. That said, a tiny single-endpoint service may be perfectly served by the Node.js http module without additional dependencies. Consider whether you will add routes and validation soon, since that is where Fastify pays off."
+    },
+    {
+      "q": "How does TypeScript support compare?",
+      "a": "Fastify maintains its own TypeScript typings and supports typed route generics and schema-derived types, which many teams find convenient for API development. The Node.js core modules are typed through DefinitelyTyped, and typing raw requests and responses is possible but often more verbose. Either way, type safety depends on disciplined use of generics and validation schemas rather than on the tool alone."
+    },
+    {
+      "q": "What should I check before upgrading Node.js or Fastify?",
+      "a": "Confirm that your Node.js release is a supported LTS line and that your Fastify version declares compatibility with it, since framework support follows runtime releases. Review release notes and security advisories for both, and test plugins and schema compilation in a staging environment. Because support windows and versions change over time, verify the current status on official project pages before planning an upgrade."
+    },
+    {
+      "q": "Can I migrate an existing Node.js http service to Fastify?",
+      "a": "Migration is usually incremental: introduce Fastify, mount existing handlers behind routes, and replace manual parsing and validation with schemas over time. The main work involves adapting request and response handling, error formats, and any middleware or custom routing logic. Plan for testing around authentication, payload handling, and edge cases before cutting over production traffic."
+    },
+    {
+      "q": "Which option has better long-term maintainability?",
+      "a": "Fastify's structure, plugin encapsulation, and schema-driven contracts tend to make larger, multi-team codebases easier to keep consistent. The core Node.js approach offers fewer abstractions and fewer framework upgrades to track, which can be simpler for small or highly custom services. In both cases, maintainability depends on dependency hygiene, test coverage, and staying on supported releases."
+    }
+  ]
+}

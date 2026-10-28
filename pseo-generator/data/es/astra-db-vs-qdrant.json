@@ -1,0 +1,108 @@
+{
+  "slug": "astra-db-vs-qdrant",
+  "meta": {
+    "title": "Astra DB vs Qdrant (2026): ¿Qué solución elegir?",
+    "description": "Comparamos Astra DB (base de datos gestionada sobre Cassandra con búsqueda vectorial) y Qdrant (motor vectorial especializado) para ayudarte a elegir el mejor motor para RAG y tus proyectos."
+  },
+  "toolA": {
+    "name": "Astra DB"
+  },
+  "toolB": {
+    "name": "Qdrant"
+  },
+  "verdict": "Astra DB encaja mejor si necesitas una base de datos gestionada sobre Cassandra que una cargas operacionales relacionales y vectoriales en un mismo servicio y quieres apoyarte en la infraestructura de DataStax para RAG. Qdrant suele ser preferible si el proyecto es de búsqueda vectorial pura, necesita control fino de la indexación y prefieres una herramienta especializada, desplegable también de forma autoalojada.",
+  "comparison": [
+    {
+      "category": "Modelo de datos subyacente",
+      "toolA": "Se apoya en el modelo de Cassandra (tablas particionadas con CQL y, según el caso, colecciones con esquema flexible), lo que aporta una base ampliamente conocida para datos operacionales. La búsqueda vectorial se integra en ese modelo como un tipo de dato y de índice adicional, no como un sistema separado. El detalle exacto de esquemas y límites depende de la versión y del plan contratado.",
+      "toolB": "Es un motor orientado a colecciones de puntos, donde cada punto combina un vector con una carga útil (payload) JSON de metadatos. El modelo es más estrecho que el de Cassandra, pero también más predecible para filtros de metadatos y búsquedas por similitud. No está pensado para sustituir una base operacional de amplio espectro.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Búsqueda vectorial e indexación",
+      "toolA": "Ofrece búsqueda por similitud vectorial sobre colecciones, con opciones de indexación que han ido evolucionando entre versiones; conviene verificar en la documentación vigente qué algoritmos, parámetros y métricas de distancia están disponibles en tu plan. Está orientada a casos de RAG donde el corpus ya vive en Astra DB o se quiere evitar un segundo almacén. La calidad final depende de la dimensión de los vectores, el volumen y la configuración del índice.",
+      "toolB": "Implementa índices vectoriales especializados (como HNSW) con métricas de distancia configurables y filtros de metadatos que se aplican durante la búsqueda. El foco del producto es precisamente la recuperación vectorial, por lo que su superficie de parámetros suele ser más amplia y granular. El rendimiento real depende del hardware, del tamaño del corpus y de los parámetros elegidos, no de cifras genéricas.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Modelo operativo y despliegue",
+      "toolA": "Es un servicio gestionado: DataStax se encarga del aprovisionamiento, las copias de seguridad y el escalado dentro de los planes disponibles, lo que reduce la carga del equipo. Exige depender de la nube del proveedor y revisar la disponibilidad regional y las limitaciones de cada plan. No está pensada para un despliegue totalmente autoalojado en local.",
+      "toolB": "Puede usarse como servicio gestionado en la nube o autoalojarse (por ejemplo, con contenedores), lo que da control sobre la infraestructura y la residencia de datos. A cambio, el autoalojamiento traslada al equipo tareas de operación, escalado y copias de seguridad. Esa flexibilidad es útil en entornos con requisitos estrictos de soberanía de datos.",
+      "winner": "tie"
+    },
+    {
+      "category": "Integraciones y ecosistema para RAG",
+      "toolA": "Se integra con el ecosistema de DataStax y con frameworks habituales de IA (como LangChain o LlamaIndex, según versión y documentación) para construir canalizaciones de recuperación aumentada. Al ser una base operacional, permite combinar datos de negocio con vectores en un mismo servicio. Conviene comprobar qué conectores y utilidades están realmente soportados en cada plan.",
+      "toolB": "Dispone de clientes oficiales en varios lenguajes, API HTTP/gRPC y ejemplos de integración con frameworks de IA y orquestadores. Su especialización facilita patrones de recuperación con filtros y búsquedas híbridas dentro de su propio ámbito. La amplitud de integraciones concretas debe verificarse en la documentación actual del proyecto.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ajuste a la carga de trabajo",
+      "toolA": "Rinde bien cuando ya existe una carga operacional en Cassandra y se quiere añadir búsqueda semántica sin montar otro sistema, por ejemplo para RAG sobre catálogos o datos de clientes. También encaja si el equipo prefiere un único proveedor gestionado. No es la opción más especializada si el único requisito es recuperación vectorial a gran escala con ajuste fino.",
+      "toolB": "Está pensada para cargas centradas en recuperación vectorial, con muchos vectores por documento, filtros de metadatos exigentes y necesidades de ajuste de la indexación. Es una elección natural cuando la búsqueda semántica es el núcleo del producto. Si además necesitas una base operacional amplia, probablemente tengas que combinarla con otro almacén.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Coste y previsión de gasto",
+      "toolA": "El coste depende del plan gestionado, la región y el consumo de recursos; no conviene asumir cifras sin consultar la página oficial de precios vigente. Al unificar cargas operacionales y vectoriales puede simplificar la factura, pero también implica pagar por un servicio más amplio del necesario si solo buscas vectores.",
+      "toolB": "Ofrece modalidades gestionadas y autoalojadas: el autoalojamiento traslada el coste a infraestructura propia, mientras que el servicio gestionado se factura según el plan del proveedor. La comparación justa exige estimar el coste total (infraestructura, operación y soporte) y no solo la tarifa por consulta. Las tarifas concretas cambian con frecuencia y deben verificarse.",
+      "winner": "tie"
+    },
+    {
+      "category": "Madurez, comunidad y soporte",
+      "toolA": "Cuenta con el respaldo de DataStax y de la comunidad de Cassandra, con documentación y soporte comercial en los planes que lo incluyan. La búsqueda vectorial es una capacidad añadida a una base ya madura, y su ritmo de evolución puede diferir del de un motor especializado. Verifica el nivel de soporte y garantías de cada plan.",
+      "toolB": "Es un proyecto de código abierto con una comunidad activa y una empresa detrás que ofrece servicio gestionado y soporte. Su evolución está centrada en búsqueda vectorial, con lanzamientos frecuentes que conviene revisar antes de fijar una versión. La disponibilidad de soporte comercial depende del plan elegido.",
+      "winner": "tie"
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Al ser gestionado, hereda las prácticas de seguridad del proveedor, con mecanismos de autenticación y control de acceso que dependen del plan y la configuración. Es importante revisar la documentación oficial sobre cifrado, roles y cumplimiento antes de decidir. La responsabilidad se reparte entre proveedor y cliente según el modelo de servicio.",
+      "toolB": "Permite configurar autenticación y control de acceso tanto en despliegues gestionados como autoalojados, lo que facilita adaptarse a políticas internas. En autoalojamiento, la seguridad de la infraestructura recae en el equipo. Las capacidades exactas varían según versión y modo de despliegue, por lo que deben confirmarse en la documentación.",
+      "winner": "tie"
+    },
+    {
+      "category": "Arquitectura Cassandra y búsqueda vectorial",
+      "toolA": "Astra DB es una base de datos gestionada basada en Apache Cassandra con búsqueda vectorial nativa, que puede actuar como capa de recuperación en una arquitectura RAG. La base de datos por sí sola no es un flujo RAG completo: también hacen falta una aplicación, un modelo y una configuración de recuperación.",
+      "toolB": "Pinecone y Qdrant son bases de datos vectoriales especializadas, no bases con el modelo de datos de Cassandra. Compara indexación, filtros, despliegue e integraciones para la versión y el plan concretos.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"TU_TOKEN_DE_ASTRA\")\ndb = client.get_database(\"TU_ENDPOINT\", keyspace=\"default_keyspace\")\ncollection = db.create_collection(\"demo\", dimension=3, metric=\"cosine\")\ncollection.insert_one({\"_id\": \"1\", \"$vector\": [0.1, 0.2, 0.3], \"texto\": \"hola mundo\"})\nprint(collection.find_one({}, sort={\"$vector\": [0.1, 0.2, 0.3]}))",
+    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.recreate_collection(\n    collection_name=\"demo\",\n    vectors_config=VectorParams(size=3, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"demo\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3], payload={\"texto\": \"hola mundo\"})],\n)\nprint(client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3], limit=1))"
+  },
+  "faq": [
+    {
+      "q": "¿Qué herramienta se adapta mejor a un proyecto de RAG que ya usa Cassandra?",
+      "a": "Si tu equipo ya opera sobre Cassandra y quiere añadir recuperación semántica sin mantener un segundo sistema, Astra DB resulta una opción coherente porque integra la búsqueda vectorial en un servicio gestionado. Qdrant sería preferible si la recuperación vectorial es el núcleo del producto y necesitas un ajuste más fino del índice, aunque entonces probablemente mantengas Cassandra aparte para los datos operacionales. En ambos casos conviene validar con una prueba de carga realista antes de comprometerse."
+    },
+    {
+      "q": "¿Puedo usar Qdrant sin depender de un proveedor cloud?",
+      "a": "Sí, Qdrant puede desplegarse de forma autoalojada, por ejemplo con contenedores, además de existir una oferta gestionada. El autoalojamiento te da control sobre la infraestructura y la residencia de datos, pero traslada al equipo las tareas de operación, escalado y copias de seguridad. Debes comprobar los requisitos de cada versión y planificar la alta disponibilidad según tus necesidades."
+    },
+    {
+      "q": "¿Astra DB sustituye por completo a un motor vectorial especializado?",
+      "a": "No necesariamente: Astra DB es una base de datos gestionada sobre Cassandra que incorpora capacidades de búsqueda vectorial, no un motor dedicado exclusivamente a ello. Para muchos casos de RAG puede ser suficiente, pero si necesitas ajuste muy fino de la indexación o filtros vectoriales avanzados, un motor especializado como Qdrant puede ofrecer más control. La decisión depende del volumen, la latencia objetivo y la complejidad de los filtros."
+    },
+    {
+      "q": "¿Qué debo verificar antes de comparar precios entre ambas opciones?",
+      "a": "Conviene revisar la página oficial de precios vigente de cada proveedor, porque las tarifas cambian con el tiempo y dependen de la región, el plan y el consumo. Además del precio unitario, hay que estimar el coste total de operación: infraestructura, soporte, copias de seguridad y esfuerzo del equipo. No des por válida ninguna cifra sin contrastarla con la documentación actual del proveedor."
+    },
+    {
+      "q": "¿Cuál es más sencilla de operar para un equipo pequeño?",
+      "a": "Astra DB, al ser un servicio gestionado, reduce las tareas de aprovisionamiento y mantenimiento dentro de los límites de su plan, lo que puede aliviar a equipos pequeños. Qdrant gestionado también simplifica la operación, aunque su autoalojamiento exige más trabajo. La elección depende de si prefieres delegar la operación en un proveedor o mantener control directo sobre el despliegue."
+    },
+    {
+      "q": "¿Cómo influye la indexación vectorial en el rendimiento de cada herramienta?",
+      "a": "En Qdrant, el rendimiento depende en gran medida de los parámetros del índice, la dimensión de los vectores y los filtros aplicados, y su enfoque especializado permite ajustarlos con detalle. En Astra DB, la búsqueda vectorial se apoya en la infraestructura de Cassandra y su configuración depende de la versión y el plan, por lo que el margen de ajuste puede ser menor. En ambos casos, los resultados reales deben medirse con tu propio corpus y carga, no extrapolarse de cifras genéricas."
+    },
+    {
+      "q": "¿Qué opción encaja mejor si necesito datos operacionales y vectores en el mismo sitio?",
+      "a": "Astra DB está pensada precisamente para combinar cargas operacionales sobre Cassandra con búsqueda vectorial en un mismo servicio gestionado, lo que simplifica la arquitectura. Qdrant está especializado en recuperación vectorial y normalmente se combina con otra base de datos para el resto de la información. Si la prioridad es unificar, Astra DB suele ser la elección más directa; si la prioridad es especialización, Qdrant."
+    },
+    {
+      "q": "¿Cómo puedo validar cuál funciona mejor en mi caso concreto?",
+      "a": "La forma más fiable es construir una prueba de concepto con una muestra representativa de tus datos y medir la calidad de recuperación y la latencia bajo tu carga esperada. Evita basarte solo en comparativas genéricas, porque los resultados dependen del corpus, de los filtros y de la configuración. Revisa también la documentación oficial de cada herramienta para confirmar que las funciones que necesitas están disponibles en tu plan y versión."
+    }
+  ]
+}

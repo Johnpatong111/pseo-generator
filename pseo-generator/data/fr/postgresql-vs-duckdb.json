@@ -1,0 +1,102 @@
+{
+  "slug": "postgresql-vs-duckdb",
+  "meta": {
+    "title": "PostgreSQL vs DuckDB (2026) : quelle solution choisir ?",
+    "description": "Comparez PostgreSQL et DuckDB en 2026 : OLTP vs OLAP, architecture, performances, écosystème et cas d'usage. Choisissez la base adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "PostgreSQL reste la référence pour les applications transactionnelles, multi-utilisateurs et les besoins relationnels avancés. DuckDB est un moteur analytique embarqué idéal pour l'exploration de données locale, les pipelines de fichiers et l'analyse intégrée. Les deux peuvent cohabiter : PostgreSQL pour la production OLTP et DuckDB pour l'analytique ad hoc sur des exports ou des fichiers Parquet.",
+  "comparison": [
+    {
+      "category": "Modèle d'architecture et mode de déploiement",
+      "toolA": "PostgreSQL est un serveur de base de données relationnelle client-serveur, conçu pour être déployé comme un service central accessible par de nombreux clients simultanément via le protocole réseau. Son architecture multi-processus et sa gestion des connexions en font une brique d'infrastructure robuste, adaptée à la production, à la haute disponibilité et à la montée en charge horizontale via des réplicas. Son administration requiert des compétences et une configuration dédiées.",
+      "toolB": "DuckDB est un moteur de base de données analytique embarqué, qui s'exécute dans le processus de l'application ou du script, sans serveur à administrer. Il stocke les données dans un fichier unique ou opère directement sur des fichiers Parquet, CSV ou JSON, ce qui simplifie le déploiement et le rend idéal pour l'analyse locale, les notebooks et les pipelines de données. Il ne vise pas le partage concurrent à grande échelle entre de nombreux utilisateurs distants.",
+      "winner": "tie"
+    },
+    {
+      "category": "Type de charge de travail : OLTP vs OLAP",
+      "toolA": "PostgreSQL est optimisé pour les charges transactionnelles (OLTP) : insertions, mises à jour et lectures ciblées fréquentes, avec un contrôle de concurrence multi-versions (MVCC) éprouvé. Il gère bien les écritures concurrentes et garantit l'intégrité transactionnelle, ce qui en fait un choix courant pour les applications métier. Ses performances analytiques restent correctes mais ne sont pas son point fort face à des moteurs colonnaires spécialisés.",
+      "toolB": "DuckDB est conçu pour l'analytique (OLAP) : il utilise un stockage colonnaire, un moteur d'exécution vectorisé et des optimisations pour les agrégations et les jointures sur de gros volumes. Il excelle dans les requêtes d'exploration, les scans de fichiers Parquet et les calculs analytiques sur des dizaines de millions de lignes. En revanche, il n'est pas conçu pour des écritures transactionnelles concurrentes ni pour un service multi-utilisateurs intensif.",
+      "winner": "tie"
+    },
+    {
+      "category": "Performance et comportement selon la charge",
+      "toolA": "Les performances de PostgreSQL dépendent fortement du dimensionnement, de l'indexation, de la configuration et de la charge concurrente ; il peut nécessiter un réglage fin (mémoire partagée, autovacuum, plans de requêtes) pour tenir la charge. Sur des requêtes analytiques massives, il peut être plus lent que des moteurs colonnaires, mais reste très compétitif pour les charges mixtes et les transactions. Il ne faut pas généraliser de chiffres sans contexte de version et de matériel.",
+      "toolB": "DuckDB affiche souvent d'excellentes performances sur des requêtes analytiques locales, notamment grâce à son exécution vectorisée et à sa capacité à interroger directement des fichiers sans étape de chargement. Ces performances dépendent de la taille des données, de la mémoire disponible et du type de requête ; les benchmarks varient selon les versions et les jeux de données. Il n'est pas conçu pour des milliers d'écritures concurrentes, ce qui limite son usage comme base de production transactionnelle.",
+      "winner": "tie"
+    },
+    {
+      "category": "Gestion de la concurrence et intégrité transactionnelle",
+      "toolA": "PostgreSQL offre des transactions ACID complètes, un contrôle de concurrence multi-versions et des niveaux d'isolation configurables, adaptés aux applications multi-utilisateurs. Il gère les verrous, les contraintes d'intégrité et les rollbacks de manière mature et documentée. Ces garanties sont essentielles pour les systèmes où plusieurs clients écrivent simultanément.",
+      "toolB": "DuckDB prend en charge les transactions ACID sur un fichier de base, mais son modèle est orienté mono-utilisateur ou accès concurrent limité, avec un verrou d'écriture sur le fichier. Il ne vise pas les charges d'écriture concurrentes à grande échelle ni les architectures multi-nœuds. Pour des lectures analytiques parallèles, il peut être utilisé avec précaution, mais ce n'est pas son cas d'usage principal.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, compatibilité et intégration",
+      "toolA": "PostgreSQL bénéficie d'un écosystème très large : extensions (PostGIS, pgvector, etc.), outils de sauvegarde, de réplication, de supervision et connecteurs pour presque tous les langages. Il s'intègre aux architectures cloud managées et aux outils d'orchestration, avec une communauté active et une documentation abondante. Cette maturité facilite l'intégration dans des systèmes existants et la maintenance à long terme.",
+      "toolB": "DuckDB dispose de liaisons officielles pour Python, R, Java, Node.js et d'autres langages, ainsi que d'une extension PostgreSQL permettant d'interroger des tables distantes. Il s'intègre naturellement aux notebooks, aux outils de BI légers et aux workflows de data science, et lit nativement de nombreux formats de fichiers. Son écosystème est plus jeune et plus restreint que celui de PostgreSQL, même s'il progresse rapidement.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "PostgreSQL propose un système de rôles et de privilèges granulaire, l'authentification par mot de passe, certificat, GSSAPI, LDAP ou Kerberos, ainsi que le chiffrement des connexions via TLS. Il permet de cloisonner les accès par base, schéma, table et colonne, avec des politiques de sécurité au niveau des lignes (RLS). Ces fonctionnalités sont éprouvées pour des déploiements multi-utilisateurs exposés.",
+      "toolB": "DuckDB étant embarqué, la sécurité repose principalement sur les permissions du système de fichiers et sur l'environnement d'exécution ; il ne fournit pas nativement un système complet de gestion des utilisateurs comparable à PostgreSQL. Des mécanismes de contrôle d'accès existent dans certaines intégrations ou via des extensions, mais ils ne remplacent pas une authentification centralisée. Il est donc plutôt adapté à des contextes où l'accès est déjà maîtrisé par l'application hôte.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cas d'usage typiques et adéquation projet",
+      "toolA": "PostgreSQL convient aux applications web et mobiles, aux systèmes de gestion, aux plateformes multi-tenants, aux API et aux architectures nécessitant des transactions fiables et une concurrence élevée. Il est également un bon choix pour centraliser des données et servir de source de vérité, avec la possibilité d'ajouter des extensions analytiques. Son administration et son dimensionnement demandent toutefois un investissement en compétences.",
+      "toolB": "DuckDB est particulièrement adapté à l'analyse de données locales, à l'exploration de fichiers Parquet ou CSV, aux notebooks, aux tests analytiques et aux pipelines de transformation légers. Il peut aussi servir de moteur de requête intégré dans une application pour des rapports ou des agrégations sur des données embarquées. Il n'est pas destiné à remplacer un serveur transactionnel multi-utilisateurs comme PostgreSQL.",
+      "winner": "tie"
+    },
+    {
+      "category": "Coût, exploitation et maintenance",
+      "toolA": "PostgreSQL est open source et gratuit, mais son exploitation implique des coûts indirects : infrastructure, sauvegardes, supervision, mises à jour, réglage et éventuellement support commercial ou service cloud managé. Ces coûts dépendent fortement de la criticité, du volume et de l'organisation ; aucune tarification universelle ne peut être affirmée sans contexte. La maintenance nécessite des compétences en administration de bases de données.",
+      "toolB": "DuckDB est également open source et gratuit, avec un déploiement très léger puisqu'il ne requiert ni serveur ni administration dédiée dans son usage embarqué. Les coûts se limitent souvent à l'environnement d'exécution et au stockage des fichiers, ce qui simplifie les projets ponctuels ou locaux. Pour des usages multi-utilisateurs ou critiques, il faudra néanmoins prévoir des mécanismes de sécurité et de sauvegarde adaptés.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import psycopg\n\nconn = psycopg.connect(\"dbname=postgres user=postgres password=postgres host=localhost\")\ncur = conn.cursor()\ncur.execute(\"SELECT 'Hello, World!' AS message;\")\nprint(cur.fetchone()[0])\ncur.close()\nconn.close()",
+    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect()\nresult = con.execute(\"SELECT 'Hello, World!' AS message;\").fetchone()\nprint(result[0])\ncon.close()"
+  },
+  "faq": [
+    {
+      "q": "Quel outil choisir pour une application web multi-utilisateurs avec des écritures fréquentes ?",
+      "a": "Pour une application web multi-utilisateurs avec des écritures fréquentes, PostgreSQL est généralement le choix recommandé en raison de ses transactions ACID, de sa gestion de la concurrence et de son écosystème mature. DuckDB n'est pas conçu pour des écritures concurrentes à grande échelle et serait inadapté comme base de production transactionnelle. Il est toutefois possible d'utiliser PostgreSQL pour la production et DuckDB pour des analyses ponctuelles sur des exports."
+    },
+    {
+      "q": "DuckDB peut-il remplacer PostgreSQL dans un projet analytique ?",
+      "a": "DuckDB peut remplacer PostgreSQL pour des analyses locales ou des pipelines de données sur fichiers, car il est optimisé pour les requêtes analytiques et ne nécessite pas d'administration serveur. En revanche, il ne remplace pas PostgreSQL lorsqu'il faut servir de nombreux utilisateurs simultanément, gérer des transactions concurrentes ou exposer une API sécurisée. Le choix dépend donc du niveau de concurrence, du mode d'accès aux données et des exigences de sécurité."
+    },
+    {
+      "q": "Peut-on utiliser PostgreSQL et DuckDB ensemble dans une même architecture ?",
+      "a": "Oui, il est possible de combiner les deux : PostgreSQL comme source de vérité transactionnelle et DuckDB pour l'analyse locale ou l'exploration de données exportées. DuckDB propose notamment une extension permettant d'interroger des tables PostgreSQL, ce qui facilite certains scénarios de lecture analytique. Cette complémentarité demande toutefois de définir clairement les flux de données et les responsabilités de chaque outil."
+    },
+    {
+      "q": "Quelles sont les limites de DuckDB en production ?",
+      "a": "DuckDB est un moteur embarqué qui ne vise pas les charges d'écriture concurrentes élevées ni le service multi-utilisateurs à grande échelle, et son système de sécurité natif est plus limité que celui de PostgreSQL. Il est donc déconseillé comme base de production pour des applications transactionnelles critiques sans mesures d'encadrement adaptées. Ses performances analytiques peuvent néanmoins être excellentes dans un contexte local ou mono-utilisateur."
+    },
+    {
+      "q": "PostgreSQL est-il performant pour les requêtes analytiques ?",
+      "a": "PostgreSQL peut exécuter des requêtes analytiques et dispose d'extensions et de fonctionnalités utiles, mais il n'est pas optimisé en priorité pour les scans colonnaires massifs comme DuckDB. Ses performances dépendent de l'indexation, du dimensionnement, de la version et de la charge concurrente. Pour des analyses lourdes et répétées, un moteur colonnaire dédié peut être plus adapté, sans que cela remette en cause la robustesse de PostgreSQL pour le transactionnel."
+    },
+    {
+      "q": "Quel outil est le plus simple à déployer pour un data scientist ?",
+      "a": "DuckDB est généralement plus simple à déployer pour un data scientist, car il s'installe comme une bibliothèque et s'exécute sans serveur, directement dans un notebook ou un script. Il permet d'interroger des fichiers Parquet ou CSV sans étape de chargement préalable. PostgreSQL reste plus lourd à mettre en place, mais offre un cadre partagé et sécurisé pour des équipes travaillant sur des données centralisées."
+    },
+    {
+      "q": "Quels sont les coûts à prévoir pour chaque solution ?",
+      "a": "Les deux outils sont open source et gratuits, mais les coûts réels dépendent de l'infrastructure, de l'exploitation et du niveau de service attendu. PostgreSQL peut nécessiter des compétences d'administration, des sauvegardes, de la supervision et éventuellement un support commercial ou un service cloud managé. DuckDB réduit ces coûts dans un usage embarqué, mais peut demander des mécanismes complémentaires pour la sécurité et la sauvegarde en contexte partagé."
+    },
+    {
+      "q": "Comment décider entre PostgreSQL et DuckDB pour un projet de 2026 ?",
+      "a": "La décision dépend du type de charge : privilégiez PostgreSQL pour les applications transactionnelles multi-utilisateurs, les besoins relationnels avancés et les architectures de production centralisées. Choisissez DuckDB pour l'analyse locale, l'exploration de fichiers, les notebooks et les pipelines analytiques légers. Une approche hybride est souvent pertinente, avec PostgreSQL comme source de vérité et DuckDB comme moteur d'analyse complémentaire."
+    }
+  ]
+}

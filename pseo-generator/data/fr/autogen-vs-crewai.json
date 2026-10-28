@@ -1,0 +1,96 @@
+{
+  "slug": "autogen-vs-crewai",
+  "meta": {
+    "title": "AutoGen vs CrewAI (2026) : quelle solution choisir ?",
+    "description": "Comparatif AutoGen vs CrewAI : orchestration multi-agents, courbe d'apprentissage, personnalisation, écosystème et cas d'usage. Verdict clair pour choisir en 2026."
+  },
+  "toolA": {
+    "name": "AutoGen"
+  },
+  "toolB": {
+    "name": "CrewAI"
+  },
+  "verdict": "AutoGen convient aux équipes qui veulent un cadre de recherche flexible, événementiel et très personnalisable, avec un contrôle fin des conversations entre agents. CrewAI séduit par sa prise en main rapide et son modèle « équipage » intuitif, idéal pour des automatisations métier structurées. Le choix dépend surtout de votre tolérance à la personnalisation avancée et de la maturité attendue de l'API, qui évolue selon les versions.",
+  "comparison": [
+    {
+      "category": "Modèle conceptuel et orchestration : comment chaque outil structure le travail multi-agents ?",
+      "toolA": "AutoGen repose sur une architecture orientée conversation et événements : les agents échangent des messages dans des groupes de discussion, avec un orchestrateur configurable et des intervenants comme le « GroupChatManager ». Cette souplesse permet de modéliser des topologies variées, mais le comportement global dépend beaucoup de la configuration et de la version utilisée.",
+      "toolB": "CrewAI propose une abstraction « équipage » (crew) où chaque agent détient un rôle, un objectif et un outil, avec des tâches explicitement séquencées ou hiérarchisées. Ce modèle, plus prescriptif, réduit les surprises et facilite la lecture du flux d'exécution, au prix d'une latitude parfois moindre pour des scénarios très réactifs.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Courbe d'apprentissage et ergonomie pour une équipe pressée",
+      "toolA": "AutoGen expose davantage de concepts (agents conversationnels, gestionnaires de groupe, conditions d'arrêt) et la documentation a évolué entre versions, ce qui peut dérouter une équipe qui démarre. En contrepartie, l'API conversationnelle reste lisible une fois les concepts assimilés, surtout pour des profils habitués aux architectures événementielles.",
+      "toolB": "CrewAI mise sur une API minimaliste et déclarative : un agent se définit par un rôle et un but, une tâche décrit le livrable attendu. Un prototype fonctionnel peut généralement être obtenu en quelques dizaines de lignes, ce qui accélère les premières itérations, même si les cas avancés demandent vite d'explorer les options de configuration.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Personnalisation et contrôle fin du comportement des agents",
+      "toolA": "AutoGen offre un contrôle granulaire sur le routage des messages, les conditions d'arrêt et les gestionnaires de conversation, ce qui permet d'implémenter des boucles de rétroaction et des stratégies d'orchestration sur mesure. Cette puissance exige toutefois de concevoir soi-même de nombreux mécanismes qui existent par défaut ailleurs, avec un risque de complexité croissante du code.",
+      "toolB": "CrewAI fournit des briques prêtes à l'emploi (délégation, hiérarchie, mémoire, outils) et une personnalisation orientée configuration. Les besoins très spécifiques se traitent souvent via des outils personnalisés ou des callbacks, mais certains comportements fins restent dépendants du cadre et de la version installée.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, outils et intégrations disponibles",
+      "toolA": "AutoGen s'intègre à de nombreux fournisseurs de modèles et bibliothèques Python, et son écosystème est alimenté par la recherche et des exemples communautaires. La qualité et la stabilité des extensions varient, et il est prudent de vérifier la compatibilité avec votre version avant d'adopter une intégration.",
+      "toolB": "CrewAI propose un catalogue d'outils et de connecteurs, ainsi qu'une communauté active orientée cas d'usage métier. L'offre s'est élargie avec des composants d'entreprise, dont les fonctionnalités exactes, la disponibilité et les conditions dépendent de l'édition et du moment où vous consultez la documentation.",
+      "winner": "tie"
+    },
+    {
+      "category": "Gestion d'état, mémoire et robustesse des exécutions longues",
+      "toolA": "AutoGen prend en charge des conversations multi-tours avec historique de messages, et plusieurs options d'exécution de code selon la configuration retenue. La persistance et la reprise d'un état complexe demandent souvent un travail d'ingénierie complémentaire, ce qui pèse sur la fiabilité en production.",
+      "toolB": "CrewAI structure les tâches et peut conserver une mémoire partagée entre agents selon la configuration choisie. Pour des flux longs ou critiques, une supervision applicative reste nécessaire, et le comportement dépend aussi du modèle, du fournisseur et de la charge.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage typiques et adéquation projet",
+      "toolA": "AutoGen se prête bien aux prototypes de recherche, aux expérimentations d'orchestration et aux scénarios où plusieurs agents doivent négocier ou s'auto-corriger. Il convient aux équipes prêtes à investir du temps d'ingénierie pour obtenir un comportement précis et adapté à un domaine particulier.",
+      "toolB": "CrewAI vise les automatisations métier structurées : veille, génération de rapports, assistance à la décision, flux avec rôles distincts. Sa lisibilité en fait un bon choix pour des équipes produit ou data qui veulent livrer rapidement un flux multi-agents compréhensible et maintenable.",
+      "winner": "tie"
+    },
+    {
+      "category": "Maintenance, stabilité des API et évolution entre versions",
+      "toolA": "AutoGen a connu des refontes d'API notables selon les versions, ce qui impose de suivre les notes de version et de figer les dépendances avant un déploiement. La flexibilité du cadre compense partiellement cet effort, mais toute montée de version doit être testée sur vos scénarios réels.",
+      "toolB": "CrewAI suit un rythme d'évolution soutenu, avec des ajouts fréquents et une séparation entre l'offre open source et des composants payants. Vérifiez la stabilité des interfaces que vous utilisez et les conditions de l'édition choisie, car elles peuvent évoluer.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import asyncio\nfrom autogen_agentchat.agents import AssistantAgent\nfrom autogen_agentchat.teams import RoundRobinGroupChat\nfrom autogen_ext.models.openai import OpenAIChatCompletionClient\n\nasync def main():\n    client = OpenAIChatCompletionClient(model=\"gpt-4o-mini\")\n    agent = AssistantAgent(name=\"assistant\", model_client=client)\n    team = RoundRobinGroupChat([agent], max_turns=1)\n    result = await team.run(task=\"Dis bonjour en une phrase.\")\n    print(result.messages[-1].content)\n\nasyncio.run(main())",
+    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Assistant\",\n    goal=\"Répondre brièvement\",\n    backstory=\"Tu réponds en une phrase.\",\n)\n\ntask = Task(\n    description=\"Dis bonjour en une phrase.\",\n    expected_output=\"Une phrase de salutation.\",\n    agent=agent,\n)\n\ncrew = Crew(agents=[agent], tasks=[task])\nprint(crew.kickoff())"
+  },
+  "faq": [
+    {
+      "q": "Quel outil choisir pour un premier projet multi-agents en 2026 ?",
+      "a": "Pour un premier projet, CrewAI offre généralement une prise en main plus rapide grâce à son modèle de rôles et de tâches explicites. AutoGen reste pertinent si vous visez une orchestration conversationnelle fine ou si votre équipe est déjà à l'aise avec les architectures événementielles. Dans les deux cas, commencez par un flux minimal et validez le comportement avec vos propres modèles et vos données."
+    },
+    {
+      "q": "AutoGen est-il plus difficile à mettre en production que CrewAI ?",
+      "a": "Cela dépend surtout de la complexité du flux visé et du niveau de supervision attendu. AutoGen donne beaucoup de contrôle mais laisse davantage de mécanismes à construire, tandis que CrewAI fournit des abstractions prêtes à l'emploi qui réduisent le code initial. Une évaluation sur un scénario réel, avec journalisation et gestion des erreurs, reste indispensable avant de conclure."
+    },
+    {
+      "q": "Les deux outils fonctionnent-ils avec des modèles locaux ?",
+      "a": "AutoGen et CrewAI sont conçus pour s'interfacer avec plusieurs fournisseurs de modèles, y compris via des API compatibles OpenAI, ce qui permet en pratique de brancher des solutions locales. La compatibilité exacte dépend des bibliothèques d'intégration et de la version installée, donc consultez la documentation et testez votre configuration avant de généraliser. Les performances varient selon le modèle et le matériel."
+    },
+    {
+      "q": "Lequel est le plus adapté à des tâches séquentielles clairement définies ?",
+      "a": "CrewAI met naturellement en avant un enchaînement de tâches avec des agents spécialisés, ce qui colle bien à un processus séquentiel dont les étapes sont connues. AutoGen peut également réaliser ce type de flux, mais il faudra souvent le construire plus explicitement via des groupes de discussion et des conditions d'arrêt. Le choix dépend de votre besoin de lisibilité pour les parties prenantes."
+    },
+    {
+      "q": "Peut-on combiner AutoGen et CrewAI dans un même projet ?",
+      "a": "Techniquement, les deux bibliothèques sont en Python et peuvent coexister dans un même dépôt si leurs dépendances sont compatibles. Cette approche ajoute toutefois de la complexité opérationnelle et doit être justifiée par un besoin précis, comme un composant de recherche AutoGen appelé depuis un flux CrewAI. Vérifiez les versions et isolez les intégrations pour faciliter la maintenance."
+    },
+    {
+      "q": "Quelles compétences faut-il pour exploiter AutoGen ou CrewAI ?",
+      "a": "Une bonne maîtrise de Python, des appels d'API de modèles génératifs et des notions de conception de flux suffisent pour démarrer avec les deux outils. AutoGen demande souvent une compréhension supplémentaire des architectures événementielles et de l'orchestration asynchrone, alors que CrewAI privilégie la configuration et la structuration des rôles. Des compétences en évaluation et en observabilité sont un vrai plus dans les deux cas."
+    },
+    {
+      "q": "Quels sont les principaux risques à anticiper avec ces frameworks ?",
+      "a": "Comme tout système fondé sur des modèles génératifs, ils peuvent produire des sorties erronées ou instables, et les comportements dépendent du modèle, de la configuration et de la charge. Ajoutez une validation des résultats, des garde-fous sur les outils exécutés et une journalisation des échanges. Ne considérez pas leurs valeurs par défaut comme des garanties de sécurité."
+    },
+    {
+      "q": "Faut-il privilégier l'open source ou une offre gérée pour ces outils ?",
+      "a": "Cela dépend de vos contraintes de contrôle, de coût et de conformité : l'open source offre la maîtrise du code mais exige d'assumer l'exploitation, tandis qu'une offre gérée peut simplifier certains aspects. Les fonctionnalités, les conditions et les tarifs évoluent et doivent être vérifiés directement auprès des éditeurs. Comparez toujours sur la base de vos besoins réels et non de promesses générales."
+    }
+  ]
+}

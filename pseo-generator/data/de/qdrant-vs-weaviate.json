@@ -1,0 +1,102 @@
+{
+  "slug": "qdrant-vs-weaviate",
+  "meta": {
+    "title": "Qdrant vs Weaviate (2026): welche Lösung passt besser?",
+    "description": "Qdrant und Weaviate im Vergleich 2026: Unterschiede bei Architektur, Filterung, Hybridsuche, Betrieb und Sprache – plus Empfehlung, welches Tool zu welchem Projekt passt."
+  },
+  "toolA": {
+    "name": "Qdrant"
+  },
+  "toolB": {
+    "name": "Weaviate"
+  },
+  "verdict": "Qdrant ist die naheliegende Wahl, wenn Sie eine schlanke, filterstarke Vektordatenbank mit Rust-Kern, klarer REST-/gRPC-API und unkompliziertem Self-Hosting suchen. Weaviate punktet, wenn Sie integrierte Hybridsuche, ein modulares Vektorizer-Ökosystem und einen stärker schemaorientierten Ansatz mit GraphQL bevorzugen. Beide Systeme sind produktionsreif; die Entscheidung hängt vor allem von Hybridsuch-Anforderungen, Betriebsmodell und bestehender Toolchain ab. Prüfen Sie konkrete Versionen und Tarife, da sich Funktionen und Preise ändern können.",
+  "comparison": [
+    {
+      "category": "Architektur und Datenmodell",
+      "toolA": "Qdrant speichert Punkte mit Vektoren und optionalen JSON-Payloads in Collections und setzt auf einen in Rust geschriebenen Kern mit segmentbasierter Speicherung und Write-Ahead-Log. Nutzlastdaten dienen als flexible Metadaten für Filterung, ohne dass ein starres Schema erzwungen wird. Die genaue Speicherkonfiguration hängt von Version, Deployment und gewählten Einstellungen ab.",
+      "toolB": "Weaviate organisiert Daten in Klassen mit einem Schema, das Eigenschaften und Vektorisierungsmodule definiert, und bietet neben Vektoren auch ein objektorientiertes Datenmodell mit GraphQL-Schnittstelle. Das Schema kann Vektorizer pro Klasse festlegen und so Embeddings beim Import erzeugen. Wie streng das Schema wirkt, unterscheidet sich je nach Version und Konfiguration.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Filterung und Abfrageflexibilität",
+      "toolA": "Qdrant bietet eine ausdrucksstarke Payload-Filter-API mit Bedingungen wie match, range, geo und verschachtelten booleschen Kombinationen, die direkt in die Vektorsuche integriert werden. Filter können über Indizes beschleunigt werden, was bei selektiven Abfragen relevant ist; die Wirkung hängt von Datenverteilung und Indexkonfiguration ab. Zusätzlich stehen Empfehlungs- und Discover-Abfragen zur Verfügung.",
+      "toolB": "Weaviate erlaubt Filterung über Where-Operatoren in GraphQL oder REST und kombiniert diese mit Vektorsuche sowie BM25-Textsuche. Die hybride Abfrage mit Alpha-Parameter zur Gewichtung von Vektor- und Keyword-Anteil ist ein zentraler Bestandteil des Produkts. Die Fähigkeiten einzelner Filtertypen können sich je nach Version und Modul unterscheiden.",
+      "winner": "tie"
+    },
+    {
+      "category": "Hybridsuche und Textsuche",
+      "toolA": "Qdrant unterstützt seit geraumer Zeit sparse Vektoren, sodass Sie lexikalische Signale wie SPLADE oder BM25-ähnliche Einbettungen gemeinsam mit dichten Vektoren in einer Query fusionieren können. Die Fusionierung erfolgt clientseitig oder über die Query-API, was Flexibilität bei der Wahl der Textverarbeitung gibt, aber mehr Eigenverantwortung bedeutet. Details hängen von Version und genutzten Client-Bibliotheken ab.",
+      "toolB": "Weaviate bringt eine integrierte Hybridsuche mit BM25 und Vektorsuche mit, inklusive Fusionierung und Alpha-Gewichtung direkt in der Abfrage. Das reduziert Integrationsaufwand, wenn Sie Text- und Vektorsuche out of the box kombinieren wollen. Das Verhalten und die verfügbaren Parameter können sich zwischen Versionen ändern.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ökosystem, Module und Integrationen",
+      "toolA": "Qdrant fokussiert sich auf die Vektordatenbank selbst und bietet offizielle Clients für Python, JavaScript, Go, Rust und weitere Sprachen sowie eine gut dokumentierte REST- und gRPC-API. Vektorizer werden bewusst nicht eingebaut, sodass Embedding-Pipelines extern betrieben werden. Das hält das System schlank, verlangt aber eigene Integrationsarbeit.",
+      "toolB": "Weaviate verfügt über ein Modulsystem mit Vektorizern für zahlreiche Embedding- und LLM-Anbieter, Generativen Modulen und Rerankern, die direkt im Datenbankschema konfiguriert werden. Das kann Setup vereinfachen, erzeugt aber Abhängigkeiten zu den jeweiligen Modulen und Anbietern. Verfügbarkeit und Verhalten der Module sind versionsabhängig.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Betrieb, Deployment und Skalierung",
+      "toolA": "Qdrant lässt sich als Docker-Container, Binärdatei, Kubernetes-Deployment oder über den verwalteten Cloud-Dienst betreiben und bietet Sharding sowie Replikation für verteilte Setups. Die Konfiguration ist vergleichsweise überschaubar, konkrete Skalierungsgrenzen hängen jedoch stark von Hardware, Datenvolumen und Abfragemustern ab. Für den Managed-Betrieb gelten die jeweils aktuellen Tarifbedingungen.",
+      "toolB": "Weaviate kann selbst gehostet, per Helm in Kubernetes betrieben oder als Weaviate Cloud genutzt werden und unterstützt Replikation sowie horizontale Skalierung. Die Schemavalidierung und Modulkonfiguration erhöhen die Einstiegskomplexität etwas. Welche Funktionen in welchem Tarif enthalten sind, sollte vor der Planung in der aktuellen Dokumentation geprüft werden.",
+      "winner": "tie"
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Qdrant bietet unter anderem API-Key-Authentifizierung, TLS und rollenbasierte Zugriffskontrolle in neueren Versionen sowie die Möglichkeit, Netzwerkzugriffe einzuschränken. Welche Sicherheitsfunktionen verfügbar sind, hängt von Version und Betriebsart ab, insbesondere ob selbst gehostet oder verwaltet. Eine sorgfältige Härtung der Deployment-Umgebung bleibt in jedem Fall erforderlich.",
+      "toolB": "Weaviate unterstützt Authentifizierung über API-Keys und OIDC sowie Autorisierung mit Rollen und Berechtigungen, abhängig von Version und Betriebsmodus. In der Cloud übernimmt der Anbieter Teile der Infrastruktursicherheit, während beim Self-Hosting der Betreiber verantwortlich bleibt. Verbindliche Aussagen zu Zertifizierungen sollten Sie in der aktuellen Dokumentation prüfen.",
+      "winner": "tie"
+    },
+    {
+      "category": "Client-Bibliotheken und Abfrage-APIs",
+      "toolA": "Qdrant stellt offizielle Clients für Python, JavaScript/TypeScript, Go, Rust, Java und weitere Sprachen bereit, die sowohl REST als auch gRPC nutzen. Die API ist klar strukturiert und eignet sich gut für automatisierte Pipelines; das genaue Feature-Set der Clients kann der Serverversion hinterherhinken. Die Dokumentation ist umfangreich und versionsspezifisch gegliedert.",
+      "toolB": "Weaviate bietet offizielle Clients für Python, TypeScript/JavaScript, Java, Go und weitere Sprachen sowie eine GraphQL-Schnittstelle und eine REST-API. GraphQL ermöglicht präzise, schemaorientierte Abfragen, erfordert aber Einarbeitung. Funktionsumfang und Empfehlungen der Clients ändern sich mit den Versionen.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Lizenzierung und Community",
+      "toolA": "Qdrant steht unter der Apache-2.0-Lizenz und wird aktiv als Open-Source-Projekt entwickelt, mit einem kommerziellen Managed-Angebot daneben. Das erlaubt breite Nutzung und Anpassung im Rahmen der Lizenz. Support-Umfang und Service-Level hängen vom gewählten Tarif ab.",
+      "toolB": "Weaviate ist ebenfalls quelloffen lizenziert und wird aktiv weiterentwickelt, ergänzt durch ein kommerzielles Cloud-Angebot. Die Community ist über Foren, GitHub und Dokumentation erreichbar. Lizenzdetails und Supportleistungen sollten Sie für die eingesetzte Version und den Tarif konkret nachlesen, da sich diese ändern können.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.create_collection(\n    collection_name=\"demo\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"demo\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"text\": \"Hallo Welt\"})],\n)\nprint(client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))",
+    "tech2Snippet": "import weaviate\n\nclient = weaviate.connect_to_local()\ntry:\n    client.collections.create(\n        name=\"Demo\",\n        vectorizer_config=weaviate.classes.config.Configure.Vectorizer.none(),\n    )\n    demo = client.collections.get(\"Demo\")\n    demo.data.insert(properties={\"text\": \"Hallo Welt\"}, vector=[0.1, 0.2, 0.3, 0.4])\n    result = demo.query.near_vector(near_vector=[0.1, 0.2, 0.3, 0.4], limit=1)\n    print(result.objects)\nfinally:\n    client.close()"
+  },
+  "faq": [
+    {
+      "q": "Welches Tool eignet sich besser für ein Projekt mit starker Filterlogik auf Metadaten?",
+      "a": "Qdrant ist hier oft die naheliegende Wahl, weil die Payload-Filter-API sehr ausdrucksstark ist und sich gut mit der Vektorsuche kombinieren lässt. Ob Filterindizes tatsächlich den gewünschten Effekt bringen, hängt von der Selektivität Ihrer Filter und der Datenverteilung ab. Weaviate kann ebenfalls filtern, ist aber stärker auf sein Schema und die hybride Abfrage ausgerichtet. Testen Sie beide mit Ihren realen Abfragen, bevor Sie sich festlegen."
+    },
+    {
+      "q": "Wann sollte ich Weaviate wegen der Hybridsuche bevorzugen?",
+      "a": "Wenn Sie Text- und Vektorsuche ohne zusätzliche Eigenentwicklung kombinieren möchten, bietet Weaviate mit BM25 plus Vektorsuche und Alpha-Gewichtung einen integrierten Weg. Das reduziert den Aufwand für eine eigene Fusionslogik erheblich. Beachten Sie jedoch, dass Qualität und Verhalten von der Version, der Konfiguration und der gewählten Analyse abhängen können. Prüfen Sie die aktuellen Parameter in der Dokumentation Ihrer Zielversion."
+    },
+    {
+      "q": "Brauche ich für Qdrant zwingend eine eigene Embedding-Pipeline?",
+      "a": "Ja, in der Regel bringen Sie Ihre Embeddings selbst mit, da Qdrant bewusst keine eingebauten Vektorizer anbietet. Das erhöht die Flexibilität bei der Wahl von Modell und Anbieter, verlangt aber zusätzliche Infrastruktur und Verantwortung für die Embedding-Erzeugung. Weaviate kann dagegen Module konfigurieren, die Embeddings beim Import berechnen. Welche Variante besser passt, hängt davon ab, ob Sie Kontrolle über die Pipeline oder schnelle Inbetriebnahme priorisieren."
+    },
+    {
+      "q": "Welche Datenbank ist einfacher selbst zu betreiben?",
+      "a": "Qdrant gilt wegen seiner überschaubaren Konfiguration und der schlanken API häufig als unkompliziert im Self-Hosting, besonders als Container oder Kubernetes-Deployment. Weaviate erfordert zusätzlich Aufwand für Schema, Module und gegebenenfalls GraphQL-Einarbeitung, bietet dafür aber mehr integrierte Funktionen. Beide Systeme unterstützen Replikation und verteilte Setups, deren tatsächliche Komplexität von Last und Datenmenge abhängt. Eine pauschale Aussage zur Betriebsleichtigkeit ist ohne konkreten Anwendungsfall nicht seriös."
+    },
+    {
+      "q": "Wie unterscheiden sich die Abfrage-APIs aus Entwicklersicht?",
+      "a": "Qdrant setzt auf eine klar strukturierte REST- und gRPC-API mit offiziellen Clients, was sich gut für automatisierte Pipelines und serviceorientierte Architekturen eignet. Weaviate bietet zusätzlich GraphQL, das schemaorientierte und präzise Abfragen ermöglicht, aber eine gewisse Einarbeitung verlangt. Beide Ansätze sind leistungsfähig; die Wahl hängt davon ab, ob Sie imperative Clients oder deklarative GraphQL-Abfragen bevorzugen. Prüfen Sie die Client-Versionen, da diese nicht immer alle Serverfunktionen sofort abbilden."
+    },
+    {
+      "q": "Sind beide Tools für Produktionsumgebungen geeignet?",
+      "a": "Sowohl Qdrant als auch Weaviate werden in produktiven Umgebungen eingesetzt und bieten Funktionen wie Replikation, Authentifizierung und Managed-Cloud-Optionen. Konkrete Garantien zu Verfügbarkeit und Skalierung ergeben sich ausschließlich aus den jeweiligen Tarifen und Service-Level-Agreements, nicht aus pauschalen Aussagen. Für einen belastbaren Vergleich sollten Sie mit Ihren eigenen Daten und Lastprofilen testen und die aktuelle Dokumentation der gewählten Version heranziehen. So vermeiden Sie Fehlannahmen über Funktionen oder Grenzen."
+    },
+    {
+      "q": "Welche Rolle spielen die Lizenzen bei der Auswahl?",
+      "a": "Beide Projekte sind quelloffen und werden aktiv weiterentwickelt, was Anpassungen und Self-Hosting grundsätzlich ermöglicht. Die genauen Lizenzbedingungen und der Umfang kommerzieller Leistungen sollten Sie jedoch für die eingesetzte Version und den geplanten Tarif direkt prüfen, da sich diese ändern können. Wenn Ihr Unternehmen bestimmte Compliance-Anforderungen hat, ist eine rechtliche Prüfung sinnvoll. Lizenzfragen lassen sich nicht allein anhand des Produktnamens beantworten."
+    },
+    {
+      "q": "Wie sollte ich eine Entscheidung strukturiert treffen?",
+      "a": "Definieren Sie zuerst die Muss-Kriterien Ihres Projekts, etwa Filterkomplexität, Hybridsuche, Betriebsmodell und Sicherheitsanforderungen. Erstellen Sie danach einen kleinen Prototyp mit repräsentativen Daten und prüfen Sie Import, Abfragen und Betriebsaufwand in beiden Systemen. Berücksichtigen Sie außerdem die bestehende Toolchain und die Verfügbarkeit von Know-how im Team. So treffen Sie eine fundierte Entscheidung, ohne sich auf pauschale Empfehlungen oder veraltete Angaben zu verlassen."
+    }
+  ]
+}

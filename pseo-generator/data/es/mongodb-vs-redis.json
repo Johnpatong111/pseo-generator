@@ -1,0 +1,98 @@
+{
+  "slug": "mongodb-vs-redis",
+  "meta": {
+    "title": "MongoDB vs Redis (2026): ¿Qué solución elegir?",
+    "description": "Comparamos MongoDB y Redis en 2026: modelo de datos, rendimiento, escalabilidad, persistencia, casos de uso y ecosistema para elegir la base de datos adecuada."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "Redis"
+  },
+  "verdict": "MongoDB es una base de datos documental versátil y persistente, ideal para aplicaciones con datos heterogéneos y consultas complejas. Redis destaca como almacén en memoria para caché, sesiones y colas, con opciones de persistencia y módulos. A menudo se complementan: usa MongoDB como fuente de verdad y Redis para acelerar y gestionar estado efímero. La elección depende de si priorizas durabilidad y flexibilidad de consultas o latencia mínima y estructuras especializadas.",
+  "comparison": [
+    {
+      "category": "Modelo de datos y flexibilidad",
+      "toolA": "MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin migraciones rígidas. Soporta índices secundarios, consultas ad hoc, agregaciones y vistas materializadas, facilitando la evolución del esquema en aplicaciones reales. Su flexibilidad no exime de diseñar un modelo coherente para evitar duplicaciones y problemas de rendimiento.",
+      "toolB": "Redis ofrece estructuras de datos especializadas como cadenas, listas, conjuntos, hashes, sorted sets, bitmaps, hiperloglogs y streams. Cada estructura tiene comandos atómicos y un coste de memoria predecible, pero no es un sustituto directo de un modelo documental con consultas arbitrarias. La flexibilidad existe a nivel de estructuras, no de esquema relacional o documental.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Rendimiento y latencia",
+      "toolA": "MongoDB está diseñado para cargas transaccionales y analíticas moderadas, con latencias que dependen del almacenamiento en disco, índices y tamaño del working set. El motor WiredTiger usa caché en memoria y compresión, pero no garantiza latencias sub-milisegundo en todos los casos. El rendimiento mejora con un buen diseño de índices y sharding cuando se necesita escalar escrituras.",
+      "toolB": "Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un rendimiento alto en operaciones simples. Al ser monohilo para la ejecución de comandos (en su modelo clásico), evita bloqueos complejos, aunque operaciones pesadas pueden afectar a la latencia. El rendimiento real depende del tamaño del dataset, la red y el uso de clústeres.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Persistencia y durabilidad",
+      "toolA": "MongoDB ofrece durabilidad mediante journaling y write concern configurable, con opciones de réplica para tolerancia a fallos. Las escrituras pueden confirmarse en uno o varios nodos, y el balance entre latencia y durabilidad es ajustable. Está pensado como fuente de verdad para datos que deben sobrevivir a reinicios y fallos.",
+      "toolB": "Redis ofrece persistencia mediante RDB (instantáneas) y AOF (append-only file), con diferentes niveles de fsync que afectan a la durabilidad. Incluso con AOF cada segundo, existe una ventana de pérdida de datos ante fallos, por lo que no es ideal como única fuente de verdad para datos críticos. Su diseño prioriza velocidad sobre durabilidad estricta.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Escalabilidad y alta disponibilidad",
+      "toolA": "MongoDB soporta réplicas con failover automático y sharding horizontal para distribuir datos y cargas. El sharding requiere elegir una clave adecuada y planificar la topología, pero permite escalar escrituras y almacenamiento. La alta disponibilidad depende de una configuración correcta de replica sets y de la latencia entre nodos.",
+      "toolB": "Redis ofrece Redis Sentinel para alta disponibilidad y Redis Cluster para particionado horizontal con sharding. El clúster reparte las claves entre nodos y soporta failover, aunque ciertas operaciones multi-clave requieren cuidado. La escalabilidad es buena para cargas en memoria, pero el tamaño del dataset está limitado por la RAM disponible.",
+      "winner": "tie"
+    },
+    {
+      "category": "Consultas y búsqueda",
+      "toolA": "MongoDB permite consultas ad hoc con filtros, proyecciones, ordenaciones, agregaciones y búsqueda de texto. También soporta índices geoespaciales y, según la versión y el plan, búsqueda vectorial a través de Atlas Vector Search. Es adecuado para aplicaciones que necesitan explorar y combinar datos de forma flexible.",
+      "toolB": "Redis no está pensado para consultas ad hoc generales; su fortaleza son operaciones sobre claves y estructuras concretas. Ofrece búsqueda vectorial y de texto mediante el módulo RediSearch en Redis Stack, pero no sustituye a un motor documental para consultas arbitrarias. Para patrones de acceso simples y predecibles, sus comandos son muy eficientes.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Casos de uso típicos",
+      "toolA": "MongoDB encaja en aplicaciones web y móviles con datos semiestructurados, catálogos de productos, gestión de contenidos, perfiles de usuario y sistemas que requieren consultas variadas. También se usa en análisis operacional y como backend de APIs. No es la mejor opción para caché de latencia ultrabaja ni para colas de mensajes ligeras.",
+      "toolB": "Redis es habitual para caché, gestión de sesiones, colas y pub/sub, contadores, rankings con sorted sets y limitación de velocidad. También se usa en sistemas de recomendación y búsqueda vectorial mediante módulos. No está pensado como base de datos principal para datos que requieren consultas complejas y durabilidad estricta.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ecosistema, operación y costes",
+      "toolA": "MongoDB cuenta con controladores oficiales para múltiples lenguajes, herramientas de administración como Compass y Atlas como servicio gestionado. La operación de un clúster propio requiere planificación de réplicas, sharding y copias de seguridad. Los costes varían según el despliegue, el proveedor y el plan; conviene consultar precios actuales.",
+      "toolB": "Redis tiene una comunidad amplia, clientes para muchos lenguajes y soluciones gestionadas como Redis Cloud y servicios de proveedores cloud. Su operación es relativamente sencilla para configuraciones básicas, pero el clúster y la persistencia requieren atención. Al residir en memoria, el coste por gigabyte puede ser mayor que en almacenamiento en disco, según el proveedor.",
+      "winner": "tie"
+    },
+    {
+      "category": "Seguridad y cumplimiento",
+      "toolA": "MongoDB incluye autenticación, control de acceso basado en roles, cifrado en reposo y en tránsito, y auditoría en ediciones y planes compatibles. La seguridad depende de una configuración correcta de red, usuarios y permisos. Las características exactas varían entre Community, Enterprise y Atlas.",
+      "toolB": "Redis ofrece autenticación mediante ACLs, TLS y, en despliegues gestionados, controles adicionales de red y cifrado. La configuración por defecto debe revisarse para evitar exposiciones inseguras, y algunas funciones de seguridad avanzada dependen de la edición o del servicio. No debe asumirse que todas las versiones incluyen las mismas capacidades.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Puedo usar Redis como base de datos principal en lugar de MongoDB?",
+      "a": "Redis puede actuar como base de datos principal en casos concretos, pero su diseño en memoria y su modelo de persistencia hacen que no sea ideal para datos críticos que requieren durabilidad estricta y consultas complejas. Si necesitas una fuente de verdad con esquema flexible y consultas ad hoc, MongoDB suele ser más adecuado. Una arquitectura común combina MongoDB como almacén principal y Redis como caché o gestor de estado efímero."
+    },
+    {
+      "q": "¿MongoDB es más lento que Redis?",
+      "a": "En operaciones simples sobre claves, Redis suele ser más rápido porque mantiene los datos en memoria y evita el acceso a disco. MongoDB puede ofrecer un rendimiento muy bueno para consultas documentales, pero su latencia depende de índices, tamaño del working set y configuración de durabilidad. La comparación justa requiere medir con la carga y el modelo de datos reales, no solo con benchmarks sintéticos."
+    },
+    {
+      "q": "¿Redis pierde datos si se reinicia el servidor?",
+      "a": "Redis puede perder datos si no se configura persistencia o si el fallo ocurre antes de que se escriba en disco. Con AOF y fsync cada segundo, la ventana de pérdida se reduce, pero no desaparece. Para datos que no pueden perderse, conviene usar Redis como complemento y mantener la fuente de verdad en un sistema con mayor garantía de durabilidad, como MongoDB."
+    },
+    {
+      "q": "¿MongoDB sirve para caché?",
+      "a": "MongoDB puede usarse para caché en algunos escenarios, pero no está optimizado para latencias ultrabajas ni para expiración automática de claves como Redis. Su fortaleza es la persistencia y la flexibilidad de consultas. Si la caché es un requisito central, Redis suele ser una opción más eficiente."
+    },
+    {
+      "q": "¿Cuál es más fácil de operar en producción?",
+      "a": "La facilidad de operación depende del equipo y del despliegue. Redis es sencillo para configuraciones básicas, pero la alta disponibilidad y el clúster añaden complejidad. MongoDB requiere planificar réplicas, sharding y copias de seguridad, aunque los servicios gestionados simplifican estas tareas. En ambos casos, un servicio gestionado reduce la carga operativa."
+    },
+    {
+      "q": "¿Necesito ambos si mi aplicación es pequeña?",
+      "a": "Para una aplicación pequeña, a menudo basta con una sola tecnología bien elegida. Si necesitas durabilidad y consultas flexibles, MongoDB puede cubrir el caso; si solo necesitas caché o colas ligeras, Redis es suficiente. Añadir ambos incrementa la complejidad operativa, así que conviene evaluar si el beneficio compensa."
+    },
+    {
+      "q": "¿Qué opción escala mejor horizontalmente?",
+      "a": "Ambas escalan horizontalmente, pero con enfoques distintos. MongoDB usa sharding para distribuir documentos y cargas de escritura, mientras que Redis Cluster particiona claves entre nodos en memoria. La escala de Redis está limitada por la RAM total del clúster, mientras que MongoDB puede crecer con almacenamiento en disco. La elección depende de si el cuello de botella es memoria o volumen de datos persistente."
+    },
+    {
+      "q": "¿Redis es seguro por defecto?",
+      "a": "Redis no debe considerarse seguro por defecto; es necesario configurar autenticación, ACLs y TLS, y restringir el acceso de red. Algunas versiones y servicios gestionados incluyen controles adicionales, pero la responsabilidad recae en la configuración. MongoDB también requiere una configuración cuidadosa de autenticación y permisos para un despliegue seguro."
+    }
+  ]
+}

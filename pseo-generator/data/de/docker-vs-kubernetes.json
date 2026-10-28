@@ -1,0 +1,102 @@
+{
+  "slug": "docker-vs-kubernetes",
+  "meta": {
+    "title": "Docker vs Kubernetes (2026): welche Lösung passt besser?",
+    "description": "Docker vs Kubernetes 2026 im Vergleich: Container, Orchestrierung, Skalierung, Sicherheit und Betrieb. Mit klarer Empfehlung, Codebeispielen und FAQ für die richtige Wahl."
+  },
+  "toolA": {
+    "name": "Docker"
+  },
+  "toolB": {
+    "name": "Kubernetes"
+  },
+  "verdict": "Docker und Kubernetes lösen unterschiedliche Aufgaben und ergänzen sich eher, als dass sie Konkurrenten sind. Für einzelne Anwendungen, lokale Entwicklung und kleine Deployments ist Docker mit Docker Compose meist der einfachere, schnellere Weg. Kubernetes lohnt sich, wenn viele Services automatisch skaliert, ausfallsicher betrieben und über mehrere Umgebungen oder Cluster hinweg verwaltet werden müssen – dann aber um den Preis höherer Komplexität und Betriebsaufwand.",
+  "comparison": [
+    {
+      "category": "Grundlegende Rolle und Abstraktionsebene",
+      "toolA": "Docker ist eine Container-Plattform, die Anwendungen samt Abhängigkeiten in portable Images verpackt und über eine Container-Runtime ausführt. Der Fokus liegt auf dem Bauen, Verteilen und Starten einzelner Container sowie auf Werkzeugen wie Docker Compose für lokale Mehr-Container-Setups. Damit ist Docker eher die Ebene, auf der Container erzeugt und ausgeführt werden.",
+      "toolB": "Kubernetes ist ein Orchestrierungssystem, das Container über einen Verbund von Rechnern hinweg plant, startet und überwacht. Es baut auf Container-Runtimes auf – enthaltene Images, die mit Docker oder anderen Build-Tools erstellt wurden, lassen sich grundsätzlich verwenden, sofern sie der OCI-Spezifikation entsprechen. Kubernetes ersetzt also nicht das Containern selbst, sondern verwaltet Container im Cluster.",
+      "winner": "tie"
+    },
+    {
+      "category": "Einstieg, Lernkurve und Betriebsaufwand",
+      "toolA": "Docker lässt sich auf einem einzelnen Rechner schnell installieren, und ein einzelner Container ist mit wenigen Befehlen gestartet. Für überschaubare Anwendungen bleibt der Betrieb mit Docker Compose nachvollziehbar, weil wenige Konfigurationsdateien und keine Cluster-Komponenten nötig sind. Der Aufwand steigt vor allem dann, wenn Ausfallsicherheit und Mehrknotenbetrieb selbst abgebildet werden müssen.",
+      "toolB": "Kubernetes hat eine deutlich steilere Lernkurve: Konzepte wie Pods, Deployments, Services, Ingress und Persistenzvolumes müssen verstanden werden. Ein produktionsfähiger Cluster erfordert zusätzlich Planung für Netzwerk, Speicher, Zertifikate, Updates und Monitoring. Managed Angebote der Cloud-Anbieter reduzieren diesen Aufwand, beseitigen ihn aber nicht vollständig, und die Details hängen vom jeweiligen Anbieter und Tarif ab.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalierung und Ausfallsicherheit",
+      "toolA": "Docker selbst bringt keine clusterweite Skalierung mit; einzelne Container laufen auf einem Host, und eine horizontale Verteilung über mehrere Rechner muss ergänzt werden. Docker Swarm bietet zwar Orchestrierungsfunktionen, ist aber weniger verbreitet als Kubernetes und wird in vielen Umgebungen nicht als Standard betrachtet. Für einfache Szenarien lassen sich Container mit Compose oder Skripten mehrfach starten, echte Selbstheilung bleibt jedoch begrenzt.",
+      "toolB": "Kubernetes wurde für Skalierung und Ausfallsicherheit entworfen: Deployments halten eine gewünschte Anzahl von Pods am Laufen, nicht erreichbare Pods werden neu gestartet, und der Horizontal Pod Autoscaler kann Lastabhängig skalieren. Bei Knotenausfällen verschiebt der Scheduler Workloads auf verbleibende Knoten. Das tatsächliche Verhalten hängt stark von der Konfiguration, den Ressourcenanfragen und der Cluster-Umgebung ab.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ökosystem, Portabilität und Standards",
+      "toolA": "Docker prägte das Container-Format und bietet mit Docker Hub eine sehr große Registry für öffentliche Images. Dockerfiles sind weit verbreitet und werden von vielen Build-Tools und CI-Systemen verstanden. Die Portabilität einzelner Images ist hoch, die Portabilität kompletter Mehr-Container-Setups über verschiedene Umgebungen hängt jedoch von der verwendeten Compose-Konfiguration ab.",
+      "toolB": "Kubernetes ist ein CNCF-Projekt mit einem breiten Ökosystem an Werkzeugen, Operatoren und Integrationsmustern. Manifeste und Helm-Charts sind de-facto Standards für viele Teams, und die OCI-Konformität sorgt dafür, dass Images aus unterschiedlichen Quellen genutzt werden können. Die Portabilität zwischen Clustern ist gut, sofern keine anbieterspezifischen Erweiterungen oder Netzwerk- und Speicherklassen fest verdrahtet sind.",
+      "winner": "tie"
+    },
+    {
+      "category": "Sicherheit und Isolation",
+      "toolA": "Docker nutzt Namespaces und Control Groups des Linux-Kernels zur Isolation, die Standardkonfiguration ist für viele Anwendungen ausreichend. Wichtige Sicherheitsmaßnahmen sind nicht als Root laufende Container, schlanke Basis-Images, regelmäßige Image-Scans und ein restriktiver Zugriff auf den Docker-Daemon, der weitreichende Rechte besitzt. Die konkrete Härtung hängt von der eigenen Konfiguration und der Host-Umgebung ab.",
+      "toolB": "Kubernetes bietet umfangreiche Sicherheitsbausteine wie Role-Based Access Control, Network Policies, Pod Security Standards und Secrets, deren Wirksamkeit aber von der korrekten Konfiguration abhängt. Ein falsch konfigurierter Cluster kann Angriffsflächen eröffnen, etwa durch übermäßige Rechte oder fehlende Netzwerkrichtlinien. Zusätzlich müssen Cluster-Komponenten und die zugrunde liegende Infrastruktur regelmäßig gepatcht werden.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Lokale Entwicklung und Produktionsnähe",
+      "toolA": "Docker Compose eignet sich gut, um Abhängigkeiten wie Datenbanken oder Cache lokal mit einem Befehl zu starten. Die Rückmeldung ist schnell, und Entwicklerinnen und Entwickler können Container-Images unmittelbar testen. Der Unterschied zur Produktion kann allerdings wachsen, wenn dort ein Cluster mit anderen Netzwerk- und Speicherregeln läuft.",
+      "toolB": "Kubernetes lässt sich lokal unter anderem mit Minikube, kind oder k3d betreiben, was die Produktionsumgebung näher nachbildet. Das ist hilfreich für Manifeste, Ingress und Cluster-Verhalten, kostet aber mehr Ressourcen und Einarbeitung. Ob der lokale Aufbau dem produktiven Cluster wirklich entspricht, hängt von den eingesetzten Versionen und der Konfiguration ab.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Kosten und Ressourcenbedarf",
+      "toolA": "Docker selbst ist als Community-Version kostenlos nutzbar; kommerzielle Varianten wie Docker Desktop unterliegen eigenen Lizenzbedingungen, die je nach Organisation und Tarif variieren können. Der Ressourcenbedarf einzelner Container ist vergleichsweise gering, und kleine Deployments lassen sich auf einem einzigen Host betreiben. Genaue Kosten lassen sich ohne Kenntnis der Arbeitslast nicht pauschal angeben.",
+      "toolB": "Kubernetes ist als Open Source kostenlos, verursacht aber indirekt Kosten durch die benötigten Cluster-Knoten, den Betriebsaufwand und gegebenenfalls Managed-Service-Gebühren. Ein Cluster benötigt typischerweise mehrere Knoten und zusätzliche Komponenten, was den Grundverbrauch erhöht. Ob sich das finanziell lohnt, hängt von Auslastung, Skalierungsbedarf und dem gewählten Betriebsmodell ab.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Wann welches Werkzeug die richtige Wahl ist",
+      "toolA": "Docker ist die naheliegende Wahl für lokale Entwicklung, einfache Dienste, Prototypen und kleine Produktionsumgebungen mit wenigen Containern. Auch als Bausteinschicht für Images bleibt Docker unabhängig davon nützlich, ob später ein Cluster eingesetzt wird. Wer schnell reproduzierbare Umgebungen braucht, kommt mit Docker meist ohne große Zusatzinfrastruktur aus.",
+      "toolB": "Kubernetes passt zu verteilten Systemen mit vielen Services, hohen Verfügbarkeitsanforderungen und automatischer Skalierung. Es entfaltet seinen Nutzen besonders dort, wo Teams bereits Betriebserfahrung mitbringen oder ein Managed Service genutzt wird. Für sehr kleine Projekte ist der Aufwand häufig unverhältnismäßig hoch.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# Dockerfile\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Build und Start:\n# docker build -t hello-docker .\n# docker run --rm hello-docker",
+    "tech2Snippet": "# hello-pod.yaml\napiVersion: v1\nkind: Pod\nmetadata:\n  name: hello-kubernetes\nspec:\n  containers:\n    - name: hello\n      image: alpine:3.20\n      command: [\"echo\", \"Hello, World!\"]\n  restartPolicy: Never\n\n# kubectl apply -f hello-pod.yaml\n# kubectl logs hello-kubernetes"
+  },
+  "faq": [
+    {
+      "q": "Brauche ich Kubernetes, wenn ich Docker verwende?",
+      "a": "Nein, Docker kann containerisierte Anwendungen auch ohne Kubernetes ausführen, etwa auf einem einzelnen Server oder lokal mit Docker Compose. Kubernetes wird erst interessant, wenn Sie mehrere Container über mehrere Rechner verteilen, automatisch skalieren und ausfallsicher betreiben möchten. Für kleine Anwendungen ist der zusätzliche Betriebsaufwand eines Clusters oft nicht gerechtfertigt."
+    },
+    {
+      "q": "Ersetzt Kubernetes Docker vollständig?",
+      "a": "Nein, die beiden Werkzeuge arbeiten auf unterschiedlichen Ebenen: Docker baut und startet Container, Kubernetes orchestriert sie im Cluster. Kubernetes kann Images nutzen, die mit Docker oder anderen OCI-konformen Build-Tools erstellt wurden, und setzt auf eine Container-Runtime wie containerd. In der Praxis ergänzen sich beide Konzepte häufig, statt sich zu ersetzen."
+    },
+    {
+      "q": "Welche Lösung eignet sich für einen einzelnen Webserver?",
+      "a": "Für einen einzelnen Webserver mit wenigen Containern ist Docker in der Regel die pragmatischere Wahl, weil es ohne Cluster-Infrastruktur auskommt. Ein Docker-Compose-Setup lässt sich überschaubar versionieren und auf einem Host betreiben. Kubernetes lohnt sich hier meist erst, wenn Sie hohe Verfügbarkeit über mehrere Knoten oder automatische Skalierung benötigen."
+    },
+    {
+      "q": "Wie aufwendig ist der Einstieg in Kubernetes?",
+      "a": "Der Einstieg erfordert Zeit, weil zentrale Konzepte wie Pods, Deployments, Services, Ingress und Persistenz zunächst verstanden werden müssen. Zusätzlich müssen Sie sich mit Netzwerk, Speicher, Zugriffskontrolle und Updates des Clusters auseinandersetzen. Managed Kubernetes reduziert einen Teil dieses Aufwands, ersetzt aber nicht das Grundverständnis der Konzepte."
+    },
+    {
+      "q": "Sind Docker-Container in Kubernetes sicher?",
+      "a": "Die Sicherheit hängt weniger vom Containerformat als von der Konfiguration ab. Wichtig sind etwa das Ausführen als nicht privilegierter Benutzer, schlanke Images, regelmäßige Scans und restriktive Netzwerk- und Zugriffsregeln. Kubernetes bietet dafür zusätzliche Mechanismen wie Network Policies und Pod Security Standards, deren Wirksamkeit aber von der korrekten Einrichtung abhängt."
+    },
+    {
+      "q": "Welche Rolle spielt Docker Compose im Vergleich zu Kubernetes?",
+      "a": "Docker Compose beschreibt mehrere Container auf einem Host und ist ideal für lokale Entwicklungsumgebungen und einfache Deployments. Kubernetes verteilt Container über einen Cluster und bietet Funktionen wie Selbstheilung, Rolling Updates und horizontale Skalierung. Compose ist damit deutlich einfacher, aber nicht als vollwertiger Ersatz für einen Cluster gedacht."
+    },
+    {
+      "q": "Lohnt sich Kubernetes auch für kleine Teams?",
+      "a": "Das hängt von den Anforderungen ab: Kleine Teams ohne Betriebserfahrung und ohne echten Skalierungsbedarf fahren mit Docker meist einfacher und günstiger. Wenn jedoch hohe Verfügbarkeit, viele Dienste oder mehrere Umgebungen gefordert sind, kann ein Managed Kubernetes die Wartung erleichtern. Eine pauschale Empfehlung ist ohne Kenntnis von Last, Team und Budget nicht seriös möglich."
+    },
+    {
+      "q": "Kann ich mit Docker erstellte Images in Kubernetes verwenden?",
+      "a": "Ja, sofern die Images der OCI-Spezifikation entsprechen und in einer für den Cluster erreichbaren Registry liegen. Kubernetes lädt Images über die konfigurierte Container-Runtime und benötigt lediglich Angaben zu Image-Name, Tag und gegebenenfalls Pull-Secret. Achten Sie darauf, unveränderliche Tags oder Digests zu verwenden, um reproduzierbare Deployments zu ermöglichen."
+    }
+  ]
+}

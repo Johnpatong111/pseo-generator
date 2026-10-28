@@ -1,0 +1,96 @@
+{
+  "slug": "docker-vs-nomad",
+  "meta": {
+    "title": "Docker vs Nomad (2026): quelle solution choisir ?",
+    "description": "Docker et Nomad répondent à des besoins différents : conteneurisation locale ou orchestration de flotte. Comparez-les sur 6 critères clés pour choisir votre outil en 2026."
+  },
+  "toolA": {
+    "name": "Docker"
+  },
+  "toolB": {
+    "name": "Nomad"
+  },
+  "verdict": "Docker reste la référence pour développer et livrer des conteneurs localement ou sur un hôte unique, avec un écosystème mature et une prise en main rapide. Nomad s'impose lorsque vous devez orchestrer de nombreuses charges hétérogènes (conteneurs, binaires, tâches batch) sur un cluster, avec une simplicité d'exploitation appréciée. Les deux peuvent cohabiter : Docker pour le développement et la CI, Nomad pour l'exécution en production.",
+  "comparison": [
+    {
+      "category": "Facilité de prise en main et courbe d'apprentissage",
+      "toolA": "Docker propose une CLI simple (docker run, docker build) et une documentation abondante. Un développeur peut lancer un conteneur en quelques minutes, et Docker Desktop simplifie l'expérience sur macOS et Windows. La maîtrise des Dockerfiles et des bonnes pratiques de build demande toutefois un peu de pratique.",
+      "toolB": "Nomad s'adresse plutôt à des équipes d'exploitation : il faut comprendre les notions de cluster, de nœuds et de jobs HCL. Son installation est légère (un binaire unique) et sa configuration reste plus accessible que celle de Kubernetes, mais l'absence d'interface graphique intégrée pousse à utiliser la CLI ou l'API. La courbe est modérée pour un public habitué aux systèmes distribués.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Orchestration et gestion de clusters",
+      "toolA": "Docker seul ne fournit pas d'orchestrateur multi-nœuds robuste intégré : Docker Swarm existe mais reste moins activement développé que d'autres solutions. Pour un cluster, il faut généralement s'appuyer sur Compose (mono-hôte) ou adopter un orchestrateur tiers comme Kubernetes. Docker reste excellent pour la conteneurisation, pas pour la planification distribuée à grande échelle.",
+      "toolB": "Nomad est conçu dès le départ pour orchestrer des charges sur un cluster de nœuds hétérogènes. Il gère les conteneurs Docker, les exécutables natifs, les tâches batch et les services système, avec une planification bin-packing et des contraintes déclaratives. Sa capacité à faire tourner autre chose que des conteneurs est un atout différenciant, même si certaines fonctionnalités avancées dépendent de l'édition Enterprise.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, intégrations et outillage",
+      "toolA": "Docker bénéficie de l'écosystème le plus vaste autour des conteneurs : registres (Docker Hub, Harbor), outils de build (BuildKit, buildx), scan de sécurité (Docker Scout), et intégration native dans la plupart des CI/CD et IDE. La communauté est immense, ce qui facilite la résolution de problèmes et l'accès à des images prêtes à l'emploi.",
+      "toolB": "Nomad s'intègre bien avec l'écosystème HashiCorp (Consul pour le service discovery, Vault pour les secrets, Terraform pour le provisioning). Il expose une API HTTP et des pilotes de tâches variés. En revanche, l'écosystème tiers spécifiquement dédié à Nomad est plus restreint que celui de Docker, et certaines intégrations nécessitent plus de configuration manuelle.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "Docker repose sur les mécanismes du noyau Linux (namespaces, cgroups, capabilities) et propose des profils seccomp et AppArmor par défaut. Les images peuvent être signées (Docker Content Trust) et scannées avec Docker Scout. La sécurité dépend toutefois fortement de la configuration de l'hôte et des privilèges accordés aux conteneurs ; un démon Docker mal protégé reste un risque majeur.",
+      "toolB": "Nomad applique une isolation via les pilotes d'exécution (Docker, exec, java, etc.) et s'appuie sur les mécanismes sous-jacents de l'OS. Il intègre Vault pour la gestion des secrets et Consul pour le chiffrement du trafic inter-services (mTLS). La séparation des rôles via les ACL de Nomad est appréciable, mais la sécurité globale dépend aussi de la configuration du cluster et des pilotes utilisés.",
+      "winner": "tie"
+    },
+    {
+      "category": "Haute disponibilité et tolérance aux pannes",
+      "toolA": "Docker seul ne gère pas la haute disponibilité de l'orchestrateur : un hôte unique reste un point de défaillance. Docker Swarm propose un mode multi-manager avec quorum, mais son adoption est aujourd'hui limitée. Pour des charges critiques, Docker s'insère généralement dans une plateforme orchestrée par un tiers.",
+      "toolB": "Nomad est conçu pour la haute disponibilité : les serveurs forment un cluster avec consensus Raft, et les jobs peuvent être configurés avec des stratégies de redémarrage et de reprise. La planification répartit les tâches sur les nœuds disponibles et peut respecter des contraintes de spread ou d'affinité. Ces garanties dépendent du dimensionnement du cluster et de la configuration des jobs.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage : développement local vs production distribuée",
+      "toolA": "Docker excelle pour le développement local, les tests d'intégration et la construction d'images reproductibles. Docker Compose permet de décrire une stack multi-services sur un poste de travail. En production, Docker est souvent utilisé comme runtime de conteneurs au sein d'un orchestrateur plus large, plutôt que comme solution complète.",
+      "toolB": "Nomad vise la production distribuée : il est adapté aux flottes de machines, aux charges batch, aux services stateful et aux environnements hybrides ou edge. Il peut aussi exécuter des conteneurs Docker, mais il n'est pas conçu pour remplacer l'expérience de développement local offerte par Docker. Son intérêt dépend de la taille de l'infrastructure et des compétences internes.",
+      "winner": "tie"
+    },
+    {
+      "category": "Coût et modèle de licence",
+      "toolA": "Docker Engine et Docker CLI sont open source (Apache 2.0) et gratuits pour un usage personnel ou en entreprise. Docker Desktop est gratuit pour les petits usages, mais soumis à des conditions de licence payante pour certaines organisations ; les tarifs et seuils doivent être vérifiés sur le site officiel, car ils évoluent.",
+      "toolB": "Nomad est distribué en version open source (MPL 2.0) avec des fonctionnalités de base gratuites. L'édition Enterprise ajoute des capacités avancées (multi-régions, quotas, etc.) sous licence commerciale. Les tarifs et le périmètre exact des fonctionnalités varient selon les versions ; il convient de se référer à la grille officielle HashiCorp avant tout engagement.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "FROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]",
+    "tech2Snippet": "job \"hello\" {\n  datacenters = [\"dc1\"]\n  type = \"batch\"\n  group \"example\" {\n    task \"hello\" {\n      driver = \"docker\"\n      config {\n        image = \"alpine:3.20\"\n        command = \"echo\"\n        args    = [\"Hello, World!\"]\n      }\n    }\n  }\n}"
+  },
+  "faq": [
+    {
+      "q": "Docker peut-il remplacer Nomad pour orchestrer un cluster de production ?",
+      "a": "Docker seul n'est pas un orchestrateur de cluster complet ; Docker Swarm existe mais son développement est ralenti et son adoption reste limitée. Pour une production multi-nœuds, il faut généralement adopter un orchestrateur dédié comme Nomad ou Kubernetes. Docker reste la brique de conteneurisation, pas la couche d'orchestration distribuée."
+    },
+    {
+      "q": "Nomad est-il plus simple que Kubernetes pour démarrer ?",
+      "a": "Nomad est souvent considéré comme plus léger et plus simple à installer que Kubernetes, car il repose sur un binaire unique et une configuration declarative en HCL. Cependant, il nécessite tout de même de comprendre les concepts de cluster, de jobs et de pilotes d'exécution. La simplicité perçue dépend beaucoup du background de l'équipe et de la taille de l'infrastructure."
+    },
+    {
+      "q": "Quels sont les avantages de Nomad par rapport à Docker pour les charges non conteneurisées ?",
+      "a": "Nomad peut orchestrer des exécutables natifs, des tâches batch, des services Java ou des binaires legacy, en plus des conteneurs Docker. Docker, de son côté, est centré sur les conteneurs et ne gère pas nativement l'exécution de binaires sur un cluster. Si votre parc mélange conteneurs et charges traditionnelles, Nomad offre une unification intéressante."
+    },
+    {
+      "q": "Docker et Nomad peuvent-ils être utilisés ensemble ?",
+      "a": "Oui, ils sont complémentaires : Docker sert à construire et à empaqueter des images, tandis que Nomad peut exécuter ces images sur un cluster via son pilote Docker. Cette combinaison permet de bénéficier de l'écosystème de build Docker et de la planification distribuée de Nomad. Elle est courante dans les environnements qui adoptent la stack HashiCorp."
+    },
+    {
+      "q": "La sécurité est-elle suffisante avec Docker en production ?",
+      "a": "Docker propose des mécanismes d'isolation (namespaces, cgroups, seccomp, AppArmor) et des outils de scan d'images, mais la sécurité dépend fortement de la configuration de l'hôte et des privilèges accordés aux conteneurs. Un démon Docker mal protégé ou des conteneurs exécutés en root représentent des risques. Il est recommandé d'appliquer les bonnes pratiques (utilisateur non-root, images signées, mises à jour régulières) et de vérifier les recommandations de la version utilisée."
+    },
+    {
+      "q": "Nomad est-il adapté aux petites équipes ou aux projets personnels ?",
+      "a": "Nomad peut techniquement fonctionner sur un cluster de petite taille, mais son intérêt principal réside dans l'orchestration de plusieurs nœuds et de charges hétérogènes. Pour un projet personnel ou une petite équipe, Docker Compose ou un simple hôte Docker suffisent souvent et demandent moins d'exploitation. Nomad devient pertinent lorsque la complexité et le nombre de services augmentent."
+    },
+    {
+      "q": "Quelles compétences sont nécessaires pour administrer Nomad ?",
+      "a": "Administrer Nomad demande des compétences en systèmes distribués, en réseau et en gestion de clusters, ainsi qu'une familiarité avec les outils HashiCorp comme Consul et Vault si vous les utilisez. La connaissance de HCL et de l'API Nomad est également utile. Une équipe habituée à Kubernetes ou à Terraform s'adaptera plus facilement, mais une formation reste recommandée."
+    },
+    {
+      "q": "Docker Desktop est-il gratuit pour les entreprises ?",
+      "a": "Docker Desktop est gratuit pour un usage personnel, l'éducation et les petites entreprises, mais une licence payante est requise pour les structures plus grandes ou les usages commerciaux dépassant certains seuils. Les conditions exactes et les tarifs évoluent régulièrement ; il est indispensable de consulter la grille tarifaire officielle de Docker avant de déployer l'outil en entreprise."
+    }
+  ]
+}

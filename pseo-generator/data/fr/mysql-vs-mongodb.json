@@ -1,0 +1,102 @@
+{
+  "slug": "mysql-vs-mongodb",
+  "meta": {
+    "title": "MySQL vs MongoDB (2026): quelle solution choisir ?",
+    "description": "MySQL ou MongoDB en 2026 : comparatif des modèles de données, requêtes, transactions, scalabilité, écosystème et sécurité pour choisir la base adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "MongoDB"
+  },
+  "verdict": "Choisissez MySQL pour des données fortement relationnelles, des transactions strictes et un écosystème SQL éprouvé (applications métier, ERP, reporting). Choisissez MongoDB pour des documents hétérogènes à schéma évolutif et une distribution horizontale aisée (catalogues, contenus, télémétrie). Le choix dépend surtout du modèle de données et des contraintes d'intégrité, pas d'une supériorité générale : évaluez charge, version et hébergement avant de trancher.",
+  "comparison": [
+    {
+      "category": "Modèle de données et schéma",
+      "toolA": "MySQL est une base relationnelle : les données vivent dans des tables aux colonnes typées, reliées par des clés étrangères, avec un schéma défini à l'avance et modifié via des migrations. Ce modèle impose une structure claire, facilite les contraintes d'intégrité et convient aux domaines fortement normalisés comme la facturation ou la gestion de stock.",
+      "toolB": "MongoDB stocke des documents BSON dans des collections, avec un schéma flexible où chaque document peut différer, y compris par des sous-documents et des tableaux imbriqués. Cette souplesse accélère les itérations sur des données évolutives, mais reporte une partie de la validation sur l'application ou sur les validateurs de schéma optionnels, définis par collection et par version.",
+      "winner": "tie"
+    },
+    {
+      "category": "Langage de requête et expressivité",
+      "toolA": "MySQL s'appuie sur SQL, un langage déclaratif standardisé et très répandu, avec jointures, agrégations, sous-requêtes, fonctions de fenêtrage et CTE selon la version. La richesse du SQL facilite les analyses ad hoc et le reporting, au prix d'une courbe d'apprentissage pour les jointures complexes.",
+      "toolB": "MongoDB utilise le langage de requête MongoDB et l'agrégation par pipeline, avec des opérateurs comme $match, $group et $lookup pour des jointures ponctuelles. L'approche est intuitive pour des documents imbriqués, mais les jointures multi-collections y sont généralement moins naturelles et moins performantes que les jointures relationnelles bien indexées, selon la modélisation retenue.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Transactions et intégrité des données",
+      "toolA": "MySQL propose des transactions ACID depuis longtemps avec InnoDB, incluant transactions multi-tables, verrous, isolation configurable et contraintes de clés étrangères. Cette maturité rassure pour les opérations critiques où une écriture partielle serait inacceptable.",
+      "toolB": "MongoDB prend en charge les transactions multi-documents ACID sur les ensembles répliqués depuis la version 4.0 et sur les clusters shardés depuis la 4.2. Elles fonctionnent, mais leur coût et leurs limites (durée, taille, nombre d'opérations) invitent à privilégier une modélisation par documents pour réduire le besoin de transactions distribuées.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "MySQL scale principalement verticalement, et horizontalement via réplicas en lecture et partitionnement ; le sharding natif n'est pas intégré au serveur mais repose sur des solutions externes ou des offres managées. Cette architecture reste simple à exploiter pour des charges modérées à élevées correctement indexées.",
+      "toolB": "MongoDB intègre un sharding natif avec clé de partitionnement et rééquilibrage automatique, ainsi que des réplicas pour la haute disponibilité. La distribution horizontale est donc plus directe, mais le choix de la clé de sharding conditionne fortement les performances et demande une réflexion en amont.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Performances selon la charge",
+      "toolA": "MySQL offre d'excellentes performances sur des lectures et écritures relationnelles bien indexées, avec un optimiseur de requêtes mature et un cache de buffer configurable. Les résultats dépendent fortement du schéma, des index, du moteur InnoDB et du dimensionnement du serveur, sans garantie universelle.",
+      "toolB": "MongoDB est performant pour lire un document complet et ses sous-ensembles, ce qui évite des jointures coûteuses ; les écritures distribuées profitent du sharding. En revanche, des agrégations complexes ou des documents mal modélisés peuvent dégrader les temps de réponse, et les performances varient selon la version et la configuration du cluster.",
+      "winner": "tie"
+    },
+    {
+      "category": "Écosystème, outils et hébergement",
+      "toolA": "MySQL bénéficie d'un écosystème très vaste : connecteurs dans presque tous les langages, ORM, outils de migration, administration et sauvegarde, ainsi que des offres managées chez de nombreux hébergeurs. Cette ubiquité facilite le recrutement et la maintenance à long terme.",
+      "toolB": "MongoDB dispose de pilotes officiels, de MongoDB Atlas comme offre managée et d'outils comme Compass ou mongosh. L'écosystème est solide mais plus resserré autour de l'éditeur, ce qui peut peser sur les coûts et la dépendance à un fournisseur, selon l'offre choisie.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et conformité",
+      "toolA": "MySQL propose authentification, gestion fine des privilèges par utilisateur et par objet, chiffrement des connexions TLS et chiffrement des données au repos via des options ou l'infrastructure sous-jacente. La sécurité dépend largement du durcissement, des mises à jour et de la configuration du serveur.",
+      "toolB": "MongoDB propose authentification SCRAM, contrôle d'accès par rôles, TLS, chiffrement au repos et chiffrement côté client pour les champs sensibles. Ces fonctions existent selon l'édition et la version, et une configuration par défaut mal ajustée reste un risque : l'audit et le durcissement restent indispensables dans les deux cas.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cas d'usage et adéquation projet",
+      "toolA": "MySQL convient aux applications à données structurées et fortement reliées : ERP, CRM, e-commerce transactionnel, systèmes financiers et reporting SQL. Il brille quand l'intégrité référentielle et les requêtes analytiques priment.",
+      "toolB": "MongoDB convient aux contenus hétérogènes, aux catalogues produits variables, aux journaux applicatifs et aux applications à évolution rapide du schéma. Il est pertinent quand les documents sont lus en bloc et que la distribution horizontale devient nécessaire.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "-- Exemple minimal MySQL : création, insertion et lecture\nCREATE TABLE salutation (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(100) NOT NULL);\nINSERT INTO salutation (message) VALUES ('Hello, World!');\nSELECT message FROM salutation;",
+    "tech2Snippet": "// Exemple minimal MongoDB avec le pilote Node.js officiel\nconst { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('salutations');\n  await collection.insertOne({ message: 'Hello, World!' });\n  console.log(await collection.findOne({}));\n  await client.close();\n}\n\nmain().catch(console.error);"
+  },
+  "faq": [
+    {
+      "q": "MySQL ou MongoDB pour une application e-commerce en 2026 ?",
+      "a": "Pour un e-commerce transactionnel avec commandes, stocks et paiements, MySQL reste souvent le choix naturel grâce aux transactions ACID, aux clés étrangères et aux jointures entre clients, commandes et lignes de commande. MongoDB peut convenir si le catalogue produits est très hétérogène et lu en bloc, ou si la distribution horizontale est prioritaire, mais il faut alors modéliser soigneusement pour éviter des transactions multi-documents fréquentes. Évaluez le volume, les besoins analytiques et la compétence de votre équipe avant de décider."
+    },
+    {
+      "q": "MongoDB gère-t-il les transactions comme MySQL ?",
+      "a": "MongoDB prend en charge des transactions ACID multi-documents sur les ensembles répliqués et les clusters shardés, avec des limites de durée et de taille à vérifier selon la version. MySQL, via InnoDB, propose des transactions matures et des contraintes de clés étrangères natives, ce qui simplifie l'intégrité référentielle. Pour des opérations critiques fréquentes, MySQL est généralement plus direct, tandis que MongoDB invite à regrouper les données dans un même document pour limiter le besoin de transactions distribuées."
+    },
+    {
+      "q": "Lequel est le plus facile à faire évoluer horizontalement ?",
+      "a": "MongoDB intègre un sharding natif avec rééquilibrage automatique, ce qui facilite la distribution horizontale lorsque la clé de sharding est bien choisie. MySQL peut aussi monter en charge via réplicas de lecture et partitionnement, mais le sharding repose souvent sur des solutions externes ou managées. La facilité réelle dépend surtout de votre modèle de données et de votre capacité à opérer un cluster : ne choisissez pas le sharding par défaut si votre charge ne l'exige pas."
+    },
+    {
+      "q": "Peut-on utiliser SQL avec MongoDB et des documents avec MySQL ?",
+      "a": "MySQL propose un type JSON et des fonctions associées pour stocker des documents, mais les requêtes et index sur JSON restent moins naturels que dans un modèle relationnel classique. MongoDB expose le langage de requête MongoDB et l'agrégation par pipeline, avec des connecteurs SQL optionnels selon l'offre, sans égaler la richesse d'un vrai moteur SQL. En pratique, choisissez la base dont le modèle principal correspond à vos accès dominants plutôt que d'empiler des contournements."
+    },
+    {
+      "q": "Quelles compétences sont nécessaires pour chaque base ?",
+      "a": "MySQL demande une bonne maîtrise de SQL, de la modélisation relationnelle, des index et des plans d'exécution, compétences largement répandues sur le marché. MongoDB exige de comprendre la modélisation par documents, les pipelines d'agrégation et le choix des clés de sharding, avec une communauté plus spécialisée. La disponibilité des profils et la formation interne pèsent souvent plus lourd que des écarts de performance théoriques."
+    },
+    {
+      "q": "Comment se comparent-ils en matière de sécurité ?",
+      "a": "Les deux bases proposent authentification, gestion des rôles, TLS et chiffrement au repos, avec des options de chiffrement côté client pour MongoDB selon l'édition. La sécurité effective dépend surtout du durcissement, des mises à jour, de la segmentation réseau et de la gestion des secrets, pas seulement du produit. Vérifiez la matrice de fonctionnalités de votre version et de votre offre managée, car les capacités varient."
+    },
+    {
+      "q": "MySQL ou MongoDB pour de l'analyse et du reporting ?",
+      "a": "MySQL, grâce à SQL, aux jointures, aux fonctions de fenêtrage et aux CTE, s'intègre bien aux outils de BI et aux requêtes analytiques ad hoc. MongoDB permet des agrégations puissantes par pipeline, mais les analyses multi-collections et les jointures y sont généralement moins confortables. Pour un entrepôt ou du reporting décisionnel, envisagez aussi une base analytique dédiée plutôt que de solliciter la base transactionnelle."
+    },
+    {
+      "q": "Faut-il préférer une offre managée en 2026 ?",
+      "a": "Pour les deux bases, une offre managée réduit la charge d'exploitation : sauvegardes, mises à jour, haute disponibilité et supervision sont souvent incluses selon le palier choisi. Les coûts et fonctionnalités varient fortement d'un fournisseur à l'autre et selon la région, donc comparez les grilles tarifaires à jour avant de vous engager. Une offre managée n'exonère pas d'une bonne modélisation ni d'un dimensionnement adapté à votre charge réelle."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "slug": "mongodb-vs-redis",
+  "meta": {
+    "title": "MongoDB vs Redis (2026): welche Lösung passt besser?",
+    "description": "MongoDB vs Redis im Vergleich 2026: Dokumentenbank trifft In-Memory-Store. Wir vergleichen Datenmodell, Performance, Persistenz, Skalierung und Einsatzszenarien."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "Redis"
+  },
+  "verdict": "MongoDB und Redis lösen unterschiedliche Probleme: MongoDB eignet sich als primäre Dokumentendatenbank für flexible, persistente Anwendungsdaten, während Redis als schneller In-Memory-Store für Caching, Sessions, Warteschlangen und Echtzeitfunktionen glänzt. Viele Teams kombinieren beide. Die Wahl hängt von Datenmodell, Persistenzbedarf, Konsistenzanforderungen und Arbeitslast ab.",
+  "comparison": [
+    {
+      "category": "Datenmodell und Abfragesprache",
+      "toolA": "MongoDB speichert Daten als BSON-Dokumente in flexiblen Collections und erlaubt verschachtelte Strukturen ohne festes Schema. Die Abfragesprache unterstützt Filter, Projektionen, Aggregationspipelines und Sekundärindizes, was komplexe Abfragen auf Anwendungsdaten ermöglicht.",
+      "toolB": "Redis ist ein Key-Value-Store mit vielfältigen Datentypen wie Strings, Hashes, Listen, Sets, Sorted Sets, Streams und probabilistischen Strukturen. Abfragen erfolgen meist über Schlüsselzugriff und typspezifische Operationen; eine dokumentenähnliche Abfragesprache oder Aggregationspipeline wie in MongoDB gibt es nicht.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistenz und Dauerhaftigkeit",
+      "toolA": "MongoDB ist als persistente Datenbank konzipiert und schreibt Daten dauerhaft auf Speichermedien, mit Journaling und Replikation zur Absicherung. Dadurch eignet sie sich als System of Record für geschäftskritische Anwendungsdaten.",
+      "toolB": "Redis hält Daten primär im Arbeitsspeicher und bietet optionale Persistenz über RDB-Snapshots und AOF-Logs. Je nach Konfiguration sind Datenverluste bei Ausfällen möglich; für strenge Dauerhaftigkeitsanforderungen ist die Abstimmung von Persistenzmodus und Replikation entscheidend.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance und Latenz",
+      "toolA": "MongoDB arbeitet mit Datenträgerzugriffen, Caching im WiredTiger-Speicher und Indizes; die Latenz hängt von Datenmenge, Indexnutzung und Arbeitslast ab. Für schreib- und leseintensive Anwendungen sind sorgfältige Modellierung und Indizierung nötig.",
+      "toolB": "Redis ist auf niedrige Latenz durch In-Memory-Verarbeitung ausgelegt und eignet sich für häufige, einfache Zugriffe. Die tatsächliche Leistung hängt von Netzwerk, Datenstrukturen, Persistenzkonfiguration und Last ab; pauschale Geschwindigkeitsaussagen sind ohne konkrete Messung nicht belastbar.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Skalierung und Hochverfügbarkeit",
+      "toolA": "MongoDB unterstützt Replica Sets für Hochverfügbarkeit und Sharding für horizontale Skalierung über mehrere Knoten. Die Einrichtung erfordert Planung von Shard-Keys, Replikation und Betriebsprozessen.",
+      "toolB": "Redis bietet Redis Cluster mit Sharding sowie Replikation und Sentinel für Ausfallszenarien. Die Skalierung ist schlüsselbasiert; komplexe Datenmodelle über mehrere Schlüssel können die Verteilung erschweren.",
+      "winner": "tie"
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "MongoDB bietet rollenbasierte Zugriffskontrolle, Authentifizierung, TLS und Verschlüsselung at Rest in vielen Editionen. Konkrete Funktionen unterscheiden sich je nach Edition, Version und Betriebsmodell und sollten in der Dokumentation geprüft werden.",
+      "toolB": "Redis unterstützt ACLs für Benutzer und Berechtigungen, TLS und je nach Version und Deployment zusätzliche Sicherheitsfunktionen. Viele Installationen erfordern bewusste Härtung, da unsachgemäße Konfiguration ein Risiko darstellt.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ökosystem und Integration",
+      "toolA": "MongoDB bietet offizielle Treiber für zahlreiche Sprachen, Atlas als Managed Service sowie Werkzeuge wie Compass und Atlas Search in bestimmten Angeboten. Das Ökosystem ist breit und auf Anwendungsentwicklung ausgerichtet.",
+      "toolB": "Redis verfügt über weit verbreitete Client-Bibliotheken, Managed-Angebote und Erweiterungen wie Redis Stack mit Modulen für Suche, JSON und Zeitreihen. Als Baustein für Caching und Echtzeitfunktionen ist es in vielen Architekturen etabliert.",
+      "winner": "tie"
+    },
+    {
+      "category": "Betrieb, Komplexität und Kosten",
+      "toolA": "MongoDB kann selbst betrieben oder als Managed Service genutzt werden; Self-Hosting erfordert Know-how für Replikation, Backups und Monitoring. Kosten hängen von Edition, Hosting-Modell, Speicher- und Rechenressourcen ab und lassen sich nicht pauschal beziffern.",
+      "toolB": "Redis ist als einzelner Prozess relativ einfach zu starten, während Cluster, Persistenz und Hochverfügbarkeit mehr Betriebsaufwand erfordern. Managed-Angebote und Tarife variieren stark; konkrete Preise sollten beim Anbieter geprüft werden.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('greetings');\n  await collection.insertOne({ message: 'Hallo, Welt!', createdAt: new Date() });\n  const doc = await collection.findOne({ message: 'Hallo, Welt!' });\n  console.log(doc);\n  await client.close();\n}\n\nmain().catch(console.error);",
+    "tech2Snippet": "import Redis from 'ioredis';\n\nconst redis = new Redis('redis://localhost:6379');\nawait redis.set('greeting', 'Hallo, Welt!');\nconst value = await redis.get('greeting');\nconsole.log(value);\nawait redis.quit();"
+  },
+  "faq": [
+    {
+      "q": "Welches Tool eignet sich besser als primäre Datenbank für eine Webanwendung?",
+      "a": "Für eine Webanwendung mit strukturierten, aber flexiblen Anwendungsdaten ist MongoDB in der Regel die naheliegende Wahl, da sie dauerhafte Speicherung, Abfragen und Indizes bietet. Redis eignet sich eher ergänzend für Caching, Sessions oder Warteschlangen, nicht als alleiniger Speicher für komplexe Geschäftsdaten. Die genaue Entscheidung hängt von Datenmodell, Konsistenzanforderungen und Betriebsmodell ab."
+    },
+    {
+      "q": "Kann Redis eine dauerhafte Datenbank ersetzen?",
+      "a": "Redis kann mit RDB- und AOF-Persistenz Daten dauerhaft speichern, doch die Auslegung als In-Memory-Store bringt andere Garantien und Grenzen als eine klassische persistente Datenbank. Ob das für einen Anwendungsfall ausreicht, hängt von akzeptablem Datenverlust, Persistenzkonfiguration und Replikationsstrategie ab. Für kritische Primärdaten ist eine Prüfung der Dauerhaftigkeitsanforderungen unerlässlich."
+    },
+    {
+      "q": "Wann sollte ich MongoDB und Redis gemeinsam einsetzen?",
+      "a": "Eine Kombination ist sinnvoll, wenn MongoDB die persistenten Anwendungsdaten hält und Redis häufige, latenzkritische Zugriffe beschleunigt, etwa durch Caching oder Session-Verwaltung. Dadurch lassen sich die Stärken beider Systeme nutzen, allerdings steigt die operative Komplexität durch zwei Dienste. Cache-Invalidierung und Konsistenz zwischen beiden Systemen müssen bewusst geplant werden."
+    },
+    {
+      "q": "Welche Rolle spielt das Datenmodell bei der Entscheidung?",
+      "a": "Wenn Daten verschachtelt, dokumentenorientiert und abfragbar sein müssen, passt das Dokumentenmodell von MongoDB besser. Wenn es um einfache Schlüssel-Wert-Zugriffe, Zähler, Listen, Ranglisten oder Echtzeit-Streams geht, sind die Datentypen von Redis oft effizienter. Eine vorherige Modellierung der wichtigsten Zugriffsmuster hilft, Fehlentscheidungen zu vermeiden."
+    },
+    {
+      "q": "Wie unterscheiden sich beide Systeme bei der Skalierung?",
+      "a": "MongoDB skaliert horizontal über Sharding und bietet Replica Sets für Ausfallsicherheit, wobei die Wahl eines geeigneten Shard-Keys entscheidend ist. Redis skaliert über Redis Cluster mit schlüsselbasierter Verteilung sowie Replikation, wobei Operationen über mehrere Schlüssel die Verteilung erschweren können. In beiden Fällen hängt die tatsächliche Leistung von Arbeitslast, Konfiguration und Betrieb ab."
+    },
+    {
+      "q": "Welche Sicherheitsaspekte sind zu beachten?",
+      "a": "Beide Systeme bieten Authentifizierung und Zugriffskontrolle, doch die konkreten Funktionen unterscheiden sich je nach Version, Edition und Deployment. Besonders bei Redis ist eine bewusste Härtung wichtig, da falsch konfigurierte Instanzen ein Risiko darstellen können. In beiden Fällen sollten TLS, Netzbeschränkung und regelmäßige Updates Teil des Betriebskonzepts sein."
+    },
+    {
+      "q": "Wie sieht es mit Betriebsaufwand und Kosten aus?",
+      "a": "Redis lässt sich als einzelner Prozess schnell starten, während Cluster, Persistenz und Hochverfügbarkeit mehr Aufwand erfordern. MongoDB benötigt als persistente Datenbank ebenfalls Planung für Replikation, Backups und Monitoring, kann aber auch als Managed Service betrieben werden. Konkrete Kosten hängen von Anbieter, Tarif, Ressourcen und Region ab und sollten individuell geprüft werden."
+    },
+    {
+      "q": "Welche Entscheidung ist für Einsteiger oder kleine Projekte sinnvoll?",
+      "a": "Für kleine Projekte mit einfachen Anforderungen kann ein einzelner Redis-Instanz für Caching oder Sessions ausreichen, während MongoDB für persistente Anwendungsdaten oft die passendere Grundlage ist. Einsteiger sollten den Betriebsaufwand und die Datenhaltungsanforderungen realistisch einschätzen, statt sich allein an vermeintlicher Geschwindigkeit zu orientieren. Ein Managed Service kann den Einstieg erleichtern, ist aber mit laufenden Kosten verbunden."
+    }
+  ]
+}

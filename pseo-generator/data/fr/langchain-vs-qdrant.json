@@ -1,0 +1,102 @@
+{
+  "slug": "langchain-vs-qdrant",
+  "meta": {
+    "title": "LangChain vs Qdrant (2026): quelle solution choisir ?",
+    "description": "Comparatif 2026 LangChain vs Qdrant : framework d'orchestration LLM contre base vectorielle. Rôles, critères, exemples de code et conseils pour choisir ou combiner les deux."
+  },
+  "toolA": {
+    "name": "LangChain"
+  },
+  "toolB": {
+    "name": "Qdrant"
+  },
+  "verdict": "LangChain et Qdrant ne sont pas des concurrents directs : LangChain orchestre des chaînes LLM et des flux RAG, tandis que Qdrant est une base vectorielle spécialisée. Choisissez LangChain pour structurer une application LLM multi-étapes, Qdrant pour stocker et rechercher des embeddings à grande échelle. Les équipes sérieuses les combinent souvent, LangChain servant d'orchestrateur au-dessus de Qdrant.",
+  "comparison": [
+    {
+      "category": "Nature et rôle principal de l'outil",
+      "toolA": "LangChain est un framework d'orchestration pour applications LLM : chaînes, agents, outils, gestion de prompts, mémoire et intégrations. Il ne stocke pas lui-même de vecteurs à grande échelle et s'appuie sur des bases externes pour la recherche vectorielle.",
+      "toolB": "Qdrant est une base de données vectorielle dédiée à la recherche de similarité et au filtrage de payloads. Elle expose une API REST et gRPC, un moteur de recherche approximative (HNSW) et des fonctionnalités de production comme la réplication et les snapshots.",
+      "winner": "tie"
+    },
+    {
+      "category": "Adéquation aux cas d'usage RAG et agents",
+      "toolA": "LangChain fournit des abstractions prêtes à l'emploi pour les chaînes RAG, les retrievers, les agents et les appels d'outils, ce qui accélère le prototypage. En revanche, ses abstractions évoluent rapidement entre versions, ce qui peut demander des ajustements de code lors des mises à jour.",
+      "toolB": "Qdrant excelle pour la partie récupération : recherche par similarité, filtres sur métadonnées et gestion de collections. Il ne fournit pas nativement d'orchestration de prompts ni de logique d'agent, qui doivent être implémentés côté application.",
+      "winner": "tie"
+    },
+    {
+      "category": "Performance et passage à l'échelle",
+      "toolA": "Les performances de LangChain dépendent surtout du modèle LLM, du réseau et de la base vectorielle sous-jacente ; le framework ajoute une couche d'abstraction dont le coût varie selon l'usage. Il n'est pas conçu pour servir lui-même des requêtes vectorielles massives.",
+      "toolB": "Qdrant est optimisé pour la recherche vectorielle à faible latence et gère des collections de plusieurs millions de vecteurs selon le dimensionnement et la charge. Les performances réelles dépendent de la configuration matérielle, de l'indexation et des filtres appliqués.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, intégrations et interopérabilité",
+      "toolA": "LangChain propose de nombreuses intégrations avec des modèles, des bases vectorielles (dont Qdrant), des traceurs et des outils, ce qui en fait un hub d'interopérabilité. La qualité et la maintenance de chaque intégration peuvent varier selon les versions.",
+      "toolB": "Qdrant s'intègre à de nombreux frameworks et SDK (Python, JavaScript, Rust, Go), et peut être utilisé seul ou derrière LangChain. Son écosystème est plus ciblé sur la recherche vectorielle que sur l'orchestration LLM.",
+      "winner": "tie"
+    },
+    {
+      "category": "Déploiement, exploitation et sécurité",
+      "toolA": "LangChain s'exécute dans votre application ou votre service ; la sécurité dépend donc de votre code, de la gestion des secrets et des modèles appelés. Le framework n'impose pas de modèle de déploiement unique.",
+      "toolB": "Qdrant peut être déployé en local, en conteneur ou en mode distribué, avec des options d'authentification et de chiffrement selon l'offre et la configuration. Une revue de sécurité adaptée à votre environnement reste nécessaire, notamment pour l'exposition réseau et la gestion des clés.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Courbe d'apprentissage et productivité",
+      "toolA": "LangChain permet de prototyper rapidement des chaînes et des agents, mais la multiplicité des abstractions et les changements d'API entre versions peuvent demander un temps d'adaptation. La productivité dépend fortement de la familiarité avec l'écosystème LLM.",
+      "toolB": "Qdrant a une API relativement directe pour créer une collection, insérer des vecteurs et interroger par similarité ; la maîtrise des concepts de recherche vectorielle (distance, index, filtres) reste nécessaire. Une fois ces bases acquises, l'usage est généralement simple.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Coût et modèle de tarification",
+      "toolA": "LangChain est open source et gratuit dans sa version bibliothèque ; des services managés ou des plateformes associées peuvent avoir leurs propres tarifs. Le coût réel dépend surtout des appels aux modèles LLM et de l'infrastructure.",
+      "toolB": "Qdrant est open source et peut être auto-hébergé ; une offre cloud managée existe avec une tarification variable selon les ressources et le plan. Les tarifs et limites doivent être vérifiés sur la page officielle au moment du choix.",
+      "winner": "tie"
+    },
+    {
+      "category": "Maturité, documentation et communauté",
+      "toolA": "LangChain bénéficie d'une large communauté et d'une documentation abondante, avec de nombreux exemples. La rapidité d'évolution du projet peut toutefois rendre certains tutoriels obsolètes.",
+      "toolB": "Qdrant dispose d'une documentation technique fournie et d'une communauté active autour de la recherche vectorielle. Son périmètre plus restreint rend la documentation généralement plus stable dans le temps.",
+      "winner": "toolB"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "from langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\nfrom langchain_openai import ChatOpenAI\n\nprompt = ChatPromptTemplate.from_template(\"Dis bonjour à {nom} en une phrase.\")\nchain = prompt | ChatOpenAI(model=\"gpt-4o-mini\") | StrOutputParser()\nprint(chain.invoke({\"nom\": \"monde\"}))",
+    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.create_collection(\n    collection_name=\"hello\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"hello\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"texte\": \"bonjour\"})],\n)\nresultats = client.search(collection_name=\"hello\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1)\nprint(resultats)"
+  },
+  "faq": [
+    {
+      "q": "LangChain et Qdrant sont-ils concurrents ou complémentaires ?",
+      "a": "Ils sont complémentaires plutôt que concurrents : LangChain orchestre des chaînes LLM et des agents, tandis que Qdrant stocke et recherche des vecteurs. On peut utiliser LangChain seul avec une autre base vectorielle, ou Qdrant seul avec du code applicatif, mais les combiner est courant pour le RAG. Le bon choix dépend donc de la brique qui vous manque."
+    },
+    {
+      "q": "Quel outil choisir pour construire un système RAG from scratch en 2026 ?",
+      "a": "Pour un RAG, Qdrant couvre la récupération vectorielle et LangChain couvre l'orchestration du prompt, du modèle et du retriever. Si vous partez de zéro et voulez un contrôle maximal, commencez par Qdrant plus un SDK LLM simple, puis ajoutez LangChain si la logique se complexifie. Si vous multipliez les étapes et les outils, LangChain fait gagner du temps mais ajoute une couche d'abstraction à maîtriser."
+    },
+    {
+      "q": "LangChain peut-il remplacer Qdrant pour la recherche vectorielle ?",
+      "a": "Non, LangChain n'est pas une base vectorielle : il fournit des intégrations vers des bases comme Qdrant, FAISS ou Chroma. Pour de la recherche vectorielle en production, il faut un stockage dédié, et Qdrant est conçu pour ce rôle. LangChain seul ne suffit donc pas à garantir la persistance, la montée en charge et les filtres avancés."
+    },
+    {
+      "q": "Qdrant est-il adapté aux petits projets ou au prototypage ?",
+      "a": "Oui, Qdrant propose un mode local en mémoire ou sur disque, pratique pour prototyper sans infrastructure lourde. Pour de petits volumes, une base plus simple peut suffire, mais Qdrant reste pertinent si vous prévoyez de monter en charge. Vérifiez les limites du mode choisi et les options de déploiement selon votre contexte."
+    },
+    {
+      "q": "Quels critères vérifier avant de choisir entre LangChain et Qdrant ?",
+      "a": "Vérifiez d'abord si votre besoin principal est l'orchestration LLM ou la recherche vectorielle, car les deux outils ne couvrent pas le même périmètre. Ensuite, examinez la charge prévue, les contraintes de sécurité, le mode de déploiement et la tolérance aux évolutions d'API. Enfin, comparez le coût total, notamment les appels aux modèles pour LangChain et l'infrastructure pour Qdrant."
+    },
+    {
+      "q": "Peut-on utiliser LangChain avec Qdrant dans le même projet ?",
+      "a": "Oui, LangChain propose une intégration Qdrant via un module dédié, ce qui permet d'utiliser Qdrant comme vector store dans une chaîne RAG. Cette combinaison est fréquente : Qdrant gère la similarité et les filtres, LangChain gère les prompts et les appels de modèles. Vérifiez la version de l'intégration et les paramètres de connexion dans la documentation officielle."
+    },
+    {
+      "q": "LangChain est-il stable pour la production en 2026 ?",
+      "a": "LangChain est utilisé en production, mais son rythme d'évolution impose de suivre les versions et de tester les mises à jour. La stabilité perçue dépend aussi de la qualité des intégrations et de votre capacité à isoler les abstractions critiques. Une approche prudente consiste à épingler les versions et à prévoir des tests de non-régression."
+    },
+    {
+      "q": "Qdrant convient-il à des recherches avec filtres métier complexes ?",
+      "a": "Qdrant prend en charge le filtrage sur les payloads associés aux vecteurs, ce qui permet de combiner similarité et conditions métier. La performance dépend de la conception de l'index, du nombre de filtres et de la charge ; il faut donc tester avec vos données. Pour des besoins très relationnels, une base classique peut rester complémentaire."
+    }
+  ]
+}

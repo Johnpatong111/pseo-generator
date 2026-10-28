@@ -1,0 +1,98 @@
+{
+  "slug": "redis-vs-memcached",
+  "meta": {
+    "title": "Redis vs Memcached (2026): ¿Qué solución elegir?",
+    "description": "Comparativa actualizada de Redis y Memcached en 2026: estructuras de datos, escalabilidad, persistencia, seguridad y casos de uso para elegir bien tu caché."
+  },
+  "toolA": {
+    "name": "Redis"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "Redis encaja mejor en la mayoría de proyectos modernos por su versatilidad: estructuras de datos, persistencia opcional, pub/sub, scripts y clúster. Memcached sigue siendo una opción válida si solo necesitas una caché clave-valor simple, muy ligera y horizontalmente sencilla, con menos funciones que mantener. La decisión depende de si necesitas solo caché o también colas, sesiones o contadores.",
+  "comparison": [
+    {
+      "category": "Modelo de datos y estructuras soportadas",
+      "toolA": "Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs, bitmaps, streams y estructuras geoespaciales. Esto permite implementar caché, colas ligeras, rankings, contadores o sesiones sin añadir otro sistema, aunque conviene valorar el consumo de memoria según la estructura elegida.",
+      "toolB": "Memcached está diseñado como una caché clave-valor pura: almacena blobs opacos asociados a una clave y no interpreta su contenido. Su simplicidad reduce la superficie de configuración y el consumo por operación, pero obliga a gestionar en la aplicación cualquier lógica de listas, colas o agregaciones.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistencia y durabilidad de los datos",
+      "toolA": "Redis ofrece persistencia mediante RDB (instantáneas) y AOF (registro de operaciones), con distintos niveles de fsync configurables. Esto permite usar Redis como caché o como almacén con cierta durabilidad, aunque los modos más seguros implican costes de rendimiento y la durabilidad absoluta no está garantizada en todas las configuraciones.",
+      "toolB": "Memcached no incluye persistencia: los datos viven solo en memoria y se pierden al reiniciar el proceso o el servidor. Es una decisión de diseño coherente con su función de caché efímera, pero lo descarta para casos donde necesites recuperar el estado tras un fallo.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Rendimiento y latencia bajo carga",
+      "toolA": "Redis es monohilo para la ejecución de comandos, lo que simplifica la coherencia y ofrece latencias muy bajas, aunque una operación pesada puede bloquear brevemente el servidor. Las versiones recientes han incorporado mejoras de E/S multihilo, y el rendimiento real depende mucho del tamaño de los valores, la red y la configuración del clúster.",
+      "toolB": "Memcached es multihilo y escala bien en un solo servidor con múltiples núcleos, con un modelo de memoria sencillo basado en slabs. Para cargas de caché puras y valores pequeños suele ofrecer una latencia muy competitiva, si bien el rendimiento efectivo varía según la versión, el hardware y el patrón de acceso.",
+      "winner": "tie"
+    },
+    {
+      "category": "Escalabilidad y distribución",
+      "toolA": "Redis Cluster ofrece particionado de datos y replicación integrados, con soporte de failover y redistribución de ranuras. Su operación es más compleja que un despliegue simple, y algunos comandos multiclave requieren que las claves compartan ranura o un enfoque alternativo.",
+      "toolB": "Memcached escala de forma horizontal mediante clientes con hashing consistente, sin coordinación entre nodos ni replicación nativa. Esto simplifica el despliegue, pero traslada a la aplicación la gestión de fallos, la coherencia y la redistribución de claves cuando cambia el número de nodos.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Redis incluye autenticación con contraseña, ACL por usuario y comando, y soporte de TLS en versiones recientes; además, el modo protegido evita exposiciones accidentales. Aun así, una configuración incorrecta puede dejar instancias accesibles, por lo que conviene revisar bind, firewalls y credenciales antes de exponer el servicio.",
+      "toolB": "Memcached no incorpora autenticación ni cifrado en su protocolo, y su modelo de seguridad se basa en aislarlo en redes privadas y aplicar controles perimetrales. Existen variantes y proxies que añaden TLS o autenticación, pero no forman parte del núcleo estándar y deben evaluarse como componentes adicionales.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosistema, clientes y comunidad",
+      "toolA": "Redis cuenta con una comunidad amplia, clientes maduros en la mayoría de lenguajes y una documentación extensa, además de módulos y servicios gestionados en la nube. Su licencia ha cambiado en los últimos años, por lo que conviene revisar las condiciones de la versión y del proveedor que vayas a usar.",
+      "toolB": "Memcached tiene una comunidad más reducida pero estable, con clientes consolidados y una implementación sencilla de integrar. Su ecosistema es menos activo que el de Redis, y algunas funciones avanzadas dependen de librerías o proxies de terceros.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Facilidad de operación y mantenimiento",
+      "toolA": "Redis ofrece más funciones y, por tanto, más parámetros que ajustar: persistencia, políticas de expulsión, clúster, ACL y réplicas. La curva de aprendizaje es mayor, aunque herramientas gestionadas y una documentación sólida reducen el esfuerzo operativo en producción.",
+      "toolB": "Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración. Esa sencillez es una ventaja para equipos pequeños, pero implica que funciones como la persistencia o la replicación deben resolverse fuera de la herramienta.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Casos de uso recomendados",
+      "toolA": "Redis resulta adecuado para caché con estructuras ricas, sesiones, rankings, contadores, colas ligeras, rate limiting, pub/sub y streams. También encaja cuando necesitas cierta durabilidad o recuperación tras reinicios, siempre que asumas su mayor complejidad operativa.",
+      "toolB": "Memcached está pensado para acelerar lecturas costosas mediante caché de objetos, fragmentos HTML o resultados de consultas, especialmente cuando el patrón es clave-valor y los datos son efímeros. Es una elección sólida si buscas simplicidad y escalado horizontal sin funciones adicionales.",
+      "winner": "toolA"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué herramienta se adapta mejor a un proyecto que solo necesita caché?",
+      "a": "Si tu única necesidad es almacenar y recuperar valores efímeros por clave, Memcached ofrece una solución sencilla y fácil de operar. Redis también cubre ese caso e incluso puede ser más cómodo si luego necesitas estructuras adicionales, pero introduce más configuración y funciones que quizá no aproveches. Valora el coste operativo de mantener cada opción antes de decidir."
+    },
+    {
+      "q": "¿Puedo usar Redis como base de datos principal en lugar de solo caché?",
+      "a": "Redis puede actuar como almacén con persistencia, pero su durabilidad depende del modo configurado y no equivale a la de un sistema transaccional tradicional. Para datos críticos conviene combinarlo con una base de datos principal o asumir explícitamente el riesgo de pérdida en determinados escenarios. Evalúa los requisitos de consistencia y recuperación antes de usarlo como único almacén."
+    },
+    {
+      "q": "¿Memcached es más rápido que Redis?",
+      "a": "No hay una respuesta universal: Memcached es multihilo y puede escalar bien en un servidor con varios núcleos para operaciones simples, mientras que Redis ofrece latencias muy bajas con su modelo de ejecución. El resultado depende del tamaño de los valores, la red, la versión y el patrón de acceso. Lo recomendable es medir con tu propia carga en lugar de asumir una superioridad general."
+    },
+    {
+      "q": "¿Cómo afecta la seguridad a la elección entre Redis y Memcached?",
+      "a": "Redis incluye autenticación, ACL y TLS en versiones recientes, lo que facilita un despliegue más controlado si se configura correctamente. Memcached no incorpora autenticación ni cifrado nativos y suele requerir aislamiento de red y controles perimetrales. En ambos casos, exponer el servicio a internet sin protecciones es un riesgo que debe evitarse."
+    },
+    {
+      "q": "¿Qué opción escala mejor en un clúster grande?",
+      "a": "Redis Cluster ofrece particionado, replicación y failover integrados, lo que simplifica la arquitectura a costa de una operación más compleja. Memcached escala horizontalmente mediante hashing consistente en el cliente, sin coordinación entre nodos ni replicación nativa. La elección depende de si prefieres funciones integradas o una capa de cliente más sencilla y controlada por tu equipo."
+    },
+    {
+      "q": "¿Cuál es más económico en producción?",
+      "a": "El coste depende del proveedor, la región, la memoria contratada y los servicios gestionados, por lo que no conviene dar cifras genéricas sin verificar. Memcached suele requerir menos recursos de configuración, mientras que Redis puede consumir más memoria según las estructuras y la persistencia. Compara precios actuales de tu proveedor y el esfuerzo operativo de cada alternativa."
+    },
+    {
+      "q": "¿Puedo migrar de Memcached a Redis sin cambiar la aplicación?",
+      "a": "Ambos manejan operaciones básicas de clave-valor, pero Redis interpreta los tipos de datos y ofrece comandos adicionales que Memcached no tiene. Una migración sencilla suele requerir revisar la lógica de expiración, el manejo de errores y las operaciones que dependían del hashing del cliente. Planifica pruebas de carga y validación antes de cambiar en producción."
+    },
+    {
+      "q": "¿Qué debo revisar antes de elegir en 2026?",
+      "a": "Comprueba la versión y licencia de la herramienta, las funciones de seguridad disponibles, el soporte de tu proveedor y la compatibilidad con tus clientes. También conviene revisar si necesitas persistencia, clúster o estructuras avanzadas, porque eso inclina la balanza hacia Redis. Si solo buscas caché simple y fácil de operar, Memcached sigue siendo una opción razonable."
+    }
+  ]
+}

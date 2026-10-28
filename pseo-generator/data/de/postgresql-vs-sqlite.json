@@ -1,0 +1,102 @@
+{
+  "slug": "postgresql-vs-sqlite",
+  "meta": {
+    "title": "PostgreSQL vs SQLite (2026): welche Lösung passt besser?",
+    "description": "PostgreSQL und SQLite im Vergleich 2026: Architektur, Skalierung, Betrieb, Sicherheit und Einsatzgebiete – mit klarer Empfehlung, wann sich welche Datenbank eignet."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "PostgreSQL ist die bessere Wahl, wenn mehrere Nutzer oder Dienste gleichzeitig schreiben, die Datenbank über das Netz erreichbar sein soll und Rollen, Rechte sowie hohe Skalierbarkeit gefragt sind. SQLite eignet sich hervorragend für eingebettete Anwendungen, lokale Tools, Tests und kleinere Projekte mit einem überwiegend lesenden oder einzelnen schreibenden Zugriff. Die Entscheidung hängt von Zugriffsmodell, Betriebsaufwand und Datenmenge ab – nicht von einem pauschalen „besser“.",
+  "comparison": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "PostgreSQL arbeitet als eigenständiger Serverprozess, mit dem Clients über das Netzwerk per TCP oder über lokale Sockets kommunizieren. Dadurch lassen sich Datenbank, Anwendung und mehrere Nutzer sauber trennen; der Betrieb erfordert jedoch Installation, Konfiguration, Backups und Überwachung eines Dienstes.",
+      "toolB": "SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die Daten in einer einzigen Datei auf dem Datenträger speichert. Die Anwendung öffnet die Datei direkt, was den Betrieb stark vereinfacht, aber die Datenbank an den Rechner und den Dateizugriff bindet.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Nebenläufigkeit und Schreibzugriffe",
+      "toolA": "PostgreSQL ist auf viele gleichzeitige Verbindungen und parallele Schreibtransaktionen ausgelegt und nutzt MVCC, sodass Leser und Schreiber sich in der Regel nicht blockieren. Das macht es für Webanwendungen, APIs und Mehrbenutzerszenarien geeignet, wobei der Grad der Skalierung von Konfiguration und Arbeitslast abhängt.",
+      "toolB": "SQLite erlaubt in der Standardkonfiguration nur einen schreibenden Vorgang zur selben Zeit; im WAL-Modus können Leser parallel dazu arbeiten. Für Anwendungen mit vielen gleichzeitigen Schreibern ist das ein begrenzender Faktor, während es für lokale oder schreibarme Szenarien meist unproblematisch ist.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalierung und Datenmenge",
+      "toolA": "PostgreSQL kann große Datenbestände und hohe Verbindungszahlen verwalten und bietet Funktionen wie Partitionierung, Replikation und Verbindungspooling, um Wachstum abzufedern. Konkrete Grenzen hängen stark von Hardware, Schema, Indizes und Arbeitslast ab und lassen sich nicht pauschal beziffern.",
+      "toolB": "SQLite ist für Datenmengen im Bereich einzelner Anwendungen und Geräte ausgelegt und kommt mit durchaus großen Dateien zurecht; sehr hohe Schreiblast oder verteilte Zugriffe sind jedoch nicht sein Zielbereich. Die praktische Obergrenze wird vor allem durch Dateisystem, Speicher und Zugriffsmuster bestimmt.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Einrichtung und Entwicklerkomfort",
+      "toolA": "PostgreSQL benötigt einen laufenden Dienst, eine Datenbank, Benutzer und Rechte, was anfangs mehr Schritte erfordert. Im Gegenzug gibt es ausgereifte Werkzeuge, eine umfangreiche SQL-Implementierung und ein stabiles Ökosystem für Migrationen und Administration.",
+      "toolB": "SQLite lässt sich in vielen Sprachen ohne separaten Dienst einbinden; oft genügt ein Pfad zur Datei, und die Datenbank ist sofort nutzbar. Das macht es besonders attraktiv für Prototypen, Tests, kleine Tools und Anwendungen, die ohne Administration auskommen sollen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "PostgreSQL bietet ein mehrstufiges Rechtesystem mit Rollen, Datenbank- und Schema-Rechten sowie Optionen für verschlüsselte Verbindungen. Sicherheit muss jedoch korrekt konfiguriert werden, etwa durch Authentifizierung, Netzbeschränkungen und aktuelle Versionen – die konkrete Härtung ist installationsabhängig.",
+      "toolB": "SQLite kennt keine Benutzerverwaltung im Datenbanksinn; der Schutz ergibt sich im Wesentlichen aus den Dateisystemrechten und der Absicherung der Anwendung. Verschlüsselung ist nicht in der Standardbibliothek enthalten, sondern erfordert Erweiterungen oder ein verschlüsseltes Dateisystem, was je nach Umgebung zusätzlichen Aufwand bedeutet.",
+      "winner": "toolA"
+    },
+    {
+      "category": "SQL-Funktionsumfang und Kompatibilität",
+      "toolA": "PostgreSQL unterstützt einen breiten SQL-Standardumfang inklusive umfangreicher Joins, Fensterfunktionen, CTEs und Datentypen wie JSONB, Arrays und geometrischer Typen. Erweiterungen wie PostGIS oder Volltextsuche erweitern die Einsatzmöglichkeiten, wobei einzelne Features versionsabhängig sind.",
+      "toolB": "SQLite implementiert eine pragmatische Teilmenge von SQL mit vielen nützlichen Funktionen, aber einigen Abweichungen und Einschränkungen gegenüber großen Datenbanksystemen. Für typische CRUD-Anwendungen reicht der Umfang meist aus; komplexe analytische Abfragen oder spezielle Datentypen können an Grenzen stoßen.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Zuverlässigkeit, Backups und Wartung",
+      "toolA": "PostgreSQL gilt als sehr ausgereift und bietet Werkzeuge für logische und physische Backups sowie Replikation für Ausfallszenarien. Der Betrieb verlangt regelmäßige Wartung, Updates und Monitoring, deren Umfang von Anforderungen und Umgebung abhängt.",
+      "toolB": "SQLite ist robust gegenüber Abstürzen und speichert konsistent in einer Datei, was Backups durch simples Kopieren im richtigen Moment ermöglicht. Es gibt jedoch keinen zentralen Dienst für automatische Sicherungen oder Replikation; solche Aufgaben müssen Anwendung oder Betriebsprozess übernehmen.",
+      "winner": "tie"
+    },
+    {
+      "category": "Geeignete Einsatzszenarien",
+      "toolA": "PostgreSQL passt zu Web- und Unternehmensanwendungen, APIs, Mehrbenutzersystemen und Analyse-Workloads, bei denen zentrale Datenhaltung, Rechte und Skalierung wichtig sind. Es ist eine gute Wahl, wenn die Datenbank über das Netzwerk erreichbar sein soll und mehrere Dienste darauf zugreifen.",
+      "toolB": "SQLite eignet sich für mobile Apps, Desktop-Software, eingebettete Systeme, lokale Werkzeuge, Testumgebungen und kleine Websites mit geringer Schreiblast. Es glänzt dort, wo kein separater Datenbankserver gewünscht ist und die Daten eng an eine Anwendung gebunden sind.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# Voraussetzung: laufender PostgreSQL-Server, psql oder Python-Treiber\n# Beispiel mit psql:\npsql -h localhost -U postgres -c \"CREATE DATABASE hello;\"\npsql -h localhost -U postgres -d hello -c \"CREATE TABLE gruss (text TEXT); INSERT INTO gruss (text) VALUES ('Hallo, Welt!'); SELECT * FROM gruss;\"",
+    "tech2Snippet": "import sqlite3\n\nconn = sqlite3.connect(\"hello.db\")\nconn.execute(\"CREATE TABLE IF NOT EXISTS gruss (text TEXT)\")\nconn.execute(\"INSERT INTO gruss (text) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\nfor row in conn.execute(\"SELECT text FROM gruss\"):\n    print(row[0])\nconn.close()"
+  },
+  "faq": [
+    {
+      "q": "Welche Datenbank eignet sich besser für eine Webanwendung mit vielen gleichzeitigen Nutzern?",
+      "a": "Für Webanwendungen mit mehreren gleichzeitig schreibenden Nutzern ist PostgreSQL in der Regel die passendere Wahl, weil es parallele Transaktionen und viele Verbindungen besser unterstützt. SQLite kann für kleinere Websites mit geringer Schreiblast ausreichen, stößt aber bei vielen gleichzeitigen Schreibvorgängen eher an Grenzen. Die konkrete Belastbarkeit hängt von Konfiguration, Schema und Arbeitslast ab und sollte im eigenen Szenario geprüft werden."
+    },
+    {
+      "q": "Wann ist SQLite die bessere Wahl gegenüber PostgreSQL?",
+      "a": "SQLite ist besonders sinnvoll, wenn die Datenbank direkt in eine Anwendung eingebettet sein soll, kein separater Server gewünscht ist und überwiegend lokal zugegriffen wird. Typische Beispiele sind Desktop- und Mobile-Apps, Prototypen, Tests und kleine Werkzeuge. Wenn später viele Nutzer parallel schreiben oder zentrale Rechteverwaltung nötig wird, ist ein Wechsel zu PostgreSQL oft absehbar."
+    },
+    {
+      "q": "Brauche ich für SQLite einen Datenbankserver?",
+      "a": "Nein, SQLite ist eine Bibliothek und benötigt keinen eigenständigen Serverprozess; die Anwendung öffnet eine Datenbankdatei direkt. Das vereinfacht Installation und Betrieb erheblich, bringt aber Einschränkungen bei verteiltem Zugriff und zentraler Administration mit sich. Wer mehrere Dienste unabhängig auf dieselben Daten zugreifen lassen will, sollte eher ein Server-Datenbanksystem prüfen."
+    },
+    {
+      "q": "Wie steht es um Sicherheit und Benutzerverwaltung?",
+      "a": "PostgreSQL bringt ein Rechtesystem mit Rollen und Privilegien mit, das bei korrekter Konfiguration fein abgestufte Zugriffe erlaubt. SQLite kennt keine Datenbankbenutzer; der Schutz erfolgt über Dateisystemrechte und die Absicherung der Anwendung. In beiden Fällen gilt, dass Sicherheit von einer aktuellen Version, sorgfältiger Konfiguration und einer geschützten Umgebung abhängt."
+    },
+    {
+      "q": "Kann SQLite mit großen Datenmengen umgehen?",
+      "a": "SQLite kann durchaus große Datenbankdateien verwalten, und die praktische Grenze hängt vor allem von Dateisystem, Speicher und Zugriffsmuster ab. Kritisch wird es weniger bei der reinen Größe als bei vielen gleichzeitigen Schreibzugriffen und verteilten Clients. Für solche Anforderungen ist PostgreSQL meist die robustere Wahl, sofern der Betrieb eines Servers akzeptabel ist."
+    },
+    {
+      "q": "Welche Datenbank ist einfacher zu betreiben?",
+      "a": "SQLite ist im Betrieb deutlich einfacher, weil keine Serverinstallation, kein Dienst und keine zentrale Benutzerverwaltung nötig sind; Backups lassen sich oft als Dateikopie erledigen. PostgreSQL erfordert mehr Einrichtung und laufende Wartung, bietet dafür aber zentrale Administration, Replikation und ein etabliertes Werkzeugumfeld. Der Aufwand lohnt sich vor allem, wenn diese Funktionen tatsächlich gebraucht werden."
+    },
+    {
+      "q": "Kann ich später von SQLite zu PostgreSQL wechseln?",
+      "a": "Ein Wechsel ist grundsätzlich möglich, weil beide SQL verwenden, aber die Dialekte unterscheiden sich in Details wie Datentypen, Funktionen und Verhalten bei bestimmten Abfragen. Ein Umstieg erfordert daher Anpassungen am Schema, an Migrationen und möglicherweise an Anwendungscode. Wer von Anfang an mit starkem Wachstum rechnet, kann es sich erleichtern, indem er SQL möglichst standardkonform hält."
+    },
+    {
+      "q": "Beeinflusst die Wahl die Performance meiner Anwendung?",
+      "a": "Die Performance hängt stark von Arbeitslast, Schema, Indizes, Hardware und Konfiguration ab und lässt sich nicht pauschal einer der beiden Datenbanken zuschreiben. SQLite kann bei lokalen Zugriffen sehr effizient sein, während PostgreSQL bei paralleler Nutzung und großen Datenbeständen seine Stärken ausspielt. Belastbare Aussagen erfordern eigene Messungen im konkreten Szenario statt allgemeiner Annahmen."
+    }
+  ]
+}

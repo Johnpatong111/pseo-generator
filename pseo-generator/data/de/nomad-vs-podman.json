@@ -1,0 +1,96 @@
+{
+  "slug": "nomad-vs-podman",
+  "meta": {
+    "title": "Nomad vs Podman (2026): welche Lösung passt besser?",
+    "description": "Nomad vs Podman im Vergleich 2026: Orchestrierung, Container-Laufzeit, Sicherheit, Betrieb und Einsatzszenarien – mit klarer Empfehlung für beide Tools."
+  },
+  "toolA": {
+    "name": "Nomad"
+  },
+  "toolB": {
+    "name": "Podman"
+  },
+  "verdict": "Nomad lohnt sich, wenn du viele heterogene Workloads über einen ganzen Cluster hinweg orchestrieren willst und dafür eine schlanke, integrierte Lösung mit Scheduler, Rolling Updates und Rescheduling suchst. Podman passt besser, wenn du Container vorrangig auf einzelnen Hosts oder in kleinen Umgebungen ohne Daemon und möglichst rootless betreiben willst und dir Pods sowie systemd-Integration genügen. Beide ergänzen sich, denn Nomad kann Podman als Task-Treiber nutzen. Prüfe die Eignung stets anhand von Version, Lizenz und Konfiguration.",
+  "comparison": [
+    {
+      "category": "Grundlegende Rolle und Architektur: Wofür sind die Tools überhaupt gedacht?",
+      "toolA": "Nomad ist ein Cluster-Orchestrator von HashiCorp, der Tasks als Jobs deklarativ plant und auf einem Verbund von Client- und Server-Knoten verteilt. Er verwaltet nicht nur Container, sondern über Task-Treiber auch virtuelle Maschinen, ausführbare Dateien und weitere Workloads. Die Architektur ist auf mehrere Knoten ausgelegt und trennt Server für Scheduling und Clients für die Ausführung.",
+      "toolB": "Podman ist primär eine Container-Engine zum Erstellen, Starten und Verwalten von Containern und Pods auf einem Host. Sie arbeitet daemonlos und kann rootless betrieben werden, was die Angriffsfläche reduziert. Ein Multi-Node-Scheduling ist nicht Kernaufgabe von Podman; dafür werden ergänzende Werkzeuge wie Kubernetes oder systemd benötigt.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Orchestrierung und Skalierung über mehrere Knoten",
+      "toolA": "Nomad bietet nativ Cluster-Orchestrierung mit Platzierung, Rescheduling, Rolling Updates und Multi-Region-Funktionen. Abhängig von Version und Lizenz stehen zusätzlich Enterprise-Funktionen wie bestimmte Governance- oder Disaster-Recovery-Optionen zur Verfügung. Für Workloads, die über viele Hosts verteilt werden sollen, ist das ein zentraler Vorteil.",
+      "toolB": "Podman selbst führt kein Cluster-Scheduling durch und verteilt Container nicht eigenständig über Knoten. Für mehrere Hosts brauchst du zusätzliche Orchestrierung, etwa Kubernetes, oder du verwaltest Hosts manuell beziehungsweise per Automatisierung. Podman eignet sich damit eher für Single-Host- oder ergänzende Szenarien.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Daemon-Architektur, rootless Betrieb und Sicherheitsmodell",
+      "toolA": "Nomad läuft als Client- und Server-Prozess und führt Workloads über Treiber aus, die je nach Konfiguration unterschiedliche Rechte benötigen. Sicherheit hängt stark von der Einrichtung ab, etwa von ACLs, mTLS und der Isolation der Clients. Einige Treiber erfordern erhöhte Rechte auf dem Host, was bei der Härtung berücksichtigt werden muss.",
+      "toolB": "Podman ist daemonlos und unterstützt rootless Container, sodass Prozesse ohne dauerhaft laufenden Root-Dienst ausgeführt werden können. Namespaces und weitere Linux-Mechanismen sorgen für Isolation; das genaue Verhalten ist von Kernel, Konfiguration und Version abhängig. Für viele lokale oder CI-nahe Szenarien gilt Podman daher als sicherheitsfreundliche Wahl.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ökosystem, Kompatibilität und Workload-Vielfalt",
+      "toolA": "Nomad ist Teil des HashiCorp-Ökosystems und lässt sich mit Consul, Vault und Terraform kombinieren. Es unterstützt Container, VMs, Batch-Jobs sowie eigenständige Prozesse und ist damit für gemischte Workloads interessant. Die Konfiguration erfolgt über HCL-Jobspezifikationen, was Einarbeitung erfordert.",
+      "toolB": "Podman ist weitgehend kompatibel mit der Docker-CLI und kann viele bestehende Befehle und Container-Images direkt nutzen. Es unterstützt Pods, Quadlet und systemd-Integration, was den Betrieb auf Linux-Hosts erleichtert. Für Kubernetes gibt es ergänzende Werkzeuge; die Kompatibilität einzelner Funktionen hängt von Version und Konfiguration ab.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Betriebsaufwand und Lernkurve",
+      "toolA": "Der Betrieb eines Nomad-Clusters erfordert Planung von Servern, Clients, Netzwerk und Zustandsspeicherung. Für einfache Einzel-Host-Setups ist der Aufwand oft höher als nötig, während größere Umgebungen von der integrierten Orchestrierung profitieren. Die HCL-Syntax und das Jobmodell verlangen eine gewisse Einarbeitung.",
+      "toolB": "Podman ist schnell installiert und über eine vertraute CLI bedienbar, insbesondere wenn du Docker kennst. Für einfache Einzel-Host-Szenarien ist der Einstieg niedrigschwellig, während komplexe Mehrmaschinen-Setups zusätzliche Tools erfordern. Die Lernkurve hängt stark vom gewünschten Betriebsmodell ab.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Integration mit systemd und Host-Automatisierung",
+      "toolA": "Nomad kann Tasks über systemd-nahe Abläufe oder eigene Treiber starten, ersetzt systemd jedoch nicht als Host-Initiator. Auf Client-Knoten läuft Nomad als Dienst, der die Workloads verwaltet. Für hostnahe Automatisierung werden häufig ergänzende Werkzeuge eingesetzt.",
+      "toolB": "Podman lässt sich über Quadlet oder generierte systemd-Units tief in den Host-Betrieb integrieren. Container können so beim Systemstart gestartet und über systemd überwacht werden. Das macht Podman für klassische Linux-Server attraktiv, auch ohne separaten Orchestrator.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Reifegrad und Einsatzumfeld (Stand 2026, ohne eigene Tests)",
+      "toolA": "Nomad ist ein etablierter Orchestrator mit dokumentierten Funktionen und einer aktiven Community, wobei Funktionsumfang und Support je nach Edition variieren. Die Eignung für produktive Umgebungen hängt von Version, Konfiguration und Betriebserfahrung ab. Größe und Reife zeigen sich vor allem in Mehrmaschinen-Szenarien.",
+      "toolB": "Podman ist eine ausgereifte Container-Engine mit breiter Distribution und aktiver Entwicklung, wobei einzelne Features von Version und Distribution abhängen. Es wird häufig für lokale Entwicklung, CI und Host-Betrieb eingesetzt. Für Cluster-Orchestrierung ist es allein nicht ausgelegt.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# hello.nomad\njob \"hello\" {\n  datacenters = [\"dc1\"]\n  type        = \"service\"\n\n  group \"app\" {\n    task \"server\" {\n      driver = \"docker\"\n\n      config {\n        image   = \"nginx:alpine\"\n        ports   = [\"http\"]\n      }\n\n      resources {\n        cpu    = 100\n        memory = 128\n      }\n    }\n  }\n}\n\n# Ausführen (vereinfacht):\n# nomad job run hello.nomad",
+    "tech2Snippet": "# Minimaler Podman-Start (illustrativ):\npodman run --rm docker.io/library/hello-world\n\n# Rootless mit explizitem Namen:\npodman run --rm --name hello docker.io/library/hello-world"
+  },
+  "faq": [
+    {
+      "q": "Für welches Projekt eignet sich Nomad besser als Podman?",
+      "a": "Nomad ist die bessere Wahl, wenn du Workloads über mehrere Knoten verteilen, Rolling Updates durchführen und gemischte Arbeitslasten wie Container, virtuelle Maschinen und Batch-Jobs orchestrieren möchtest. Der integrierte Scheduler und die deklarative Jobdefinition reduzieren den manuellen Aufwand in größeren Umgebungen. Prüfe vorab, ob deine Version und Lizenz die benötigten Funktionen abdecken."
+    },
+    {
+      "q": "Wann ist Podman die passendere Lösung?",
+      "a": "Podman passt gut, wenn du Container vorwiegend auf einzelnen Hosts betreibst, daemonlos und möglichst rootless arbeiten willst und eine vertraute Docker-kompatible CLI schätzt. Für Linux-Server ist die Integration über systemd und Quadlet ein praktischer Vorteil. Wenn du jedoch Cluster-Scheduling über viele Knoten benötigst, brauchst du zusätzlich einen Orchestrator."
+    },
+    {
+      "q": "Kann ich Nomad und Podman zusammen verwenden?",
+      "a": "Ja, Nomad kann Podman als Task-Treiber einsetzen, sodass Podman die Container auf den Nomad-Clients ausführt und Nomad die Platzierung und Orchestrierung übernimmt. Die genaue Einrichtung und der unterstützte Funktionsumfang hängen von der Nomad-Version und der Konfiguration ab. Das kann sinnvoll sein, wenn du die daemonlose Laufzeit schätzt, aber nicht auf Cluster-Scheduling verzichten willst."
+    },
+    {
+      "q": "Ist Podman sicherer als Nomad?",
+      "a": "Ein pauschales Urteil ist nicht seriös, weil die Sicherheit von Konfiguration, Version und Umgebung abhängt. Podman bringt durch den daemonlosen rootless Betrieb oft eine kleinere Angriffsfläche, während Nomad seine Sicherheit über ACLs, mTLS und Härtung der Client-Knoten gewinnt. Entscheidend ist, wie konsequent du Rechte, Netzwerk und Isolation einrichtest."
+    },
+    {
+      "q": "Welche Rolle spielt die Kompatibilität mit Docker?",
+      "a": "Podman ist weitgehend kompatibel mit der Docker-CLI und kann viele bestehende Befehle und Images ohne große Änderungen nutzen, was Migrationen erleichtert. Nomad arbeitet auf einer anderen Abstraktionsebene und beschreibt Workloads als Jobs in HCL, auch wenn Container über Treiber gestartet werden. Eine direkte Docker-CLI-Kompatibilität ist bei Nomad daher nicht das Ziel."
+    },
+    {
+      "q": "Wie aufwendig ist der Betrieb eines Nomad-Clusters?",
+      "a": "Ein Nomad-Cluster erfordert Planung von Servern, Clients, Netzwerk und Zustandsspeicherung sowie Kenntnisse der HCL-Jobspezifikation. Für große Umgebungen zahlt sich der Aufwand durch integrierte Orchestrierung und Rescheduling aus. Für einen einzelnen Host ist der Betrieb oft überdimensioniert, weshalb dort eine einfachere Container-Engine sinnvoller sein kann."
+    },
+    {
+      "q": "Eignet sich Podman für Kubernetes-Umgebungen?",
+      "a": "Podman allein ist kein Kubernetes-Ersatz, kann aber Container-Images für Kubernetes bereitstellen und lokal Pods erzeugen, die Kubernetes-Konzepten ähneln. Für echte Cluster-Orchestrierung ist Kubernetes oder ein anderer Orchestrator nötig. Die konkrete Kompatibilität und Werkzeugunterstützung hängen von Version und Konfiguration ab."
+    },
+    {
+      "q": "Welche Faktoren sollte ich vor der Entscheidung prüfen?",
+      "a": "Kläre Anzahl der Hosts, Art der Workloads, Anforderungen an Hochverfügbarkeit und ob du rootless arbeiten möchtest. Prüfe außerdem, welche Kenntnisse im Team vorhanden sind und ob du eine integrierte Orchestrierung wie Nomad oder eine hostnahe Laufzeit wie Podman benötigst. Ein kleiner Prototyp mit deiner Zielversion ist sinnvoll, um Kompatibilität und Betriebsaufwand realistisch einzuschätzen."
+    }
+  ]
+}

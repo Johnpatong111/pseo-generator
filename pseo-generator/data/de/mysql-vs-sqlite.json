@@ -1,0 +1,102 @@
+{
+  "slug": "mysql-vs-sqlite",
+  "meta": {
+    "title": "MySQL vs SQLite (2026): welche Lösung passt besser?",
+    "description": "MySQL vs SQLite im Vergleich 2026: Architektur, Betrieb, Skalierung, Sicherheit und Einsatzszenarien. So wählen Sie die passende Datenbank für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "SQLite eignet sich für lokale, eingebettete und schreibarme Anwendungen mit einer Datei als Datenbank und praktisch ohne Administrationsaufwand, etwa Desktop-Apps, Prototypen oder mobile Clients. MySQL ist die bessere Wahl, wenn mehrere Clients gleichzeitig über ein Netzwerk zugreifen, Rollen- und Rechteverwaltung, Replikation und horizontale Skalierung gefragt sind. Die Entscheidung hängt damit vor allem von Nebenläufigkeit, Betriebsmodell und Wachstumserwartung ab, nicht von einem pauschalen Sieger.",
+  "comparison": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "MySQL arbeitet als eigenständiger Serverprozess, den Anwendungen über TCP oder Unix-Sockets ansprechen. Der Betrieb erfordert Installation, Konfiguration, Backup-Strategie und meist eine laufende Dienstverwaltung.",
+      "toolB": "SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die direkt in die Anwendung gelinkt wird. Die gesamte Datenbank liegt in einer einzigen Datei, was Deployment und Sicherung deutlich vereinfacht.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Nebenläufigkeit und Mehrbenutzerbetrieb",
+      "toolA": "MySQL ist auf viele gleichzeitige Verbindungen ausgelegt und bietet mehrere Speicher-Engines sowie Zeilen-Sperren, die parallele Schreibzugriffe unterschiedlicher Clients ermöglichen.",
+      "toolB": "SQLite serialisiert Schreibzugriffe über Dateisperren; Lesen ist parallel möglich, aber nur ein Schreiber ist zugleich aktiv. Bei hoher Schreibl rhetorik aus mehreren Prozessen oder Hosts stößt dieses Modell an Grenzen.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalierung und Verteilung",
+      "toolA": "MySQL unterstützt Replikation, Clustering-Varianten und horizontale Aufteilung sowie Netzwerkzugriff von vielen Servern. Die tatsächliche Skalierung hängt stark von Version, Konfiguration und Arbeitslast ab.",
+      "toolB": "SQLite skaliert nicht über Rechner hinweg, da die Datenbank als lokale Datei gebunden ist. Für verteilte Systeme ist es nicht vorgesehen, was die Einsatzgrenzen klar definiert.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sicherheit und Rechteverwaltung",
+      "toolA": "MySQL bietet Benutzerkonten, granulare Privilegien, verschlüsselte Verbindungen und Audit-Optionen, abhängig von Version und Edition. Die sichere Konfiguration erfordert Fachkenntnis, etwa bei Netzwerkbindung und Passwortrichtlinien.",
+      "toolB": "SQLite kennt kein eigenes Benutzer- oder Rollenkonzept; der Schutz ergibt sich aus den Dateisystemrechten. Verschlüsselung ist nicht in der Kernbibliothek enthalten und erfordert Erweiterungen wie SQLCipher.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Einfachheit und Wartungsaufwand",
+      "toolA": "MySQL verlangt regelmäßige Updates, Backups, Monitoring und Kapazitätsplanung. Diese Aufgaben sind planbar, erfordern aber laufenden Betriebsaufwand.",
+      "toolB": "SQLite benötigt keinen Dienst und keine Serverwartung; ein Backup ist im einfachsten Fall das Kopieren der Datei in einem konsistenten Zustand. Das senkt den Einstieg deutlich.",
+      "winner": "toolB"
+    },
+    {
+      "category": "SQL-Funktionsumfang",
+      "toolA": "MySQL deckt umfangreiche SQL-Funktionen ab, darunter Fensterfunktionen, CTEs, JSON-Unterstützung und Stored Procedures, wobei Details von der Version abhängen.",
+      "toolB": "SQLite unterstützt einen großen Teil von SQL, einschließlich CTEs und Fensterfunktionen in aktuellen Versionen, bleibt aber bewusst schlank und typlocker. Spezialfälle wie vollständige Stored-Procedure-Logik fehlen.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Zuverlässigkeit und Fehlertoleranz",
+      "toolA": "MySQL bietet Transaktionen, Crash-Recovery und Mechanismen wie Replikation zur Ausfallsicherheit, deren Verhalten von Engine, Version und Konfiguration abhängt.",
+      "toolB": "SQLite ist durch sein Transaktionsjournal sehr robust gegen Abstürze und gilt als äußerst zuverlässig für lokale Nutzung. Ausfallsicherheit über mehrere Hosts hinweg ist jedoch nicht Teil des Designs.",
+      "winner": "tie"
+    },
+    {
+      "category": "Einsatzgebiete und Ökosystem",
+      "toolA": "MySQL ist in Webanwendungen, Content-Management-Systemen und SaaS-Backends weit verbreitet, mit breitem Hosting- und Tool-Ökosystem.",
+      "toolB": "SQLite dominiert bei mobilen Apps, Desktop-Software, Testumgebungen und Analysewerkzeugen durch zero-config-Betrieb und breite Sprachbindungen.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import mysql.connector\n\nconn = mysql.connector.connect(host=\"localhost\", user=\"root\", password=\"geheim\")\ncursor = conn.cursor()\ncursor.execute(\"CREATE DATABASE IF NOT EXISTS demo\")\ncursor.execute(\"USE demo\")\ncursor.execute(\"CREATE TABLE IF NOT EXISTS gruss (text VARCHAR(100))\")\ncursor.execute(\"INSERT INTO gruss (text) VALUES (%s)\", (\"Hallo, Welt!\",))\nconn.commit()\ncursor.execute(\"SELECT text FROM gruss\")\nprint(cursor.fetchone()[0])\ncursor.close()\nconn.close()",
+    "tech2Snippet": "import sqlite3\n\nconn = sqlite3.connect(\"demo.db\")\ncursor = conn.cursor()\ncursor.execute(\"CREATE TABLE IF NOT EXISTS gruss (text TEXT)\")\ncursor.execute(\"INSERT INTO gruss (text) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\ncursor.execute(\"SELECT text FROM gruss\")\nprint(cursor.fetchone()[0])\ncursor.close()\nconn.close()"
+  },
+  "faq": [
+    {
+      "q": "Welche Datenbank eignet sich besser für eine kleine Webanwendung mit wenigen Nutzern?",
+      "a": "Bei einer kleinen Webanwendung mit geringer Nebenläufigkeit kann SQLite ausreichen, besonders wenn die Anwendung auf einem einzelnen Server läuft. Sobald mehrere Prozesse intensiv schreiben oder mehrere Server zugreifen sollen, ist MySQL die robustere Wahl. Prüfen Sie vorab, ob Ihr Hosting SQLite-Dateien dauerhaft und mit konsistenten Backups unterstützt."
+    },
+    {
+      "q": "Kann SQLite mehrere gleichzeitige Benutzer bedienen?",
+      "a": "SQLite erlaubt parallele Lesezugriffe, serialisiert aber Schreibvorgänge über Dateisperren. Für wenige, kurze Schreibtransaktionen funktioniert das im Alltag oft zuverlässig. Bei vielen gleichzeitigen Schreibern oder langen Transaktionen entstehen Wartezeiten, weshalb dann ein Server-Datenbanksystem wie MySQL sinnvoller ist."
+    },
+    {
+      "q": "Wann lohnt sich der Wechsel von SQLite zu MySQL?",
+      "a": "Ein Wechsel ist sinnvoll, wenn mehrere Anwendungsinstanzen über ein Netzwerk zugreifen, Rollen und Rechte verwaltet werden müssen oder die Datenbank über Replikation verteilt werden soll. Auch hohe Schreiblast und Wachstum über einen einzelnen Server hinaus sind typische Auslöser. Ob der Wechsel nötig ist, hängt von Ihrer Arbeitslast und den Anforderungen an Ausfallsicherheit ab."
+    },
+    {
+      "q": "Ist SQLite für Produktionssysteme geeignet?",
+      "a": "Ja, SQLite wird in vielen Produktivumgebungen eingesetzt, insbesondere in mobilen Apps, Desktop-Software und eingebetteten Systemen. Entscheidend ist, ob die Zugriffsmuster zum Design passen, also keine verteilten Schreiber und keine hohe Parallelität erforderlich sind. Für zentrale Mehrbenutzersysteme ist MySQL meist die passendere Wahl."
+    },
+    {
+      "q": "Wie steht es um Sicherheit und Verschlüsselung bei beiden Systemen?",
+      "a": "MySQL bietet Benutzerverwaltung, Rechtevergabe und verschlüsselte Verbindungen, deren konkreter Umfang von Version und Edition abhängt. SQLite hat kein eigenes Rechtekonzept und schützt Daten über Dateisystemrechte; Verschlüsselung ist nicht in der Kernbibliothek enthalten und erfordert Erweiterungen wie SQLCipher. Für sensible Mehrbenutzersysteme ist MySQL in der Regel die sicherere Grundlage."
+    },
+    {
+      "q": "Welche Backup-Strategie passt zu SQLite und welche zu MySQL?",
+      "a": "Bei SQLite sichern Sie die Datenbankdatei in einem konsistenten Zustand, etwa über die Backup-API oder bei gestopptem Schreibzugriff. Bei MySQL nutzen Sie Werkzeuge wie mysqldump oder physische Backups, abhängig von Engine und Größe. In beiden Fällen sollten Wiederherstellungstests fester Bestandteil der Strategie sein."
+    },
+    {
+      "q": "Unterstützen beide Datenbanken Transaktionen und SQL-Standardfunktionen?",
+      "a": "Beide Systeme unterstützen Transaktionen mit ACID-Eigenschaften, wobei SQLite standardmäßig eine passende Journal-Modus-Konfiguration nutzt. Fensterfunktionen und CTEs sind in aktuellen Versionen beider Systeme verfügbar, Details hängen jedoch von der jeweiligen Version ab. Prüfen Sie vor der Migration die konkreten SQL-Funktionen, die Ihre Anwendung benötigt."
+    },
+    {
+      "q": "Wie aufwendig ist der Betrieb im Vergleich?",
+      "a": "SQLite verursacht praktisch keinen Verwaltungsaufwand, da kein Serverprozess betrieben werden muss und die Datenbank als Datei mitwandert. MySQL erfordert Installation, Konfiguration, Updates, Monitoring und Backups, was mehr Know-how und laufende Aufmerksamkeit bedeutet. Für kleine Teams kann dieser Unterschied stark ins Gewicht fallen."
+    }
+  ]
+}

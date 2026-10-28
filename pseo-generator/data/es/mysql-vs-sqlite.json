@@ -1,0 +1,98 @@
+{
+  "slug": "mysql-vs-sqlite",
+  "meta": {
+    "title": "MySQL vs SQLite (2026): ¿Qué solución elegir?",
+    "description": "Comparamos MySQL y SQLite en 2026: arquitectura, concurrencia, escalabilidad, seguridad, copias de seguridad y casos de uso para elegir bien tu base de datos."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "Elige MySQL cuando necesites un servidor de base de datos centralizado, muchos usuarios concurrentes, permisos por usuario y escalabilidad horizontal. Elige SQLite cuando el rendimiento de escritura concurrente no sea crítico y quieras cero administración: aplicaciones de escritorio, móviles, prototipos o servicios de lectura intensiva. SQLite no sustituye a MySQL en cargas de escritura distribuidas.",
+  "comparison": [
+    {
+      "category": "Arquitectura y modelo de despliegue",
+      "toolA": "MySQL funciona como un servidor de base de datos independiente al que los clientes se conectan por red, normalmente con el protocolo nativo o mediante conectores. Este modelo permite centralizar datos, separar la capa de datos de la aplicación y escalar clientes sin redistribuir el motor.",
+      "toolB": "SQLite es una biblioteca embebida que se enlaza dentro de la propia aplicación; no hay proceso servidor ni puerto de escucha. La base de datos es un archivo local, lo que simplifica el despliegue, pero limita el acceso concurrente y la distribución del almacenamiento.",
+      "winner": "tie"
+    },
+    {
+      "category": "Concurrencia y bloqueos",
+      "toolA": "MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y niveles de aislamiento configurables, lo que permite muchas conexiones simultáneas con lecturas y escrituras. El comportamiento concreto depende de la versión, la configuración y la carga.",
+      "toolB": "SQLite aplica un bloqueo de escritura a nivel de base de datos: en el modo de diario clásico solo un escritor puede escribir a la vez, aunque los lectores concurrentes sí son posibles. El modo WAL (write-ahead logging) mejora la concurrencia de lecturas y escrituras, pero sigue habiendo un único escritor.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Escalabilidad y rendimiento bajo carga",
+      "toolA": "MySQL está diseñado para crecer verticalmente y, con réplicas, particionado o soluciones de clustering, también horizontalmente en ciertos escenarios. El rendimiento depende de la configuración del servidor, el esquema, los índices y el tipo de consultas, por lo que no conviene asumir cifras sin medir la carga real.",
+      "toolB": "SQLite es muy rápido para lecturas locales y bases de datos pequeñas o medianas, y suele ser suficiente para aplicaciones de un solo usuario o de baja concurrencia. No está pensado para cargas de escritura concurrentes altas ni para escalado horizontal entre varios servidores.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Instalación, administración y mantenimiento",
+      "toolA": "MySQL requiere instalar y configurar un servidor, gestionar usuarios, copias de seguridad, actualizaciones y parámetros de rendimiento. Esa administración añade complejidad, pero ofrece herramientas y procedimientos consolidados para operar en producción.",
+      "toolB": "SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y abrir un archivo. El mantenimiento se reduce a copias de seguridad y control de versiones del archivo, aunque esto también implica menos herramientas para operaciones avanzadas.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "MySQL incluye un sistema de cuentas de usuario, privilegios granulares por base de datos, tabla u operación, y opciones de cifrado en tránsito y en reposo según la versión y la configuración. Estas capacidades permiten separar roles y auditar accesos en un entorno multiusuario.",
+      "toolB": "SQLite se apoya en los permisos del sistema de archivos del sistema operativo, ya que no tiene un sistema de usuarios propio integrado. Esto es adecuado para aplicaciones locales, pero no ofrece control de acceso granular por usuario de base de datos.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Copias de seguridad y recuperación",
+      "toolA": "MySQL permite copias lógicas con mysqldump o herramientas equivalentes y copias físicas con utilidades específicas, además de réplicas y puntos de recuperación según la configuración. La recuperación exige planificación y pruebas periódicas.",
+      "toolB": "SQLite ofrece la orden de copia de seguridad en línea y la posibilidad de copiar el archivo cuando la base de datos no está en uso o con el mecanismo adecuado. Es sencillo para archivos pequeños, pero requiere cuidado con las escrituras concurrentes y no incluye réplica integrada.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosistema, compatibilidad y herramientas",
+      "toolA": "MySQL tiene un ecosistema amplio de conectores para lenguajes y frameworks, herramientas de administración, monitorización y servicios gestionados en la nube. Su compatibilidad con estándares SQL es razonable, aunque con particularidades propias.",
+      "toolB": "SQLite es compatible con una gran cantidad de lenguajes y plataformas, y su formato de archivo es estable y ampliamente soportado. Su dialecto SQL es muy cercano al estándar, pero carece de algunos tipos y funciones avanzadas que sí ofrecen los servidores de bases de datos.",
+      "winner": "tie"
+    },
+    {
+      "category": "Casos de uso recomendados",
+      "toolA": "MySQL encaja en aplicaciones web con muchos usuarios, sistemas con escrituras concurrentes, servicios centralizados y escenarios donde se necesita control de acceso y operación en red. También es habitual en entornos gestionados por proveedores cloud.",
+      "toolB": "SQLite encaja en aplicaciones de escritorio y móviles, prototipos, herramientas locales, cachés y servicios de solo lectura o de baja escritura. Es una opción excelente cuando la simplicidad de despliegue pesa más que la concurrencia multiusuario.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué base de datos conviene para una aplicación web con muchos usuarios?",
+      "a": "Para una aplicación web con muchos usuarios concurrentes y escrituras frecuentes, MySQL suele ser la opción más adecuada porque está diseñado como servidor con control de concurrencia y permisos por usuario. SQLite puede funcionar en servicios pequeños o de solo lectura, pero su modelo de un único escritor limita la concurrencia. Antes de decidir, mide la carga real y revisa la configuración de tu versión."
+    },
+    {
+      "q": "¿SQLite es suficiente para producción?",
+      "a": "SQLite se usa en producción en muchos escenarios, especialmente en aplicaciones locales, móviles y servicios de lectura intensiva. Su fiabilidad depende de usar correctamente las transacciones, el modo WAL cuando corresponda y copias de seguridad verificadas. No obstante, no es la mejor opción si necesitas muchos escritores simultáneos o acceso remoto centralizado."
+    },
+    {
+      "q": "¿MySQL puede funcionar sin un servidor dedicado?",
+      "a": "MySQL se ejecuta como un proceso servidor, aunque puede instalarse en la misma máquina que la aplicación o en un contenedor. No es una biblioteca embebida como SQLite, por lo que siempre implica gestionar un servicio y su configuración. Para desarrollo local existen alternativas ligeras, pero el modelo sigue siendo cliente-servidor."
+    },
+    {
+      "q": "¿Cuál es más fácil de desplegar y mantener?",
+      "a": "SQLite es más fácil de desplegar porque no requiere instalar ni administrar un servidor: la base de datos es un archivo que la aplicación abre. MySQL necesita configuración, usuarios, copias de seguridad y monitorización, lo que añade trabajo operativo. Esa complejidad se compensa cuando necesitas concurrencia, permisos y escalabilidad."
+    },
+    {
+      "q": "¿Qué opción ofrece mejor control de acceso y seguridad?",
+      "a": "MySQL incluye cuentas de usuario y privilegios granulares, además de opciones de cifrado según la versión y la configuración. SQLite depende de los permisos del sistema de archivos y no tiene un sistema de usuarios propio. Para entornos multiusuario con requisitos de auditoría, MySQL suele ser más adecuado; para aplicaciones locales, SQLite puede ser suficiente."
+    },
+    {
+      "q": "¿Cómo afecta el modo WAL a SQLite en 2026?",
+      "a": "El modo WAL de SQLite permite que los lectores no bloqueen al escritor y viceversa en muchos casos, lo que mejora la concurrencia respecto al diario clásico. Aun así, sigue habiendo un único escritor a la vez, por lo que no elimina el límite fundamental para cargas de escritura intensas. Su comportamiento concreto depende de la versión y de la configuración de la aplicación."
+    },
+    {
+      "q": "¿Puedo migrar de SQLite a MySQL más adelante?",
+      "a": "La migración es posible, pero requiere revisar el esquema, los tipos de datos, las consultas específicas y el manejo de transacciones y bloqueos. No es una copia directa: conviene planificar pruebas de compatibilidad y validar el rendimiento con la carga esperada. Hacerlo pronto, antes de que crezca el volumen de datos, reduce el coste."
+    },
+    {
+      "q": "¿Qué debo evaluar antes de elegir entre MySQL y SQLite?",
+      "a": "Evalúa el número de usuarios concurrentes, el volumen y tipo de escrituras, la necesidad de acceso remoto, los requisitos de permisos y las copias de seguridad. También conviene medir el rendimiento con una carga representativa y revisar la versión y la configuración de cada motor. No hay una respuesta universal: la decisión depende del contexto operativo y de las restricciones del proyecto."
+    }
+  ]
+}

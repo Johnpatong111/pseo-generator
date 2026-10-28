@@ -1,0 +1,98 @@
+{
+  "slug": "sqlite-vs-duckdb",
+  "meta": {
+    "title": "SQLite vs DuckDB (2026): które rozwiązanie wybrać?",
+    "description": "Porównanie SQLite i DuckDB w 2026: transakcje, analityka, współbieżność, integracje i ograniczenia. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "SQLite to najlepszy wybór dla aplikacji transakcyjnych, mobilnych, desktopowych i wbudowanych, gdzie liczą się dojrzałość, prostota i współdzielony zapis. DuckDB wybierz do analityki lokalnej, zapytań OLAP i przetwarzania Parquet lub CSV. Kluczowy jest profil obciążenia, a nie sama popularność narzędzia. Wyniki silnie zależą od wersji, konfiguracji i charakteru zapytań, więc decyzję oprzyj na testach na własnych danych.",
+  "comparison": [
+    {
+      "category": "Model przechowywania i architektura pliku",
+      "toolA": "SQLite przechowuje całą bazę w jednym pliku na dysku, co upraszcza kopie zapasowe, przenoszenie i osadzanie w aplikacjach. Jest to baza wierszowa z pełnym silnikiem transakcyjnym i wieloma opcjami kompilacji. Zachowanie i dostępne funkcje zależą od wersji biblioteki oraz flag kompilacji, dlatego warto sprawdzić konkretną dystrybucję.",
+      "toolB": "DuckDB również działa na pojedynczym pliku bazy i nie wymaga serwera, ale jest zoptymalizowany pod układ kolumnowy i przetwarzanie wektorowe. Zapewnia wysoki stopień kompresji danych oraz obsługę zapytań analitycznych na dużych zbiorach. Zachowanie i funkcje zależą od wersji silnika oraz konfiguracji pamięci, więc wyniki należy weryfikować na własnym obciążeniu.",
+      "winner": "tie"
+    },
+    {
+      "category": "Profil obciążenia: transakcje a analityka",
+      "toolA": "SQLite jest projektowany pod obciążenia transakcyjne OLTP: wiele krótkich zapytań, wstawianie, aktualizacje i odczyty pojedynczych wierszy. Tryb WAL poprawia współbieżność odczytów, choć zapis nadal jest ograniczony i może wymagać koordynacji przy dużym obciążeniu. Rzeczywista wydajność zależy od schematu, indeksów i konfiguracji.",
+      "toolB": "DuckDB jest zoptymalizowany pod zapytania analityczne OLAP: agregacje, złączenia i skanowanie kolumn na dużych zbiorach. Działa dobrze na plikach Parquet i CSV oraz przy lokalnej analityce, ale nie jest projektowany jako baza do wielu równoległych zapisów transakcyjnych. Wydajność zależy od rozmiaru danych, dostępnej pamięci i konstrukcji zapytań.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Współbieżność i dostęp wieloużytkownikowy",
+      "toolA": "SQLite obsługuje wielu czytających, a zapis jest serializowany; przy włączonym WAL odczyty nie blokują zapisu w typowych scenariuszach. Rozwiązanie sprawdza się w aplikacjach wbudowanych i lokalnych, ale przy intensywnym współdzieleniu zapisu może wymagać kolejek lub architektury z jednym procesem zapisującym. Zachowanie zależy od wersji i konfiguracji.",
+      "toolB": "DuckDB obsługuje równoległe przetwarzanie zapytań w ramach pojedynczego procesu, ale nie jest przeznaczony do równoczesnego zapisu z wielu procesów do tego samego pliku bazy. Typowy model to analiza w jednym procesie lub dostęp przez serwer aplikacyjny, a nie współdzielenie pliku przez wielu piszących. Wydajność i ograniczenia zależą od wersji oraz konfiguracji.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Wydajność zapytań analitycznych i kompresja",
+      "toolA": "SQLite korzysta z układu wierszowego, co jest korzystne przy zapytaniach punktowych i transakcyjnych, ale mniej efektywne przy skanowaniu dużych tabel i agregacjach. Indeksy i dobrze zaprojektowany schemat mogą poprawić wydajność, jednak przy dużych zbiorach analitycznych silnik może wymagać więcej pracy. Wyniki zależą od wersji, sprzętu i zapytań.",
+      "toolB": "DuckDB używa układu kolumnowego, przetwarzania wektorowego i kompresji, co sprzyja skanowaniu dużych zbiorów i agregacjom. Potrafi czytać pliki Parquet i CSV bezpośrednio, co bywa wygodne w analityce lokalnej. Rzeczywiste przyspieszenie zależy od zapytań, rozmiaru danych i konfiguracji pamięci.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Transakcje i integralność danych",
+      "toolA": "SQLite jest dojrzałym silnikiem transakcyjnym z obsługą transakcji, więzów i mechanizmów integralności, szeroko wykorzystywanym w aplikacjach produkcyjnych. Zapewnia atomowość i trwałość zgodnie z konfiguracją, a jego zachowanie jest dobrze udokumentowane. Szczegóły zależą od wersji i ustawień.",
+      "toolB": "DuckDB również wspiera transakcje i więzy integralności, ale jego główny profil to analityka, a nie intensywne obciążenie transakcyjne. Obsługa transakcji i współbieżności może się różnić między wersjami, dlatego przy zastosowaniach transakcyjnych należy zweryfikować dokumentację konkretnej wersji.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ekosystem, dojrzałość i wsparcie społeczności",
+      "toolA": "SQLite ma bardzo długą historię, szerokie wsparcie w językach programowania i systemach operacyjnych oraz liczne narzędzia i biblioteki. Jest często domyślnym wyborem w aplikacjach mobilnych i desktopowych, a dokumentacja jest obszerna. Dojrzałość przekłada się na przewidywalność, choć warto sprawdzić konkretną dystrybucję.",
+      "toolB": "DuckDB rozwija się dynamicznie i zyskuje popularność w analityce lokalnej oraz w ekosystemie danych, w tym w integracjach z Pythonem i narzędziami analitycznymi. Jego ekosystem jest młodszy niż SQLite, a dostępne funkcje i integracje zmieniają się między wersjami. Przed wdrożeniem warto sprawdzić zgodność z posiadanymi narzędziami.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Zastosowania w aplikacjach wbudowanych i mobilnych",
+      "toolA": "SQLite jest powszechnie używany w aplikacjach mobilnych, desktopowych i urządzeniach wbudowanych ze względu na mały rozmiar, brak serwera i prostą integrację. Sprawdza się tam, gdzie potrzebny jest lokalny magazyn transakcyjny i niezawodność. Zachowanie zależy od platformy i konfiguracji.",
+      "toolB": "DuckDB bywa używany w aplikacjach desktopowych i analityce lokalnej, ale nie jest tak powszechny w roli wbudowanego magazynu transakcyjnego w aplikacjach mobilnych. Może być dobrym wyborem do lokalnej analityki w aplikacji, jeśli profile obciążenia odpowiadają zapytaniom analitycznym. Dostępność i rozmiar zależą od platformy oraz wersji.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Koszt, licencja i wdrożenie",
+      "toolA": "SQLite jest dostępny na otwartej licencji typu public domain, co sprzyja szerokiemu wykorzystaniu w różnych projektach. Wdrożenie jest proste, bo nie wymaga osobnego serwera, a koszty zależą głównie od infrastruktury aplikacji. Należy sprawdzić warunki konkretnej dystrybucji i ewentualne komponenty firm trzecich.",
+      "toolB": "DuckDB jest udostępniany na otwartej licencji MIT, a wdrożenie polega zwykle na użyciu biblioteki w aplikacji lub środowisku analitycznym. Brak serwera upraszcza start, ale koszty mogą wynikać z pamięci i mocy obliczeniowej potrzebnej do analityki. Warunki licencji i dostępność funkcji zależą od wersji, dlatego warto zweryfikować konkretne wydanie.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Które narzędzie lepiej pasuje do aplikacji mobilnej lub desktopowej?",
+      "a": "Dla typowej aplikacji mobilnej lub desktopowej z lokalnym magazynem transakcyjnym zwykle lepiej sprawdzi się SQLite, ponieważ jest dojrzały, szeroko wspierany i projektowany pod takie zastosowania. DuckDB może mieć sens, jeśli aplikacja wykonuje głównie analitykę lokalną na dużych zbiorach, ale trzeba zweryfikować dostępność i rozmiar biblioteki na docelowej platformie oraz profil obciążenia."
+    },
+    {
+      "q": "Czy DuckDB zastąpi SQLite w typowych zastosowaniach transakcyjnych?",
+      "a": "Zwykle nie jest to zalecane, ponieważ DuckDB jest optymalizowany pod analitykę, a SQLite pod transakcje i współbieżny dostęp do pojedynczego pliku. DuckDB wspiera transakcje, ale jego model współbieżności i przeznaczenie różnią się od SQLite. Przy obciążeniach transakcyjnych należy sprawdzić dokumentację konkretnej wersji i przetestować zachowanie pod realnym obciążeniem."
+    },
+    {
+      "q": "Kiedy warto rozważyć DuckDB zamiast SQLite?",
+      "a": "DuckDB warto rozważyć, gdy aplikacja wykonuje zapytania analityczne na dużych zbiorach, czyta pliki Parquet lub CSV i potrzebuje szybkich agregacji w lokalnym środowisku. SQLite pozostaje lepszym wyborem przy wielu krótkich transakcjach i współdzielonym zapisie. Decyzję najlepiej oprzeć na testach wydajności na własnych danych, ponieważ wyniki zależą od wersji, konfiguracji i charakteru zapytań."
+    },
+    {
+      "q": "Czy SQLite i DuckDB można używać razem w jednym projekcie?",
+      "a": "Tak, można je łączyć, jeśli aplikacja ma wyraźnie rozdzielone role: SQLite jako magazyn transakcyjny, a DuckDB jako silnik analityczny lub narzędzie do przetwarzania plików. Taki układ bywa sensowny, ale zwiększa złożoność wdrożenia i wymaga spójnego procesu synchronizacji danych. Należy sprawdzić, czy wybrane wersje bibliotek i integracje obsługują potrzebne formaty oraz czy nie powstaną problemy z równoczesnym dostępem."
+    },
+    {
+      "q": "Jak wypada współbieżność zapisu w obu rozwiązaniach?",
+      "a": "W SQLite zapis jest serializowany, a tryb WAL poprawia równoległość odczytów, ale przy dużym natężeniu zapisu może pojawić się potrzeba koordynacji. DuckDB nie jest projektowany do równoczesnego zapisu z wielu procesów do tego samego pliku bazy i zwykle stosuje się go w analityce w jednym procesie lub przez warstwę aplikacyjną. W obu przypadkach zachowanie zależy od wersji i konfiguracji, dlatego warto przeprowadzić testy pod docelowym obciążeniem."
+    },
+    {
+      "q": "Czy któreś z narzędzi jest lepsze do analizy plików Parquet i CSV?",
+      "a": "DuckDB jest projektowany pod analitykę i potrafi czytać pliki Parquet oraz CSV bezpośrednio, co bywa wygodne przy lokalnym przetwarzaniu danych. SQLite nie jest zoptymalizowany pod skanowanie dużych plików analitycznych, choć można do niego zaimportować dane i wykonywać zapytania. Wybór zależy od rozmiaru plików, częstotliwości zapytań i konfiguracji środowiska, więc warto porównać wyniki na własnych zbiorach."
+    },
+    {
+      "q": "Jakie są ograniczenia DuckDB w zastosowaniach produkcyjnych?",
+      "a": "DuckDB jest silnikiem analitycznym i nie jest przeznaczony do intensywnego, wieloprocesowego zapisu transakcyjnego, co ogranicza jego rolę w niektórych systemach produkcyjnych. Jego funkcje i integracje zmieniają się między wersjami, więc przed wdrożeniem trzeba sprawdzić dokumentację konkretnego wydania. Przy dużych zbiorach istotne mogą być wymagania pamięciowe i sposób zarządzania współbieżnością."
+    },
+    {
+      "q": "Jakie są ograniczenia SQLite przy dużych obciążeniach analitycznych?",
+      "a": "SQLite korzysta z układu wierszowego, co jest korzystne dla transakcji, ale mniej efektywne przy skanowaniu dużych tabel i złożonych agregacjach. Indeksy i optymalizacja schematu mogą poprawić wydajność, jednak przy bardzo dużych zbiorach analitycznych silnik może wymagać więcej pracy niż rozwiązania kolumnowe. Rzeczywiste ograniczenia zależą od wersji, sprzętu i konstrukcji zapytań, dlatego warto testować na reprezentatywnych danych."
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "slug": "terraform-vs-kubernetes",
+  "meta": {
+    "title": "Terraform vs Kubernetes (2026): Which option should you choose?",
+    "description": "Compare Terraform and Kubernetes in 2026: provisioning versus orchestration, state, security, and when to use each tool or combine both in production."
+  },
+  "toolA": {
+    "name": "Terraform"
+  },
+  "toolB": {
+    "name": "Kubernetes"
+  },
+  "verdict": "Terraform and Kubernetes solve different problems and are rarely substitutes. Choose Terraform when you need to provision and govern infrastructure across clouds and services declaratively. Choose Kubernetes when you need to run and scale containerized workloads with self-healing and service discovery. Most mature platform teams use both: Terraform creates the cluster and its dependencies, and Kubernetes runs the applications inside it.",
+  "comparison": [
+    {
+      "category": "Primary purpose and problem domain",
+      "toolA": "Terraform is an infrastructure as code tool that provisions and manages resources such as networks, virtual machines, managed databases, IAM policies, and DNS records through provider APIs. It operates at the infrastructure layer and can target many cloud and SaaS providers from a single workflow. Its job ends largely once the resource exists and remains in the desired state.",
+      "toolB": "Kubernetes is a container orchestration platform that schedules, runs, and scales containerized workloads across a cluster of nodes. It handles deployment rollouts, service discovery, load balancing, and self-healing of pods. Its job is continuous runtime management of applications rather than creation of the underlying cloud resources.",
+      "winner": "tie"
+    },
+    {
+      "category": "Declarative model and reconciliation",
+      "toolA": "Terraform uses a plan-and-apply model: it compares configuration against stored state and provider APIs, shows a diff, and applies changes when you run it. Reconciliation is on demand, driven by CLI runs or automation pipelines, not by a long-running controller. Drift is detected when you next plan, which means detection depends on how often you run Terraform.",
+      "toolB": "Kubernetes runs controllers that continuously reconcile actual cluster state with the desired state declared in manifests. If a pod crashes or a node is drained, the control plane reschedules workloads without human intervention. This continuous loop is a core design property, though it applies to cluster objects rather than external cloud infrastructure.",
+      "winner": "toolB"
+    },
+    {
+      "category": "State management and source of truth",
+      "toolA": "Terraform keeps a state file that maps configuration to real resources, and that state must be stored remotely with locking for team use. State is powerful but also a operational responsibility: it can drift, contain secrets, and require careful migration when resources move. Backend choice and locking behavior depend on the configured backend and Terraform version.",
+      "toolB": "Kubernetes stores desired and observed state in etcd, and the API server is the single source of truth for cluster objects. There is no separate user-managed state file for workloads, which reduces a class of drift problems. However, etcd backups and control plane availability become critical operational concerns instead.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, providers, and extensibility",
+      "toolA": "Terraform has a large provider ecosystem covering major clouds, SaaS platforms, and niche services, plus modules for reusable patterns. Extensibility centers on providers and modules rather than in-cluster runtime behavior. Provider quality and feature lag vary, so verify support for specific resources in the provider documentation for your version.",
+      "toolB": "Kubernetes has a deep ecosystem of APIs, custom resource definitions, operators, ingress controllers, and CNI/CSI plugins. Extensibility is a first-class design goal, letting teams add platform capabilities through the API. The tradeoff is a steeper learning curve and more moving parts to secure and upgrade.",
+      "winner": "tie"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "Terraform security hinges on protecting state, since state can include sensitive values, and on scoping provider credentials tightly. Teams typically use remote state with encryption and access controls, plus short-lived credentials where the provider supports them. Policy-as-code tools can enforce guardrails, but enforcement depends on your pipeline design.",
+      "toolB": "Kubernetes provides native RBAC, namespaces, service accounts, network policies, and admission control, which enable fine-grained in-cluster authorization. Its security surface is broader: misconfigured RBAC, privileged pods, and supply chain issues are common risks, and hardening depends heavily on cluster version and configuration. Managed offerings shift some control plane responsibility to the provider.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Learning curve and operational overhead",
+      "toolA": "Terraform's HCL is relatively approachable for engineers familiar with infrastructure concepts, and a small team can be productive quickly. Ongoing overhead comes from state management, provider upgrades, and module maintenance. The blast radius of a mistaken apply can be significant, which makes review and planning discipline important.",
+      "toolB": "Kubernetes has a steeper learning curve spanning networking, storage, scheduling, and security concepts. Day-two operations, including upgrades, certificate rotation, and capacity planning, require real expertise. Managed Kubernetes services reduce control plane burden but do not eliminate workload and policy complexity.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Best fit for team workflows and GitOps",
+      "toolA": "Terraform fits change-management workflows built around pull requests, plan output review, and gated applies in CI/CD. It is well suited to platform teams that own cloud accounts and shared infrastructure. Integration with GitOps tools is common, but Terraform itself is not a continuous reconciler.",
+      "toolB": "Kubernetes pairs naturally with GitOps controllers that continuously sync manifests from a repository to the cluster. This supports fast, auditable application delivery and rollbacks. The approach works best when teams already standardize on container images and cluster-based deployment.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Role in a combined platform stack",
+      "toolA": "Terraform is typically used to create clusters, node pools, networking, identity, and managed services that the cluster depends on. It provides the foundation and guardrails before workloads exist. Keeping cluster bootstrap and cloud resources in Terraform improves reproducibility across environments.",
+      "toolB": "Kubernetes runs the applications and platform services on top of that provisioned foundation. It handles scaling, rollout strategy, and runtime resilience for containers. Using both together, with clear ownership boundaries, is a common and supportable pattern in 2026.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can Terraform replace Kubernetes?",
+      "a": "No. Terraform provisions infrastructure resources, while Kubernetes orchestrates containerized workloads at runtime. You could use Terraform to create a Kubernetes cluster, but Terraform does not schedule pods, perform health checks, or self-heal applications. They operate at different layers and are complementary rather than interchangeable."
+    },
+    {
+      "q": "Can Kubernetes replace Terraform?",
+      "a": "Generally no. Kubernetes manages objects inside a cluster, but it does not natively provision cloud networks, managed databases, IAM policies, or DNS records across providers. Some operators and crossplane-style tools can manage external resources from within Kubernetes, but that adds complexity and requires careful evaluation. Terraform remains the more direct fit for broad infrastructure provisioning."
+    },
+    {
+      "q": "Should I learn Terraform or Kubernetes first?",
+      "a": "If your goal is platform or cloud engineering, start with Terraform to learn infrastructure as code, state, and provider workflows, then move to Kubernetes for runtime orchestration. If your role is application deployment on an existing cluster, Kubernetes concepts may be the priority. The right order depends on your team's responsibilities and existing tooling."
+    },
+    {
+      "q": "How do Terraform and Kubernetes handle drift?",
+      "a": "Terraform detects drift when you run a plan, so detection frequency depends on your automation schedule. Kubernetes controllers reconcile continuously and correct divergence from declared objects automatically. Neither eliminates drift entirely, and both require monitoring, review, and disciplined change management."
+    },
+    {
+      "q": "Is Terraform secure enough for managing secrets?",
+      "a": "Terraform state can contain sensitive values, so protect remote state with encryption and restricted access, and avoid committing state to version control. Many teams use external secret managers and short-lived credentials to reduce exposure. Security depends on your backend configuration, provider capabilities, and pipeline controls rather than Terraform alone."
+    },
+    {
+      "q": "Do I need Kubernetes if I already use Terraform?",
+      "a": "Only if you run containerized workloads that benefit from orchestration, such as autoscaling, rolling deployments, and service discovery. Many teams run applications on managed platforms or serverless services without Kubernetes. Adding Kubernetes increases operational complexity, so adopt it when the workload and team maturity justify it."
+    },
+    {
+      "q": "Which tool is better for a small team in 2026?",
+      "a": "A small team usually gets more value from Terraform first, because provisioning cloud resources reproducibly is broadly useful and the learning curve is gentler. Kubernetes may be unnecessary overhead unless you already have containerized services and need orchestration features. Managed Kubernetes can lower the burden, but workload and security complexity remain."
+    },
+    {
+      "q": "How should Terraform and Kubernetes be divided in a platform?",
+      "a": "A common boundary is for Terraform to own cloud accounts, networks, clusters, node pools, and managed services, while Kubernetes owns application manifests and in-cluster platform components. Define ownership explicitly to avoid two tools fighting over the same resources. Review the boundary as your platform and team structure evolve."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "slug": "postgresql-vs-cassandra",
+  "meta": {
+    "title": "PostgreSQL vs Apache Cassandra (2026): welche Lösung passt besser?",
+    "description": "PostgreSQL und Apache Cassandra im Vergleich 2026: Datenmodell, Konsistenz, Skalierung, Betrieb und Eignung – mit klarer Empfehlung für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "PostgreSQL ist die bessere Standardwahl für transaktionale Anwendungen mit komplexen Abfragen, Joins und starker Konsistenz. Apache Cassandra lohnt sich vor allem bei extrem hohen Schreiblasten, geografisch verteilten Cluster-Anforderungen und vorab bekannten Zugriffsmustern. Prüfen Sie Datenmodell und Konsistenzbedarf zuerst; die Leistung hängt in beiden Fällen stark von Version, Konfiguration und Arbeitslast ab.",
+  "comparison": [
+    {
+      "category": "Datenmodell und Abfragesprache: Wie werden Daten strukturiert und abgefragt?",
+      "toolA": "PostgreSQL ist eine relationale Datenbank mit Tabellen, Fremdschlüsseln und vollem SQL. Sie unterstützt Joins, Aggregationen, Unterabfragen, Window-Funktionen sowie JSONB, Arrays und Vektortypen über Erweiterungen. Das erlaubt flexible Abfragen ohne vorab festgelegte Zugriffspfade, wobei die konkrete Performance von Indizes, Statistiken und Version abhängt.",
+      "toolB": "Apache Cassandra ist eine verteilte Wide-Column-Datenbank mit partitionierten Zeilen und Clustering-Spalten. Abfragen erfolgen über CQL und sind an das Datenmodell gebunden; Joins und beliebige Ad-hoc-Abfragen gibt es nicht. Das Datenmodell muss anhand der Zugriffsmuster entworfen werden, was bei bekanntem Zugriffsprofil effizient ist, aber spätere Änderungen erschwert.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Transaktionen und Konsistenz: Welche Garantien sind möglich?",
+      "toolA": "PostgreSQL bietet ACID-Transaktionen mit voller Konsistenz, MVCC und mehrstufiger Isolation bis zur Serialisierbarkeit. Schreibvorgänge sind standardmäßig stark konsistent und atomar über mehrere Tabellen hinweg. Bei verteilten Setups können Latenz und Konfliktauflösung je nach Konfiguration und Version variieren.",
+      "toolB": "Apache Cassandra verfolgt ein verfügbarkeitsorientiertes Modell nach dem Prinzip der eventual Consistency. Pro Abfrage lässt sich der Konsistenzgrad festlegen, etwa ONE, QUORUM oder ALL, und leichte Transaktionen sind nur eingeschränkt über Partitionen hinweg möglich. Höhere Konsistenz erhöht typischerweise Latenz und reduziert Verfügbarkeit, abhängig von Replikation und Cluster-Topologie.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Horizontale Skalierung und Schreibdurchsatz: Wie wächst das System?",
+      "toolA": "PostgreSQL skaliert primär vertikal und über Replikate für Lesezugriffe; Sharding ist möglich, aber manuell oder über Erweiterungen wie Citus. Sehr hohe Schreiblasten erfordern sorgfältige Planung von Verbindungen, Vacuum und Partitionierung. Die erreichbaren Werte hängen stark von Hardware, Version und Arbeitslast ab.",
+      "toolB": "Apache Cassandra wurde für horizontale Skalierung konzipiert und verteilt Daten per konsistentem Hashing über einen Ring aus Knoten. Schreibvorgänge sind append-orientiert und Cluster lassen sich durch Hinzufügen von Knoten erweitern, ohne Ausfallzeiten. Der tatsächliche Durchsatz hängt von Replikationsfaktor, Konsistenzgrad, Hardware und Datenmodell ab.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Betrieb, Wartung und Ökosystem: Wie aufwendig ist der laufende Betrieb?",
+      "toolA": "PostgreSQL ist als einzelne Instanz relativ einfach zu betreiben und weit verbreitet, mit ausgereiften Backup-, Monitoring- und Managed-Service-Angeboten. Erweiterungen, Migrationen und Schemaänderungen sind gut dokumentiert und breit unterstützt. Der Aufwand für Tuning, Vacuum und Verbindungsmanagement wächst mit Last und Datenmenge.",
+      "toolB": "Apache Cassandra erfordert mehr Fachwissen beim Betrieb: Reparaturprozesse, Compaction-Strategien, Tombstones und die Balance des Rings müssen aktiv gepflegt werden. Fehlkonfigurationen wirken sich oft erst unter Last aus, und Managed-Angebote unterscheiden sich stark in Funktionsumfang und Preis. Der Betriebsaufwand ist daher tendenziell höher, abhängig von Team-Erfahrung und Cluster-Größe.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Verfügbarkeit und Fehlertoleranz: Wie verhält sich das System bei Ausfällen?",
+      "toolA": "PostgreSQL bietet Streaming-Replikation, logisches Replizieren und Failover über Werkzeuge wie Patroni oder Managed Services. Mit synchroner Replikation sind Verluste im Failover-Fall reduzierbar, allerdings auf Kosten der Schreiblatenz. Die konkreten Garantien hängen von der gewählten Topologie und Konfiguration ab.",
+      "toolB": "Apache Cassandra ist auf Ausfalltoleranz ausgelegt: Daten werden über mehrere Knoten und Rechenzentren repliziert, und Lese- und Schreibvorgänge laufen bei Ausfällen weiter, sofern der Konsistenzgrad es zulässt. Das System ist masterlos, sodass kein einzelner Knoten zum Engpass wird. Die tatsächliche Ausfallsicherheit hängt von Replikationsfaktor, Reparaturzustand und Netzwerk-Topologie ab.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Analyse und Ad-hoc-Abfragen: Wie gut eignet sich das System für Auswertungen?",
+      "toolA": "PostgreSQL unterstützt komplexe Analysen mit Joins, CTEs, Window-Funktionen und Erweiterungen wie PostGIS. Daten können zudem über Fremddaten-Wrapper oder logische Replikation in Analysesysteme gespiegelt werden. Für reine OLAP-Lasten ist spezialisierte Software oft geeigneter, aber viele mittlere Analysefälle lassen sich direkt abdecken.",
+      "toolB": "Apache Cassandra ist für vorhersehbare, schlüsselbasierte Zugriffe optimiert und weniger für Ad-hoc-Analysen geeignet. Aggregationen sind möglich, aber ohne Joins und mit Einschränkungen bei Filterung und Sortierung. Für Analysen wird üblicherweise eine separate Auswertungsschicht oder ein Data Warehouse vorgeschaltet.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Schemaentwicklung und Flexibilität: Wie leicht lassen sich Änderungen umsetzen?",
+      "toolA": "PostgreSQL unterstützt Schemaänderungen mit Transaktionen, sodass Migrationen atomar ausgeführt werden können. Neue Spalten, Indizes und Constraints lassen sich schrittweise einführen, was die Weiterentwicklung erleichtert. Bei großen Tabellen können manche Änderungen jedoch Sperren verursachen, abhängig von Version und Vorgehen.",
+      "toolB": "Apache Cassandra erlaubt Schemaänderungen, die sich asynchron über den Cluster verbreiten und in der Regel ohne zentrale Sperre ablaufen. Das Datenmodell ist jedoch stark an Zugriffsmuster gebunden, weshalb spätere Umstellungen oft neue Tabellen und Datenmigration erfordern. Schemaänderungen sollten daher früh geplant und getestet werden.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Kosten und Ressourcenbedarf: Welche Ressourcen sind nötig?",
+      "toolA": "PostgreSQL ist als Open Source ohne Lizenzkosten verfügbar und läuft auf moderater Hardware. Die Gesamtkosten entstehen vor allem durch Betrieb, Fachpersonal und Managed-Service-Gebühren, die je nach Anbieter und Tarif stark variieren. Für kleinere und mittlere Projekte ist der Einstieg meist günstig.",
+      "toolB": "Apache Cassandra ist ebenfalls Open Source ohne Lizenzkosten, benötigt aber typischerweise mehrere Knoten für sinnvolle Ausfallsicherheit. Der Ressourcenbedarf für Speicher, Netzwerk und Betriebspersonal ist daher oft höher, besonders bei geografischer Verteilung. Managed-Angebote unterscheiden sich erheblich in Preis und Leistungsumfang und sollten individuell geprüft werden.",
+      "winner": "toolA"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "-- PostgreSQL: minimale Tabelle und Abfrage\nCREATE TABLE greeting (\n  id   SERIAL PRIMARY KEY,\n  text TEXT NOT NULL\n);\n\nINSERT INTO greeting (text) VALUES ('Hallo, Welt!');\n\nSELECT text FROM greeting;",
+    "tech2Snippet": "-- Apache Cassandra: Keyspace, Tabelle und Abfrage (CQL)\nCREATE KEYSPACE IF NOT EXISTS demo\n  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};\n\nUSE demo;\n\nCREATE TABLE IF NOT EXISTS greeting (\n  id   int PRIMARY KEY,\n  text text\n);\n\nINSERT INTO greeting (id, text) VALUES (1, 'Hallo, Welt!');\n\nSELECT text FROM greeting WHERE id = 1;"
+  },
+  "faq": [
+    {
+      "q": "Für welche Art von Anwendung ist PostgreSQL die bessere Wahl?",
+      "a": "PostgreSQL passt gut zu Anwendungen mit klar strukturierten, miteinander verknüpften Daten und dem Bedarf an Transaktionen, etwa Buchungssysteme, ERP-Anwendungen oder Content-Plattformen. Auch komplexe Abfragen und Auswertungen lassen sich direkt in der Datenbank abbilden. Wenn Konsistenz und Datenintegrität im Vordergrund stehen, ist PostgreSQL meist die naheliegende Wahl; die konkrete Leistung hängt dennoch von Version, Indexierung und Arbeitslast ab."
+    },
+    {
+      "q": "Wann lohnt sich Apache Cassandra gegenüber PostgreSQL?",
+      "a": "Apache Cassandra ist interessant, wenn sehr hohe Schreiblasten anfallen, das System geografisch verteilt sein muss und die Zugriffsmuster vorab bekannt sind. Typische Beispiele sind Zeitreihendaten, Event-Logs oder IoT-Plattformen mit vielen gleichzeitigen Schreibern. Für Anwendungen mit komplexen Joins und wechselnden Ad-hoc-Abfragen ist Cassandra dagegen selten eine gute Wahl."
+    },
+    {
+      "q": "Was bedeutet der Konsistenzgrad bei Apache Cassandra praktisch?",
+      "a": "Mit dem Konsistenzgrad legen Sie fest, wie viele Replikate eine Abfrage bestätigen müssen, etwa ONE für hohe Verfügbarkeit oder QUORUM für einen Kompromiss. Ein strengerer Grad erhöht die Sicherheit der Daten, kann aber Latenz und Fehlerraten bei Ausfällen steigern. Welcher Grad sinnvoll ist, hängt vom Replikationsfaktor und den Toleranzgrenzen Ihrer Anwendung ab und sollte pro Zugriffsmuster bewusst gewählt werden."
+    },
+    {
+      "q": "Kann PostgreSQL genauso horizontal skalieren wie Apache Cassandra?",
+      "a": "PostgreSQL ist nicht von Grund auf für horizontale Skalierung über viele Knoten konzipiert; Schreiblasten werden meist vertikal oder über Partitionierung und Sharding-Erweiterungen verteilt. Cassandra verteilt Daten dagegen von Haus aus über einen Cluster und unterstützt das Hinzufügen von Knoten ohne Ausfallzeiten. Ob PostgreSQL für Ihr Wachstum ausreicht, hängt davon ab, ob Lese- oder Schreiblasten dominieren und wie viel Betriebsaufwand Sie investieren können."
+    },
+    {
+      "q": "Welche Datenbank eignet sich besser für Analysen und Reporting?",
+      "a": "Für Ad-hoc-Analysen mit Joins, Aggregationen und Window-Funktionen ist PostgreSQL deutlich flexibler, da volles SQL zur Verfügung steht. Apache Cassandra ist für vorhersehbare, schlüsselbasierte Zugriffe optimiert und bietet nur eingeschränkte Analysefunktionen. Für umfangreiche Analytik kann es in beiden Fällen sinnvoll sein, eine separate Analyse- oder Warehouse-Schicht vorzuschalten."
+    },
+    {
+      "q": "Wie unterscheidet sich der Betriebsaufwand der beiden Systeme?",
+      "a": "PostgreSQL ist als einzelne Instanz einfacher zu starten und hat ein breites Angebot an Managed Services und Werkzeugen. Cassandra erfordert mehr Spezialwissen zu Reparatur, Compaction, Tombstones und Cluster-Balance, was sich besonders in größeren Installationen bemerkbar macht. Der tatsächliche Aufwand hängt stark von Team-Erfahrung, Cluster-Größe und der gewählten Betriebsform ab."
+    },
+    {
+      "q": "Sind beide Systeme für sicherheitskritische Anwendungen geeignet?",
+      "a": "Beide Datenbanken unterstützen Authentifizierung, Verschlüsselung der Verbindungen und rollenbasierte Zugriffskontrolle, wobei der konkrete Funktionsumfang von Version und Konfiguration abhängt. Sicherheit entsteht jedoch erst durch konsequente Härtung, Netzwerktrennung, Backups und Monitoring. Bei regulierten Anforderungen sollten Sie die jeweiligen Zertifizierungen und Managed-Service-Angebote individuell prüfen, statt von einer pauschalen Eignung auszugehen."
+    },
+    {
+      "q": "Kann ich beide Datenbanken sinnvoll kombiniert einsetzen?",
+      "a": "Eine Kombination ist in der Praxis möglich: PostgreSQL als führendes System für Transaktionen und Cassandra für hohe Schreiblasten oder verteilte Ereignisdaten. Dabei entsteht jedoch zusätzliche Komplexität bei Konsistenz, Datenabgleich und Betrieb, die sorgfältig geplant werden muss. Ob sich der Aufwand lohnt, hängt davon ab, ob ein einzelnes System die Anforderungen nicht mehr zuverlässig erfüllen kann."
+    }
+  ]
+}

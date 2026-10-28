@@ -1,0 +1,98 @@
+{
+  "slug": "fastify-vs-express",
+  "meta": {
+    "title": "Fastify vs Express (2026): Which option should you choose?",
+    "description": "A practical 2026 comparison of Fastify and Express covering performance design, ecosystem, TypeScript support, learning curve, and which framework fits your Node.js project."
+  },
+  "toolA": {
+    "name": "Fastify"
+  },
+  "toolB": {
+    "name": "Express"
+  },
+  "verdict": "Choose Fastify if you're starting a new API or service and want strong performance defaults, built-in JSON schema validation and serialization, first-class TypeScript typings, and an encapsulated plugin system that suits larger codebases. Choose Express if you need the widest middleware ecosystem, the largest pool of tutorials and existing examples, or you're maintaining a legacy application. Express remains a reasonable default for small services and teams already fluent in it, but for greenfield projects in 2026, Fastify is generally the stronger technical starting point.",
+  "comparison": [
+    {
+      "category": "Performance and architectural design",
+      "toolA": "Fastify is built around a schema-based request lifecycle and a lightweight router, with JSON schema compilation used to validate inputs and serialize outputs quickly. Its design emphasizes low per-request overhead, and its own published benchmarks claim throughput advantages over older frameworks, though real-world results depend heavily on route complexity, schema usage, payload size, and Node.js version. Fastify also supports a fast, schema-driven serializer that can reduce response serialization cost when schemas are defined.",
+      "toolB": "Express uses a simple, mature middleware-chain architecture that has changed little over the years, prioritizing flexibility over raw throughput. Its per-request overhead is generally higher than Fastify's in published benchmarks, particularly on high-throughput JSON APIs, though for many applications the framework is not the bottleneck compared with database queries, network latency, or external services. Express's minimalist design makes behavior predictable and easy to reason about, which can matter more than microbenchmarks for moderate-traffic services.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Validation, serialization, and built-in features",
+      "toolA": "Fastify includes first-class JSON schema support for validating params, query strings, bodies, and headers, and it can generate response schemas for faster serialization and safer output contracts. These features are available without extra middleware, though teams still often add validation libraries such as Zod or TypeBox via type providers. Fastify also bundles structured logging via Pino, request IDs, and lifecycle hooks out of the box.",
+      "toolB": "Express does not include schema validation or response serialization by default; these are typically added through middleware such as Joi, express-validator, Zod, or celebrate. This keeps the core dependency-light and lets teams assemble exactly the stack they want, but it also means validation behavior, error handling, and serialization performance depend on which libraries are chosen and how consistently they are applied. Logging and request IDs also require additional middleware such as morgan or pino-http.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosystem, middleware, and community resources",
+      "toolA": "Fastify has a well-maintained official plugin ecosystem covering CORS, cookies, multipart uploads, sessions, rate limiting, JWT, and database integrations, all designed around its encapsulation and hooks model. Its community is large but smaller than Express's, so niche middleware may not exist and you may need to adapt Express-compatible plugins via @fastify/middie. Tutorials and Stack Overflow answers are plentiful but fewer for uncommon integrations.",
+      "toolB": "Express has the largest middleware ecosystem in the Node.js server world, with thousands of packages, decades of tutorials, books, and answered questions. Nearly every integration guide or older codebase assumes Express, which reduces friction when searching for solutions or hiring developers. However, middleware quality varies widely, some popular packages are unmaintained, and Express 5 introduced changes that older middleware may not fully support.",
+      "winner": "toolB"
+    },
+    {
+      "category": "TypeScript and developer experience",
+      "toolA": "Fastify ships its own TypeScript declarations and offers type providers (TypeBox, Zod, Valibot, and others) that infer request and response types from schemas, giving strong end-to-end type safety when configured. The plugin encapsulation model is powerful, but it requires understanding of Fastify's decorators and hooks, which can be a learning hurdle for newcomers. Configuration is slightly more verbose than Express's minimal routing.",
+      "toolB": "Express historically relied on DefinitelyTyped types that were serviceable but weaker for typed request bodies and responses; Express 5's typings have improved, and community patterns using Zod plus typed handlers are common. Its simpler concepts and enormous body of JavaScript examples make onboarding fast, though type safety generally requires more manual annotation than with Fastify's schema-driven inference. Developers often find Express easier to prototype with quickly.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Learning curve and migration effort",
+      "toolA": "Fastify's core API is approachable, but its plugin encapsulation, hooks, decorators, and schema-first conventions introduce concepts that take time to internalize. Migrating an existing Express application usually requires rewriting route handlers, adapting middleware, and rethinking how shared state is decorated across encapsulated contexts, though @fastify/middie eases some compatibility.",
+      "toolB": "Express is widely considered one of the simplest Node.js frameworks to learn: routes, middleware, and error handlers map directly onto request/response flow, and most developers can be productive within hours. Migrating away from Express requires more work because so much legacy code and documentation assumes its patterns, which is itself a reason many teams stay on it. The trade-off is fewer guardrails against inconsistent code as applications grow.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Security posture and maintenance",
+      "toolA": "Fastify is actively maintained by a team with a formal security policy and coordinated disclosure process, and its schema validation helps prevent malformed input from reaching handlers when schemas are used consistently. Features like secure default error responses and body limits reduce common misconfigurations. As with any framework, security still depends on plugin choices, dependency hygiene, and whether authentication and rate limiting are configured correctly.",
+      "toolB": "Express is maintained by the OpenJS Foundation with a long track record and a published security policy; Express 5 addressed several longstanding issues and updated dependencies. Its minimal core means security largely depends on the middleware you add, and popular middleware has occasionally had vulnerabilities, so auditing dependencies remains essential. Express's huge deployment base means vulnerabilities are usually found and patched quickly, but older pinned versions can linger in projects.",
+      "winner": "tie"
+    },
+    {
+      "category": "Best fit by project type",
+      "toolA": "Fastify fits greenfield JSON APIs, microservices, and services where throughput, schema contracts, and TypeScript inference are priorities. Its encapsulation model rewards teams building modular systems with shared plugins, and its built-in logging and validation reduce the number of dependencies to vet. Small prototypes are also possible, but the schema-first style can feel heavier than needed for a quick script.",
+      "toolB": "Express fits a broad range of projects, from tiny prototypes and internal tools to production APIs, and remains a safe choice when you need maximum compatibility with existing middleware, tutorials, and legacy code. It is also a sensible option for teams with limited Node.js experience or where framework churn is a concern. Projects with extreme throughput requirements should benchmark both rather than assuming, since workload specifics often dominate.",
+      "winner": "tie"
+    },
+    {
+      "category": "Long-term maintenance and roadmap",
+      "toolA": "Fastify follows semantic versioning with documented migration guides and a steady release cadence, and its plugin ecosystem is versioned alongside the core. Its roadmap has focused on performance, schema tooling, and developer experience rather than dramatic architectural shifts, which supports long-lived services. Adopting it means depending on a smaller but active maintainer community compared with Express.",
+      "toolB": "Express has an extremely long history and a stable API surface, which makes it predictable for long-lived applications, and Express 5 represented its first major release in years. Its roadmap is conservative and its maintenance is foundation-backed, reducing the risk of abandonment. The trade-off is slower adoption of modern patterns, so performance and typing improvements often arrive via ecosystem libraries rather than the framework itself.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which is faster, Fastify or Express?",
+      "a": "Published benchmarks generally show Fastify handling more requests per second than Express on JSON-heavy routes, largely because of its schema-based serialization and lighter request overhead. However, the difference depends on route complexity, payload size, whether schemas are used, the Node.js version, and how much time is spent in databases or external calls. For many applications, optimizing queries and caching will matter more than the framework choice, so benchmark your own workload before assuming a specific gain."
+    },
+    {
+      "q": "Can I use Express middleware in Fastify?",
+      "a": "Yes, to a degree: Fastify provides the @fastify/middie plugin, which allows Express-style middleware to run within a Fastify application. Not all middleware behaves identically, especially middleware that depends on Express-specific request or response extensions, and running middleware through this compatibility layer can reduce some of Fastify's performance benefits. For core needs such as CORS, cookies, sessions, and uploads, prefer native Fastify plugins."
+    },
+    {
+      "q": "Is Express still maintained and safe to use in 2026?",
+      "a": "Yes. Express is maintained under the OpenJS Foundation, and the Express 5 release brought dependency updates and API improvements after a long gap. Security still depends on keeping the framework and your middleware patched, since Express's minimal core leaves authentication, validation, and rate limiting to third-party packages. Teams running older Express 4 applications should plan an upgrade path, as long-term support for older major versions is not indefinite."
+    },
+    {
+      "q": "Which framework is better for TypeScript?",
+      "a": "Fastify generally offers a stronger out-of-the-box TypeScript experience because it ships its own type definitions and supports type providers such as TypeBox and Zod that infer request and response types from schemas. Express 5 has improved typings, and many teams get good results by pairing Express with Zod and typed handler wrappers. The best choice depends on whether you want schema-driven inference (Fastify) or prefer a simpler setup with more manual typing (Express)."
+    },
+    {
+      "q": "Do I need to use JSON schemas with Fastify?",
+      "a": "No, schemas are optional, but using them is where much of Fastify's value lies: they enable request validation, response serialization, and TypeScript inference. Without schemas you still get Fastify's routing, hooks, and plugin system, but you lose the automatic validation and some performance benefits. Teams that prefer Zod or Valibot can use Fastify's type providers so schemas are derived from their existing validation code."
+    },
+    {
+      "q": "Which framework has a bigger ecosystem and more learning resources?",
+      "a": "Express has a substantially larger ecosystem of middleware, tutorials, and answered questions, largely because it has been the default Node.js framework for many years. Fastify's ecosystem is smaller but official plugins cover common needs, and its documentation is thorough. If you frequently rely on niche middleware or want the largest pool of hiring candidates familiar with the framework, Express has the edge; if you want curated, modern plugins, Fastify is well served."
+    },
+    {
+      "q": "How hard is it to migrate from Express to Fastify?",
+      "a": "Migration usually involves rewriting route handlers, converting middleware to Fastify hooks or plugins, and rethinking shared state through decorators and encapsulation. The @fastify/middie plugin can reduce effort for Express-style middleware, but a full migration still takes planning and testing. For large legacy applications, a gradual approach, such as running both frameworks behind a proxy or migrating service by service, is often safer than a full rewrite."
+    },
+    {
+      "q": "What should I choose for a new project in 2026?",
+      "a": "For a new API or service where you control the stack, Fastify is often the stronger default: it offers validation, serialization, logging, and TypeScript support without assembling many dependencies. Choose Express if your team already knows it well, you need specific middleware that is only available or well tested for Express, or you want the largest pool of examples and community answers. Either framework can run production workloads; the best decision depends on team familiarity, performance needs, and long-term maintenance plans."
+    }
+  ]
+}

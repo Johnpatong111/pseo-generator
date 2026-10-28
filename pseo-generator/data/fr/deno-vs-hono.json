@@ -1,0 +1,102 @@
+{
+  "slug": "deno-vs-hono",
+  "meta": {
+    "title": "Deno vs Hono (2026) : quelle solution choisir ?",
+    "description": "Comparaison Deno vs Hono en 2026 : runtime sécurisé face à un framework web ultrafin et portable. Critères, exemples de code, FAQ et recommandations pour bien choisir selon votre projet."
+  },
+  "toolA": {
+    "name": "Deno"
+  },
+  "toolB": {
+    "name": "Hono"
+  },
+  "verdict": "Deno est un runtime JavaScript/TypeScript complet, sécurisé par défaut, idéal si vous voulez un environnement d'exécution autonome avec permissions explicites, outils intégrés et déploiement edge via Deno Deploy. Hono est un framework HTTP minimaliste et portable qui s'exécute sur de nombreux runtimes, dont Deno. La plupart des projets bénéficient des deux : Hono pour le routage et les middlewares, Deno comme runtime. Choisissez Deno seul si vous préférez les API natives et un socle standardisé ; choisissez Hono comme couche applicative si vous visez la portabilité multi-runtime.",
+  "comparison": [
+    {
+      "category": "Nature de l'outil et rôle dans une architecture.",
+      "toolA": "Deno est un runtime moderne pour JavaScript et TypeScript, écrit en Rust, qui fournit un moteur V8, une API standard, un gestionnaire de modules, un formateur et un linter. Il se substitue globalement à Node.js dans une pile d'exécution et peut héberger aussi bien des scripts que des serveurs HTTP ou des fonctions serverless.",
+      "toolB": "Hono est un framework web léger centré sur le routage, les middlewares et la composition de handlers, avec une API inspirée d'Express mais compatible avec les objets Request/Response standard. Il ne fournit pas de runtime : il s'exécute au-dessus de Deno, Node.js, Bun, Cloudflare Workers ou d'autres environnements compatibles Fetch.",
+      "winner": "tie"
+    },
+    {
+      "category": "Modèle de sécurité et permissions.",
+      "toolA": "Deno applique un modèle de permissions explicites : l'accès au réseau, au système de fichiers, aux variables d'environnement ou aux sous-processus doit être accordé au lancement via des drapeaux comme --allow-net ou --allow-read. Ce comportement réduit la surface d'attaque par défaut, mais impose de configurer finement les permissions en production et lors des tests, et certaines bibliothèques tierces peuvent nécessiter des permissions plus larges.",
+      "toolB": "Hono n'a pas de modèle de permissions propre : la sécurité dépend entièrement du runtime et de la plateforme d'hébergement sur lesquels il tourne. Sur Deno ou Cloudflare Workers, il hérite de leurs mécanismes d'isolation ; sur Node.js, il dépend de la configuration du processus. Hono propose en revanche des utilitaires de sécurité comme la gestion des CORS, des en-têtes ou la protection CSRF à intégrer explicitement dans les middlewares.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Portabilité et compatibilité multi-runtime.",
+      "toolA": "Deno est avant tout un runtime : la portabilité concerne vos scripts Deno, qui peuvent s'exécuter là où Deno est disponible (poste local, serveurs, Deno Deploy, conteneurs). Les API spécifiques à Deno et le modèle de permissions ne se transposent pas directement vers Node.js ou Bun sans adaptation, même si Deno améliore progressivement sa compatibilité avec l'écosystème npm.",
+      "toolB": "Hono est conçu dès l'origine pour la portabilité : la même application peut viser Deno, Node.js, Bun, Cloudflare Workers, Fastly Compute ou AWS Lambda avec des adaptateurs dédiés. Cette flexibilité facilite le changement d'hébergeur, mais certaines fonctionnalités dépendantes du runtime (stockage KV, bindings, WebSockets avancés) demandent des abstractions supplémentaires et une validation par environnement.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, dépendances et gestion des modules.",
+      "toolA": "Deno privilégie les modules ES natifs et les URL comme identifiants de dépendance, avec un fichier de configuration et un verrouillage des versions via deno.json et le fichier de lock. Le support de npm s'est nettement amélioré avec les spécificateurs npm: et les fichiers node_modules optionnels, mais certaines bibliothèques Node natives ou fortement couplées au runtime peuvent encore poser des problèmes selon les versions.",
+      "toolB": "Hono expose une API unifiée et un écosystème de middlewares officiels couvrant l'authentification, la validation, la journalisation, la compression ou le rendu JSX. Il s'appuie sur les modules standard du runtime hôte et s'installe via npm, JSR ou des imports URL. Sa dépendance vis-à-vis de l'écosystème sous-jacent reste réelle : une bibliothèque Node exotique peut ne pas fonctionner sur un runtime edge sans adaptation.",
+      "winner": "tie"
+    },
+    {
+      "category": "Expérience de développement et outillage.",
+      "toolA": "Deno intègre nativement un formateur, un linter, un gestionnaire de tests, un bundler et un système de tâches, ce qui réduit le nombre d'outils à installer et à configurer. Le support TypeScript est natif et sans étape de compilation préalable, mais l'adoption de conventions différentes de Node.js peut dérouter les équipes habituées à npm, ts-node ou aux configurations Jest/Vitest.",
+      "toolB": "Hono reste volontairement minimal : il fournit le routeur, le contexte de requête et des middlewares, sans imposer de framework de test ni d'outil de build. Cette légèreté accélère la prise en main et laisse le choix de l'outillage, mais elle oblige à assembler soi-même la chaîne de tests, de validation de schéma et de déploiement, ce qui peut représenter un coût sur les projets complexes.",
+      "winner": "tie"
+    },
+    {
+      "category": "Performance et charge (avec nuance).",
+      "toolA": "Les performances de Deno dépendent du moteur V8, des optimisations du runtime, du type de charge et de la version utilisée. Les benchmarks publics varient fortement selon le scénario, la taille des payloads et la configuration matérielle ; il est donc prudent de mesurer sur votre propre charge plutôt que de se fier à un classement général. Deno Deploy peut également introduire des caractéristiques de latence liées à l'edge.",
+      "toolB": "Hono revendique un routeur très léger et une empreinte minimale, ce qui peut réduire la surcharge applicative comparé à des frameworks plus lourds. Toutefois, la performance perçue dépend surtout du runtime hôte, de la proximité réseau et de la base de données ; Hono n'apporte pas de gain garanti sans mesure dans votre contexte, et les comparaisons chiffrées doivent être reproduites sur votre environnement.",
+      "winner": "tie"
+    },
+    {
+      "category": "Déploiement et hébergement.",
+      "toolA": "Deno propose Deno Deploy comme plateforme edge managée, ainsi que le déploiement classique par conteneurs ou serveurs. L'intégration est fluide si vous utilisez le runtime Deno de bout en bout, mais l'hébergement sur des plateformes conçues pour Node.js peut demander des adaptations ou des couches de compatibilité.",
+      "toolB": "Hono dispose d'adaptateurs explicites pour de nombreuses cibles : Cloudflare Workers, Deno Deploy, AWS Lambda, Node.js, Bun, Fastly. Ce choix facilite le déploiement et la migration entre hébergeurs, mais chaque cible impose de vérifier les capacités disponibles (taille mémoire, durée d'exécution, stockage, variables d'environnement) avant de s'engager.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage et courbe d'apprentissage.",
+      "toolA": "Deno convient aux équipes qui veulent un runtime tout-en-un, un modèle de sécurité strict et un TypeScript natif, ou qui développent des outils en ligne de commande, des scripts serveur ou des fonctions edge. La courbe d'apprentissage est modérée pour les développeurs JavaScript, mais peut être plus raide pour ceux qui attendent l'écosystème Node.js à l'identique.",
+      "toolB": "Hono est particulièrement adapté aux API HTTP, aux applications edge, aux microservices et aux équipes qui veulent un socle léger et portable. Il s'apprend vite si vous connaissez les objets Request/Response et un routeur de type Express, mais il nécessite des choix d'architecture explicites pour la validation, l'authentification et la persistance.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "// server.ts\nDeno.serve((req: Request) => {\n  const url = new URL(req.url);\n  if (url.pathname === \"/\") {\n    return new Response(\"Hello, World!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  }\n  return new Response(\"Not Found\", { status: 404 });\n});\n\n// Lancer avec : deno run --allow-net server.ts",
+    "tech2Snippet": "// app.ts (Deno)\nimport { Hono } from \"jsr:@hono/hono\";\n\nconst app = new Hono();\n\napp.get(\"/\", (c) => c.text(\"Hello, World!\"));\n\nDeno.serve(app.fetch);\n\n// Lancer avec : deno run --allow-net app.ts"
+  },
+  "faq": [
+    {
+      "q": "Deno et Hono sont-ils concurrents ou complémentaires ?",
+      "a": "Ils sont complémentaires plutôt que concurrents : Deno est un runtime, tandis que Hono est un framework web qui peut s'exécuter sur Deno. Vous pouvez donc utiliser Hono comme couche de routage dans une application Deno, ou écrire des handlers natifs avec Deno.serve et l'API standard sans framework. Le choix dépend surtout de votre besoin de portabilité et de structure applicative."
+    },
+    {
+      "q": "Puis-je utiliser Hono sans Deno, et inversement ?",
+      "a": "Oui : Hono fonctionne sur Node.js, Bun, Cloudflare Workers et d'autres runtimes compatibles Fetch, et Deno s'utilise sans Hono. Le couplage n'est donc pas obligatoire. En pratique, évaluer la maturité des adaptateurs de votre plateforme cible et les fonctionnalités disponibles sur ce runtime avant de vous engager."
+    },
+    {
+      "q": "Le modèle de permissions de Deno est-il suffisant pour sécuriser une API en production ?",
+      "a": "Le modèle de permissions réduit la surface d'attaque en limitant les accès au réseau, au système de fichiers ou aux variables d'environnement, mais il ne remplace pas les bonnes pratiques applicatives. Il faut aussi gérer l'authentification, la validation des entrées, les en-têtes de sécurité, la journalisation et la limitation de débit. Considérez les permissions comme une couche de défense supplémentaire, pas comme une solution complète."
+    },
+    {
+      "q": "Hono est-il plus rapide que les frameworks Node.js classiques ?",
+      "a": "Hono met en avant un routeur léger et une empreinte réduite, ce qui peut diminuer la surcharge applicative, mais les performances réelles dépendent du runtime, du réseau, de la base de données et de la charge. Les benchmarks publics ne se transposent pas nécessairement à votre cas. Mesurez avec vos propres scénarios avant de conclure à un gain significatif."
+    },
+    {
+      "q": "Quel outil choisir pour une API destinée au edge computing ?",
+      "a": "Hono est souvent un bon candidat pour le edge grâce à ses adaptateurs et à son API standardisée, tandis que Deno Deploy offre une plateforme edge native pour du code Deno. Le bon choix dépend des contraintes de votre fournisseur (taille mémoire, stockage, latence, compatibilité des bibliothèques). Vérifiez la disponibilité des fonctionnalités dont vous avez besoin sur la cible exacte avant de décider."
+    },
+    {
+      "q": "Peut-on migrer une application Hono d'un runtime à un autre facilement ?",
+      "a": "La conception de Hono facilite la portabilité, mais une migration n'est jamais totalement transparente : les bindings de plateforme, le stockage, les variables d'environnement et certaines API spécifiques doivent être revus. Prévoyez des tests d'intégration sur la cible et une couche d'abstraction pour les services dépendants du runtime. La migration est plus simple pour une API sans état que pour une application fortement couplée à un fournisseur."
+    },
+    {
+      "q": "Deno est-il compatible avec l'écosystème npm en 2026 ?",
+      "a": "Deno prend en charge les spécificateurs npm: et peut installer des dépendances Node.js, avec un niveau de compatibilité qui s'est amélioré au fil des versions. Toutes les bibliothèques ne fonctionnent pas parfaitement, notamment celles qui reposent sur des modules natifs ou des API Node non prises en charge. Vérifiez la compatibilité de vos dépendances critiques avec la version de Deno que vous ciblez."
+    },
+    {
+      "q": "Quel impact sur les tests et la qualité du code ?",
+      "a": "Deno fournit des outils intégrés de test, de formatage et de lint, ce qui simplifie la standardisation au sein d'une équipe. Hono laisse le choix de l'outillage et s'intègre à des frameworks de test existants, ce qui offre de la flexibilité mais demande de définir des conventions. Dans les deux cas, la qualité dépend davantage de vos pratiques (revue de code, tests automatisés, couverture) que de l'outil lui-même."
+    }
+  ]
+}

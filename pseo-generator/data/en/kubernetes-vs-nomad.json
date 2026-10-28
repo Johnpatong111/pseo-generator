@@ -1,0 +1,98 @@
+{
+  "slug": "kubernetes-vs-nomad",
+  "meta": {
+    "title": "Kubernetes vs Nomad (2026): Which option should you choose?",
+    "description": "Kubernetes vs Nomad in 2026: compare scheduling, workload types, learning curve, ecosystem, security, and operations to pick the right orchestrator for your team."
+  },
+  "toolA": {
+    "name": "Kubernetes"
+  },
+  "toolB": {
+    "name": "Nomad"
+  },
+  "verdict": "Choose Kubernetes if you need the largest ecosystem, broad vendor support, and mature primitives for service discovery, autoscaling, and policy enforcement across hybrid or multi-cloud environments, and you can invest in platform expertise. Choose Nomad if you want a simpler operational model, mixed workloads (containers, batch, and non-containerized binaries) under one scheduler, and a lighter learning curve, accepting a smaller ecosystem and fewer built-in features. Many organizations can reasonably run both.",
+  "comparison": [
+    {
+      "category": "Architecture and operational complexity",
+      "toolA": "Kubernetes is a distributed control plane with an API server, etcd, scheduler, and controller manager, plus kubelets and container runtimes on nodes. Its modularity enables great flexibility and strong separation of concerns, but operating it well typically requires understanding many moving parts, upgrade paths, and add-on components such as CNI plugins, ingress controllers, and metrics pipelines. Managed offerings reduce the burden substantially, though cost and available features vary by provider and configuration.",
+      "toolB": "Nomad uses a single binary for servers and clients, with a comparatively small surface area and few mandatory dependencies; state is stored via Raft inside the server cluster, and there is no required external datastore. It supports containers through task drivers as well as non-containerized executables, which simplifies running heterogeneous workloads. This design generally means fewer components to install, patch, and monitor, though some advanced networking or storage needs may require additional integrations.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Workload and runtime support",
+      "toolA": "Kubernetes is fundamentally container-centric and expects workloads to run as containers, typically OCI images. It supports pods, deployments, stateful sets, daemonsets, jobs, and cronjobs, and it accommodates batch and stateful patterns through those abstractions. Running traditional non-containerized binaries generally requires packaging them into containers or using specialized integrations.",
+      "toolB": "Nomad schedules containers and also runs raw executables, Java applications, and other binaries through task drivers, alongside batch and service jobs and system jobs. It can orchestrate mixed fleets where not everything is containerized, which is useful during incremental migration or in environments with legacy software. Feature depth for some driver-specific options depends on the driver and Nomad version.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, integrations, and community",
+      "toolA": "Kubernetes has the broadest ecosystem in the orchestration space, with extensive tooling for ingress, service mesh, observability, GitOps, policy, secrets, and autoscaling, much of it governed by the CNCF. Most cloud providers offer managed Kubernetes, and most vendors publish compatible integrations. Breadth also means more choices and more decisions, and quality and maintenance status vary across projects.",
+      "toolB": "Nomad integrates with HashiCorp tools such as Consul for service discovery and Vault for secrets, and it offers a useful plugin ecosystem for storage and networking. Its third-party ecosystem is smaller than Kubernetes', so some categories have fewer mature options, and support for specific integrations depends on the project and version. Community size is also smaller, so troubleshooting may rely more on official documentation.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scheduling, scaling, and service discovery",
+      "toolA": "Kubernetes provides a rich scheduler with affinity and anti-affinity, taints and tolerations, topology spread constraints, and resource requests and limits. Horizontal Pod Autoscaling is built in, and cluster autoscaling is available through provider integrations or tools, while service discovery and load balancing are native concepts. Achieving the best results usually requires tuning resource requests, probes, and autoscaling policies for the workload.",
+      "toolB": "Nomad offers bin packing, constraints, affinities, spread blocks, and canary and rolling update strategies, with autoscaling available through the Nomad Autoscaler in supported configurations. Service discovery is typically handled through Consul or Nomad's native service registration features, depending on version and setup. Scaling and routing are capable but generally require more deliberate configuration than the default Kubernetes path.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Learning curve and developer experience",
+      "toolA": "Kubernetes exposes a large API surface, and developers usually need to learn manifests, controllers, labels and selectors, and debugging workflows across multiple resource types. Tooling such as kubectl, Helm, and GitOps controllers improves the experience, and managed platforms can abstract some complexity. Teams new to Kubernetes should expect a meaningful ramp-up period and ongoing platform investment.",
+      "toolB": "Nomad jobs are described in HCL or JSON job specifications that are relatively compact, and the mental model of jobs, groups, and tasks is smaller than Kubernetes' object model. Many teams report a shorter initial ramp-up, especially when they are already familiar with HashiCorp tooling. Advanced networking, policy, and multi-tenant patterns may still demand careful design.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Security and policy controls",
+      "toolA": "Kubernetes includes role-based access control, service accounts, namespaces, network policies, pod security standards, secrets, and admission control, and policy engines such as Open Policy Agent or Kyverno are widely used. Security depends heavily on configuration, and misconfigured clusters are a known risk, so hardening guides and regular upgrades matter. Support for specific controls varies by version and distribution.",
+      "toolB": "Nomad provides ACL policies with token-based access control, namespaces for multi-tenancy in supported editions, Sentinel policy enforcement as an enterprise feature, and workload identity mechanisms in recent versions. Secrets are commonly integrated through Vault. These controls are practical for many deployments, but the ecosystem of third-party policy and security tooling is smaller than for Kubernetes.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Multi-cloud, hybrid, and edge operation",
+      "toolA": "Kubernetes runs consistently across major cloud providers, on-premises, and edge distributions, and managed services make multi-region deployments practical. Cluster federation and multi-cluster tooling exist, but operating many clusters introduces complexity in identity, networking, policy, and observability that must be planned for. Hybrid success often depends on choosing compatible distributions and networking models.",
+      "toolB": "Nomad's single-binary design and small footprint make it attractive for hybrid and edge scenarios, and it can manage clusters across regions with federation features in supported configurations. It is well suited to environments where a full Kubernetes control plane is undesirable, such as small edge sites or mixed-OS fleets. Cross-cluster networking and observability still require deliberate architecture.",
+      "winner": "tie"
+    },
+    {
+      "category": "Operational maturity and talent availability",
+      "toolA": "Kubernetes has been production-proven at scale for years, and hiring for Kubernetes skills is comparatively easy because the talent pool is large. Documentation, training, and certified distributions are widely available. However, version churn and deprecations require a maintenance plan, and upgrades should be tested against your workloads and add-ons.",
+      "toolB": "Nomad is also production-proven, with a long history and a stable operational model that many teams find easier to maintain with a small platform team. The hiring pool is smaller than Kubernetes', and fewer engineers have hands-on Nomad experience, so internal training may be necessary. Feature availability and support levels can differ between the free and enterprise editions.",
+      "winner": "toolA"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is Nomad a drop-in replacement for Kubernetes?",
+      "a": "No, Nomad is not a drop-in replacement: it uses different job specifications, different abstractions, and a different ecosystem of integrations. Some concepts map reasonably well, such as jobs versus workloads, but networking, service discovery, and policy tooling differ, so migrations require redesign rather than a simple lift-and-shift. Teams should prototype representative workloads before committing to a migration."
+    },
+    {
+      "q": "Which tool is better for a small team without a dedicated platform engineer?",
+      "a": "For many small teams, Nomad's simpler architecture and smaller component count can reduce day-to-day operational effort, particularly if workloads include non-containerized binaries. Kubernetes can still be a good fit when using a managed service and a limited set of well-understood patterns, because the provider handles much of the control plane. The right choice depends on the team's existing skills, cloud provider, and how much customization the workloads require."
+    },
+    {
+      "q": "Does Nomad support autoscaling and service discovery like Kubernetes?",
+      "a": "Nomad supports autoscaling through the Nomad Autoscaler in supported configurations, and it provides service registration with Consul or native mechanisms depending on version and setup. Kubernetes offers built-in horizontal pod autoscaling and native service discovery, but effective autoscaling in either system depends on correct resource requests, metrics, and tuning. Teams should verify feature availability for their specific Nomad or Kubernetes version before relying on it."
+    },
+    {
+      "q": "Can Kubernetes run batch jobs and stateful workloads?",
+      "a": "Yes, Kubernetes supports batch and cron-style workloads through Job and CronJob resources, and stateful workloads through StatefulSets with persistent volume integrations. These features are mature but require careful configuration of storage classes, probes, and disruption budgets. Nomad also supports batch and service jobs, so the decision usually comes down to ecosystem, team skills, and operational model rather than raw capability."
+    },
+    {
+      "q": "Which option is more secure in 2026?",
+      "a": "Neither tool is inherently secure or insecure; security depends on configuration, patching, identity design, and operational discipline. Kubernetes offers a broad set of controls such as RBAC, network policies, pod security standards, and admission control, and it has a large ecosystem of policy tools, but misconfiguration is a common risk. Nomad provides ACL policies, namespaces in supported editions, and policy enforcement options, with secrets often handled through Vault. Both require hardening, regular upgrades, and monitoring."
+    },
+    {
+      "q": "How do the total costs compare?",
+      "a": "Both Kubernetes and Nomad are open source with enterprise or managed options, and actual costs depend on provider pricing, node sizing, support contracts, and staff time rather than license fees alone. Kubernetes managed services typically charge for the control plane or clusters in some configurations, and operational overhead can be significant without a platform team. Nomad may reduce infrastructure and operational complexity in some environments, but enterprise features and support are commercial. Teams should model total cost of ownership rather than compare list prices."
+    },
+    {
+      "q": "Can I run both Kubernetes and Nomad in the same organization?",
+      "a": "Yes, it is common to run Nomad alongside Kubernetes, for example using Nomad for batch, edge, or legacy workloads while Kubernetes hosts cloud-native services. This approach adds operational surface area and requires clear ownership, shared identity, and consistent observability. A deliberate boundary between the platforms usually matters more than the tools themselves."
+    },
+    {
+      "q": "What should I evaluate in a proof of concept?",
+      "a": "A useful proof of concept should include representative workloads, deployment and rollback workflows, service discovery, secrets handling, autoscaling behavior, upgrade procedures, and observability. Test failure scenarios such as node loss and control plane disruption, and measure the effort required by your actual team rather than assuming either tool is simple or complex. Document version-specific feature availability and support terms before deciding."
+    }
+  ]
+}

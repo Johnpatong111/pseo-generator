@@ -1,0 +1,102 @@
+{
+  "slug": "scylladb-vs-mongodb",
+  "meta": {
+    "title": "ScyllaDB vs MongoDB (2026) : quelle solution choisir ?",
+    "description": "Comparatif ScyllaDB vs MongoDB 2026 : architecture, modèle de données, cohérence, scalabilité, écosystème et cas d'usage. Découvrez quelle base NoSQL choisir pour votre projet."
+  },
+  "toolA": {
+    "name": "ScyllaDB"
+  },
+  "toolB": {
+    "name": "MongoDB"
+  },
+  "verdict": "ScyllaDB est un choix solide pour les charges à très faible latence, à forte cardinalité et à besoin de scalabilité horizontale prévisible, notamment quand le modèle tabulaire large colonne et CQL conviennent. MongoDB reste plus polyvalent pour les modèles documentaires évolutifs, le prototypage rapide et les équipes qui valorisent un écosystème riche, des transactions multi-documents et une flexibilité de schéma. Le choix dépend surtout du modèle de données, des contraintes de cohérence et des compétences internes.",
+  "comparison": [
+    {
+      "category": "Architecture et modèle de distribution",
+      "toolA": "ScyllaDB est une base NoSQL distribuée en colonnes larges, compatible avec l'API Cassandra et écrite en C++ avec un modèle partagé-sans (shard-per-core) et sans verrou global. Elle vise une architecture sans maître, réplication configurable par clé de partition et absence de point unique de défaillance, ce qui facilite l'extension horizontale sur des clusters de machines. Son comportement dépend toutefois de la configuration du cluster, du facteur de réplication et de la charge réelle.",
+      "toolB": "MongoDB est une base documentaire distribuée avec un ensemble de réplicas (replica set) pour la haute disponibilité et des shards pour la distribution horizontale. Les documents BSON sont répartis par clé de sharding, avec un équilibrage automatique des chunks quand il est activé. La topologie, le choix de la clé de sharding et le niveau de lecture/écriture influencent fortement les performances et la cohérence observées.",
+      "winner": "tie"
+    },
+    {
+      "category": "Modèle de données et langage de requête",
+      "toolA": "ScyllaDB utilise le modèle tabulaire large colonne avec CQL (Cassandra Query Language), proche de SQL pour les tables, les clés primaires et les index secondaires. Le schéma est déclaré à l'avance, et les requêtes doivent être conçues autour des clés de partition et de clustering pour rester efficaces. Ce modèle est adapté aux séries temporelles, aux données de capteurs, aux catalogues à très grande échelle et aux charges d'écriture massives.",
+      "toolB": "MongoDB stocke des documents BSON flexibles, sans schéma rigide imposé au niveau de la collection, et s'interroge avec MQL (MongoDB Query Language), des pipelines d'agrégation et des index variés. Il permet des documents imbriqués, des tableaux et une évolution rapide du modèle, ce qui convient aux applications web, aux catalogues produits et aux données hétérogènes. La flexibilité de schéma demande néanmoins de la discipline côté application pour éviter des incohérences.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cohérence et transactions",
+      "toolA": "ScyllaDB propose des niveaux de cohérence ajustables par requête, du QUORUM au ONE en passant par LOCAL_QUORUM, avec des écritures généralement disponibles et une convergence via réplication. Les transactions légères (LWT) existent mais ont un coût et des limites, et ne remplacent pas un moteur transactionnel généraliste. La cohérence forte dépend du niveau choisi et de la topologie du cluster.",
+      "toolB": "MongoDB prend en charge les transactions ACID multi-documents depuis la version 4.0 pour les replica sets, et 4.2 pour les clusters shardés, avec des sessions et des niveaux de lecture/écriture configurables. Les transactions sont utiles pour les opérations métier qui touchent plusieurs documents, mais elles ont un coût et ne doivent pas être utilisées comme substitut à un bon modèle de données. Les performances dépendent de la version, de la topologie et de la charge.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scalabilité et performances sous charge",
+      "toolA": "ScyllaDB est conçue pour la scalabilité horizontale et la prédictibilité de latence, avec un moteur partagé-sans qui limite les contentions et un contrôle de flux intégré. Elle est souvent choisie pour des charges d'écriture et de lecture très élevées avec des contraintes de latence stricte, mais les résultats dépendent du dimensionnement, du modèle de requête et de la configuration. Aucun benchmark universel ne peut garantir un comportement identique sur toutes les charges.",
+      "toolB": "MongoDB monte en charge via le sharding et les replica sets, avec un équilibrage automatique et des index qui accélèrent les requêtes ciblées. Les performances varient selon la taille des documents, les index, la clé de sharding, le cache et le matériel. Pour des charges massives, une conception soignée et un suivi opérationnel sont indispensables, et les comparaisons chiffrées doivent être interprétées avec prudence.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, outils et intégrations",
+      "toolA": "ScyllaDB fournit des drivers compatibles CQL, une compatibilité partielle avec l'écosystème Cassandra, Scylla Manager pour l'administration, Scylla Monitoring et des connecteurs vers Kafka et Spark. L'écosystème est plus spécialisé que celui de MongoDB, et certaines intégrations ou outils tiers peuvent manquer ou se comporter différemment. La compatibilité avec Cassandra n'est pas totale et doit être vérifiée selon les fonctionnalités utilisées.",
+      "toolB": "MongoDB dispose d'un écosystème très large : drivers officiels dans de nombreux langages, MongoDB Atlas, Compass, outils de BI, connecteurs, et une communauté étendue. Les intégrations avec les frameworks web, les outils de données et les services cloud sont nombreuses, ce qui facilite l'adoption et le recrutement. La richesse de l'écosystème ne dispense pas d'évaluer la compatibilité avec les versions et les offres réellement disponibles.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Exploitation, administration et coût total",
+      "toolA": "ScyllaDB vise une exploitation simplifiée avec des opérations de cluster sans interruption, une réparation plus rapide et des outils dédiés comme Scylla Manager. L'auto-hébergement demande néanmoins une expertise en systèmes distribués, en dimensionnement et en supervision, et l'offre managée ScyllaDB Cloud peut réduire cette charge. Le coût total dépend du matériel, de l'équipe et du niveau de service choisi.",
+      "toolB": "MongoDB propose une administration mature avec des outils comme Compass, Ops Manager et Atlas, et une documentation abondante. L'auto-hébergement reste exigeant pour les clusters shardés et les sauvegardes, tandis qu'Atlas simplifie l'exploitation avec des offres managées. Les tarifs et les fonctionnalités varient selon l'offre et la région, et doivent être vérifiés auprès de l'éditeur.",
+      "winner": "tie"
+    },
+    {
+      "category": "Sécurité et conformité",
+      "toolA": "ScyllaDB prend en charge l'authentification, le chiffrement en transit et au repos selon la configuration, ainsi que le contrôle d'accès basé sur les rôles. La sécurité dépend fortement du déploiement, des versions et des bonnes pratiques appliquées, et une revue spécifique est nécessaire pour les exigences de conformité. Il ne faut pas supposer une conformité automatique sans audit.",
+      "toolB": "MongoDB propose l'authentification, le chiffrement en transit et au repos, le contrôle d'accès basé sur les rôles, l'audit et des fonctionnalités de sécurité selon les versions et les offres. Atlas ajoute des options de conformité et de gouvernance, mais les garanties exactes dépendent du contrat et de la configuration. Une évaluation détaillée reste indispensable pour les environnements réglementés.",
+      "winner": "tie"
+    },
+    {
+      "category": "Adéquation aux cas d'usage",
+      "toolA": "ScyllaDB convient aux charges à très grande échelle, aux données de séries temporelles, aux journaux, aux données de capteurs et aux systèmes nécessitant une latence faible et prévisible. Elle est moins adaptée aux modèles documentaires complexes, aux requêtes ad hoc très flexibles et aux transactions multi-entités fréquentes. Le choix doit être validé par un prototype représentatif de la charge réelle.",
+      "toolB": "MongoDB convient aux applications web, aux catalogues produits, aux systèmes de gestion de contenu, aux profils utilisateurs et aux modèles de données évolutifs. Il est moins indiqué pour des charges d'écriture extrêmes avec des contraintes de latence très strictes ou des modèles tabulaires massifs, où d'autres bases peuvent être plus adaptées. Là encore, un test sur charge représentative reste la meilleure approche.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "const { Client } = require('cassandra-driver');\n\nasync function main() {\n  const client = new Client({\n    contactPoints: ['127.0.0.1'],\n    localDataCenter: 'datacenter1',\n    keyspace: 'demo'\n  });\n  await client.connect();\n  await client.execute(\n    \"CREATE TABLE IF NOT EXISTS messages (id uuid PRIMARY KEY, content text)\"\n  );\n  await client.execute(\n    \"INSERT INTO messages (id, content) VALUES (uuid(), ?)\",\n    ['Hello, World!']\n  );\n  const result = await client.execute('SELECT content FROM messages LIMIT 1');\n  console.log(result.rows[0].content);\n  await client.shutdown();\n}\n\nmain().catch(console.error);",
+    "tech2Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://127.0.0.1:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('messages');\n  await collection.insertOne({ content: 'Hello, World!' });\n  const doc = await collection.findOne({});\n  console.log(doc.content);\n  await client.close();\n}\n\nmain().catch(console.error);"
+  },
+  "faq": [
+    {
+      "q": "Quel outil convient le mieux à un projet qui démarre avec un modèle de données évolutif ?",
+      "a": "MongoDB est généralement plus confortable au démarrage lorsque le modèle de données n'est pas stabilisé, car son schéma flexible et son langage de requête riche permettent d'itérer rapidement. ScyllaDB impose de concevoir les tables et les clés de partition en amont, ce qui peut être un avantage pour les charges connues mais un frein pour un prototypage exploratoire. Il est recommandé de valider le choix par un prototype représentatif des requêtes et des volumes attendus."
+    },
+    {
+      "q": "ScyllaDB est-elle réellement compatible avec l'écosystème Cassandra ?",
+      "a": "ScyllaDB implémente le protocole CQL et une grande partie de l'API Cassandra, ce qui permet souvent de réutiliser des drivers et des outils existants. La compatibilité n'est toutefois pas totale : certaines fonctionnalités, options ou comportements peuvent différer selon les versions, et il faut vérifier les points précis utilisés par votre application. Un test de compatibilité sur les fonctionnalités critiques est indispensable avant migration."
+    },
+    {
+      "q": "MongoDB peut-il remplacer une base relationnelle pour des transactions métier ?",
+      "a": "MongoDB prend en charge les transactions ACID multi-documents, ce qui permet de gérer des opérations métier sur plusieurs documents dans un replica set ou un cluster shardé, selon la version et la configuration. Ces transactions ont cependant un coût et ne dispensent pas d'une modélisation adaptée ; elles ne couvrent pas nécessairement tous les besoins d'intégrité d'une base relationnelle. Pour des contraintes fortes et des jointures complexes, une base relationnelle reste parfois plus appropriée."
+    },
+    {
+      "q": "Quels sont les points d'attention pour dimensionner ScyllaDB ?",
+      "a": "Le dimensionnement de ScyllaDB dépend du nombre de nœuds, du facteur de réplication, du profil de lecture/écriture, de la taille des partitions et du niveau de cohérence requis. Il est conseillé de surveiller les latences p99, la compaction, le contrôle de flux et l'équilibrage des données, car une mauvaise distribution des clés de partition peut dégrader les performances. Un test de charge réaliste et une supervision continue sont recommandés avant la mise en production."
+    },
+    {
+      "q": "MongoDB Atlas est-il obligatoire pour bénéficier des fonctionnalités avancées ?",
+      "a": "Non, MongoDB peut être auto-hébergé et de nombreuses fonctionnalités sont disponibles dans l'édition communautaire ou les offres auto-hébergées. Atlas simplifie l'exploitation, les sauvegardes, la supervision et certaines options de sécurité ou de conformité, mais les fonctionnalités exactes dépendent de l'offre et de la version. Il faut vérifier la matrice de fonctionnalités de l'éditeur pour les besoins précis du projet."
+    },
+    {
+      "q": "Quel est le risque principal d'un mauvais choix entre ScyllaDB et MongoDB ?",
+      "a": "Le risque principal est de choisir une base inadaptée au modèle de données ou au profil de charge, ce qui entraîne des coûts de refonte, des performances décevantes ou une complexité opérationnelle excessive. Par exemple, ScyllaDB mal modélisée peut souffrir de partitions chaudes, tandis que MongoDB peut devenir coûteux ou difficile à sharder sans conception préalable. Une évaluation comparative sur un prototype représentatif réduit fortement ce risque."
+    },
+    {
+      "q": "Peut-on migrer de MongoDB vers ScyllaDB ou inversement ?",
+      "a": "Une migration est techniquement possible mais demande une adaptation du modèle de données, des requêtes et parfois de la logique applicative, car les deux bases reposent sur des paradigmes différents. Il est recommandé de prévoir une phase de double écriture ou de migration progressive, des tests de cohérence et une validation des performances sur la charge cible. La complexité dépend fortement du volume, du schéma et des fonctionnalités utilisées."
+    },
+    {
+      "q": "Comment vérifier les affirmations de performance avant de choisir ?",
+      "a": "Les performances dépendent de la version, du matériel, de la configuration, du modèle de données et de la charge réelle, donc aucun chiffre générique ne peut garantir un résultat. La meilleure approche consiste à construire un banc d'essai représentatif avec vos requêtes, vos volumes et vos contraintes de latence, puis à comparer les deux options dans des conditions identiques. Les résultats doivent être interprétés avec prudence et complétés par une analyse du coût total et de l'exploitation."
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "slug": "docker-vs-kubernetes",
+  "meta": {
+    "title": "Docker vs Kubernetes (2026): ¿Qué solución elegir?",
+    "description": "Comparamos Docker y Kubernetes en 2026: casos de uso, complejidad, escalado, seguridad y costes operativos para ayudarte a elegir la plataforma de contenedores adecuada."
+  },
+  "toolA": {
+    "name": "Docker"
+  },
+  "toolB": {
+    "name": "Kubernetes"
+  },
+  "verdict": "No son soluciones excluyentes: Docker suele ser el punto de partida para empaquetar y ejecutar contenedores en un equipo o en servidores sencillos, mientras que Kubernetes aporta orquestación, alta disponibilidad y escalado cuando el número de servicios y la carga lo justifican. Si estás empezando o tienes pocos servicios, Docker con Compose cubre la mayoría de necesidades; si operas clústeres multinodo o necesitas tolerancia a fallos, Kubernetes es la vía natural.",
+  "comparison": [
+    {
+      "category": "Propósito principal y modelo de uso",
+      "toolA": "Docker es una plataforma de contenedores centrada en construir imágenes, empaquetar dependencias y ejecutar procesos aislados en uno o varios hosts. Docker Compose permite describir pilas de varios servicios y orquestar su ciclo de vida localmente o en un servidor individual, sin necesidad de un plano de control distribuido.",
+      "toolB": "Kubernetes es un orquestador de contenedores diseñado para gestionar cargas de trabajo distribuidas en clústeres de varios nodos, con reconciliación continua del estado deseado. No sustituye a una herramienta de construcción de imágenes: normalmente consume imágenes creadas con Docker u otros constructores compatibles con OCI y se encarga de programarlas, replicarlas y actualizarlas.",
+      "winner": "tie"
+    },
+    {
+      "category": "Curva de aprendizaje y complejidad operativa",
+      "toolA": "Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener un servicio en marcha en minutos. La gestión de redes, volúmenes y permisos añade complejidad, pero el modelo mental es acotado y las herramientas gráficas como Docker Desktop facilitan el inicio.",
+      "toolB": "Kubernetes exige comprender objetos como Pods, Deployments, Services, Ingress, ConfigMaps y RBAC, además de conceptos de red y almacenamiento del clúster. Su operación continua requiere experiencia en observabilidad, actualizaciones de versión y gestión del plano de control, y por eso muchas organizaciones optan por servicios gestionados; el esfuerzo depende mucho del entorno elegido.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Escalado y alta disponibilidad",
+      "toolA": "Docker puede ejecutar varios contenedores en un host y Docker Compose admite réplicas declarativas, pero no ofrece reprogramación automática ni alta disponibilidad entre nodos por sí mismo. El escalado horizontal más allá de un servidor requiere herramientas adicionales o servicios gestionados externos, y la tolerancia a fallos depende de la infraestructura subyacente.",
+      "toolB": "Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler y para la reprogramación de cargas cuando un nodo falla. También distribuye réplicas entre nodos y permite estrategias de despliegue progresivo, aunque el comportamiento real depende de la configuración de sondas, recursos y políticas de disponibilidad.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosistema de imágenes y compatibilidad",
+      "toolA": "Docker impulsó el formato de imagen OCI y mantiene Docker Hub como registro ampliamente utilizado, con herramientas como BuildKit para construir imágenes de forma eficiente. Muchas imágenes públicas se publican pensando en compatibilidad con Docker, y la integración con flujos de integración continua es muy directa.",
+      "toolB": "Kubernetes es agnóstico respecto al runtime de contenedores gracias a la interfaz CRI y consume imágenes compatibles con OCI desde cualquier registro. Funciona bien con imágenes creadas con Docker, Buildpacks o herramientas como kaniko o Buildah, lo que lo hace interoperable, aunque la construcción de imágenes queda fuera de su alcance.",
+      "winner": "tie"
+    },
+    {
+      "category": "Seguridad y aislamiento",
+      "toolA": "Docker aplica aislamiento mediante namespaces y cgroups de Linux, con opciones como usuarios sin privilegios, perfiles seccomp y sistemas de archivos de solo lectura. La seguridad efectiva depende de configurar correctamente el daemon, limitar capacidades y escanear imágenes; Docker Desktop añade capas propias de virtualización en macOS y Windows.",
+      "toolB": "Kubernetes incorpora control de acceso basado en roles, políticas de seguridad de Pods, cuotas de recursos y aislamiento por namespaces lógicos. Su superficie de ataque es mayor por la complejidad del plano de control y la red, por lo que exige endurecer el clúster, gestionar secretos adecuadamente y aplicar políticas de red según el proveedor o la distribución.",
+      "winner": "tie"
+    },
+    {
+      "category": "Observabilidad y resolución de problemas",
+      "toolA": "Docker ofrece registros por contenedor con docker logs, inspección de metadatos con docker inspect y estadísticas básicas de consumo. Para métricas históricas y alertas suele ser necesario integrar herramientas externas, y la depuración dentro de un contenedor es directa con docker exec.",
+      "toolB": "Kubernetes proporciona eventos, registros por Pod y sondas de salud que alimentan la reconciliación, pero la observabilidad completa requiere un stack adicional como Prometheus, Grafana o soluciones gestionadas. La depuración distribuida es más compleja, aunque kubectl describe y kubectl logs concentran mucha información útil.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Coste total y mantenimiento",
+      "toolA": "Docker Engine es software libre y puede ejecutarse en un servidor modesto; el coste principal es el hardware y el tiempo de administración. Docker Desktop tiene condiciones de licencia específicas para empresas según su tamaño, por lo que conviene revisar el plan vigente antes de desplegarlo en equipos corporativos.",
+      "toolB": "Kubernetes es de código abierto, pero su coste real está en la operación: nodos, plano de control gestionado si se contrata, almacenamiento, red y personal cualificado. Un clúster pequeño puede funcionar con recursos limitados en entornos de prueba, mientras que la producción suele requerir servicios gestionados o un equipo dedicado; los precios varían según proveedor y región.",
+      "winner": "toolA"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué herramienta se adapta mejor a un proyecto pequeño con pocos servicios?",
+      "a": "Para un proyecto con uno o pocos servicios, Docker con Compose suele ser suficiente y más sencillo de operar. Kubernetes añade valor cuando hay múltiples réplicas, varios nodos o requisitos de disponibilidad que justifican su complejidad; en caso contrario, puede aumentar el coste operativo sin beneficio claro."
+    },
+    {
+      "q": "¿Necesito aprender Kubernetes si ya sé Docker?",
+      "a": "Saber Docker ayuda porque las imágenes y los contenedores son la base de Kubernetes, pero no cubre los objetos de orquestación ni la gestión del clúster. Si tu objetivo es operar cargas distribuidas, conviene formarse en Pods, Deployments, Services, RBAC y observabilidad antes de pasar a producción."
+    },
+    {
+      "q": "¿Puedo usar Docker y Kubernetes juntos?",
+      "a": "Sí, es una combinación habitual: Docker u otra herramienta construye imágenes compatibles con OCI y Kubernetes las ejecuta y orquesta en el clúster. La elección del runtime de contenedores depende de la versión y la distribución de Kubernetes, por lo que conviene consultar la documentación oficial del entorno que vayas a utilizar."
+    },
+    {
+      "q": "¿Kubernetes es más seguro que Docker por defecto?",
+      "a": "No necesariamente: Kubernetes ofrece mecanismos como RBAC, políticas de seguridad de Pods y aislamiento por namespaces, pero su superficie de ataque es mayor y requiere configuración cuidadosa. Docker puede ser muy seguro si se limita el daemon, se ejecutan contenedores sin privilegios y se escanean las imágenes; en ambos casos la seguridad depende de la configuración y del mantenimiento."
+    },
+    {
+      "q": "¿Qué opción escala mejor con el crecimiento del tráfico?",
+      "a": "Kubernetes está diseñado para escalar horizontalmente y reprogramar cargas entre nodos mediante autoscaling y sondas de salud, siempre que la aplicación y los recursos estén bien configurados. Docker puede escalar verticalmente o con réplicas en un host, pero para un crecimiento sostenido en varios servidores suele necesitar orquestación adicional o un servicio gestionado."
+    },
+    {
+      "q": "¿Cuánto cuesta operar cada solución en 2026?",
+      "a": "Docker Engine no tiene coste de licencia y el gasto se concentra en infraestructura y administración; Docker Desktop tiene condiciones comerciales que conviene revisar según el tamaño de la empresa. Kubernetes es gratuito como proyecto, pero el coste real incluye nodos, plano de control gestionado, red, almacenamiento y personal; los importes varían por proveedor y región, así que deben verificarse con cada servicio."
+    },
+    {
+      "q": "¿Qué herramienta recomiendan para equipos sin especialistas en infraestructura?",
+      "a": "Un equipo pequeño sin especialistas suele avanzar más rápido con Docker y Compose, o con un servicio gestionado que abstraiga la orquestación. Kubernetes exige conocimientos de redes, almacenamiento y seguridad del clúster, y asumir su operación sin experiencia puede derivar en incidentes; si se necesita Kubernetes, optar por una oferta gestionada reduce la carga."
+    },
+    {
+      "q": "¿Kubernetes puede ejecutar cualquier imagen de Docker?",
+      "a": "Kubernetes ejecuta imágenes compatibles con OCI a través de la interfaz CRI, y la mayoría de imágenes publicadas para Docker son compatibles. Aun así, pueden aparecer diferencias por el runtime, los permisos, la arquitectura o las dependencias del host, por lo que es recomendable probar las imágenes en el entorno real antes de desplegarlas."
+    }
+  ]
+}

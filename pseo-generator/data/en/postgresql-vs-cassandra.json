@@ -1,0 +1,92 @@
+{
+  "slug": "postgresql-vs-cassandra",
+  "meta": {
+    "title": "PostgreSQL vs Apache Cassandra (2026): Which option should you choose?",
+    "description": "Compare PostgreSQL and Apache Cassandra for 2026: data model, scalability, consistency, operations, and use cases to help you pick the right database."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "Choose PostgreSQL when you need relational integrity, rich SQL, transactions, JSON/document flexibility, and a broad extension ecosystem for OLTP, analytics, or mixed workloads. Choose Apache Cassandra when you need very high write throughput and linear horizontal scale across many nodes or regions with tunable consistency and no single point of failure. PostgreSQL scales well vertically and with read replicas but multi-primary write scaling is harder; Cassandra sacrifices joins, ad hoc queries, and strict multi-row transactions, so model around queries first. Many teams combine both.",
+  "comparison": [
+    {
+      "category": "Data model and query language",
+      "toolA": "PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys, views, stored procedures, and rich types including JSONB, arrays, ranges, and geospatial via PostGIS. Its query planner handles joins and ad hoc analytical queries well, which suits evolving schemas and reporting.",
+      "toolB": "Cassandra is a wide-column, partitioned row store queried with CQL, which resembles SQL but lacks joins and subqueries. Data is organized by partition key and clustering columns, so you design tables around access patterns and denormalize for reads. This makes modeling less flexible when query requirements change.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Horizontal scalability and write throughput",
+      "toolA": "PostgreSQL scales primarily vertically, with streaming replication, logical replication, and partitioning for larger datasets. Sharding is possible through extensions or external tools such as Citus, but it adds operational complexity and is not the default architecture. Write scaling beyond one primary requires deliberate design.",
+      "toolB": "Cassandra is built for linear horizontal scale: adding nodes increases capacity and throughput, and every node can accept writes. It handles high write volumes across clusters and multi-region deployments, with replication factor and consistency levels controlling durability. This design is well suited to time-series, messaging, and telemetry workloads.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Consistency and transactions",
+      "toolA": "PostgreSQL provides full ACID transactions with serializable isolation options, multi-statement transactions, and strong constraints enforced by the database. This makes it reliable for financial records, inventory, and other workloads where correctness across rows matters.",
+      "toolB": "Cassandra offers tunable consistency per query, from one replica to all, and lightweight transactions for compare-and-set operations. However, it does not provide general multi-partition ACID transactions, and its eventual consistency trade-offs require application-level handling. Choose it when availability and partition tolerance outrank strict cross-row consistency.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Operational complexity and availability",
+      "toolA": "PostgreSQL is a single primary with replicas, which is simpler to reason about and well supported by managed services and mature tooling. Failover and backup are straightforward, though the primary can be a write bottleneck and a failover still causes brief disruption.",
+      "toolB": "Cassandra is a peer-to-peer ring with no primary; nodes can fail without downtime if replication is configured properly. It offers high availability and multi-datacenter replication, but tuning compaction, repair, tombstones, and capacity requires more specialized expertise. Managed offerings reduce this burden but can be costly at scale.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, extensions, and tooling",
+      "toolA": "PostgreSQL has a large ecosystem of extensions such as PostGIS, pgvector, and logical replication tools, plus broad ORM and BI support. Its community is extensive, and managed options are widely available across cloud providers.",
+      "toolB": "Cassandra integrates with the Apache ecosystem, including Spark and Kafka connectors, and has drivers for major languages. Its ecosystem is narrower than PostgreSQL's for general-purpose application tooling and analytics, and fewer off-the-shelf BI tools support it directly.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analytics and flexible querying",
+      "toolA": "PostgreSQL supports complex joins, window functions, CTEs, and ad hoc aggregation, making it useful for operational analytics on modest datasets. Extensions add columnar or vector capabilities for specialized needs.",
+      "toolB": "Cassandra is optimized for known queries at scale and performs poorly for ad hoc joins and full scans. Analytics typically require exporting data to a warehouse or using external engines, so it is not a good fit for exploratory reporting.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cost and resource efficiency",
+      "toolA": "PostgreSQL is open source with no licensing fees, and managed plans vary by provider and instance size. It can run efficiently on a single powerful server, which often keeps costs predictable for moderate workloads.",
+      "toolB": "Cassandra is also open source, but its operational overhead and reliance on many commodity nodes can increase infrastructure and staffing costs. Managed Cassandra services are priced by capacity and region and can be expensive for large clusters, so total cost depends heavily on scale and team expertise.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which database should I choose for a new transactional application?",
+      "a": "For most new transactional applications with relational data, constraints, and reporting needs, PostgreSQL is the safer default because it enforces integrity and supports flexible queries. Choose Cassandra instead only when you have a clear, high-write, scale-out requirement and can design tables around fixed access patterns."
+    },
+    {
+      "q": "Can PostgreSQL handle very large datasets?",
+      "a": "Yes, PostgreSQL can manage large datasets using partitioning, indexing, and read replicas, and it can be sharded with extensions or external tooling. However, scaling writes across many nodes is not its native strength, so very high write throughput may favor Cassandra or a distributed SQL alternative."
+    },
+    {
+      "q": "Is Cassandra a good replacement for a relational database?",
+      "a": "Cassandra is not a drop-in replacement for relational databases because it lacks joins and general multi-row transactions and requires query-driven data modeling. It is a strong fit for high-volume, append-heavy workloads where availability and horizontal scale matter more than ad hoc querying."
+    },
+    {
+      "q": "How do consistency guarantees differ between the two?",
+      "a": "PostgreSQL provides strong ACID guarantees by default within a single primary, while Cassandra offers tunable consistency per operation and eventual consistency across replicas. Lightweight transactions in Cassandra handle some compare-and-set cases, but they are not equivalent to full multi-statement transactions."
+    },
+    {
+      "q": "Which option is easier to operate?",
+      "a": "PostgreSQL is generally easier to operate for small and medium deployments because it has a single primary and mature managed services. Cassandra can provide higher availability, but tuning repairs, compaction, and capacity across a cluster demands more specialized operational knowledge."
+    },
+    {
+      "q": "Do both databases support JSON data?",
+      "a": "PostgreSQL supports JSON and JSONB with indexing and SQL operators, which works well for semi-structured data alongside relational tables. Cassandra supports flexible columns and collections but does not offer the same JSON querying and indexing flexibility, so JSON-heavy use cases usually favor PostgreSQL."
+    },
+    {
+      "q": "What about geospatial or vector search?",
+      "a": "PostgreSQL has mature extensions such as PostGIS for geospatial data and pgvector for vector similarity search, which can cover many AI and location-based use cases in one database. Cassandra may require external systems for comparable search capabilities, so verify current extension and connector support for your version and provider."
+    },
+    {
+      "q": "Can I use both together?",
+      "a": "Yes, many architectures use PostgreSQL for transactional and reporting workloads while Cassandra handles high-volume event or telemetry ingestion. Keep a clear source of truth and plan how data flows between systems to avoid consistency and duplication problems."
+    }
+  ]
+}

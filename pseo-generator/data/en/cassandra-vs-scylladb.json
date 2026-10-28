@@ -1,0 +1,98 @@
+{
+  "slug": "cassandra-vs-scylladb",
+  "meta": {
+    "title": "Apache Cassandra vs ScyllaDB (2026): Which option should you choose?",
+    "description": "Apache Cassandra vs ScyllaDB in 2026: compare architecture, performance, operations, ecosystem, and costs to choose the right wide-column database for your workload."
+  },
+  "toolA": {
+    "name": "Apache Cassandra"
+  },
+  "toolB": {
+    "name": "ScyllaDB"
+  },
+  "verdict": "Choose Apache Cassandra if you want the most widely adopted open-source wide-column store, a vast ecosystem, managed options from multiple cloud providers, and predictable licensing under the Apache 2.0 license. Choose ScyllaDB if you need higher throughput per node, lower tail latency, and are willing to accept a smaller ecosystem, a source-available license for newer versions, and a somewhat different operational model. Validate both against your own workload before committing.",
+  "comparison": [
+    {
+      "category": "Architecture and storage engine",
+      "toolA": "Apache Cassandra is a distributed wide-column database built on a log-structured storage engine, using commit logs, memtables, and SSTables with compaction to manage on-disk data. Its peer-to-peer ring architecture, gossip protocol, and tunable consistency have been refined over many major releases and are well documented. The design favors write-heavy workloads and horizontal scale across commodity hardware.",
+      "toolB": "ScyllaDB is a wide-column database that is API-compatible with Cassandra's CQL but is implemented in C++ with a shard-per-core, shared-nothing architecture and its own seastar asynchronous framework. Each CPU core runs independently, which reduces lock contention and context switching compared with a JVM-based design. It also uses a log-structured engine with compaction strategies that are conceptually similar to Cassandra's but are tuned differently.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Query language and driver compatibility",
+      "toolA": "Cassandra uses CQL, a SQL-like language, and offers official drivers for Java, Python, Node.js, Go, C#, and other languages. Because it is the reference implementation, most Cassandra-compatible tooling, ORMs, and migration guides target it first. Feature availability such as vector search or lightweight transactions depends on the specific Cassandra version and configuration.",
+      "toolB": "ScyllaDB supports CQL and is largely driver-compatible with Cassandra, often allowing existing applications to connect with minimal changes. However, compatibility is not absolute: some Cassandra features, system tables, and behaviors differ, and the supported CQL surface can vary by ScyllaDB version. Teams should verify driver compatibility and feature parity for their specific release before migrating.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance and latency characteristics",
+      "toolA": "Cassandra's JVM-based runtime can deliver strong throughput, but garbage collection pauses, compaction, and repair can affect tail latency under heavy load. Performance depends heavily on tuning heap settings, compaction strategies, and cluster topology, so results vary widely by workload and version. It remains a proven choice for large-scale write-heavy systems.",
+      "toolB": "ScyllaDB's shard-per-core C++ design typically aims to deliver higher throughput per node and more predictable tail latency, and its documentation emphasizes reduced GC-related pauses. Real gains depend on workload shape, schema, compaction choices, cluster size, and configuration, so independent benchmarking is advisable rather than assuming a fixed multiplier. Under write-heavy and latency-sensitive workloads, it is often reported to require fewer nodes for equivalent throughput.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Operational complexity and tuning",
+      "toolA": "Operating Cassandra involves managing compaction, repairs, tombstones, and JVM heap tuning, and these tasks require experienced operators. Mature tooling such as nodetool, metrics integrations, and managed services from several cloud providers reduce the burden. Repair scheduling and compaction tuning remain the most common sources of operational toil.",
+      "toolB": "ScyllaDB reduces some JVM tuning concerns but introduces its own operational model, including shard-aware drivers, scylla-manager for repairs and backups, and different compaction behavior. Its tooling is capable but less widespread than Cassandra's, and teams familiar with Cassandra will need to relearn some procedures. Operational effort in both systems depends on cluster size and workload.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ecosystem, community, and managed offerings",
+      "toolA": "Cassandra has a large, long-standing community, extensive documentation, conferences, and a broad ecosystem of third-party tools, connectors, and integrations. Multiple cloud providers offer managed Cassandra-compatible services, giving teams deployment flexibility. The Apache 2.0 license is permissive and well understood by legal and procurement teams.",
+      "toolB": "ScyllaDB has an active but smaller community and a narrower set of third-party integrations, though it provides its own drivers, manager, and monitoring tools. Newer ScyllaDB versions have moved to a source-available license rather than Apache 2.0, which matters for organizations with strict open-source policies. Managed ScyllaDB options exist but are less broadly available than managed Cassandra services.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Licensing and cost considerations",
+      "toolA": "Apache Cassandra is distributed under the Apache 2.0 license, which permits commercial use, modification, and redistribution with minimal restrictions. Total cost depends on infrastructure, engineering time, and any managed service fees rather than license fees. Its broad hosting options can help teams optimize infrastructure spending.",
+      "toolB": "ScyllaDB's licensing has changed across versions, with newer releases using a source-available license that may impose restrictions on offering it as a service. Core database use is generally permitted, but organizations should review the specific license terms for the version they plan to deploy. Infrastructure costs may be lower if fewer nodes are needed, but that depends on actual workload performance.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Data modeling and migration path",
+      "toolA": "Cassandra's data modeling guidance is extensive, and best practices around partition keys, denormalization, and access patterns are widely documented. Migrating to Cassandra from relational systems requires redesigning schemas around query patterns. Tools and guides for bulk loading and migration are plentiful.",
+      "toolB": "ScyllaDB follows similar data modeling principles because it uses CQL and a comparable partition model, so schemas often transfer with modest changes. Migration from Cassandra is a documented path but requires attention to feature differences, driver versions, and testing. Teams should plan a validation phase rather than assuming drop-in compatibility.",
+      "winner": "tie"
+    },
+    {
+      "category": "Security and enterprise features",
+      "toolA": "Cassandra supports authentication, role-based access control, TLS encryption for client and internode traffic, and auditing capabilities that vary by version and distribution. Enterprises often rely on managed services or commercial distributions for advanced security and support. Feature availability should be verified against the specific release in use.",
+      "toolB": "ScyllaDB provides authentication, authorization, TLS, and auditing features, with some capabilities gated by edition or version. Its enterprise offering adds support and management capabilities. As with Cassandra, the exact security feature set depends on the release and deployment model, so teams should confirm requirements before adoption.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is ScyllaDB a drop-in replacement for Apache Cassandra?",
+      "a": "ScyllaDB is largely CQL- and driver-compatible with Cassandra, so many applications can connect with minimal code changes. However, compatibility is not complete: some system tables, features, and behaviors differ, and the supported surface varies by version. Plan a migration test that exercises your schema, drivers, and operational tooling before switching."
+    },
+    {
+      "q": "Which database delivers better performance in 2026?",
+      "a": "ScyllaDB is generally designed to achieve higher throughput per node and lower tail latency thanks to its shard-per-core C++ architecture. Cassandra remains highly capable, and real results depend on workload, schema, compaction, cluster size, and tuning. Benchmark both with your own data and query patterns rather than relying on generic claims."
+    },
+    {
+      "q": "Which option is easier to operate?",
+      "a": "Cassandra has broader operational tooling and a larger pool of experienced operators, but it requires attention to JVM tuning, compaction, and repairs. ScyllaDB avoids JVM concerns and offers scylla-manager, yet its tooling is less widespread and requires relearning some procedures. The easier choice depends on your team's existing expertise and cluster scale."
+    },
+    {
+      "q": "How do licensing differences affect adoption?",
+      "a": "Apache Cassandra uses the permissive Apache 2.0 license, which is straightforward for most commercial and open-source use. Newer ScyllaDB versions use a source-available license with restrictions that matter if you plan to offer the database as a service. Review the license for your specific version and consult legal guidance if your use case is unusual."
+    },
+    {
+      "q": "Are managed cloud services available for both?",
+      "a": "Several cloud providers offer managed Cassandra-compatible services, giving teams deployment flexibility and reduced operational burden. Managed ScyllaDB offerings exist but are less broadly available. If a fully managed experience is a hard requirement, compare regional availability, SLAs, and supported versions carefully."
+    },
+    {
+      "q": "Which database is better for write-heavy workloads?",
+      "a": "Both are log-structured systems suited to write-heavy workloads, and Cassandra has a long track record at large scale. ScyllaDB often aims to sustain higher write throughput per node with more predictable latency, though results vary by configuration. Validate with a representative benchmark that includes compaction and repair behavior."
+    },
+    {
+      "q": "What should teams consider before migrating from Cassandra to ScyllaDB?",
+      "a": "Assess feature parity for your Cassandra version, driver compatibility, monitoring integration, and backup and repair workflows. Run a proof of concept with production-like data and traffic, and plan for retraining operators on ScyllaDB tooling. Migration is feasible but should be treated as an engineering project rather than a configuration change."
+    },
+    {
+      "q": "Which option has the stronger ecosystem and community?",
+      "a": "Apache Cassandra has a larger community, more third-party integrations, and more managed service options. ScyllaDB has an active community and solid first-party tooling but a narrower ecosystem. If broad tooling support and hiring availability are priorities, Cassandra has an advantage; if performance per node is the priority, ScyllaDB may justify the smaller ecosystem."
+    }
+  ]
+}

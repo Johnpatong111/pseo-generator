@@ -1,0 +1,96 @@
+{
+  "slug": "typeorm-vs-prisma",
+  "meta": {
+    "title": "TypeORM vs Prisma (2026) : quelle solution choisir ?",
+    "description": "Comparatif TypeORM vs Prisma 2026 : approche ORM, migrations, typage TypeScript, écosystème et cas d'usage. Choisissez l'outil adapté à votre projet Node.js."
+  },
+  "toolA": {
+    "name": "TypeORM"
+  },
+  "toolB": {
+    "name": "Prisma"
+  },
+  "verdict": "TypeORM convient aux équipes qui veulent un ORM classique proche de Doctrine/Hibernate, avec entités décorées et prise en charge de motifs comme Active Record ou Data Mapper. Prisma séduit par son schéma déclaratif, son client typé et ses migrations structurées. Pour un nouveau projet TypeScript exigeant un typage fort et des migrations lisibles, Prisma est souvent plus confortable ; pour s'intégrer à un existant ou viser plusieurs SGBD avec une approche traditionnelle, TypeORM reste pertinent.",
+  "comparison": [
+    {
+      "category": "Approche et philosophie de modélisation",
+      "toolA": "TypeORM s'inscrit dans la tradition des ORM orientés objet : vous définissez des entités sous forme de classes TypeScript annotées de décorateurs, puis TypeORM gère le mapping vers les tables. Il propose les patrons Active Record et Data Mapper, ce qui permet d'adopter des styles très différents selon l'équipe et le contexte existant.",
+      "toolB": "Prisma adopte une approche déclarative : vous décrivez votre modèle dans un fichier de schéma, puis Prisma génère un client typé utilisé pour interroger la base. Ce modèle de schéma unique applique un mapping vers les tables et sert de source de vérité pour le client et les migrations.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Typage TypeScript et expérience développeur",
+      "toolA": "TypeORM expose des types génériques sur les repositories et les requêtes, mais certaines constructions dynamiques, comme les query builders complexes ou les relations, peuvent demander des annotations supplémentaires. L'autocomplétion reste utile mais dépend fortement de la manière dont les entités et les requêtes sont écrites.",
+      "toolB": "Prisma génère un client dont les types dérivent directement du schéma, ce qui offre une autocomplétion très poussée sur les champs, les filtres et les relations. Le résultat est un typage généralement perçu comme plus prévisible, même s'il faut régénérer le client après chaque modification du schéma.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Migrations et gestion du schéma",
+      "toolA": "TypeORM fournit un outil de migration en ligne de commande capable de générer des fichiers à partir des différences entre les entités et la base. La génération automatique peut produire des migrations à relire attentivement, notamment sur les renommages ou les index, car le comportement dépend de la version et du pilote utilisé.",
+      "toolB": "Prisma Migrate s'appuie sur l'historique du schéma pour produire des fichiers SQL versionnés, avec une étape de développement et une étape de déploiement distinctes. L'approche est structurée, mais certaines opérations destructives demandent une validation manuelle et la gestion de bases existantes peut nécessiter une procédure d'adoption dédiée.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Prise en charge des bases de données",
+      "toolA": "TypeORM prend en charge de nombreux SGBD relationnels comme PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle et CockroachDB, selon la version et les pilotes installés. Il propose également des variantes pour certaines bases NoSQL, avec des niveaux de maturité variables selon les connecteurs.",
+      "toolB": "Prisma cible principalement les bases relationnelles (PostgreSQL, MySQL, MariaDB, SQL Server, SQLite, CockroachDB) et propose des connecteurs supplémentaires pour MongoDB, dont les fonctionnalités peuvent différer du modèle relationnel. Le périmètre est plus resserré que TypeORM, ce qui peut limiter certains environnements atypiques.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Requêtes avancées et SQL personnalisé",
+      "toolA": "TypeORM offre un query builder riche et la possibilité d'exécuter du SQL brut, ce qui facilite les requêtes complexes, les jointures fines et les optimisations spécifiques à un SGBD. Cette souplesse a un coût : il faut maîtriser l'API et surveiller les requêtes générées pour éviter les surprises de performance.",
+      "toolB": "Prisma fournit une API de requête typée avec des filtres, des agrégations et des relations, ainsi que la possibilité d'exécuter du SQL brut via des requêtes paramétrées. Pour des requêtes très spécifiques ou des optimisations poussées, l'expression reste parfois moins directe que dans un query builder SQL classique.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, intégrations et outillage",
+      "toolA": "TypeORM est ancien dans l'écosystème Node.js et s'intègre à de nombreux frameworks, notamment NestJS, avec une documentation fournie et une communauté active. L'outillage est varié mais moins unifié que chez certains concurrents, et la qualité des guides dépend parfois des versions.",
+      "toolB": "Prisma propose un ensemble cohérent : CLI, génération de client, migrations, studio d'exploration de données et documentation structurée. Son intégration est courante dans les projets TypeScript modernes, et l'écosystème d'extensions et d'exemples est riche, sans garantir pour autant la compatibilité avec tous les frameworks.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Maturité, stabilité et courbe d'apprentissage",
+      "toolA": "TypeORM a évolué sur plusieurs années et reste largement utilisé en production, mais certaines API ont connu des changements entre versions majeures. La courbe d'apprentissage dépend du style choisi : les décorateurs et les relations demandent une compréhension solide des concepts ORM.",
+      "toolB": "Prisma a gagné en maturité et propose une expérience plus guidée, avec un schéma unique et des commandes claires. Sa courbe d'apprentissage est souvent jugée plus douce pour les débutants, à condition d'accepter le flux de génération du client et la séparation entre schéma et code applicatif.",
+      "winner": "toolB"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';\n\n@Entity()\nexport class User {\n  @PrimaryGeneratedColumn()\n  id!: number;\n\n  @Column()\n  name!: string;\n}",
+    "tech2Snippet": "// schema.prisma\n// model User {\n//   id   Int    @id @default(autoincrement())\n//   name String\n// }\n\nimport { PrismaClient } from '@prisma/client';\n\nconst prisma = new PrismaClient();\n\nasync function main() {\n  const user = await prisma.user.create({ data: { name: 'Alice' } });\n  console.log(user);\n}\n\nmain();"
+  },
+  "faq": [
+    {
+      "q": "TypeORM ou Prisma pour un nouveau projet TypeScript en 2026 ?",
+      "a": "Pour un nouveau projet TypeScript, Prisma offre généralement une expérience plus guidée grâce à son schéma déclaratif et à son client fortement typé. TypeORM reste un choix valable si l'équipe maîtrise déjà les ORM orientés objet ou si le projet doit s'intégrer à une architecture existante basée sur TypeORM."
+    },
+    {
+      "q": "Prisma est-il plus performant que TypeORM ?",
+      "a": "Il n'existe pas de réponse universelle : les performances dépendent des requêtes, du schéma, du SGBD et de la configuration. Prisma génère des requêtes SQL spécifiques et TypeORM peut produire des requêtes différentes selon le query builder utilisé ; il est donc préférable de mesurer sur votre charge réelle plutôt que de se fier à une comparaison générique."
+    },
+    {
+      "q": "Peut-on utiliser TypeORM avec NestJS ?",
+      "a": "Oui, TypeORM est historiquement très intégré à NestJS via le module officiel, ce qui facilite l'injection des repositories. Prisma peut également être utilisé avec NestJS, mais l'intégration repose souvent sur un service dédié qui encapsule le client généré."
+    },
+    {
+      "q": "Quelles bases de données sont supportées par TypeORM et Prisma ?",
+      "a": "TypeORM couvre de nombreux SGBD relationnels et quelques bases NoSQL, avec des niveaux de support variables selon les pilotes. Prisma met l'accent sur PostgreSQL, MySQL, MariaDB, SQL Server, SQLite, CockroachDB et MongoDB ; vérifiez la version exacte et le connecteur adapté à votre environnement avant de choisir."
+    },
+    {
+      "q": "Comment fonctionnent les migrations avec ces deux outils ?",
+      "a": "TypeORM peut générer des migrations à partir des différences entre entités et base, mais il faut les relire attentivement. Prisma Migrate s'appuie sur l'historique du schéma et produit des fichiers SQL versionnés, avec une séparation entre développement et déploiement ; dans les deux cas, une revue humaine reste recommandée pour les opérations sensibles."
+    },
+    {
+      "q": "Lequel choisir pour des requêtes SQL complexes ?",
+      "a": "TypeORM offre un query builder complet et l'accès au SQL brut, ce qui peut faciliter les requêtes très spécifiques. Prisma permet aussi du SQL brut via des requêtes paramétrées, mais son API typée est parfois moins directe pour des jointures ou optimisations avancées. Évaluez la complexité réelle de vos requêtes avant de trancher."
+    },
+    {
+      "q": "TypeORM et Prisma sont-ils adaptés aux équipes débutantes ?",
+      "a": "Prisma est souvent considéré comme plus accessible grâce à son schéma unique et à ses commandes explicites, tandis que TypeORM demande de comprendre les décorateurs et les relations. Cela dit, une équipe déjà familière avec les ORM classiques peut trouver TypeORM plus intuitif, et la documentation de chaque outil doit être consultée pour la version utilisée."
+    },
+    {
+      "q": "Quels sont les risques de verrouillage ou de dépendance à un outil ?",
+      "a": "Les deux outils ajoutent une couche d'abstraction au-dessus du SQL, ce qui peut compliquer une migration ultérieure si vous utilisez des fonctionnalités très spécifiques. Prisma centralise le modèle dans un schéma dédié, tandis que TypeORM lie davantage le modèle aux entités du code ; prévoyez une stratégie de sortie et documentez les requêtes sensibles pour limiter ce risque."
+    }
+  ]
+}

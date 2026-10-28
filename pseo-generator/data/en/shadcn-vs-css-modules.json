@@ -1,0 +1,98 @@
+{
+  "slug": "shadcn-vs-css-modules",
+  "meta": {
+    "title": "shadcn/ui vs CSS Modules (2026): Which option should you choose?",
+    "description": "Compare shadcn/ui and CSS Modules for 2026: component ownership, styling scope, accessibility defaults, and fit for design systems, prototypes, and long-lived apps."
+  },
+  "toolA": {
+    "name": "shadcn/ui"
+  },
+  "toolB": {
+    "name": "CSS Modules"
+  },
+  "verdict": "shadcn/ui is the stronger choice when you want accessible, prebuilt React components that you copy into your repo and own, especially with Tailwind CSS and a fast-moving product roadmap. CSS Modules remains a solid, framework-agnostic way to scope plain CSS if you already have a styling system or prefer to build component markup yourself. Many teams combine both: shadcn/ui components for structure and behavior, CSS Modules for bespoke local styles. Neither is a drop-in substitute for the other.",
+  "comparison": [
+    {
+      "category": "Scope and core purpose",
+      "toolA": "shadcn/ui is a collection of copy-and-paste React components built on Radix UI primitives and styled with Tailwind CSS. It is not an installed component library in the traditional sense; you generate component source files into your project and maintain them. Its purpose is to give you accessible, composable UI building blocks you fully own and can modify.",
+      "toolB": "CSS Modules is a CSS specification-style approach, commonly implemented by bundlers, that scopes class names locally per file to avoid global collisions. It provides no components, markup, or behavior; it only scopes styles you write yourself. Its purpose is to make hand-authored CSS safer and more modular inside a build pipeline.",
+      "winner": "tie"
+    },
+    {
+      "category": "Framework and stack compatibility",
+      "toolA": "shadcn/ui targets React, with first-class support for Next.js and guidance for other React setups, and it assumes Tailwind CSS for default styling. Some components depend on additional packages, and compatibility can vary by React version and framework configuration, so it is worth checking current docs. It is a poor fit for non-React stacks.",
+      "toolB": "CSS Modules is supported by most modern bundlers, including Vite, webpack, and Next.js, and works with React, Vue, Svelte, and plain HTML projects depending on configuration. It is framework-agnostic and interoperates with Sass, PostCSS, and other CSS tooling when configured. Exact syntax support varies by bundler and version.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ownership, customization, and upgrade path",
+      "toolA": "Because components are copied into your codebase, you own every line and can tailor markup, styles, and behavior without fighting a package API. The trade-off is that upstream improvements are not delivered automatically; you must review and merge changes manually. This model suits teams that want long-term control over their design system.",
+      "toolB": "CSS Modules files are yours by definition, and changing styles is as simple as editing CSS classes. There is no component API to learn, but there is also no upstream to upgrade or merge. The cost is that all structure and behavior must be built and maintained in-house.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Accessibility and interaction behavior",
+      "toolA": "shadcn/ui builds on Radix UI primitives, which handle many keyboard interactions, focus management, and ARIA patterns for complex widgets such as dialogs, menus, and comboboxes. You still need to author labels, content, and testing to meet your accessibility goals. Behavior can change across versions, so accessibility should be verified in your own app.",
+      "toolB": "CSS Modules has no built-in accessibility features because it only scopes styles. Accessibility depends entirely on the markup and behavior you write. This gives full control but places the entire burden of keyboard support and ARIA correctness on your team.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Styling model and design consistency",
+      "toolA": "shadcn/ui ships with Tailwind utility classes and CSS variables for theming, which encourages consistent tokens and fast iteration. Team members must be comfortable with Tailwind, and customization often means editing utility strings or extending configuration. Design consistency depends on disciplined use of shared tokens.",
+      "toolB": "CSS Modules keeps styles in conventional CSS files with locally scoped class names, which many developers find familiar and easy to reason about. It integrates naturally with Sass, design tokens, and existing stylesheets. Consistency depends on your own conventions, since there is no built-in token system.",
+      "winner": "tie"
+    },
+    {
+      "category": "Learning curve and developer experience",
+      "toolA": "Teams already fluent in React and Tailwind can move quickly, but newcomers must learn the CLI, component conventions, and Tailwind workflows. Reading generated component source is often necessary to understand behavior and props. The payoff is less boilerplate for complex widgets.",
+      "toolB": "CSS Modules is easy to learn for anyone who knows CSS and a bundler, with little tooling to adopt beyond configuration. The downside is that you write more markup and behavior code yourself, which adds effort for complex components. Familiarity with CSS architecture matters for larger projects.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Tooling, testing, and long-term maintenance",
+      "toolA": "shadcn/ui components live in your repository, so type checking, linting, and unit tests apply to them directly. You control dependencies such as Radix and Tailwind, which helps with security review and pinning. Maintenance includes tracking upstream changes and reviewing generated code over time.",
+      "toolB": "CSS Modules benefits from mature bundler support and straightforward debugging through browser dev tools. Styles are easier to isolate in tests, but there is no component behavior to test unless you build it. Long-term maintenance is predictable but entirely your responsibility.",
+      "winner": "tie"
+    },
+    {
+      "category": "Best fit for project type and team size",
+      "toolA": "shadcn/ui suits React teams building dashboards, SaaS apps, or internal tools that need accessible components quickly and want to own the code. It works best when Tailwind is already part of the stack. It is less attractive for non-React projects or teams that prefer plain CSS.",
+      "toolB": "CSS Modules fits projects of any size that want scoped CSS without adopting a component library, including legacy apps, Vue or Svelte codebases, and static sites. It is a good choice when you already have components and just need safer styling. It is not a substitute for a UI toolkit.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can I use shadcn/ui and CSS Modules together in the same project?",
+      "a": "Yes, in principle you can import CSS Modules files alongside shadcn/ui components in a React project configured to support both. In practice, mixing Tailwind utility styling from shadcn/ui with separate CSS Module files can fragment your styling conventions, so establish clear rules about which approach owns which concerns. Many teams use shadcn/ui for structure and behavior and reserve CSS Modules for isolated custom widgets."
+    },
+    {
+      "q": "Is CSS Modules a replacement for a component library like shadcn/ui?",
+      "a": "No, CSS Modules only scopes CSS class names and provides no components, markup, or interaction logic. shadcn/ui supplies React component source with accessibility primitives and default Tailwind styling. If you need buttons, dialogs, or menus, CSS Modules alone will not provide them; you would still write or import those components yourself."
+    },
+    {
+      "q": "Does shadcn/ui lock me into Tailwind CSS?",
+      "a": "The default components are generated with Tailwind utility classes and CSS variables, so adopting them usually means adopting Tailwind. Because you own the source, you can theoretically rewrite component styles with another approach, but that is significant manual work and may complicate future updates. Teams that strongly prefer plain CSS should weigh this carefully before committing."
+    },
+    {
+      "q": "Which option is better for accessibility out of the box?",
+      "a": "shadcn/ui generally offers more built-in accessibility support because it wraps Radix UI primitives that implement keyboard navigation, focus management, and ARIA patterns for complex widgets. That does not make your app automatically accessible; you still need correct labels, content, and testing. CSS Modules provides no accessibility behavior at all, so every requirement must be implemented and verified by your team."
+    },
+    {
+      "q": "How do upgrade and maintenance costs compare?",
+      "a": "shadcn/ui requires manual maintenance because components are copied into your repo and upstream fixes must be reviewed and merged by hand. CSS Modules has no component API to upgrade, so maintenance is limited to your own code and bundler compatibility. Both approaches benefit from pinned dependencies and a clear review process, and actual effort depends on how heavily you customize."
+    },
+    {
+      "q": "Is shadcn/ui suitable for non-React frameworks such as Vue or Svelte?",
+      "a": "shadcn/ui is designed for React, so it is not a direct fit for Vue, Svelte, or other frameworks. Community ports exist for some frameworks, but their feature parity and maintenance status can differ from the official React implementation. If you are not using React, CSS Modules is a more portable styling choice, paired with a component library built for your framework."
+    },
+    {
+      "q": "Which approach produces smaller CSS bundles?",
+      "a": "Bundle size depends heavily on configuration, tooling, and how much code you ship. Tailwind-based setups typically purge unused utilities in production builds, while CSS Modules output depends on the CSS you author and how your bundler extracts it. Neither option is universally smaller, so measure your actual build rather than assuming."
+    },
+    {
+      "q": "What should a small team starting a new app choose in 2026?",
+      "a": "A small React team that needs accessible, good-looking components quickly will usually benefit from shadcn/ui, especially if Tailwind is already acceptable. A team with strong CSS skills or a non-React stack may prefer CSS Modules and a smaller set of hand-built components. Either way, define styling conventions early and verify accessibility, dependency versions, and build configuration against current documentation."
+    }
+  ]
+}

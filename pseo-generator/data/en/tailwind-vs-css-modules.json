@@ -1,0 +1,98 @@
+{
+  "slug": "tailwind-vs-css-modules",
+  "meta": {
+    "title": "Tailwind CSS vs CSS Modules (2026): Which option should you choose?",
+    "description": "Compare Tailwind CSS and CSS Modules for 2026: styling workflow, scoping, performance, tooling, and team fit, plus a clear verdict on which to choose for your project."
+  },
+  "toolA": {
+    "name": "Tailwind CSS"
+  },
+  "toolB": {
+    "name": "CSS Modules"
+  },
+  "verdict": "Choose Tailwind CSS if you want a utility-first workflow, fast iteration, and design consistency enforced through a shared token scale, accepting markup with long class lists and a build setup. Choose CSS Modules if you prefer conventional CSS with local scoping, minimal markup noise, and styles co-located with components, accepting more manual naming discipline and less built-in design-system enforcement. Many teams combine both, since they address different concerns and can coexist in one build.",
+  "comparison": [
+    {
+      "category": "Authoring model and developer experience",
+      "toolA": "Tailwind CSS is a utility-first framework: you compose small single-purpose classes such as flex, p-4, and text-sm directly in markup, and the build step generates only the utilities actually used. This keeps styling decisions close to the component and removes the need to invent class names, but markup becomes verbose and can be harder to scan when many conditional variants are involved. Tailwind's configuration file and plugin ecosystem extend the design scale, and editor tooling such as IntelliSense-style completion helps with memorizing utilities.",
+      "toolB": "CSS Modules is a specification-driven approach rather than a framework: you write ordinary CSS or a preprocessor dialect in a file, and the bundler rewrites class names into locally scoped identifiers so styles do not leak across components. Authors keep familiar CSS selectors, media queries, and cascade behavior, and co-locating a .module.css file with a component is a common pattern. The tradeoff is that naming, composition, and design-token discipline remain your responsibility, and additional tooling or conventions are needed to share values consistently.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scoping, specificity, and cascade management",
+      "toolA": "Tailwind largely sidesteps cascade conflicts because each utility maps to a narrow property set, and conflicts are resolved by class order in the generated stylesheet rather than selector specificity. This predictability makes overrides straightforward, though combining many utilities for one element can obscure which declaration wins without tooling support. Tailwind's layer system in recent major versions, including the v4 CSS-first configuration approach, is designed to keep base styles, components, and utilities in a controlled order, but exact behavior depends on your version and setup.",
+      "toolB": "CSS Modules provides strong local scoping by default, so selectors are hashed and isolated per module, which effectively prevents unintended style bleed between components. Specificity still follows standard CSS rules inside a module, so deeply nested selectors or !important can reintroduce conflicts within a file. Global styles require an explicit escape hatch such as :global, which is useful but must be used deliberately to avoid leaking styles.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Build integration and framework compatibility",
+      "toolA": "Tailwind CSS integrates with major bundlers and frameworks through PostCSS, the official Vite plugin, or framework-specific setups, and version 4 shifted configuration toward CSS with a Vite-first plugin path. Compatibility is broad across React, Vue, Svelte, Astro, and server-rendered setups, but configuration details vary by version and framework, so following current documentation matters. Teams should verify plugin and postcss configuration for their exact toolchain before upgrading.",
+      "toolB": "CSS Modules is supported out of the box by many bundlers and frameworks, including webpack, Vite, and Next.js, usually with zero or minimal configuration. Because it is a CSS authoring convention rather than a runtime library, it tends to be less version-sensitive and easier to adopt incrementally in an existing codebase. Preprocessor support such as Sass or Less depends on the bundler configuration you enable.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Design consistency and theming",
+      "toolA": "Tailwind ships a default design scale for spacing, color, typography, and breakpoints, and customizing the theme in configuration keeps values centralized so teams reuse tokens instead of inventing ad hoc values. This tends to produce more consistent interfaces, especially across large teams, though enforcing semantic component abstractions still requires discipline or additional component libraries. Theming and dark mode are supported through configuration and variant strategies, with specifics depending on version.",
+      "toolB": "CSS Modules does not impose a design scale, so consistency depends entirely on your own custom properties, preprocessor variables, or a design-token pipeline. This offers maximum flexibility and suits teams with an established design system, but without governance it is easy to accumulate one-off values. Theming via CSS custom properties works naturally, since standard CSS mechanisms remain fully available.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance and output size",
+      "toolA": "Tailwind generates CSS on demand from the classes detected in source files, so production output usually stays small relative to the number of components, although the scanning configuration must cover all template locations to avoid missing styles. Because utilities are reused, the same rules serve many components, which can reduce duplication in large applications. Actual bundle size depends on configuration, content detection, and whether additional plugins or component layers are used.",
+      "toolB": "CSS Modules output scales with the number of module files, and scoped hashing adds a small amount of selector length but negligible weight. Duplication across components is a common risk, since similar rules may be repeated in separate modules unless shared partials or tokens are used. Compression and HTTP caching generally mitigate this, but very large codebases may see more CSS than an on-demand utility approach.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Learning curve and team onboarding",
+      "toolA": "Tailwind requires learning a large utility vocabulary and a mental model shift away from semantic class names, which can slow initial onboarding for developers accustomed to traditional CSS. Once learned, many developers report faster iteration because styling happens in the same file as markup, though this varies by individual and team. Documentation quality and editor extensions reduce the ramp-up period.",
+      "toolB": "CSS Modules builds on standard CSS knowledge, so developers who already know CSS can be productive almost immediately, with only the scoping and composition rules to learn. The approach is approachable for teams with strong CSS fundamentals and for projects migrating from global stylesheets. Advanced patterns such as composes and sharing variables across modules require some additional learning.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Maintainability and refactoring at scale",
+      "toolA": "Tailwind centralizes design decisions in configuration and reduces orphaned CSS, since unused utilities are not emitted, but long class strings can become difficult to read and refactor without extracting components or using helper utilities. Consistency improves when teams agree on conventions, and tooling such as class sorting linters helps. Large codebases benefit from component abstraction rather than repeating utility combinations.",
+      "toolB": "CSS Modules keeps styles in dedicated files with clear local scope, which makes ownership and deletion straightforward when a component is removed. However, dead CSS detection, cross-module reuse, and shared design values need deliberate conventions, and global overrides can become a maintenance burden if overused. Refactoring is generally predictable because standard CSS tooling applies.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ecosystem, tooling, and long-term viability",
+      "toolA": "Tailwind has a large ecosystem including official plugins, a component-oriented UI kit, and integrations with most modern frameworks and editors. Its release cadence has included significant changes between major versions, so teams should plan for migration effort, particularly around configuration in version 4. The project is actively maintained and widely adopted in the React and full-stack communities.",
+      "toolB": "CSS Modules is a stable, widely implemented convention supported by major bundlers and frameworks, with a smaller dedicated tooling ecosystem because it relies on standard CSS tooling. Long-term viability is strong precisely because it is close to the platform, but features like typed class names rely on TypeScript declaration generation configured in your build. It pairs well with linters and stylelint-based workflows.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which should I choose for a brand-new React or Next.js project in 2026?",
+      "a": "For most new React and Next.js projects that want fast iteration and a consistent design scale, Tailwind CSS is the lower-friction default, and Next.js documents first-class Tailwind setup. Choose CSS Modules instead when you have strong existing CSS expertise, a mature token system, or a preference for conventional stylesheets and minimal markup noise. Both are supported by Next.js, so the decision is mainly about workflow and team preference rather than compatibility."
+    },
+    {
+      "q": "Can Tailwind CSS and CSS Modules be used together in the same project?",
+      "a": "Yes, they can coexist in one build: Tailwind is typically added through PostCSS or its bundler plugin, while CSS Modules is handled by the bundler's CSS pipeline. A common pattern is using Tailwind for layout and spacing utilities and CSS Modules for complex component-specific styles or third-party overrides. Be deliberate about cascade layers and import order so utility and module rules resolve predictably."
+    },
+    {
+      "q": "Does Tailwind CSS produce smaller CSS bundles than CSS Modules?",
+      "a": "Tailwind usually produces smaller CSS for large applications because it emits only the utilities detected in your source files and reuses them across components, whereas CSS Modules output grows with the number of module files. That advantage depends on correct content detection and on avoiding heavy plugin or component layers, and small projects may see little difference. Always measure your own production build rather than relying on general claims."
+    },
+    {
+      "q": "Is CSS Modules better for avoiding style conflicts?",
+      "a": "CSS Modules provides strong isolation because class names are locally scoped and hashed, which prevents accidental leakage between components. Tailwind avoids most specificity conflicts by design because utilities map to narrow property sets, but combining utilities can still require care when overriding styles. Both approaches manage conflicts well when used with clear conventions."
+    },
+    {
+      "q": "Which option is easier for developers who are new to CSS?",
+      "a": "CSS Modules is generally easier to start with for people who already know standard CSS, since it preserves familiar selectors and only adds local scoping. Tailwind demands learning a large utility vocabulary and a different mental model, which can slow beginners initially but often speeds up iteration once the vocabulary is internalized. Teams should weigh onboarding time against long-term consistency benefits."
+    },
+    {
+      "q": "How do Tailwind CSS and CSS Modules handle theming and dark mode?",
+      "a": "Tailwind supports theming and dark mode through its configuration and variant system, with details that vary between major versions, including the CSS-first configuration introduced in version 4. CSS Modules handles theming with standard CSS custom properties and media queries, giving full control but requiring you to build the token system yourself. Both approaches can implement dark mode reliably; the difference is how much structure the tool provides out of the box."
+    },
+    {
+      "q": "Do I need special tooling or TypeScript support for CSS Modules?",
+      "a": "Bundlers such as webpack, Vite, and Next.js support CSS Modules with little or no configuration, but TypeScript needs generated declarations to type-check imported class names. Tools and bundler plugins can generate those declarations, and stylelint can enforce conventions. Tailwind's tooling centers on its PostCSS or bundler plugin plus editor extensions and class-sorting linters."
+    },
+    {
+      "q": "What are the main limitations of each option?",
+      "a": "Tailwind's main drawbacks are verbose markup, a learning curve, and dependency on build configuration, with migration effort between major versions. CSS Modules' main drawbacks are a lack of built-in design tokens, greater risk of duplicated CSS, and reliance on team discipline for consistency. Neither is universally superior, and many production applications combine them to offset each other's weaknesses."
+    }
+  ]
+}

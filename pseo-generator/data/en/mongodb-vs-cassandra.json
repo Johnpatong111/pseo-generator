@@ -1,0 +1,98 @@
+{
+  "slug": "mongodb-vs-cassandra",
+  "meta": {
+    "title": "MongoDB vs Apache Cassandra (2026): Which option should you choose?",
+    "description": "Compare MongoDB and Apache Cassandra in 2026 on data model, scalability, consistency, operations, and ecosystem to pick the right database for your workload."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "Choose MongoDB when you need a flexible document model, rich querying, secondary indexes, and strong ecosystem tooling for operational applications. Choose Apache Cassandra when you need linear write scalability, multi-region availability, and tunable consistency at very high ingest rates. Many teams reasonably combine both. Version, deployment model, and workload shape materially affect results, so validate with your own benchmarks.",
+  "comparison": [
+    {
+      "category": "Data model and schema flexibility",
+      "toolA": "MongoDB stores BSON documents with a flexible schema, allowing nested objects and arrays that map naturally to application objects. Schema validation is optional but can be enforced per collection, so teams can balance flexibility with governance.",
+      "toolB": "Apache Cassandra uses a partitioned wide-column model defined by CQL tables with partition keys and clustering columns. Schema is defined up front and changing primary keys later is costly, which favors designing around known query patterns.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scalability and write throughput",
+      "toolA": "MongoDB scales horizontally through sharding, and writes are distributed across shards. Sharding requires choosing a shard key carefully, and throughput depends heavily on cluster topology, hardware, and workload.",
+      "toolB": "Apache Cassandra is built for linear horizontal scaling across commodity nodes, and its leaderless architecture avoids a single write bottleneck. It handles very high write volumes well, though results depend on partition design and cluster tuning.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Querying and secondary indexes",
+      "toolA": "MongoDB supports rich queries, aggregation pipelines, secondary indexes, and near-real-time analytics on operational data within limits. Ad hoc queries are practical without predefining every access pattern.",
+      "toolB": "Apache Cassandra queries are designed around partition keys, and efficient querying generally requires data modeled per access pattern. Secondary indexes exist but are limited in scope and should be used judiciously at scale.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Consistency and availability trade-offs",
+      "toolA": "MongoDB offers strong consistency at the primary and configurable read/write concerns plus causal consistency in replica sets. Multi-document transactions are supported, which simplifies correctness for related writes.",
+      "toolB": "Apache Cassandra provides tunable consistency per operation and remains highly available during node or region failures. It typically favors availability and partition tolerance, and multi-row atomicity is limited compared to transactional databases.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Operational complexity",
+      "toolA": "MongoDB offers managed services and mature tooling, and replica set operations are relatively approachable. Large sharded clusters still require experienced operators, capacity planning, and monitoring.",
+      "toolB": "Apache Cassandra can be operationally demanding: compaction, repair, tombstone management, and JVM tuning require expertise. Managed offerings reduce this burden, but self-managed clusters are not a low-effort option.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Transactions and multi-row atomicity",
+      "toolA": "MongoDB supports multi-document ACID transactions in replica sets and sharded clusters, subject to version and configuration constraints. This suits use cases needing coordinated writes across documents.",
+      "toolB": "Apache Cassandra offers lightweight transactions with compare-and-set semantics but no general multi-partition ACID transactions. Workloads needing cross-partition atomicity must be designed around that limitation.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosystem, drivers, and integrations",
+      "toolA": "MongoDB provides official drivers, Atlas cloud services, change streams, and broad integration with BI and analytics tools. Documentation and community resources are extensive.",
+      "toolB": "Apache Cassandra has official drivers, strong integration with the Apache ecosystem such as Spark, and several managed providers. Its tooling ecosystem is smaller than MongoDB's but sufficient for many large-scale deployments.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Best-fit use cases",
+      "toolA": "MongoDB fits application backends, content management, catalogs, user profiles, and workloads needing flexible documents and varied queries. It is a strong general-purpose operational database.",
+      "toolB": "Apache Cassandra fits time-series, messaging, IoT telemetry, and high-write workloads requiring multi-region availability. It is a poor fit for ad hoc analytics or highly relational queries.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which database should I choose for a new application with unpredictable queries?",
+      "a": "MongoDB is usually the safer default when query patterns are not yet fully known, because its document model, secondary indexes, and aggregation framework support ad hoc access without redesigning tables. Apache Cassandra requires modeling tables around specific access patterns and penalizes unplanned queries. If your team cannot predict queries, start with MongoDB and revisit Cassandra if write scale becomes the dominant constraint."
+    },
+    {
+      "q": "Is Apache Cassandra faster than MongoDB for writes?",
+      "a": "Apache Cassandra is generally designed for high, sustained write throughput with linear scaling across nodes, which often makes it the stronger option for very high ingest rates. MongoDB can also handle substantial write volumes, especially with sharding and appropriate hardware, but its write path involves different trade-offs. Real performance depends on version, cluster size, schema or data model, consistency settings, and workload shape, so benchmark with your own data."
+    },
+    {
+      "q": "Can MongoDB handle global, multi-region deployments?",
+      "a": "Yes. MongoDB supports multi-region replica sets and sharded clusters, and managed services can distribute data across regions. However, cross-region writes involve latency trade-offs, and consistency and read-preference settings affect behavior. Cassandra is often favored for active-active multi-region patterns, but MongoDB remains viable when its consistency and operational model fit your requirements."
+    },
+    {
+      "q": "Does Apache Cassandra support transactions?",
+      "a": "Cassandra offers lightweight transactions using compare-and-set, which provide limited atomicity for single-partition operations. It does not provide general multi-partition ACID transactions comparable to MongoDB's multi-document transactions. Design around this by keeping related data in the same partition when atomicity matters, or pair Cassandra with other systems for transactional needs."
+    },
+    {
+      "q": "Which option is easier to operate in production?",
+      "a": "MongoDB is often considered more approachable for teams new to distributed databases, particularly with managed services handling replication and backups. Cassandra can be highly reliable but requires expertise in compaction, repair, tombstones, and capacity planning, and self-managed clusters are demanding. Managed Cassandra services reduce the burden, but both databases require monitoring and skilled operators at scale."
+    },
+    {
+      "q": "How do licensing and costs compare?",
+      "a": "MongoDB offers a community edition under the SSPL and commercial licensing, while Apache Cassandra is open source under the Apache License 2.0. Total cost depends on self-managed versus managed deployment, hardware, staffing, and support contracts rather than license alone. Pricing changes over time, so consult current vendor documentation instead of relying on stale figures."
+    },
+    {
+      "q": "Can I use both MongoDB and Cassandra in the same architecture?",
+      "a": "Yes, and some organizations do: MongoDB for operational application data and Cassandra for high-volume telemetry or event streams. This increases operational surface area and requires clear data ownership between systems. Adopt a dual-database approach only when each system solves a distinct, well-understood problem."
+    },
+    {
+      "q": "What should I evaluate before committing in 2026?",
+      "a": "Test with realistic data volume, query patterns, and failure scenarios rather than relying on general claims. Confirm support for your required features and security controls in the specific versions and deployment models you plan to use. Also assess team expertise and long-term operational cost, since the best choice depends on your workload more than on headline benchmarks."
+    }
+  ]
+}

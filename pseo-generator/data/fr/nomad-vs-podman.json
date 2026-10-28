@@ -1,0 +1,96 @@
+{
+  "slug": "nomad-vs-podman",
+  "meta": {
+    "title": "Nomad vs Podman (2026): quelle solution choisir ?",
+    "description": "Nomad vs Podman en 2026 : orchestration de clusters contre moteur de conteneurs. Critères, exemples et verdict pour choisir selon votre besoin réel."
+  },
+  "toolA": {
+    "name": "Nomad"
+  },
+  "toolB": {
+    "name": "Podman"
+  },
+  "verdict": "Nomad et Podman ne jouent pas vraiment dans la même catégorie : Nomad orchestre des charges (conteneurs, tâches binaires, batch) sur un cluster de machines, tandis que Podman exécute et gère des conteneurs sur un hôte, souvent en local ou en rootless. Choisissez Nomad pour du scheduling multi-nœuds à l'échelle, Podman pour remplacer Docker sur une machine ou un petit serveur sans démon. Ils peuvent aussi se combiner, Nomad pilotant alors des tâches conteneurisées.",
+  "comparison": [
+    {
+      "category": "Rôle principal et positionnement",
+      "toolA": "Nomad est un planificateur et orchestrateur de charges de travail développé par HashiCorp : il place des tâches sur un ensemble de nœuds et gère leur cycle de vie à l'échelle d'un cluster. Il prend en charge des conteneurs, mais aussi des exécutables, des tâches batch et des services système, ce qui le distingue d'un simple moteur de conteneurs.",
+      "toolB": "Podman est un moteur de conteneurs sans démon, compatible avec l'écosystème OCI, conçu pour construire, exécuter et gérer des conteneurs sur une machine donnée. Il vise d'abord un usage local ou par hôte, avec un mode rootless natif, et ne fournit pas nativement de planification multi-nœuds.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Architecture et fonctionnement interne",
+      "toolA": "Nomad repose sur un modèle client-serveur : des agents serveur forment le plan de contrôle (avec consensus Raft) et des agents clients exécutent les tâches sur chaque nœud. Cette architecture distribuée est pensée pour la haute disponibilité et le placement dynamique des charges.",
+      "toolB": "Podman fonctionne sans démon central : chaque commande interagit directement avec les API du noyau et les runtimes OCI via une bibliothèque, ce qui simplifie le débogage et réduit la surface d'attaque liée à un service privilégié permanent. Cette approche par hôte est légère mais ne constitue pas, seule, un orchestrateur de cluster.",
+      "winner": "tie"
+    },
+    {
+      "category": "Planification et montée en charge multi-nœuds",
+      "toolA": "Nomad excelle dans le placement de tâches sur de nombreux nœuds selon les ressources disponibles, les contraintes et les affinités, avec des stratégies de mise à jour et de redémarrage. C'est précisément ce que Podman ne propose pas nativement, ce qui rend Nomad pertinent dès qu'il faut coordonner plusieurs machines.",
+      "toolB": "Podman gère très bien des conteneurs sur un hôte unique et peut s'appuyer sur des outils complémentaires (systemd, Quadlet, Kubernetes via des générateurs) pour des scénarios multi-hôtes. En revanche, il n'embarque pas de planificateur distribué comparable à celui de Nomad, ce qui limite son usage à grande échelle sans brique additionnelle.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "Nomad s'appuie sur l'isolation du système d'exploitation et sur des mécanismes d'ACL pour contrôler l'accès aux API et aux namespaces. La sécurité dépend fortement de la configuration du cluster, des politiques ACL et du durcissement des nœuds, et doit être évaluée au cas par cas.",
+      "toolB": "Podman met en avant le mode rootless, qui permet d'exécuter des conteneurs sans privilèges root et réduit l'impact d'une évasion de conteneur. L'absence de démon permanent limite aussi la surface d'attaque, même si la sécurité réelle dépend toujours des réglages, des images et des politiques de l'hôte.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème, compatibilité et intégrations",
+      "toolA": "Nomad s'intègre naturellement aux autres produits HashiCorp (Consul, Vault) et expose une API et des pilotes variés pour les tâches conteneurisées ou non. Son écosystème est solide mais plus spécialisé que celui de l'univers Docker/Kubernetes.",
+      "toolB": "Podman s'appuie sur les standards OCI et propose une compatibilité de commandes avec Docker, ce qui facilite la migration de scripts et l'usage d'images existantes. Il s'intègre aux outils de l'écosystème conteneurs et à systemd via Quadlet, ce qui en fait un choix courant pour remplacer Docker sur un hôte.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Facilité d'apprentissage et exploitation",
+      "toolA": "Nomad demande de comprendre les concepts de cluster, d'agents serveur et client, de jobs et de politiques ACL, ce qui suppose une certaine familiarité avec l'administration distribuée. Une fois en place, l'exploitation est cohérente, mais la courbe d'apprentissage est réelle pour les débutants.",
+      "toolB": "Podman est généralement plus simple à adopter : les commandes ressemblent à celles de Docker et un conteneur peut être lancé en quelques secondes sur un poste de travail. Pour des scénarios avancés (réseau, multi-hôtes, orchestration), il faut néanmoins ajouter des briques et de la configuration.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage typiques",
+      "toolA": "Nomad convient aux organisations qui doivent orchestrer des charges hétérogènes sur plusieurs machines, avec des besoins de placement, de résilience et de gestion centralisée. Il est particulièrement pertinent pour des équipes déjà familières avec l'écosystème HashiCorp.",
+      "toolB": "Podman convient au développement local, aux serveurs uniques, aux environnements rootless et aux contextes où l'on veut éviter un démon de conteneurs. Il est aussi utilisé comme alternative à Docker dans des chaînes CI ou des postes de travail.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# hello.nomad\njob \"hello\" {\n  datacenters = [\"dc1\"]\n  type        = \"service\"\n\n  group \"web\" {\n    count = 1\n\n    task \"server\" {\n      driver = \"docker\"\n\n      config {\n        image   = \"nginx:alpine\"\n        ports   = [\"http\"]\n      }\n\n      resources {\n        cpu    = 100\n        memory = 128\n      }\n    }\n  }\n}\n\n# Exécution : nomad job run hello.nomad",
+    "tech2Snippet": "# Lancer un conteneur « Hello, World! » avec Podman\npodman run --rm docker.io/library/hello-world:latest"
+  },
+  "faq": [
+    {
+      "q": "Nomad et Podman sont-ils concurrents ou complémentaires ?",
+      "a": "Ils sont largement complémentaires : Nomad orchestre des charges sur un cluster, tandis que Podman exécute des conteneurs sur un hôte. On peut très bien utiliser Nomad pour planifier des tâches conteneurisées et Podman pour le développement local ou des serveurs isolés. Le choix dépend donc surtout du périmètre : multi-nœuds pour Nomad, hôte unique pour Podman."
+    },
+    {
+      "q": "Peut-on remplacer Kubernetes par Nomad ou Podman ?",
+      "a": "Nomad peut couvrir certains besoins d'orchestration sans la complexité de Kubernetes, notamment pour des charges variées, mais il ne propose pas le même écosystème ni les mêmes opérateurs. Podman, seul, ne remplace pas un orchestrateur de cluster : il gère des conteneurs par hôte. Il faut donc évaluer les fonctionnalités réellement nécessaires avant de comparer ces outils à Kubernetes."
+    },
+    {
+      "q": "Le mode rootless de Podman est-il suffisant pour un serveur de production ?",
+      "a": "Le mode rootless améliore l'isolation et réduit les privilèges, ce qui est un atout en production comme en développement. Il ne dispense toutefois pas d'une configuration soignée des images, des volumes, des réseaux et des mises à jour. La pertinence dépend de l'application et des contraintes de l'organisation, à valider par des tests dans l'environnement cible."
+    },
+    {
+      "q": "Nomad est-il adapté aux petites équipes ?",
+      "a": "Nomad peut être utilisé par de petites équipes, surtout si elles ont déjà des compétences en administration de clusters et en outils HashiCorp. Pour un seul serveur ou quelques conteneurs, il peut représenter une complexité superflue face à Podman et systemd. La décision doit tenir compte du nombre de nœuds, du besoin de résilience et des compétences disponibles."
+    },
+    {
+      "q": "Podman est-il compatible avec les images et commandes Docker ?",
+      "a": "Podman suit les standards OCI et propose une interface de commandes très proche de celle de Docker, ce qui facilite la réutilisation d'images et de scripts. La compatibilité n'est pas totale : certains comportements, options réseau ou fonctions spécifiques peuvent différer selon les versions. Il est recommandé de valider les commandes critiques avant une migration."
+    },
+    {
+      "q": "Quel outil choisir pour un cluster de plusieurs machines ?",
+      "a": "Pour plusieurs machines, Nomad est conçu pour le placement et la gestion centralisée des tâches, avec une architecture distribuée. Podman peut fonctionner sur chaque machine, mais il faut ajouter une couche d'orchestration pour coordonner l'ensemble. Le choix se fait donc entre une solution intégrée comme Nomad et une combinaison d'outils autour de Podman."
+    },
+    {
+      "q": "Quels sont les coûts et licences à considérer ?",
+      "a": "Nomad et Podman sont tous deux disponibles sous des licences ouvertes, mais les modalités exactes et les offres commerciales associées peuvent évoluer selon les versions et les éditeurs. Il convient de vérifier les conditions en vigueur sur les dépôts officiels et de tenir compte des coûts d'exploitation et de formation. Aucun tarif précis ne doit être supposé sans consultation des sources officielles."
+    },
+    {
+      "q": "Comment démarrer rapidement avec chacun de ces outils ?",
+      "a": "Pour Podman, une commande suffit souvent pour lancer un conteneur de test sur un poste local, comme le montre l'exemple fourni. Pour Nomad, il faut d'abord démarrer un agent puis soumettre un fichier de job décrivant la tâche. Commencer par un environnement de test permet de mesurer la complexité réelle avant un déploiement en production."
+    }
+  ]
+}

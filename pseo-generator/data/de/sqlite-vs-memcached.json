@@ -1,0 +1,102 @@
+{
+  "slug": "sqlite-vs-memcached",
+  "meta": {
+    "title": "SQLite vs Memcached (2026): welche Lösung passt besser?",
+    "description": "SQLite und Memcached im Vergleich 2026: Einsatzgebiete, Persistenz, Skalierung, Sicherheit und Performance – mit klarer Empfehlung für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "SQLite ist die richtige Wahl, wenn Sie dauerhaft gespeicherte Daten mit SQL-Abfragen, Transaktionen und ohne separaten Server benötigen – etwa in Desktop-Apps, mobilen Anwendungen, Edge-Geräten oder kleinen Web-Backends. Memcached eignet sich dagegen als flüchtiger, verteilter In-Memory-Cache zur Entlastung einer bestehenden Datenbank. Beide Tools lösen unterschiedliche Probleme: SQLite ist eine eingebettete Datenbank, Memcached ein reiner Key-Value-Cache. Eine Kombination ist in der Praxis häufig sinnvoller als ein Entweder-oder.",
+  "comparison": [
+    {
+      "category": "Grundlegende Architektur und Datenmodell",
+      "toolA": "SQLite ist eine serverlose, eingebettete relationale Datenbank, die als Bibliothek direkt im Prozess der Anwendung läuft und Daten in einer einzelnen Datei ablegt. Sie unterstützt SQL, Tabellen, Indizes, Views, Trigger und Transaktionen mit ACID-Eigenschaften.",
+      "toolB": "Memcached ist ein eigenständiger Netzwerkdienst, der Schlüssel-Wert-Paare ausschließlich im Arbeitsspeicher hält und keine relationalen Strukturen oder Abfragesprache bietet. Damit adressiert es fundamental andere Anwendungsfälle als eine Datenbank: temporäres Caching statt persistenter Datenhaltung.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Persistenz und Datenverlust",
+      "toolA": "SQLite schreibt Änderungen dauerhaft in eine Datei und bietet über das Write-Ahead-Logging und Transaktionen Schutz vor inkonsistenten Zuständen, abhängig von den gewählten PRAGMA-Einstellungen. Ein Neustart des Prozesses oder Systems führt nicht automatisch zu Datenverlust.",
+      "toolB": "Memcached ist bewusst flüchtig: Bei einem Neustart, einem Absturz oder einer Speicherbereinigung gehen Einträge verloren, was je nach Konfiguration und Last auftreten kann. Für Daten, die einen Neustart überleben müssen, ist Memcached daher nicht geeignet.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Leistung und Latenz",
+      "toolA": "SQLite ist für lokale Lesezugriffe sehr schnell, da keine Netzwerkkommunikation anfällt; Schreibzugriffe werden serialisiert, was bei hoher paralleler Schreiblast zum Engpass werden kann. Die tatsächliche Leistung hängt stark von Schema, Indizes, WAL-Modus und Arbeitslast ab.",
+      "toolB": "Memcached ist auf extrem niedrige Latenz bei einfachen Get- und Set-Operationen über das Netzwerk optimiert und skaliert horizontal über mehrere Instanzen. Für reine Cache-Abfragen ist Memcached in der Regel schneller, während SQLite bei komplexen Abfragen und Joins die passendere Wahl ist.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Skalierung und Betrieb",
+      "toolA": "SQLite skaliert gut innerhalb eines einzelnen Hosts und eignet sich für Anwendungen mit mäßiger Parallelität; horizontale Skalierung über mehrere Knoten ist nicht vorgesehen und erfordert Architekturmuster wie Read-Replicas oder Sharding auf Anwendungsebene. Der Betrieb ist einfach, weil keine Serverprozesse verwaltet werden müssen.",
+      "toolB": "Memcached ist von Grund auf für verteilte Setups konzipiert: Mehrere Instanzen lassen sich über Client-seitiges Sharding zusammenschließen, was die horizontale Skalierung erleichtert. Allerdings muss die Cache-Infrastruktur separat betrieben und überwacht werden.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "SQLite bietet keine integrierte Benutzerverwaltung oder Netzwerkauthentifizierung, da der Zugriff über das Dateisystem erfolgt; Schutz entsteht durch Dateiberechtigungen und Prozessisolation. Eine optionale Verschlüsselung ist nicht im Kern enthalten, sondern nur über Erweiterungen wie SQLCipher verfügbar.",
+      "toolB": "Memcached bietet ebenfalls keine Authentifizierung im klassischen Sinn; in neueren Versionen sind SASL und TLS optional verfügbar, abhängig von Build und Konfiguration. In beiden Fällen sollte der Zugriff auf vertrauenswürdige Netze beschränkt und die Konfiguration sorgfältig geprüft werden.",
+      "winner": "tie"
+    },
+    {
+      "category": "Abfragemöglichkeiten und Datenstrukturen",
+      "toolA": "SQLite unterstützt vollständiges SQL mit Filtern, Aggregationen, Joins, Indizes und JSON-Funktionen, sodass komplexe Auswertungen direkt in der Datenbank möglich sind. Das erlaubt eine flexible Modellierung ohne zusätzliche Anwendungsschicht.",
+      "toolB": "Memcached kennt nur einfache Schlüssel-Wert-Operationen wie Get, Set, Add, Delete und Inkrement; komplexe Abfragen müssen vollständig in der Anwendung erfolgen. Für strukturierte Auswertungen ist SQLite deutlich mächtiger, während Memcached bewusst minimalistisch bleibt.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Einsatzszenarien und Kompatibilität",
+      "toolA": "SQLite eignet sich für Desktop- und Mobile-Apps, Edge-Geräte, Prototyping, Testumgebungen und kleine Backends, in denen eine Datei als Datenbank genügt. Die Bibliothek ist in vielen Programmiersprachen und Plattformen verfügbar und benötigt keine Administration.",
+      "toolB": "Memcached wird typischerweise als Cache vor relationalen Datenbanken, als Session-Speicher oder zur Entlastung bei häufigen Lesezugriffen eingesetzt. Es ist kein Ersatz für eine persistente Datenbank, sondern eine Ergänzung im Architekturverbund.",
+      "winner": "tie"
+    },
+    {
+      "category": "Wartung, Backup und Wiederherstellung",
+      "toolA": "Backups von SQLite lassen sich über die Online-Backup-API oder schlicht durch Kopieren der Datei erstellen, sofern Konsistenzbedingungen beachtet werden. Die Datenbank ist selbstständig und benötigt keine laufende Serverwartung.",
+      "toolB": "Memcached erfordert keine Sicherung im klassischen Sinn, weil die Daten nur flüchtig sind; nach einem Neustart füllt sich der Cache über die Anwendung neu. Wartung bedeutet hier vor allem Kapazitätsplanung, Monitoring der Trefferquote und Verwaltung verteilter Instanzen.",
+      "winner": "toolA"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"CREATE TABLE greeting (message TEXT)\")\ncur.execute(\"INSERT INTO greeting (message) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\nfor (message,) in cur.execute(\"SELECT message FROM greeting\"):\n    print(message)\nconn.close()",
+    "tech2Snippet": "import socket\n\nsock = socket.create_connection((\"127.0.0.1\", 11211))\nsock.sendall(b\"set greeting 0 0 12\\r\\nHallo, Welt!\\r\\n\")\nprint(sock.recv(1024).decode())\nsock.sendall(b\"get greeting\\r\\n\")\nprint(sock.recv(1024).decode())\nsock.close()"
+  },
+  "faq": [
+    {
+      "q": "Wann sollte ich SQLite statt Memcached verwenden?",
+      "a": "SQLite ist die richtige Wahl, sobald Daten dauerhaft gespeichert, per SQL abgefragt oder transaktional verändert werden müssen. Typische Beispiele sind Desktop-Anwendungen, mobile Apps und kleine Backends ohne separaten Datenbankserver. Memcached bietet diese Funktionen bewusst nicht und sollte nicht als einzige Datenhaltung dienen."
+    },
+    {
+      "q": "Kann Memcached eine Datenbank wie SQLite vollständig ersetzen?",
+      "a": "Nein, Memcached ist ein flüchtiger Key-Value-Cache ohne Persistenz, Transaktionen oder relationale Abfragen. Nach einem Neustart sind die Einträge verloren, sodass es keine Quelle der Wahrheit für geschäftskritische Daten sein kann. Es ergänzt eine Datenbank, ersetzt sie aber nicht."
+    },
+    {
+      "q": "Eignet sich Memcached als Cache vor einer SQLite-Datenbank?",
+      "a": "Ja, diese Kombination ist möglich, wenn viele gleichartige Lesezugriffe die SQLite-Datenbank entlasten sollen. Dabei muss die Anwendung Cache-Invalidierung bei Schreibzugriffen selbst sicherstellen. Ob der zusätzliche Betriebsaufwand lohnt, hängt von Arbeitslast, Latenzanforderungen und Konfiguration ab und sollte gemessen werden."
+    },
+    {
+      "q": "Welche Lösung ist sicherer für sensible Daten?",
+      "a": "Beide Tools bringen keine vollständige Authentifizierung oder Verschlüsselung im Standardbetrieb mit; der Schutz hängt stark von Konfiguration und Umgebung ab. SQLite schützt Daten über Dateisystemberechtigungen und kann mit Erweiterungen wie SQLCipher verschlüsselt werden. Memcached sollte nur in vertrauenswürdigen Netzen betrieben und bei Bedarf über SASL und TLS abgesichert werden, sofern die eingesetzte Version dies unterstützt."
+    },
+    {
+      "q": "Wie skaliert Memcached im Vergleich zu SQLite?",
+      "a": "Memcached lässt sich über mehrere Instanzen horizontal verteilen, wobei das Client-seitige Sharding die Schlüssel auf die Knoten verteilt. SQLite ist auf einen Host begrenzt und stößt bei hoher paralleler Schreiblast an Grenzen, abhängig von Konfiguration und Arbeitslast. Für stark verteilte Systeme ist Memcached als Cache-Schicht meist die passendere Ergänzung."
+    },
+    {
+      "q": "Welche Rolle spielt die Latenz bei der Entscheidung?",
+      "a": "Memcached ist für sehr schnelle Netzwerkzugriffe auf einfache Schlüssel-Wert-Operationen ausgelegt und wird häufig zur Latenzsenkung eingesetzt. SQLite ist bei lokalen Lesezugriffen ohne Netzwerkoverhead ebenfalls sehr schnell, bei komplexen Abfragen aber von Schema und Indizes abhängig. Die konkrete Latenz sollte immer mit der eigenen Arbeitslast und Konfiguration gemessen werden."
+    },
+    {
+      "q": "Brauche ich für SQLite einen Datenbankserver?",
+      "a": "Nein, SQLite läuft als Bibliothek direkt im Anwendungsprozess und benötigt keinen separaten Serverdienst. Dadurch entfallen Installation, Netzwerkkonfiguration und laufende Administration. Memcached erfordert dagegen einen eigenen Dienst, der gestartet, überwacht und bei verteilten Setups koordiniert werden muss."
+    },
+    {
+      "q": "Können SQLite und Memcached gemeinsam in einer Architektur genutzt werden?",
+      "a": "Ja, eine häufige Kombination ist SQLite als persistente Datenbank und Memcached als vorgelagerter Cache für häufig gelesene Daten. Die Anwendung muss dabei Invalidierung und Konsistenz selbst regeln, da Memcached keine Kenntnis von SQLite-Daten hat. Ob sich diese Architektur lohnt, hängt von Zugriffsmustern, Datenmenge und Betriebsaufwand ab."
+    }
+  ]
+}

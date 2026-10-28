@@ -1,0 +1,92 @@
+{
+  "slug": "styled-components-vs-css-modules",
+  "meta": {
+    "title": "styled-components vs CSS Modules (2026): ¿Qué solución elegir?",
+    "description": "Comparamos styled-components y CSS Modules en 2026: rendimiento, tipado, mantenimiento, ecosistema y encaje en distintos tipos de proyecto para elegir bien."
+  },
+  "toolA": {
+    "name": "styled-components"
+  },
+  "toolB": {
+    "name": "CSS Modules"
+  },
+  "verdict": "Elige styled-components si buscas estilos acoplados al componente con props dinámicas y un único modelo de autoría en JavaScript, asumiendo coste en tiempo de ejecución. Elige CSS Modules si priorizas CSS nativo, cero dependencias de runtime y control del bundle, aceptando menos dinamismo ergonómico. En proyectos grandes o críticos en rendimiento, conviene medir según la configuración y la carga real.",
+  "comparison": [
+    {
+      "category": "Modelo de autoría y ubicación de los estilos",
+      "toolA": "Define los estilos en archivos JavaScript o TypeScript mediante template literals o funciones, de modo que cada componente encapsula su presentación junto a su lógica. Esta colocalización facilita razonar sobre un componente aislado, pero introduce sintaxis CSS dentro de JS que algunas herramientas de edición y revisión tratan con menor madurez.",
+      "toolB": "Mantiene hojas .css reales junto al componente y usa nombres de clase locales con hashes generados en build, conservando el modelo CSS clásico. Esto favorece la familiaridad, el uso de preprocesadores y el trabajo de perfiles centrados en CSS, aunque exige gestionar dos archivos por componente y mantener la coherencia de nombres.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Rendimiento y coste en tiempo de ejecución",
+      "toolA": "Genera y aplica estilos en el cliente o en el servidor según el framework y la configuración, lo que puede añadir trabajo de runtime al montar componentes. Su impacto real depende de la versión, del tamaño de la aplicación y del soporte de compilación que se use, por lo que no conviene generalizar sin medir.",
+      "toolB": "No incorpora una biblioteca de estilos en el bundle del cliente: la transformación a nombres locales ocurre en la fase de compilación. El coste en ejecución del propio sistema es mínimo, aunque el CSS resultante puede crecer y conviene vigilar duplicaciones y el tamaño final de la hoja.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Estilos dinámicos basados en props y estado",
+      "toolA": "Permite derivar estilos directamente de props, temas y estado del componente con una ergonomía alta y sin interpolaciones manuales de cadenas. Esa comodidad puede aumentar la cantidad de clases generadas y conviene valorar el rendimiento en componentes muy reutilizados o con muchos estados.",
+      "toolB": "El dinamismo se resuelve combinando clases, variables CSS o atributos de datos, lo que mantiene el CSS en su propio archivo y suele ser muy eficiente. Requiere algo más de disciplina para nombrar variantes y puede resultar menos directo cuando los estilos dependen de valores arbitrarios de JavaScript.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Compatibilidad con React Server Components y frameworks modernos",
+      "toolA": "Su integración depende del framework y de la versión: en entornos con componentes de servidor hay restricciones porque el runtime y el contexto de estilo deben ejecutarse en cliente. Antes de adoptarlo en arquitecturas nuevas, conviene revisar la documentación oficial vigente y probar el flujo de renderizado concreto.",
+      "toolB": "Al resolverse en compilación, encaja de forma natural con React Server Components y con enfoques que separan estilos de interactividad. No obstante, el soporte exacto depende de la herramienta de build o del framework elegido, así que conviene validarlo en una prueba pequeña.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Tipado, autocompletado y experiencia en TypeScript",
+      "toolA": "Su API está escrita en TypeScript y suele ofrecer buen tipado para props, temas y estilos, con utilidades que ayudan a mantener contratos claros. Algunas construcciones con template literals pueden perder precisión o resultar más difíciles de analizar estáticamente que CSS puro.",
+      "toolB": "El tipado se apoya en declaraciones de módulos generadas o mantenidas por el proyecto, de modo que el nivel de autocompletado depende de la configuración y de las herramientas instaladas. Con una configuración cuidada funciona bien, pero el flujo no es tan inmediato como en una biblioteca con tipos propios.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Mantenimiento, refactorización y trabajo en equipo",
+      "toolA": "Centralizar estilos y lógica en un componente facilita eliminar código muerto cuando se borra el componente, siempre que el equipo respete esa convención. A cambio, mezclar estilos y lógica puede dificultar revisiones centradas solo en presentación y aumentar la complejidad de archivos grandes.",
+      "toolB": "Separar CSS y componentes permite que especialistas de estilos trabajen en paralelo y que las revisiones de presentación sean más claras. La contrapartida es que eliminar un componente exige revisar también su hoja asociada, y que los nombres locales deben gestionarse con convenciones consistentes.",
+      "winner": "tie"
+    },
+    {
+      "category": "Ecosistema, dependencias y madurez",
+      "toolA": "Es una biblioteca consolidada con amplia documentación y presencia en proyectos React, aunque su adopción futura puede depender de la evolución del ecosistema y de las alternativas de compilación. Añade una dependencia que hay que actualizar y evaluar por motivos de compatibilidad y seguridad.",
+      "toolB": "No es una biblioteca de runtime, sino una convención soportada por herramientas de build como bundlers y frameworks, por lo que su comportamiento depende de esa cadena. Esa dependencia indirecta exige verificar la integración concreta, pero reduce el número de paquetes de estilos en la aplicación.",
+      "winner": "toolB"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué opción conviene para un proyecto React nuevo en 2026?",
+      "a": "Si el proyecto usa componentes de servidor o prioriza el mínimo coste en ejecución, CSS Modules suele encajar mejor porque se resuelve en compilación y mantiene CSS nativo. Si el equipo valora estilos acoplados al componente con props dinámicas y asume el runtime, styled-components puede ser razonable, pero conviene verificar la compatibilidad con el framework y la versión elegida antes de decidir."
+    },
+    {
+      "q": "¿styled-components es más lento que CSS Modules?",
+      "a": "No puede afirmarse de forma universal: el impacto depende de la versión, la configuración de compilación, el tamaño de la aplicación y los patrones de uso. CSS Modules evita una biblioteca de estilos en el runtime del cliente, mientras que styled-components puede añadir trabajo al renderizar. La recomendación práctica es medir con las herramientas de rendimiento del propio proyecto y no extrapolar resultados ajenos."
+    },
+    {
+      "q": "¿Puedo usar variables CSS con ambas opciones?",
+      "a": "Sí, ambas permiten declarar y consumir variables CSS personalizadas, lo que resulta útil para temas y para reducir estilos dinámicos generados en JavaScript. En styled-components se combinan con props y contexto de tema; en CSS Modules se aplican desde la hoja local o desde un archivo global. La estrategia concreta depende de cómo se gestione el tema y de si se renderiza en servidor."
+    },
+    {
+      "q": "¿Cuál funciona mejor con TypeScript?",
+      "a": "styled-components ofrece tipos propios y suele proporcionar autocompletado directo para props y temas, lo que simplifica el contrato de los componentes. CSS Modules requiere declaraciones de tipos generadas o mantenidas por el proyecto, y su calidad depende de la configuración del bundler y del editor. En ambos casos conviene comprobar el flujo real con la versión de TypeScript y las herramientas del equipo."
+    },
+    {
+      "q": "¿Cómo afecta cada opción a los componentes de servidor de React?",
+      "a": "styled-components necesita un runtime de estilos que puede requerir contexto de cliente, por lo que su uso con componentes de servidor está condicionado por el framework y la versión. CSS Modules se transforma en compilación y suele integrarse mejor en ese modelo, aunque el soporte exacto depende de la herramienta de build. Antes de migrar, conviene reproducir el flujo de renderizado en una rama de prueba."
+    },
+    {
+      "q": "¿Qué solución genera menos CSS duplicado?",
+      "a": "CSS Modules parte de hojas escritas manualmente y suele favorecer la reutilización mediante clases y composición, aunque también puede duplicar reglas si no se organiza. styled-components puede generar clases específicas por combinación de props, lo que en componentes muy parametrizados puede aumentar la salida. La medición del bundle y la revisión de la hoja final son las formas fiables de comprobarlo en cada proyecto."
+    },
+    {
+      "q": "¿Merece la pena migrar de una a otra?",
+      "a": "La migración solo suele justificarse si existe un problema concreto: incompatibilidad con el framework, rendimiento medido, dificultad de mantenimiento o una necesidad clara de CSS nativo. Cambiar por moda añade riesgo y coste sin garantía de mejora. Una estrategia habitual es introducir la nueva solución en código nuevo y migrar de forma incremental, validando cada paso con pruebas y revisión de estilos."
+    },
+    {
+      "q": "¿Cuál es más segura desde el punto de vista de dependencias?",
+      "a": "CSS Modules no añade una biblioteca de estilos al runtime, pero depende de la cadena de compilación, por lo que hay que mantener actualizados bundlers y plugins. styled-components añade una dependencia directa que debe revisarse por compatibilidad y avisos de seguridad. En ambos casos, la práctica recomendada es auditar dependencias, fijar versiones y revisar las notas de cada actualización."
+    }
+  ]
+}

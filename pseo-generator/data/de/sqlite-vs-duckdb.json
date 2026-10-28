@@ -1,0 +1,96 @@
+{
+  "slug": "sqlite-vs-duckdb",
+  "meta": {
+    "title": "SQLite vs DuckDB (2026): welche Lösung passt besser?",
+    "description": "SQLite vs DuckDB im Vergleich 2026: OLTP gegen OLAP, Embedded-Datenbanken, SQL-Dialekte, Analyseleistung und Einsatzgebiete – mit klarer Empfehlung für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "SQLite bleibt 2026 die erste Wahl für eingebettete, transaktionale Anwendungen mit vielen kleinen Lese- und Schreibvorgängen, etwa in mobilen Apps oder Desktop-Software. DuckDB ist die bessere Wahl für analytische Abfragen über große Datenmengen, Spaltenauswertungen und lokale Datenpipelines. Beide sind Datei-basiert und ergänzen sich eher, als dass sie konkurrieren.",
+  "comparison": [
+    {
+      "category": "Datenmodell und Abfrageparadigma",
+      "toolA": "SQLite speichert Daten zeilenorientiert in B-Tree-Strukturen und ist für kurze, punktuelle Transaktionen (OLTP) optimiert. Das Abfragemodell ist klassisches SQL mit vollständiger ACID-Unterstützung und eignet sich gut für Anwendungszustände.",
+      "toolB": "DuckDB verwendet ein spaltenorientiertes Speicherformat und eine vektorisierte Ausführungsengine, die auf analytische Abfragen (OLAP) ausgerichtet ist. Aggregationen, Joins und Scans über große Tabellen profitieren typischerweise deutlich, wobei das Ergebnis von Arbeitslast und Konfiguration abhängt.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Einsatzszenario und Einbettung",
+      "toolA": "SQLite ist als Bibliothek in nahezu jede Sprache und Plattform einbettbar und läuft ohne Serverprozess direkt in der Anwendung. Es ist der De-facto-Standard für lokale Persistenz in mobilen und Desktop-Anwendungen.",
+      "toolB": "DuckDB ist ebenfalls als In-Process-Bibliothek konzipiert, zielt aber auf Analyse-Workloads in Notebooks, Datenpipelines und BI-nahen Szenarien. Es lässt sich gut mit Python, R und Arrow kombinieren, ersetzt aber keinen klassischen Anwendungsspeicher.",
+      "winner": "tie"
+    },
+    {
+      "category": "Transaktionen und Nebenläufigkeit",
+      "toolA": "SQLite bietet vollständige ACID-Transaktionen und ein bewährtes Locking-Modell mit WAL-Modus für paralleles Lesen. Schreibvorgänge sind serialisiert, was für viele Anwendungsfälle ausreicht, aber bei hoher Schreiblast zum Engpass werden kann.",
+      "toolB": "DuckDB unterstützt ACID-Transaktionen mit MVCC, ist jedoch auf einen einzigen schreibenden Prozess pro Datenbankdatei ausgelegt. Parallele Schreibzugriffe mehrerer Prozesse sind nicht vorgesehen, was die Einsatzgrenzen klar definiert.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analytische Abfrageleistung",
+      "toolA": "SQLite führt Abfragen zeilenweise aus und ist bei großen Scans, komplexen Aggregationen und breiten Tabellen meist langsamer. Für kleine Datenmengen und indizierte Punktabfragen ist die Leistung jedoch sehr gut und vorhersehbar.",
+      "toolB": "DuckDB nutzt Spaltenkompression, Vektorisierung und Parallelität, um analytische Abfragen über große Datenmengen effizient zu verarbeiten. Konkrete Geschwindigkeitsvorteile hängen stark von Datenmenge, Schema und Hardware ab und sollten nicht pauschal angenommen werden.",
+      "winner": "toolB"
+    },
+    {
+      "category": "SQL-Funktionsumfang und Kompatibilität",
+      "toolA": "SQLite implementiert einen bewusst schlanken SQL-Dialekt mit einigen Erweiterungen, aber ohne vollständiges Fensterfunktions- oder Typensystem im modernen Sinn. Die Kompatibilität zu anderen Datenbanken ist begrenzt, dafür ist das Verhalten stabil und gut dokumentiert.",
+      "toolB": "DuckDB bietet einen umfangreichen PostgreSQL-nahen SQL-Dialekt mit Fensterfunktionen, CTEs, umfangreichen Aggregat- und Tabellenfunktionen sowie direktem Lesen von Parquet und CSV. Das erleichtert die Übernahme analytischer Abfragen, ist aber kein vollständiger PostgreSQL-Ersatz.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Dateiformat und Ökosystem-Integration",
+      "toolA": "SQLite-Dateien sind ein etabliertes, plattformübergreifendes Format mit breiter Tool-Unterstützung und langer Stabilitätsgarantie. Viele Programmiersprachen und Betriebssysteme bringen bereits Bindings oder sogar die Bibliothek mit.",
+      "toolB": "DuckDB kannnative Tabellen speichern, liest und schreibt aber auch Parquet, CSV, JSON und arbeitet eng mit Apache Arrow und DataFrames zusammen. Das macht es attraktiv für Data-Science-Workflows, ohne ein universelles Austauschformat zu sein.",
+      "winner": "tie"
+    },
+    {
+      "category": "Betrieb, Wartung und Reifegrad",
+      "toolA": "SQLite wird seit vielen Jahren intensiv geprüft und gilt als außerordentlich stabil und wartungsarm, da keine Serverinstallation nötig ist. Updates und Migrationen sind unkompliziert, was den Betrieb in eingebetteten Umgebungen vereinfacht.",
+      "toolB": "DuckDB entwickelt sich schnell weiter, was neue Funktionen bringt, aber auch häufigere Versionsänderungen bedeutet. Für Produktionspipelines empfiehlt sich daher, Versionen zu pinnen und Änderungen der Release Notes zu verfolgen.",
+      "winner": "toolA"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\nconn.execute(\"CREATE TABLE greeting (message TEXT)\")\nconn.execute(\"INSERT INTO greeting (message) VALUES (?)\", (\"Hallo, Welt!\",))\nmessage = conn.execute(\"SELECT message FROM greeting\").fetchone()[0]\nprint(message)\nconn.close()",
+    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect(\":memory:\")\ncon.execute(\"CREATE TABLE greeting (message VARCHAR)\")\ncon.execute(\"INSERT INTO greeting VALUES (?)\", [\"Hallo, Welt!\"])\nmessage = con.execute(\"SELECT message FROM greeting\").fetchone()[0]\nprint(message)\ncon.close()"
+  },
+  "faq": [
+    {
+      "q": "Für welche Art von Projekt ist SQLite 2026 die bessere Wahl?",
+      "a": "SQLite eignet sich vor allem für Anwendungen, die lokale, transaktionale Daten speichern, etwa mobile Apps, Desktop-Programme, Konfigurationsspeicher oder Protokolldaten mit vielen kleinen Schreibvorgängen. Wenn die Anwendung eine einzelne Datei mitbringen soll und kein separater Datenbankserver gewünscht ist, ist SQLite meist die naheliegende Lösung. Bei sehr hoher paralleler Schreiblast sollten Sie jedoch die Grenzen des Locking-Modells prüfen."
+    },
+    {
+      "q": "Wann sollte ich DuckDB statt SQLite einsetzen?",
+      "a": "DuckDB passt zu analytischen Aufgaben, bei denen große Tabellen gescannt, aggregiert oder mit anderen Datensätzen verknüpft werden, etwa in Notebooks, Datenpipelines oder Auswertungen über Parquet- und CSV-Dateien. Auch wenn Sie DataFrames aus Python oder R direkt abfragen möchten, ist DuckDB oft komfortabler. Für klassische Anwendungsdaten mit häufigen Einzeltransaktionen ist es dagegen selten die erste Wahl."
+    },
+    {
+      "q": "Können SQLite und DuckDB in derselben Anwendung kombiniert werden?",
+      "a": "Ja, beide sind einbettbare Bibliotheken und können in einem Prozess nebeneinander bestehen. Ein übliches Muster ist, Anwendungsdaten in SQLite zu halten und diese Daten für Auswertungen regelmäßig in DuckDB zu laden. So trennen Sie transaktionale und analytische Arbeitslast, ohne einen zentralen Server zu benötigen."
+    },
+    {
+      "q": "Welche Datenbank unterstützt mehrere gleichzeitige Schreiber besser?",
+      "a": "SQLite serialisiert Schreibvorgänge, erlaubt aber mit dem WAL-Modus paralleles Lesen während eines Schreibvorgangs; mehrere schreibende Prozesse sind dennoch eingeschränkt. DuckDB ist auf einen einzigen schreibenden Prozess pro Datenbankdatei ausgelegt und nicht für viele parallele Schreiber konzipiert. Für hohe Schreibparallelität sind in der Regel Client-Server-Datenbanken die passendere Wahl."
+    },
+    {
+      "q": "Wie unterscheiden sich die SQL-Dialekte von SQLite und DuckDB?",
+      "a": "SQLite bietet einen bewusst schlanken SQL-Dialekt, der stabil und gut dokumentiert ist, aber nicht alle Funktionen moderner Analysesysteme abdeckt. DuckDB orientiert sich stärker an PostgreSQL und bietet zahlreiche Fenster-, Aggregat- und Tabellenfunktionen sowie direkten Zugriff auf externe Dateiformate. Wer bestehende PostgreSQL-Abfragen übernehmen möchte, findet in DuckDB häufig weniger Anpassungsbedarf."
+    },
+    {
+      "q": "Sind beide Datenbanken für den produktiven Einsatz geeignet?",
+      "a": "SQLite ist seit Jahren in unzähligen Produktionsumgebungen im Einsatz und gilt als sehr stabil und wartungsarm. DuckDB wird aktiv weiterentwickelt und ist in vielen Analyse-Workflows produktiv nutzbar, allerdings ändern sich Versionen und Funktionen vergleichsweise häufig. Für DuckDB empfiehlt es sich, Versionen zu pinnen und Release Notes zu verfolgen; konkrete Reifegradaussagen hängen von Version und Einsatzszenario ab."
+    },
+    {
+      "q": "Welche Datenmengen lassen sich mit SQLite und DuckDB sinnvoll verarbeiten?",
+      "a": "SQLite verarbeitet Datenbanken im Bereich mehrerer Gigabyte problemlos, solange die Zugriffsmuster gut zu indizierten Punktabfragen passen. DuckDB ist auf analytische Scans größerer Datenmengen ausgelegt und kann auch mit Datenvolumen umgehen, die den Arbeitsspeicher übersteigen, wobei die Leistung von Hardware und Abfrage abhängt. Pauschale Grenzwerte lassen sich nicht seriös nennen, da sie stark vom Schema und der Arbeitslast abhängen."
+    },
+    {
+      "q": "Eignet sich eines der beiden Tools als Ersatz für einen Datenbankserver?",
+      "a": "Beide sind einbettbare Datenbanken und ersetzen keinen zentralen Mehrbenutzer-Server mit Netzwerkzugriff und Rollenverwaltung. SQLite kann in manchen Fällen als leichtgewichtiger Speicher für Anwendungen dienen, die keinen Server benötigen, stößt aber bei verteiltem Zugriff an Grenzen. DuckDB ist primär für lokale Analyse gedacht; für mandantenfähige oder stark nebenläufige Serveranwendungen sind Client-Server-Systeme meist geeigneter."
+    }
+  ]
+}

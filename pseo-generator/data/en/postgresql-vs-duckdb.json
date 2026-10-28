@@ -1,0 +1,98 @@
+{
+  "slug": "postgresql-vs-duckdb",
+  "meta": {
+    "title": "PostgreSQL vs DuckDB (2026): Which option should you choose?",
+    "description": "PostgreSQL vs DuckDB in 2026: compare architecture, analytics performance, concurrency, SQL support, and operations to pick the right database for your workload."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "Choose PostgreSQL when you need a durable, concurrent, multi-user system of record with rich transactions, extensions, and mature operational tooling. Choose DuckDB when your work is analytical, single-process, and file- or columnar-oriented, such as local BI, data science, or embedded reporting. Many teams reasonably use both: DuckDB for analysis, PostgreSQL for transactional truth. Verify current feature and version details before committing.",
+  "comparison": [
+    {
+      "category": "Core architecture and intended workload",
+      "toolA": "PostgreSQL is a client-server relational database management system with a separate server process that multiple clients connect to over a network. It is optimized for mixed transactional and analytical workloads (OLTP and HTAP), and its architecture supports durability, crash recovery, and many concurrent sessions. Its design assumes long-running, shared, multi-user operation.",
+      "toolB": "DuckDB is an embedded, in-process analytical database, similar in spirit to SQLite but columnar and vectorized. It runs inside your application process, reads and writes local database files or scans files such as Parquet and CSV directly, and is optimized for OLAP-style scans and aggregations. It does not use a client-server architecture, which shapes both its strengths and limitations.",
+      "winner": "tie"
+    },
+    {
+      "category": "Analytical query performance",
+      "toolA": "PostgreSQL performs well for many analytical queries, especially with proper indexing, partitioning, and configuration, and parallel query support has improved across versions. However, its row-oriented storage and MVCC overhead make large scans and wide aggregations less efficient than dedicated columnar engines. Extensions such as columnar storage and foreign data wrappers can narrow the gap but add complexity.",
+      "toolB": "DuckDB's columnar, vectorized execution engine is built for scanning large datasets and computing aggregations quickly on a single machine. It often outperforms row-oriented databases for analytical queries over local files and moderate data volumes, though results depend heavily on data size, hardware, query shape, and version. Performance claims should always be validated with your own workload.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Concurrency and multi-user access",
+      "toolA": "PostgreSQL is designed for high-concurrency, multi-user access with MVCC, row-level locking, and configurable isolation levels, making it suitable for many application servers writing simultaneously. It supports connection pooling patterns and mature replication options. These characteristics make it a strong fit for production systems of record.",
+      "toolB": "DuckDB supports concurrent reads and, depending on version and configuration, a single writer at a time for a given database file. Its in-process model means concurrency is bounded by the host application rather than a network server, so it is not a drop-in replacement for a shared multi-tenant transactional database. Multi-user access patterns generally require additional coordination or a different architecture.",
+      "winner": "toolA"
+    },
+    {
+      "category": "SQL features and ecosystem",
+      "toolA": "PostgreSQL has a rich SQL dialect with advanced features such as window functions, common table expressions, JSON/JSONB support, full-text search, and a large extension ecosystem including PostGIS and many procedural languages. Tooling, drivers, and managed hosting options are widely available. Compatibility and feature details vary by version.",
+      "toolB": "DuckDB offers strong SQL support geared toward analytics, including window functions, common table expressions, and direct querying of Parquet, CSV, and Arrow data. It also provides extensions that broaden its capabilities. Its ecosystem is smaller and younger than PostgreSQL's, so some operational and integration features may be limited or version-dependent.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Transactions, reliability, and durability",
+      "toolA": "PostgreSQL provides ACID transactions, write-ahead logging, point-in-time recovery, and a mature backup and replication story. These features are battle-tested for systems where data integrity and durability are critical. Operational guarantees depend on proper configuration, hosting, and maintenance practices.",
+      "toolB": "DuckDB provides transactional guarantees within its embedded model, including atomic commits and crash recovery for its database files, but it is not designed as a highly available, replicated server. For shared production systems requiring failover and continuous multi-user writes, PostgreSQL's operational model is generally more appropriate. Confirm current durability behavior for your version and usage pattern.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Deployment, operations, and cost model",
+      "toolA": "PostgreSQL typically requires a server, configuration, backups, monitoring, and patching, whether self-managed or via a managed service. It scales vertically and can scale horizontally with read replicas and sharding patterns, at the cost of operational effort. Total cost depends on hosting, personnel, and workload, so no universal price claim applies.",
+      "toolB": "DuckDB requires no server process: it is a library plus a database file, which simplifies local setup and embedded deployment. It can reduce operational overhead for analytical use cases, though large or shared deployments still need planning for storage, access control, and coordination. Costs vary by environment and are not fixed across versions or platforms.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "PostgreSQL offers role-based access control, granular privileges, SSL/TLS connections, row-level security, and integration with external authentication methods. Security posture depends on configuration, patching, and network design. These features make it suitable for regulated and multi-user environments when properly administered.",
+      "toolB": "DuckDB's security model is shaped by its embedded nature: access control is largely delegated to the host application and the filesystem, since there is no server-level user management comparable to PostgreSQL. This can be appropriate for local analysis but requires care in shared or sensitive environments. Verify current security features and recommended practices for your version.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Best-fit use cases and interoperability",
+      "toolA": "PostgreSQL fits application backends, transactional systems, multi-tenant SaaS, and mixed workloads that need concurrency and durability. It integrates broadly with application frameworks, BI tools, and data pipelines. It can also serve analytical needs within limits, often alongside dedicated analytical engines.",
+      "toolB": "DuckDB fits data science notebooks, local BI, embedded analytics, ETL prototyping, and querying data lakes of Parquet and CSV files on a single machine. It can complement PostgreSQL by handling analytical workloads that would otherwise load a transactional system. Interoperability with Arrow and Parquet is a key advantage for analytics workflows.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Should I replace PostgreSQL with DuckDB for my application backend?",
+      "a": "In most cases, no. PostgreSQL is built for concurrent, multi-user, durable transactional workloads, while DuckDB is an embedded analytical engine with limited concurrent-write semantics. If your backend needs many simultaneous writers, role-based access control, and high availability, PostgreSQL is the safer default. DuckDB is better suited to analytical sidecar tasks or local processing."
+    },
+    {
+      "q": "Is DuckDB faster than PostgreSQL for analytics?",
+      "a": "DuckDB's columnar, vectorized engine is generally well suited to large scans and aggregations, and it often performs strongly on analytical queries over local data. However, real performance depends on data size, hardware, query shape, indexing, and version. PostgreSQL can be competitive with proper tuning and extensions for moderate workloads, so benchmark with your own data before deciding."
+    },
+    {
+      "q": "Can I use both PostgreSQL and DuckDB together?",
+      "a": "Yes, and this is a common pattern. PostgreSQL can remain the system of record for transactional data, while DuckDB reads exported Parquet or CSV files for fast local analysis and reporting. Teams often use extensions or ETL steps to move data between them. This combination avoids overloading the transactional database with heavy analytical scans."
+    },
+    {
+      "q": "Does DuckDB support multiple concurrent users?",
+      "a": "DuckDB supports concurrent reads and, depending on version and configuration, a single writer for a given database file. Its in-process design means concurrency is bounded by the host application rather than a network server. For many simultaneous writers or multi-tenant access, PostgreSQL is generally the more appropriate choice, and you should verify current concurrency behavior for your DuckDB version."
+    },
+    {
+      "q": "Which database has better security and access control?",
+      "a": "PostgreSQL provides mature server-level features such as role-based access control, granular privileges, row-level security, and TLS connections, assuming it is properly configured and patched. DuckDB relies more on the host application and filesystem for access control because it is embedded. For sensitive shared environments, PostgreSQL's model is usually easier to govern, though DuckDB can be appropriate for local, controlled analysis."
+    },
+    {
+      "q": "Which one is easier to operate in production?",
+      "a": "PostgreSQL requires server provisioning, backups, monitoring, patching, and high-availability planning, whether self-managed or through a managed service. DuckDB is simpler to start with because it is a library and a file with no server process, but shared or large-scale deployments still need planning for storage and coordination. Operational ease depends on your team, environment, and workload requirements."
+    },
+    {
+      "q": "Is DuckDB a good fit for data science and local BI?",
+      "a": "Yes. DuckDB is designed for analytical workloads such as notebooks, local BI, and querying Parquet and CSV files on a single machine, and it integrates well with Arrow-based tooling. It reduces setup compared with running a server database for analysis. For shared, always-on reporting services with many users, a server-based system such as PostgreSQL or a dedicated warehouse may be more appropriate."
+    },
+    {
+      "q": "Do I need to worry about vendor lock-in with either option?",
+      "a": "Both are open-source projects with active communities, and both support standard SQL, which reduces lock-in risk. PostgreSQL has a larger ecosystem and broader managed hosting availability, while DuckDB's file format and analytical focus are relatively portable for local workflows. As with any database, review licensing, version support, and migration paths for your specific deployment."
+    }
+  ]
+}

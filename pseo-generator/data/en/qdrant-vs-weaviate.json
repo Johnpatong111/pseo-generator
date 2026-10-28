@@ -1,0 +1,98 @@
+{
+  "slug": "qdrant-vs-weaviate",
+  "meta": {
+    "title": "Qdrant vs Weaviate (2026): Which option should you choose?",
+    "description": "Compare Qdrant and Weaviate in 2026 on architecture, filtering, hybrid search, scalability, and operations to choose the right vector database for your stack."
+  },
+  "toolA": {
+    "name": "Qdrant"
+  },
+  "toolB": {
+    "name": "Weaviate"
+  },
+  "verdict": "Choose Qdrant if you want a focused, Rust-based vector engine with strong payload filtering, predictable performance tuning, and simpler self-hosting or a managed cloud. Choose Weaviate if you need built-in hybrid search, generative and reranking modules, and multi-tenancy features out of the box. Both handle production vector search well; the deciding factor is usually how much module-driven functionality you want versus a leaner core.",
+  "comparison": [
+    {
+      "category": "Core architecture and deployment model",
+      "toolA": "Qdrant is a purpose-built vector database written in Rust, distributed as a single binary and also available as a managed cloud service. It stores vectors alongside JSON payloads and can run in-memory, on disk, or in a hybrid configuration to balance speed and memory cost. Deployment options include Docker, Kubernetes, and a managed offering, and version-specific details should be confirmed in current documentation.",
+      "toolB": "Weaviate is a Go-based vector database with a modular architecture, available as open source, self-hosted via Docker or Kubernetes, and as Weaviate Cloud. Its design centers on vectorizers and other modules that can be enabled at startup to handle embedding, reranking, and generative tasks. Exact module availability depends on the release and deployment type, so verify against the version you plan to run.",
+      "winner": "tie"
+    },
+    {
+      "category": "Vector indexing and search quality",
+      "toolA": "Qdrant supports HNSW-based approximate nearest neighbor search and offers quantization options such as scalar and binary quantization to reduce memory use, with configurable trade-offs between recall and speed. It also supports multiple distance metrics and lets you tune index parameters per collection. Actual recall and latency depend heavily on dataset size, dimension, and configuration.",
+      "toolB": "Weaviate also uses HNSW indexing by default and provides compression options, including product and binary quantization, to control memory footprint. It supports cosine, dot product, and other distance metrics and can combine vector and keyword scoring in a single query. Performance characteristics vary with shard count, compression settings, and hardware.",
+      "winner": "tie"
+    },
+    {
+      "category": "Filtering and payload query capabilities",
+      "toolA": "Qdrant treats payload filtering as a first-class feature and integrates filters directly into the HNSW graph traversal, which helps maintain speed when combining vector search with attribute conditions. It supports nested JSON filtering, range queries, geo filters, and full-text payload indexes. Complex nested filters can still affect performance, so benchmarking your specific query shapes is advisable.",
+      "toolB": "Weaviate offers GraphQL and REST filtering with operators for equality, ranges, geo coordinates, and cross-references between objects. Filters can be combined with vector search and, when modules are enabled, with BM25 keyword search. Some advanced filtering behavior depends on the schema design and the version in use.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Hybrid and keyword search",
+      "toolA": "Qdrant provides native support for sparse vectors, which enables hybrid search by combining dense and sparse representations, and it supports fusion approaches such as reciprocal rank fusion at query time. Text search over payloads is also available through full-text indexes. Building a complete hybrid pipeline may require generating sparse embeddings yourself rather than relying on built-in modules.",
+      "toolB": "Weaviate includes built-in hybrid search that blends BM25 keyword scoring with vector similarity, and it exposes configurable fusion methods. Because vectorizer modules can generate embeddings automatically, teams can stand up hybrid search with less custom pipeline code. The exact hybrid behavior and available fusion options should be checked against the current release notes.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, integrations, and extensibility",
+      "toolA": "Qdrant offers official clients for Python, JavaScript/TypeScript, Go, Rust, and other languages, plus a REST and gRPC API. Integrations exist for popular frameworks and orchestration tools, and the open-source core makes it straightforward to extend or self-manage. The ecosystem is smaller and more focused than some competitors, so niche integrations may require custom work.",
+      "toolB": "Weaviate has a broad integration surface, with modules for many embedding and generative model providers and connectors for common data and LLM frameworks. Its GraphQL-first API and module system suit teams that want to assemble retrieval pipelines largely through configuration. Module support is version-dependent, so confirm the specific provider integration you need.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scalability, replication, and multi-tenancy",
+      "toolA": "Qdrant supports sharding and replication for distributed deployments, and it offers multi-tenancy through payload-based partitioning with tenant keys and dedicated storage optimizations. Scaling behavior depends on cluster configuration and how tenants are isolated. Operators should validate failover and rebalancing behavior for their workload.",
+      "toolB": "Weaviate supports sharding and replication across a cluster and provides native multi-tenancy with isolated tenant states, which can simplify managing many small customer datasets. Resource usage and tenant limits depend on cluster sizing and version. Review current documentation for replication guarantees and tenant capacity guidance.",
+      "winner": "tie"
+    },
+    {
+      "category": "Operational complexity and observability",
+      "toolA": "Qdrant is comparatively lean to operate: a single binary, a clear configuration surface, and built-in metrics and health endpoints that integrate with common monitoring stacks. Self-hosting a small deployment is straightforward, while large clusters still require capacity planning and tuning. Managed cloud reduces operational burden if that option fits your budget and region needs.",
+      "toolB": "Weaviate is also operable via Docker and Kubernetes, with health endpoints, metrics, and a management console in its cloud offering. Enabling many modules adds moving parts and configuration to manage, and debugging module-related behavior can require more effort. Operational ease depends on whether you use the managed cloud or run it yourself.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "Qdrant supports API-key authentication and, in cluster and cloud deployments, role-based access control for collections and operations. Encryption in transit is available through TLS configuration, and cloud deployments add provider-level controls. Feature availability varies by edition and deployment, so confirm the specifics for your plan and version.",
+      "toolB": "Weaviate provides authentication options including API keys and OIDC-based authentication, along with role-based authorization in supported configurations. It supports TLS for secure connections and cloud deployments inherit provider security controls. Which authentication and authorization features are available depends on the deployment type and version, so verify against official docs.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which is better for a project that mainly needs fast filtered vector search?",
+      "a": "Qdrant is often the stronger fit because payload filtering is integrated into its index traversal, which tends to preserve speed when queries combine vectors with attribute conditions. That said, the gap depends on filter complexity, dataset size, and configuration, so benchmark with your own query patterns before committing. Weaviate can also handle filtered search well, especially when its schema and modules are designed around your access patterns."
+    },
+    {
+      "q": "Do I need Weaviate's modules, or can Qdrant do hybrid search too?",
+      "a": "Qdrant supports hybrid search through sparse vectors and fusion techniques, but you typically generate dense and sparse embeddings in your own pipeline. Weaviate bundles BM25-based hybrid search and optional vectorizer modules, which can reduce integration code if you want retrieval assembled largely through configuration. Choose Weaviate when built-in modules save meaningful engineering time; choose Qdrant when you prefer explicit control over embeddings and ranking."
+    },
+    {
+      "q": "How do the two compare for multi-tenant applications?",
+      "a": "Both support multi-tenancy, but the ergonomics differ: Weaviate offers native tenant isolation that can simplify managing many separate customer datasets, while Qdrant provides payload-based tenant partitioning with storage optimizations for large tenant counts. The better choice depends on tenant scale, isolation requirements, and how your application scopes queries. Validate tenant limits and resource behavior with a realistic tenant count in either system."
+    },
+    {
+      "q": "Which database is easier to operate in production?",
+      "a": "Qdrant is generally leaner to run, thanks to a single-binary design and a comparatively small configuration surface, which helps for small to mid-sized self-hosted deployments. Weaviate is also production-capable, but enabling multiple modules adds components and configuration that can complicate debugging. Managed offerings from both vendors can offset operational effort; compare regions, support terms, and pricing directly with each provider."
+    },
+    {
+      "q": "Can both tools scale horizontally with replication?",
+      "a": "Yes, both support sharding and replication for distributed deployments, and both offer managed cloud options that abstract cluster management. Real-world scaling depends on shard counts, replication factors, hardware, and index settings, so published benchmarks rarely map directly to your workload. Plan a load test that mirrors your expected query mix and data volume."
+    },
+    {
+      "q": "What about security features such as authentication and encryption?",
+      "a": "Both provide API-key authentication, TLS for encrypted connections, and role-based access control in supported configurations, with cloud deployments adding provider-level security controls. Exact availability varies by edition, deployment type, and version, so confirm the current feature matrix in official documentation. For regulated workloads, also review audit logging, network isolation, and data residency options with each vendor."
+    },
+    {
+      "q": "Which has better integrations with LLM and RAG frameworks?",
+      "a": "Weaviate generally offers a wider set of built-in modules for embedding providers and generative models, plus connectors for common LLM frameworks, which can shorten RAG prototyping. Qdrant has official clients across major languages and solid framework integrations, but you often wire embedding and generation steps yourself. If minimizing custom glue code is a priority, Weaviate's module ecosystem is a real advantage; otherwise Qdrant's focused API is straightforward to integrate."
+    },
+    {
+      "q": "Should I self-host or use the managed cloud for either tool?",
+      "a": "Self-hosting gives you control over cost, data residency, and configuration, but it shifts responsibility for upgrades, backups, and scaling to your team. Managed cloud plans from both vendors reduce that burden, though pricing and regional availability change over time and should be checked directly. A common approach is to prototype on a managed instance and evaluate self-hosting once workload and compliance requirements are clearer."
+    }
+  ]
+}

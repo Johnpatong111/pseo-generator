@@ -1,0 +1,96 @@
+{
+  "slug": "typeorm-vs-mongoose",
+  "meta": {
+    "title": "TypeORM vs Mongoose (2026): welche Lösung passt besser?",
+    "description": "TypeORM vs Mongoose 2026 im Vergleich: ORM für relationale Datenbanken trifft auf ODM für MongoDB. Kriterien, Codebeispiele und klare Empfehlungen für beide Tools."
+  },
+  "toolA": {
+    "name": "TypeORM"
+  },
+  "toolB": {
+    "name": "Mongoose"
+  },
+  "verdict": "TypeORM ist die passende Wahl, wenn Sie eine relationale Datenbank (PostgreSQL, MySQL, SQLite) mit Entitäten, Migrationen und TypeScript-Typisierung sauber abbilden wollen. Mongoose ist die bessere Wahl, wenn Sie bewusst auf MongoDB setzen und ein Schema- und Validierungs-ODM mit Middleware und Population benötigen. Ein Wechsel zwischen beiden ist kein reines Rerouting von Aufrufen, sondern betrifft Datenmodell und Abfragestil.",
+  "comparison": [
+    {
+      "category": "Datenbankmodell und Hauptanwendungsfall",
+      "toolA": "TypeORM ist ein ORM, das primär auf relationale Datenbanken ausgerichtet ist und dort Tabellen, Beziehungen, Joins und Transaktionen in TypeScript-Entitäten abbildet. Es unterstützt eine Reihe relationaler Treiber sowie einige dokumentenorientierte Datenbanken, wobei das Kernmodell relational geprägt ist. Der praktische Nutzen hängt daher stark davon ab, ob Ihre Arbeitslast ein relationales Schema erfordert.",
+      "toolB": "Mongoose ist ein Object-Document-Mapper, der speziell für MongoDB entwickelt wurde und dort Dokumente, Schemata und Population von Referenzen abbildet. Es ist kein generalistisches ORM und setzt bewusst auf die Datenmodellierung von MongoDB, was die API und die Denkweise prägt. Für nicht-relationale, dokumentenorientierte Speicherszenarien ist es daher meist der naheliegende Einstieg.",
+      "winner": "tie"
+    },
+    {
+      "category": "Typsicherheit und TypeScript-Integration",
+      "toolA": "TypeORM ist in TypeScript geschrieben und bietet dekoratorbasierte Entitäten sowie generische Repository-APIs, wodurch viele Zugriffe typisiert sind. Die Typsicherheit ist jedoch nicht vollständig garantiert, weil Abfragen als Strings oder über Query Builder formuliert werden können und das Ergebnis je nach Konfiguration weniger streng typisiert ist. Insgesamt ist die Integration pragmatisch, erfordert aber Disziplin bei Query-Gestaltung.",
+      "toolB": "Mongoose wird von den offiziellen Typdefinitionen begleitet und leitet Typen aus einem Schema ab, sodass Modelle und Dokumente in TypeScript weitgehend typisiert sind. Allerdings sind bestimmte Operationen, etwa Aggregationen oder dynamische Filter, weniger streng typisiert und erfordern oft manuelle Annotationen. Die Typsicherheit ist damit sehr gut für Standardfälle, aber nicht lückenlos.",
+      "winner": "tie"
+    },
+    {
+      "category": "Schema, Migrationen und Weiterentwicklung",
+      "toolA": "TypeORM bringt ein Migrationssystem mit, das Schemaänderungen versioniert und über die CLI ausführen kann, was für relationale Datenbanken mit kontrollierten Deployments zentral ist. Daneben existiert ein Synchronisationsmodus, der das Schema automatisch anpasst, aber in Produktion kritisch zu bewerten ist. Ob Migrationen nötig sind und wie sie eingesetzt werden, hängt von Projekt, Version und Konfiguration ab.",
+      "toolB": "Mongoose kennt kein dem ORM vergleichbares Migrationssystem für Schema-DDL, da MongoDB-Schemata zur Laufzeit definiert werden. Änderungen werden häufig über anwendungseitige Migrationsskripte oder Validierungslogik abgebildet, was flexibel, aber weniger standardisiert ist. Die Eignung hängt stark von Teamgröße, Datenvolumen und gewünschter Nachvollziehbarkeit ab.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Beziehungen, Joins und Transaktionen",
+      "toolA": "TypeORM modelliert Eins-zu-viele, viele-zu-viele und ähnliche Relationen nativ und kann Joins effizient über den Query Builder oder Relationen abbilden. Es unterstützt Transaktionen, die sich an den Möglichkeiten der jeweiligen relationalen Datenbank orientieren, was konsistente Schreibvorgänge erleichtert. Die konkrete Semantik und Leistung variieren je nach Datenbanktreiber und Konfiguration.",
+      "toolB": "Mongoose bildet Referenzen über ObjectIds und die populate()-Funktion ab, die im Wesentlichen zusätzliche Abfragen ausführt, statt einen klassischen SQL-Join zu erzeugen. Transaktionen sind möglich, setzen aber eine MongoDB-Konfiguration als Replica Set oder Sharded Cluster voraus und sind nicht in jeder Umgebung verfügbar. Für stark relationale Anforderungen ist das Modell dadurch weniger direkt als bei einem ORM.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Validierung und Schema-Durchsetzung",
+      "toolA": "TypeORM stützt die Validierung auf die Fähigkeiten der Datenbank, etwa Constraints, sowie optional auf Validierungsbibliotheken, die an Entitäten angebunden werden können. Die Durchsetzung ist damit tendenziell hart und konsistent, sofern das Schema korrekt migriert wird. Die Qualität der Validierung hängt jedoch von der sorgfältigen Definition und Pflege der Constraints ab.",
+      "toolB": "Mongoose bringt eine eigene Validierungsschicht auf Schema-Ebene mit, inklusive eingebauter Validatoren und der Möglichkeit eigener Validierungsfunktionen. Diese Validierung greift anwendungseitig und lässt sich gut mit Middleware kombinieren, ersetzt aber keine Datenbank-Constraints. Ob sie ausreicht, hängt davon ab, ob weitere Clients direkt auf die Datenbank zugreifen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ökosystem, Tooling und Lernkurve",
+      "toolA": "TypeORM bietet eine CLI für Migrationen und Entitäts-Generierung sowie eine breite Dokumentation, wirkt aber durch Dekoratoren, DataSource-Konfiguration und Query Builder anfangs komplexer. Die vielfältigen Konfigurationsoptionen erhöhen die Flexibilität, verlangen aber Einarbeitung. Für Teams mit relationalem Hintergrund ist das Modell oft vertraut.",
+      "toolB": "Mongoose ist eng auf MongoDB zugeschnitten und bietet eine umfangreiche Dokumentation sowie viele Anleitungen und Beispiele aus der Praxis. Für Einsteiger in dokumentenorientierte Datenbanken ist die API häufig schneller greifbar, während fortgeschrittene Funktionen wie Middleware, virtuelle Felder oder Discriminators zusätzliche Lernzeit erfordern. Die Lernkurve hängt stark von der Vorerfahrung mit MongoDB ab.",
+      "winner": "tie"
+    },
+    {
+      "category": "Reifegrad und Kompatibilität mit aktuellen Umgebungen",
+      "toolA": "TypeORM unterstützt eine Reihe aktueller Node.js-Versionen und Datenbanktreiber, wobei konkrete Kompatibilität immer von der eingesetzten TypeORM-Version und dem Treiberpaket abhängt. Die Bibliothek ist seit Jahren etabliert, hat aber historisch mit unterschiedlichen Dekorator- und Modulstandards gearbeitet, was bei Upgrades beachtet werden sollte. Eine pauschale Aussage zur Zukunftssicherheit ist ohne Versionsprüfung nicht seriös.",
+      "toolB": "Mongoose liegt in einer aktiv gepflegten Version vor und wird eng an MongoDB-Versionen sowie aktuelle Node.js-Releases angepasst. Die Kompatibilität mit neuen MongoDB-Funktionen ist ein Kernziel des Projekts, sodass die Version von Mongoose und die des MongoDB-Treibers zusammen geprüft werden sollten. Ältere Anwendungen können durch Breaking Changes bei Hauptversionen Anpassungen benötigen.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import \"reflect-metadata\";\nimport { DataSource, Entity, PrimaryGeneratedColumn, Column } from \"typeorm\";\n\n@Entity()\nclass Greeting {\n  @PrimaryGeneratedColumn()\n  id!: number;\n\n  @Column()\n  message!: string;\n}\n\nconst dataSource = new DataSource({\n  type: \"sqlite\",\n  database: \":memory:\",\n  entities: [Greeting],\n  synchronize: true,\n});\n\nasync function main() {\n  await dataSource.initialize();\n  const repo = dataSource.getRepository(Greeting);\n  await repo.save(repo.create({ message: \"Hello, World!\" }));\n  const all = await repo.find();\n  console.log(all);\n  await dataSource.destroy();\n}\n\nmain();",
+    "tech2Snippet": "import mongoose from \"mongoose\";\n\nconst greetingSchema = new mongoose.Schema({\n  message: { type: String, required: true },\n});\n\nconst Greeting = mongoose.model(\"Greeting\", greetingSchema);\n\nasync function main() {\n  await mongoose.connect(\"mongodb://127.0.0.1:27017/hello\");\n  await Greeting.create({ message: \"Hello, World!\" });\n  const all = await Greeting.find().lean();\n  console.log(all);\n  await mongoose.disconnect();\n}\n\nmain();"
+  },
+  "faq": [
+    {
+      "q": "Für welches Projekt eignet sich TypeORM besser als Mongoose?",
+      "a": "TypeORM passt besonders gut, wenn Ihr Datenmodell klar relational ist und Sie Beziehungen, Constraints sowie Migrationen kontrolliert verwalten wollen. Auch Teams, die bereits mit SQL-Datenbanken wie PostgreSQL oder MySQL arbeiten, finden sich in der Entitäten- und Repository-Denkweise meist schneller zurecht. Ob TypeORM die beste Wahl ist, hängt zusätzlich von Version, Treiber und Team-Erfahrung ab und sollte im Projekt geprüft werden."
+    },
+    {
+      "q": "Wann sollte ich Mongoose statt TypeORM wählen?",
+      "a": "Mongoose ist die naheliegende Wahl, wenn Sie bewusst MongoDB einsetzen und von dessen dokumentenorientiertem Modell profitieren wollen. Die integrierte Schema-Validierung, Middleware und populate()-Unterstützung erleichtern viele typische MongoDB-Aufgaben. Wenn Sie dagegen strikt relationale Joins und SQL-Migrationen benötigen, ist Mongoose weniger passend und TypeORM meist sinnvoller."
+    },
+    {
+      "q": "Kann TypeORM auch mit MongoDB verwendet werden?",
+      "a": "TypeORM unterstützt neben relationalen Datenbanken auch einige dokumentenorientierte Systeme, wobei der Funktionsumfang je nach Treiber variiert. Die relationalen Kernfunktionen und die dokumentenorientierten Fähigkeiten sind dabei nicht deckungsgleich, sodass Sie die Dokumentation der eingesetzten Version prüfen sollten. Für eine ausschließlich MongoDB-zentrische Anwendung ist Mongoose in der Regel die spezialisiertere und funktional reichere Wahl."
+    },
+    {
+      "q": "Bietet Mongoose Migrationen wie TypeORM?",
+      "a": "Mongoose bringt kein eigenes Migrationssystem für Schema-DDL mit, weil MongoDB-Schemata zur Laufzeit definiert werden. Änderungen werden typischerweise über eigene Skripte, Validierungslogik oder Tools von Drittanbietern organisiert. Wenn Sie versionierte, wiederholbare Migrationen als Kernanforderung betrachten, ist TypeORM mit seinem Migrationssystem meist besser aufgestellt."
+    },
+    {
+      "q": "Wie unterscheiden sich Transaktionen in beiden Tools?",
+      "a": "TypeORM bietet Transaktions-APIs, deren Möglichkeiten von der jeweiligen relationalen Datenbank abhängen, und kann Schreibvorgänge konsistent bündeln. Mongoose kann Transaktionen nutzen, sofern MongoDB als Replica Set oder Sharded Cluster betrieben wird, was nicht in jeder Umgebung gegeben ist. Prüfen Sie daher vor der Entscheidung die eingesetzte Datenbankkonfiguration und die Anforderungen an Konsistenz."
+    },
+    {
+      "q": "Welche Rolle spielt die Typsicherheit in TypeScript?",
+      "a": "Beide Tools sind gut in TypeScript nutzbar, aber keines garantiert eine vollständige Typsicherheit über alle Abfrageformen hinweg. Bei TypeORM sind dekoratorbasierte Entitäten typisiert, während Query-Builder und Rohabfragen mehr Sorgfalt erfordern. Bei Mongoose werden Typen aus dem Schema abgeleitet, während Aggregationen und dynamische Filter häufig manuelle Annotationen benötigen."
+    },
+    {
+      "q": "Wie aufwendig ist der Wechsel zwischen TypeORM und Mongoose?",
+      "a": "Ein Wechsel ist nicht nur ein Austausch von Bibliotheksaufrufen, weil sich Datenmodell, Abfragestil und Konsistenzgarantien unterscheiden. Relationale Beziehungen, Transaktionen und Migrationen müssen bei einer Umstellung auf MongoDB neu gedacht werden, und umgekehrt ebenso. Planen Sie daher eine eigene Migrationsphase mit Datenübernahme und Tests ein, statt einen reibungslosen Eins-zu-eins-Wechsel anzunehmen."
+    },
+    {
+      "q": "Welche Kriterien sollte ich vor der Entscheidung konkret prüfen?",
+      "a": "Prüfen Sie zuerst das Datenmodell und die benötigten Konsistenzgarantien, danach Schemaverwaltung, Beziehungsabfragen und Transaktionen. Ergänzend sind Typsicherheit, Validierungsort und die Kompatibilität mit Ihrer Datenbankversion und Node.js-Umgebung relevant. Eine kleine, realistische Prototyp-Implementierung mit Ihren wichtigsten Abfragen liefert oft mehr Klarheit als ein pauschaler Vergleich."
+    }
+  ]
+}

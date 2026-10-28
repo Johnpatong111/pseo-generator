@@ -1,0 +1,102 @@
+{
+  "slug": "docker-vs-podman",
+  "meta": {
+    "title": "Docker vs Podman (2026): welche Lösung passt besser?",
+    "description": "Docker vs Podman im Vergleich 2026: rootless Betrieb, Kompatibilität, Compose, Pods, Ökosystem und Security – mit klarer Empfehlung für dein Setup."
+  },
+  "toolA": {
+    "name": "Docker"
+  },
+  "toolB": {
+    "name": "Podman"
+  },
+  "verdict": "Docker ist 2026 die bequemste Wahl für Teams, die ein ausgereiftes Ökosystem, Docker Compose und breite Tool-Unterstützung wollen. Podman punktet mit rootless Betrieb als Standard, Pods und dem Verzicht auf einen dauerhaft laufenden Daemon – ideal für sicherheitsbewusste Umgebungen und RHEL-nahe Infrastruktur. Wer maximale Kompatibilität und geringen Einführungsaufwand braucht, bleibt bei Docker; wer Daemon-frei und rootless arbeiten will, wählt Podman.",
+  "comparison": [
+    {
+      "category": "Architektur: Daemon-basiert versus daemonlos",
+      "toolA": "Docker nutzt mit dockerd einen zentralen Daemon, der Container, Images und Netzwerke verwaltet; der Client spricht über eine Socket-API mit ihm. Das erleichtert zentrale Verwaltung, bedeutet aber, dass der Daemon als Dienst läuft und – je nach Konfiguration – weitreichende Rechte auf dem Host haben kann.",
+      "toolB": "Podman arbeitet daemonlos: Befehle wie podman run starten Prozesse direkt über Fork/Exec und verwalten Container ohne zentralen Hintergrunddienst. Dadurch entfällt ein dauerhaft laufender privilegierter Dienst, was das Angriffsprofil reduziert; für übergreifende Verwaltung kann optional podman system service im Socket-Modus genutzt werden.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Rootless-Betrieb und Sicherheitsmodell",
+      "toolA": "Docker unterstützt seit geraumer Zeit Rootless-Modus, der jedoch zusätzliche Einrichtung benötigt und je nach Kernel, Storage-Treiber und Netzwerk-Setup Einschränkungen haben kann. Im Standardbetrieb läuft der Daemon als root, sodass Container-Rechte und Host-Angriffsfläche sorgfältig konfiguriert werden müssen.",
+      "toolB": "Podman ist auf rootless Betrieb ausgelegt und nutzt standardmäßig Benutzer-Namespaces, sodass Container ohne root-Rechte des aufrufenden Nutzers laufen können. Das ist ein Sicherheitsvorteil, wobei Funktionalität und Performance von Kernel-Version, cgroup-Konfiguration und Storage-Treiber abhängen und nicht pauschal garantiert werden können.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Kompatibilität mit Docker-CLI und Images",
+      "toolA": "Docker definiert die Referenz-CLI und das Image-Format, die viele Tools und CI-Systeme erwarten. Bestehende Skripte, Dockerfiles und Registries funktionieren ohne Anpassung, was die Einführung in bestehenden Umgebungen erheblich vereinfacht.",
+      "toolB": "Podman ist weitgehend CLI-kompatibel zu Docker, viele Befehle lassen sich per Alias direkt ersetzen, und OCI-konforme Images aus Docker-Registries werden unterstützt. In Randfällen können sich Verhalten, Standardwerte und Netzwerkdetails unterscheiden, sodass vor einer Migration Tests mit den eigenen Workloads sinnvoll sind.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Container-Orchestrierung und Pods",
+      "toolA": "Docker fokussiert auf einzelne Container und Compose für Multi-Container-Setups auf einem Host; für echte Cluster-Orchestrierung wird üblicherweise Kubernetes eingesetzt. Eine native Pod-Abstraktion wie in Kubernetes bietet Docker selbst nicht.",
+      "toolB": "Podman kennt Pods als native Einheit, inspiriert von Kubernetes, und kann über podman generate kube Kubernetes-kompatible YAML-Dateien erzeugen. Das erleichtert den Übergang zwischen lokaler Entwicklung und Kubernetes-Betrieb, ohne einen separaten Cluster starten zu müssen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Docker Compose und Multi-Container-Workflows",
+      "toolA": "Docker Compose ist ein ausgereiftes, weit verbreitetes Werkzeug für Multi-Container-Anwendungen mit umfangreicher Dokumentation und breiter Tool-Integration. Gerade für lokale Entwicklung und kleine Deployments ist der Workflow etabliert und stabil.",
+      "toolB": "Podman unterstützt Compose-Dateien über podman-compose oder die Compose-Funktionalität in neueren Podman-Versionen, wobei der Reifegrad und die Abdeckung je nach Version und Feature variieren. Für einfache Compose-Setups funktioniert das gut, komplexe Dateien sollten vor dem Umstieg getestet werden.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ökosystem, Tooling und Dokumentation",
+      "toolA": "Docker verfügt über ein sehr großes Ökosystem, breite Dokumentation, viele Integrationen in IDE-, CI- und Cloud-Dienste sowie eine große Community. Das senkt den Einführungsaufwand und erleichtert die Fehlersuche, weil Lösungen für die meisten Probleme dokumentiert sind.",
+      "toolB": "Podman wird aktiv entwickelt und ist besonders im Red-Hat- und Fedora-Umfeld gut dokumentiert, gewinnt aber außerhalb davon langsamer an Verbreitung. Die Community wächst, und für viele Standardaufgaben existieren bereits gute Anleitungen; bei Nischenproblemen ist die Trefferquote jedoch oft geringer als bei Docker.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Plattformunterstützung und Desktop-Erfahrung",
+      "toolA": "Docker Desktop bietet unter Windows und macOS eine komfortable, integrierte Umgebung inklusive Kubernetes-Option und grafischer Oberfläche. Die Lizenzbedingungen für die kommerzielle Nutzung von Docker Desktop sollten je nach Unternehmensgröße geprüft werden.",
+      "toolB": "Podman läuft nativ unter Linux und ist über Podman Desktop sowie eine VM-basierte Maschine auch unter Windows und macOS nutzbar. Die Desktop-Erfahrung ist funktional, historisch aber weniger stark in bestehende Workflows integriert als Docker Desktop, wobei sich das je nach Version ändern kann.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Betrieb ohne root und ohne Hintergrunddienst im Enterprise-Umfeld",
+      "toolA": "Docker lässt sich in Enterprise-Umgebungen gut zentral verwalten, setzt aber meist auf einen laufenden Daemon und root-Rechte oder eine sorgfältig konfigurierte rootless-Installation. In regulierten Umgebungen kann das zusätzlichen Konfigurationsaufwand bedeuten.",
+      "toolB": "Podman erfüllt Anforderungen wie daemonlosen Betrieb und rootless Standard besonders gut und ist daher in sicherheitskritischen und RHEL-basierten Umgebungen verbreitet. Für Systemd-Integration stehen Quadlet und generate systemd zur Verfügung, sodass Container als Dienste verwaltet werden können, abhängig von der eingesetzten Version.",
+      "winner": "toolB"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# Dockerfile\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Bauen und starten:\n# docker build -t hello-docker .\n# docker run --rm hello-docker",
+    "tech2Snippet": "# Containerfile (Docker-kompatibel)\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Bauen und starten:\n# podman build -t hello-podman .\n# podman run --rm hello-podman"
+  },
+  "faq": [
+    {
+      "q": "Ist Podman ein vollständiger Ersatz für Docker?",
+      "a": "Für viele typische Anwendungsfälle ja, denn Podman ist weitgehend CLI-kompatibel und unterstützt OCI-Images aus Docker-Registries. In Randfällen können sich Netzwerk-, Volume- und Compose-Verhalten unterscheiden, daher sollten bestehende Skripte und Workloads vor einer Migration getestet werden. Ob Podman ein vollständiger Ersatz ist, hängt von den konkret genutzten Features und der eingesetzten Version ab."
+    },
+    {
+      "q": "Warum gilt Podman als sicherer als Docker?",
+      "a": "Podman läuft standardmäßig rootless und benötigt keinen dauerhaft laufenden privilegierten Daemon, was die Angriffsfläche reduziert. Docker kann ebenfalls rootless betrieben werden, erfordert dafür aber zusätzliche Konfiguration und hat je nach Setup Einschränkungen. Eine pauschale Aussage, das eine Tool sei immer sicherer, ist nicht korrekt, weil die Sicherheit stark von Konfiguration, Kernel und Workload abhängt."
+    },
+    {
+      "q": "Kann ich Docker Compose mit Podman nutzen?",
+      "a": "Ja, Podman kann Compose-Dateien über podman-compose oder über die Compose-Unterstützung neuerer Podman-Versionen ausführen. Der Funktionsumfang und die Kompatibilität variieren je nach Version und verwendeten Compose-Features, daher empfiehlt sich ein Test mit der eigenen Konfiguration. Für einfache Setups funktioniert das in der Regel reibungslos, bei komplexen Dateien kann eine Anpassung nötig sein."
+    },
+    {
+      "q": "Welche Lösung eignet sich besser für Kubernetes-nahe Entwicklung?",
+      "a": "Podman bietet mit Pods und podman generate kube eine native Nähe zu Kubernetes-Konzepten und kann Kubernetes-YAML erzeugen. Docker fokussiert auf Compose und einzelne Container; für Kubernetes wird üblicherweise ein lokaler Cluster wie kind oder k3s genutzt. Wer ohne Cluster Kubernetes-Konzepte lokal abbilden will, ist mit Podman häufig besser bedient."
+    },
+    {
+      "q": "Ist Docker Desktop für die kommerzielle Nutzung kostenpflichtig?",
+      "a": "Die Lizenzbedingungen von Docker Desktop sehen ab bestimmten Unternehmensgrößen eine kostenpflichtige Nutzung vor, während kleinere Unternehmen und Privatpersonen unter Bedingungen kostenlos nutzen können. Die genauen Regeln sollten vor dem Einsatz direkt bei Docker geprüft werden, weil sie sich ändern können. Podman ist quelloffen und unterliegt nicht denselben Lizenzbeschränkungen, was für manche Teams ein Argument ist."
+    },
+    {
+      "q": "Welche Rolle spielt das Betriebssystem bei der Wahl?",
+      "a": "Unter Linux laufen beide Tools nativ, wobei Podman seinen rootless-Vorteil dort am stärksten ausspielt. Unter Windows und macOS nutzen beide eine VM oder eine Desktop-Anwendung; Docker Desktop ist hier oft komfortabler integriert, während Podman über Podman Desktop eine Alternative bietet. Die konkrete Plattform und die vorhandenen Team-Workflows sollten daher in die Entscheidung einfließen."
+    },
+    {
+      "q": "Wie aufwendig ist die Migration von Docker zu Podman?",
+      "a": "Für einfache Setups reicht häufig ein Alias von docker auf podman, weil die CLI sehr ähnlich ist und Images kompatibel sind. Aufwendiger wird es bei Docker-Compose-Dateien, speziellen Netzwerk-Setups, Docker-Desktop-spezifischen Features und CI-Pipelines, die einen Docker-Socket erwarten. Eine schrittweise Migration mit Tests der kritischen Workloads ist empfehlenswert, um Überraschungen zu vermeiden."
+    },
+    {
+      "q": "Welches Tool passt besser zu einem kleinen Entwicklerteam ohne dedizierte Plattform-Teams?",
+      "a": "Ein kleines Team profitiert meist von der ausgereiften Dokumentation, dem breiten Ökosystem und der einfachen Compose-Erfahrung von Docker. Podman ist eine gute Wahl, wenn rootless Betrieb und Daemon-Freiheit Priorität haben und das Team bereit ist, sich in kleinere Unterschiede einzuarbeiten. Die Entscheidung sollte sich an den wichtigsten Workflows und nicht an einzelnen Features orientieren."
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "slug": "postgresql-vs-sqlite",
+  "meta": {
+    "title": "PostgreSQL vs SQLite (2026): które rozwiązanie wybrać?",
+    "description": "Porównanie PostgreSQL i SQLite w 2026 r.: wydajność, współbieżność, skalowanie, bezpieczeństwo, kopie zapasowe i koszty wdrożenia. Praktyczna rekomendacja."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "PostgreSQL wybierz, gdy potrzebujesz wielu równoczesnych zapisów, zaawansowanych zapytań, ról i uprawnień, replikacji oraz skalowania w sieci. SQLite sprawdzi się w aplikacjach lokalnych, na urządzeniach mobilnych, w testach i małych projektach z jednym procesem zapisującym. Oba rozwiązania są dojrzałe i darmowe w podstawowej wersji open source, ale różnią się modelem współbieżności i sposobem administracji, więc decyzja powinna wynikać z profilu obciążenia i architektury.",
+  "comparison": [
+    {
+      "category": "Model architektury i sposób wdrożenia",
+      "toolA": "PostgreSQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć, zwykle protokołem klient-serwer. Taki model wymaga instalacji, konfiguracji, zarządzania procesem usługi oraz kontroli dostępu do portu, ale pozwala współdzielić jedną bazę między wieloma aplikacjami i hostami. Szczegóły konfiguracji zależą od wersji, systemu operacyjnego i sposobu wdrożenia, na przykład kontenera lub usługi zarządzanej.",
+      "toolB": "SQLite to biblioteka osadzana w aplikacji, a cała baza przechowywana jest zwykle w jednym pliku na dysku, bez odrębnego procesu serwera. Dzięki temu wdrożenie jest bardzo proste i nie wymaga konfiguracji sieci ani administracji usługą. Ograniczeniem jest to, że dostęp do pliku odbywa się lokalnie lub przez współdzielony system plików, co przy niektórych konfiguracjach sieciowych bywa ryzykowne i zależy od mechanizmów blokad systemu.",
+      "winner": "tie"
+    },
+    {
+      "category": "Współbieżność i obsługa wielu zapisów",
+      "toolA": "PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym konflikty zapisów są rozwiązywane przez blokady na poziomie wiersza. Przy odpowiedniej konfiguracji i sprzęcie obsługuje wysoką współbieżność, choć realna wydajność zależy od obciążenia, indeksów i parametrów serwera. Mechanizmy izolacji transakcji są rozbudowane i pozwalają dostosować poziom spójności do wymagań aplikacji.",
+      "toolB": "SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą współistnieć dzięki trybowi WAL, jeśli jest włączony i odpowiednio skonfigurowany. To wystarcza w aplikacjach z jednym procesem zapisującym lub niewielkim ruchem, ale przy wielu równoczesnych zapisach mogą pojawiać się oczekiwania i błędy blokad. Zachowanie zależy od wersji biblioteki, trybu dziennikowania i ustawień.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Skalowanie i wydajność pod obciążeniem",
+      "toolA": "PostgreSQL projektowano z myślą o pracy pod współbieżnym obciążeniem, z możliwością skalowania pionowego i poziomego, między innymi przez replikację i partycjonowanie. Wydajność zależy od sprzętu, konfiguracji, jakości zapytań i indeksów, dlatego nie da się podać uniwersalnych liczb bez odniesienia do konkretnego scenariusza. Dojrzałe narzędzia monitoringu i planowania zapytań ułatwiają diagnostykę wąskich gardeł.",
+      "toolB": "SQLite jest bardzo szybki w scenariuszach lokalnych, zwłaszcza przy odczytach i prostych zapisach, ponieważ nie ma narzutu komunikacji sieciowej. Skalowanie w poziomie jest jednak ograniczone, a wielu równoczesnych zapisów nie obsłuży tak jak serwerowa baza danych. Wyniki silnie zależą od rodzaju dysku, rozmiaru bazy, trybu synchronizacji i konfiguracji.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Zaawansowane funkcje SQL i typy danych",
+      "toolA": "PostgreSQL oferuje bogaty zestaw funkcji, między innymi zaawansowane zapytania analityczne, funkcje okna, CTE, typy JSON i JSONB, tablice, typy zakresowe oraz rozbudowane możliwości indeksowania. Dostępność konkretnych funkcji zależy od wersji serwera i zainstalowanych rozszerzeń, więc warto sprawdzić dokumentację dla wybranej wersji. To elastyczne środowisko dla złożonej logiki danych i analityki.",
+      "toolB": "SQLite obsługuje dużą część standardowego SQL, w tym podzapytania, widoki, wyzwalacze i CTE, a także typ JSON dostępny w nowszych wersjach. Nie dorównuje jednak PostgreSQL w zakresie zaawansowanych typów, rozszerzeń i możliwości analitycznych. Część funkcji zależy od wersji biblioteki i flag kompilacji, dlatego kompatybilność trzeba weryfikować w konkretnym środowisku.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "PostgreSQL ma wbudowany system ról, uprawnień i uwierzytelniania, a także obsługę połączeń szyfrowanych i mechanizmów kontroli dostępu na poziomie obiektów. Bezpieczeństwo zależy jednak od poprawnej konfiguracji, aktualizacji i polityk haseł oraz od tego, czy baza jest wystawiona na dostęp sieciowy. Administracja uprawnieniami bywa bardziej złożona niż w rozwiązaniu osadzanym.",
+      "toolB": "SQLite opiera bezpieczeństwo głównie na uprawnieniach systemu plików oraz na kontroli dostępu do pliku bazy przez aplikację. Nie ma serwerowego modelu użytkowników i ról w stylu serwerowej bazy danych, więc izolacja zależy od architektury aplikacji i zabezpieczeń urządzenia. W aplikacjach mobilnych i desktopowych to zwykle wystarcza, ale w scenariuszach wieloużytkownikowych wymaga dodatkowych warstw.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Kopie zapasowe, replikacja i odtwarzanie",
+      "toolA": "PostgreSQL oferuje mechanizmy kopii zapasowych, między innymi zrzuty logiczne i kopie fizyczne, a także replikację strumieniową i logiczną, zależnie od wersji i konfiguracji. Pozwala to budować scenariusze wysokiej dostępności i odtwarzania po awarii, choć wymaga wiedzy administracyjnej i testów procedur. Realne możliwości zależą od wdrożenia i planu usługi zarządzanej.",
+      "toolB": "W SQLite kopię zapasową można wykonać przez kopiowanie pliku w bezpieczny sposób lub przez dedykowane API kopii zapasowej dostępne w bibliotece, zależnie od wersji i języka programowania. Nie ma wbudowanej replikacji w rozumieniu serwerowej bazy danych, więc wysoką dostępność trzeba zapewnić na poziomie aplikacji lub infrastruktury. Prostota tej operacji jest zaletą, ale scenariusze odtwarzania wymagają starannego planowania.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Koszty, złożoność utrzymania i ekosystem",
+      "toolA": "PostgreSQL jest dostępny jako oprogramowanie open source, a koszty pojawiają się głównie w postaci pracy administracyjnej, infrastruktury lub usług zarządzanych, których ceny zależą od dostawcy i planu. Utrzymanie wymaga wiedzy o konfiguracji, aktualizacjach i kopach zapasowych, ale ekosystem narzędzi i integracji jest szeroki. Nie można podać jednej ceny bez wskazania konkretnego wdrożenia.",
+      "toolB": "SQLite jest biblioteką open source, zwykle darmową w użyciu, a koszty ograniczają się do pracy programistycznej i utrzymania aplikacji. Brak serwera upraszcza eksploatację, ale w większych systemach trzeba samodzielnie rozwiązać kwestie współbieżności i skalowania. Wybór zależy od tego, czy oszczędność czasu administracyjnego przewyższa ograniczenia architektoniczne.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Które rozwiązanie lepiej wybrać dla aplikacji internetowej z wieloma użytkownikami?",
+      "a": "Dla aplikacji internetowej z wieloma równoczesnymi zapisami zwykle lepszy jest PostgreSQL, ponieważ obsługuje współbieżność i kontrolę dostępu w modelu serwerowym. SQLite sprawdzi się w mniejszych wdrożeniach lub przy jednym procesie zapisującym, ale przy większym ruchu może powodować oczekiwania na blokady. Decyzję warto poprzeć testem obciążeniowym w warunkach zbliżonych do produkcji."
+    },
+    {
+      "q": "Czy SQLite nadaje się do aplikacji mobilnych i desktopowych?",
+      "a": "Tak, SQLite jest bardzo często wybierany w aplikacjach mobilnych i desktopowych, ponieważ działa jako osadzana biblioteka i nie wymaga serwera. Trzeba jednak pamiętać o odpowiednim trybie dziennikowania i o tym, że równoczesne zapisy są ograniczone. Bezpieczeństwo zależy w dużej mierze od zabezpieczeń urządzenia i sposobu ochrony pliku bazy."
+    },
+    {
+      "q": "Czy PostgreSQL jest darmowy?",
+      "a": "Podstawowa wersja PostgreSQL jest dostępna na licencji open source, więc samo oprogramowanie nie wymaga opłaty licencyjnej. Koszty mogą wynikać z infrastruktury, pracy administracyjnej lub usług zarządzanych, których cenniki różnią się między dostawcami. Nie należy zakładać konkretnych kwot bez sprawdzenia aktualnej oferty wybranego dostawcy."
+    },
+    {
+      "q": "Jak wygląda kopia zapasowa w SQLite w porównaniu z PostgreSQL?",
+      "a": "W SQLite kopię można wykonać przez bezpieczne skopiowanie pliku lub przez API kopii zapasowej biblioteki, zależnie od wersji i środowiska. PostgreSQL oferuje bardziej rozbudowane mechanizmy, w tym zrzuty logiczne i kopie fizyczne oraz replikację, ale wymaga to konfiguracji i testów. W obu przypadkach kluczowe jest regularne sprawdzanie odtwarzania, a nie tylko samego tworzenia kopii."
+    },
+    {
+      "q": "Które rozwiązanie lepiej obsługuje dane JSON?",
+      "a": "PostgreSQL oferuje typy JSON i JSONB z możliwością indeksowania oraz zaawansowanego przetwarzania, co bywa przydatne w złożonych aplikacjach. SQLite również obsługuje JSON w nowszych wersjach, ale zakres funkcji i wydajność zależą od wersji oraz sposobu użycia. Przy dużej ilości zapytań do danych JSON warto zweryfikować wymagania w dokumentacji wybranej wersji."
+    },
+    {
+      "q": "Czy SQLite można używać w wielu procesach jednocześnie?",
+      "a": "SQLite pozwala na współdzielenie pliku bazy przez wiele procesów, ale równoczesne zapisy są ograniczone i mogą powodować oczekiwania lub błędy blokad. Tryb WAL poprawia współbieżność odczytów, jednak nie usuwa wszystkich ograniczeń zapisu. W scenariuszach o dużym natężeniu zapisów lepiej sprawdza się serwerowa baza danych, taka jak PostgreSQL."
+    },
+    {
+      "q": "Kiedy wybrać PostgreSQL, a kiedy SQLite w 2026 roku?",
+      "a": "PostgreSQL warto wybrać, gdy liczą się współbieżność, zaawansowane zapytania, role i uprawnienia, replikacja oraz skalowanie w sieci. SQLite jest dobrym wyborem dla aplikacji lokalnych, prototypów, testów i małych systemów, gdzie prostota wdrożenia ma większe znaczenie niż równoczesne zapisy. Warto ocenić przewidywany ruch, sposób wdrożenia i wymagania dotyczące odtwarzania po awarii."
+    },
+    {
+      "q": "Czy migracja z SQLite do PostgreSQL jest trudna?",
+      "a": "Migracja jest zwykle wykonalna, ponieważ oba systemy obsługują SQL, ale różnice w typach danych, funkcjach i zachowaniu transakcji wymagają dostosowania kodu i schematu. Trzeba też zaplanować przeniesienie danych oraz testy wydajności i poprawności po zmianie. Skala trudności zależy od złożoności aplikacji i od tego, jak bardzo kod korzysta z funkcji specyficznych dla SQLite."
+    }
+  ]
+}

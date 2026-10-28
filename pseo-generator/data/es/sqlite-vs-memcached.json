@@ -1,0 +1,98 @@
+{
+  "slug": "sqlite-vs-memcached",
+  "meta": {
+    "title": "SQLite vs Memcached (2026): ¿Qué solución elegir?",
+    "description": "Comparamos SQLite y Memcached en 2026: persistencia, rendimiento, escalado, concurrencia y casos de uso reales para elegir la opción adecuada."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "Memcached"
+  },
+  "verdict": "SQLite y Memcached resuelven problemas distintos y a menudo se complementan. SQLite es una base de datos relacional embebida con persistencia en disco, ideal para aplicaciones locales, móviles o servicios ligeros con baja concurrencia de escritura. Memcached es una caché distribuida en memoria, pensada para aligerar la carga de bases de datos y sesiones en arquitecturas de red. Si necesitas almacenar datos de forma duradera, elige SQLite; si buscas acelerar lecturas a escala, Memcached.",
+  "comparison": [
+    {
+      "category": "Modelo y propósito fundamental",
+      "toolA": "SQLite es un motor de base de datos relacional embebido que se ejecuta dentro del propio proceso de la aplicación y guarda los datos en un único archivo en disco. Ofrece SQL completo, transacciones ACID y no requiere un servidor separado ni configuración de red. Está diseñado para persistir datos de forma fiable en dispositivos y servicios con cargas moderadas.",
+      "toolB": "Memcached es un sistema de almacenamiento clave-valor en memoria, distribuido y sin persistencia, cuyo objetivo es reducir la latencia de lecturas costosas. No interpreta SQL ni garantiza durabilidad: si el proceso se reinicia o se desaloja una entrada, los datos se pierden. Funciona como una capa de caché delante de bases de datos u otros orígenes.",
+      "winner": "tie"
+    },
+    {
+      "category": "Persistencia y durabilidad de los datos",
+      "toolA": "SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la información sobrevive a reinicios del proceso o del dispositivo. La durabilidad exacta depende de la configuración de sincronización elegida y de las características del sistema de archivos subyacente.",
+      "toolB": "Memcached mantiene los datos exclusivamente en memoria RAM y no ofrece persistencia ni recuperación tras un reinicio. Además, aplica políticas de desalojo cuando se alcanza el límite de memoria, por lo que no debe usarse como almacén de referencia. Su valor está en acelerar accesos, no en conservar información crítica.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Rendimiento y latencia",
+      "toolA": "SQLite ofrece latencias muy bajas en lecturas y escrituras locales porque evita la comunicación por red y accede al archivo directamente dentro del proceso. El rendimiento depende del tamaño de la base de datos, del esquema, de los índices y del uso de WAL; las escrituras concurrentes intensas pueden convertirse en un cuello de botella.",
+      "toolB": "Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y un protocolo sencillo sobre TCP o UDP. Su diseño multihilo y su escalado horizontal permiten manejar grandes volúmenes de operaciones por segundo, aunque el rendimiento real depende de la red, del número de nodos y del tamaño de los valores.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Concurrencia y escalado",
+      "toolA": "SQLite permite múltiples lectores simultáneos y, en modo WAL, lectores concurrentes con un escritor, pero no está pensado para alta concurrencia de escritura distribuida. El escalado se limita al servidor o dispositivo donde reside el archivo, por lo que no es una opción para clústeres con escritura compartida.",
+      "toolB": "Memcached está diseñado para escalar horizontalmente añadiendo nodos, con partición de claves gestionada por el cliente. Soporta muchas conexiones concurrentes y un alto rendimiento agregado, aunque la coherencia entre nodos no está garantizada y el cliente debe encargarse de la distribución de datos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Consultas y modelo de datos",
+      "toolA": "SQLite implementa un subconjunto amplio de SQL estándar con tipos dinámicos, índices, vistas, disparadores, claves foráneas y expresiones comunes de tabla. Permite modelar relaciones complejas y realizar agregaciones directamente en la base de datos sin lógica adicional en la aplicación.",
+      "toolB": "Memcached solo admite operaciones básicas sobre claves y valores opacos, sin consultas, filtros ni relaciones. La lógica de acceso y agregación recae por completo en la aplicación, lo que simplifica el servidor pero limita el tipo de operaciones que puede resolver por sí mismo.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Administración y operación",
+      "toolA": "SQLite no requiere un proceso servidor ni administración de usuarios o red; basta con incluir la biblioteca y gestionar el archivo de base de datos. Las copias de seguridad se pueden hacer copiando el archivo o usando la API de backup, aunque la configuración de journal y bloqueos requiere cierta atención.",
+      "toolB": "Memcached requiere desplegar y supervisar uno o varios procesos servidor, dimensionar la memoria y gestionar reinicios que vacían la caché. Su operación es relativamente sencilla, pero en arquitecturas grandes implica coordinar nodos, monitorizar métricas y prever el impacto del desalojo de entradas.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "SQLite se apoya en los permisos del sistema de archivos y no incluye autenticación de usuarios por sí mismo; quien tenga acceso al archivo puede leerlo. La seguridad depende de aislar el archivo, cifrar el volumen o usar extensiones de cifrado, y de validar las entradas para evitar inyección SQL.",
+      "toolB": "Memcached no ofrece autenticación ni cifrado de serie en su protocolo clásico, por lo que debe desplegarse en redes privadas y protegerse con cortafuegos. Existe soporte de autenticación en configuraciones recientes basadas en SASL, pero su disponibilidad y activación dependen de la versión y del cliente utilizado.",
+      "winner": "tie"
+    },
+    {
+      "category": "Casos de uso típicos",
+      "toolA": "SQLite encaja en aplicaciones móviles y de escritorio, prototipos, herramientas de análisis local, servicios pequeños con baja concurrencia de escritura y como formato de archivo de datos portátil. También se usa en sistemas embebidos donde no conviene mantener un servidor de base de datos.",
+      "toolB": "Memcached se emplea como caché de consultas, de sesiones de usuario y de objetos calculados en aplicaciones web con múltiples servidores. Su objetivo es descargar la base de datos principal y reducir la latencia, no sustituir al almacén de datos persistente.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿SQLite puede sustituir a Memcached en una aplicación web?",
+      "a": "No es un sustituto directo, porque SQLite persiste datos en disco y Memcached los mantiene en memoria con desalojo. SQLite podría actuar como almacén de referencia, pero no ofrece la distribución ni el escalado horizontal propios de Memcached. Lo habitual es combinar ambos: SQLite como base de datos y Memcached como caché delante de ella."
+    },
+    {
+      "q": "¿Memcached es más rápido que SQLite para leer datos?",
+      "a": "En términos generales, Memcached está optimizado para lecturas en memoria y suele mostrar menor latencia cuando la clave está disponible en caché. Sin embargo, la diferencia real depende de la red, del tamaño de los valores, del acierto de caché y de la configuración. SQLite también puede ser muy rápido en lecturas locales gracias a su caché interna y a la ausencia de saltos de red."
+    },
+    {
+      "q": "¿Qué opción conviene para una aplicación móvil o de escritorio?",
+      "a": "SQLite es la elección natural en aplicaciones móviles y de escritorio porque se integra en el propio proceso y guarda los datos en el dispositivo. Memcached no tiene sentido en ese contexto, ya que requiere un servidor y no ofrece persistencia. Si además necesitas caché en el dispositivo, suele resolverse con estructuras en memoria de la propia aplicación."
+    },
+    {
+      "q": "¿Puedo usar SQLite como caché en lugar de Memcached?",
+      "a": "Técnicamente puedes crear una tabla de caché en SQLite, pero no obtendrás las ventajas de Memcached: distribución entre nodos, desalojo automático por memoria y latencias de red optimizadas. SQLite implicaría escrituras en disco y una gestión manual de la caducidad. Para caché pura y a escala, Memcached es la opción más adecuada."
+    },
+    {
+      "q": "¿Memcached guarda los datos si el servidor se reinicia?",
+      "a": "No, Memcached mantiene los datos solo en memoria y los pierde al reiniciar el proceso o el servidor. Tampoco garantiza la conservación de una entrada, ya que puede desalojarla cuando se alcanza el límite de memoria. Por eso debe usarse para datos reconstruibles, nunca como fuente de verdad."
+    },
+    {
+      "q": "¿Qué pasa con la concurrencia de escritura en SQLite?",
+      "a": "SQLite permite varias lecturas simultáneas y, en modo WAL, lectores concurrentes junto a un único escritor. Las escrituras concurrentes intensas pueden provocar contención y errores de bloqueo si no se gestionan con reintentos. Para cargas de escritura distribuidas de alta concurrencia se suele recurrir a bases de datos cliente-servidor."
+    },
+    {
+      "q": "¿Cómo se protege Memcached en producción?",
+      "a": "Memcached carece de autenticación y cifrado en su protocolo tradicional, por lo que debe aislarse en una red privada con cortafuegos y sin exposición a Internet. Algunas versiones admiten autenticación SASL, pero su activación depende del cliente y de la compilación. Conviene validar la configuración concreta antes de asumir que está protegido."
+    },
+    {
+      "q": "¿Se pueden usar SQLite y Memcached juntos?",
+      "a": "Sí, es una combinación habitual en servicios pequeños o medianos: SQLite actúa como almacén persistente y Memcached cachea consultas o sesiones para reducir la carga de lectura. La aplicación debe gestionar la invalidación de caché cuando SQLite cambia. En arquitecturas con varios servidores, Memcached aporta el escalado horizontal del que carece SQLite."
+    }
+  ]
+}

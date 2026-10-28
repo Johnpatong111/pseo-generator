@@ -1,0 +1,98 @@
+{
+  "slug": "llamaindex-vs-qdrant",
+  "meta": {
+    "title": "LlamaIndex vs Qdrant (2026): Which option should you choose?",
+    "description": "LlamaIndex and Qdrant solve different problems in RAG and AI search. Compare their roles, features, strengths, and best-fit use cases for 2026."
+  },
+  "toolA": {
+    "name": "LlamaIndex"
+  },
+  "toolB": {
+    "name": "Qdrant"
+  },
+  "verdict": "LlamaIndex is the better choice if you need a framework to orchestrate data ingestion, indexing, retrieval, and agent workflows over large language models, especially when you want to combine multiple storage and vector backends. Qdrant is the better choice if your core challenge is fast, filtered, production-grade vector similarity search with strong payload handling. Many teams use both together rather than choosing one over the other.",
+  "comparison": [
+    {
+      "category": "Core purpose and category",
+      "toolA": "LlamaIndex is an open-source data framework for building retrieval-augmented generation, agents, and document-centric LLM applications. It focuses on connecting data sources, structuring indexes, and orchestrating retrieval and reasoning pipelines rather than storing vectors itself as its primary job.",
+      "toolB": "Qdrant is a dedicated vector database and vector similarity search engine designed to store embeddings and payloads and to serve fast nearest-neighbor queries at scale. It is infrastructure you query rather than a framework that assembles an application pipeline.",
+      "winner": "tie"
+    },
+    {
+      "category": "Data ingestion and connectors",
+      "toolA": "LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and web sources, then split it into retrievable chunks. This built-in ingestion layer is one of its biggest strengths.",
+      "toolB": "Qdrant focuses on storage and search and expects an external pipeline to parse, chunk, embed, and upload data. It offers client libraries and integration examples, but it does not attempt to be a document-processing framework.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Retrieval orchestration beyond vector search",
+      "toolA": "LlamaIndex goes well beyond similarity search by supporting query engines, rerankers, hybrid retrieval, routers, sub-question decomposition, and agent-style workflows over retrieved context. These higher-level abstractions are central to how it composes retrieval and generation.",
+      "toolB": "Qdrant excels at vector search primitives, including filtered search, hybrid and sparse vector support depending on configuration, and query-time filtering on payloads. It does not orchestrate multi-step reasoning, prompt construction, or query decomposition for you.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Performance and scalability of vector search",
+      "toolA": "LlamaIndex delegates actual vector storage to whichever backend you configure, so performance depends heavily on that chosen store and your indexing strategy. It is not itself a specialized high-throughput vector engine.",
+      "toolB": "Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as HNSW indexing, quantization, filtering, and horizontal scaling options depending on deployment. Actual throughput and latency depend on hardware, index configuration, dimensionality, and workload.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Storage flexibility and backend choice",
+      "toolA": "LlamaIndex works with many vector stores, databases, and index types, letting teams keep or swap backends without rewriting their application logic. This flexibility suits projects that need portability or already have existing infrastructure.",
+      "toolB": "Qdrant is a single, self-contained database, available as open-source software, a managed cloud service, and enterprise deployments. That focus gives consistency and control, but it means committing to one storage system rather than mixing backends.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Filtering, metadata, and payload handling",
+      "toolA": "LlamaIndex supports metadata filtering and exposes backend-specific filter capabilities, but the exact syntax and power available depend on the underlying vector store you configure. It is a pass-through layer rather than a filtering engine of its own.",
+      "toolB": "Qdrant treats payload filtering as a first-class feature, allowing rich conditions on stored metadata combined with vector search. This makes complex filtered retrieval more predictable and often more performant in production.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Operations, deployment, and maintenance",
+      "toolA": "LlamaIndex is a library you embed in your application, so operational burden centers on your application code, its dependencies, and the backends it calls. There is no separate server to host for the framework itself.",
+      "toolB": "Qdrant runs as a service that you self-host or consume as managed cloud, requiring capacity planning, backups, upgrades, and monitoring. Managed offerings reduce that burden but shift cost to a subscription model.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosystem, integrations, and community",
+      "toolA": "LlamaIndex has a large ecosystem of integrations across LLM providers, embedding models, vector stores, and tooling for agents and evaluation. Its release cadence is rapid, so APIs can change between versions and should be pinned in production.",
+      "toolB": "Qdrant maintains official clients for multiple languages and integrations with popular frameworks, including LlamaIndex via a documented integration. It is widely used in vector search deployments and has an active community and documentation set.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can LlamaIndex and Qdrant be used together?",
+      "a": "Yes. A common pattern is to use LlamaIndex to load, chunk, and embed documents and then store vectors in Qdrant, with LlamaIndex query engines retrieving from Qdrant and passing context to an LLM. This combines LlamaIndex's orchestration with Qdrant's search performance and filtering, and many production RAG stacks follow this approach."
+    },
+    {
+      "q": "Which tool is better for a team that just needs vector search?",
+      "a": "If your application only needs to store embeddings and run similarity queries with metadata filters, Qdrant alone is usually the simpler and more focused choice. Adding LlamaIndex makes sense once you need document parsing, retrieval workflows, or LLM orchestration on top of the search layer."
+    },
+    {
+      "q": "Does LlamaIndex include its own vector database?",
+      "a": "LlamaIndex ships with simple in-memory and local index types useful for prototypes, but it primarily relies on external vector stores for production workloads. For scalable or persistent deployments, you configure a backend such as Qdrant or another supported store, and performance then depends largely on that backend."
+    },
+    {
+      "q": "Is Qdrant suitable for building agents or RAG pipelines by itself?",
+      "a": "Qdrant provides search infrastructure, not an application framework, so agent logic, prompts, chunking, and query planning must be built separately or with another library. Teams that want ready-made retrieval abstractions typically pair Qdrant with a framework like LlamaIndex rather than using Qdrant alone."
+    },
+    {
+      "q": "How do licensing and hosting models differ?",
+      "a": "LlamaIndex is open source under the MIT license and is used as a library inside your own application, so you control hosting entirely. Qdrant offers open-source software along with managed cloud and enterprise options, so the right choice depends on whether you prefer self-managed infrastructure or a hosted service; verify current licensing and pricing terms before committing."
+    },
+    {
+      "q": "Which option is easier to prototype with?",
+      "a": "LlamaIndex typically gets a prototype running faster because it handles ingestion, chunking, embedding, retrieval, and prompt assembly in a few high-level abstractions, and can start with local in-memory indexes. Qdrant requires setting up a server or cloud instance and writing an ingestion pipeline, which adds steps but gives closer control over the search layer."
+    },
+    {
+      "q": "What should I consider for production reliability and security?",
+      "a": "With LlamaIndex, review version pinning and dependency stability because the framework evolves quickly, and audit how credentials for LLM and vector backends are handled. With Qdrant, plan authentication, network isolation, backups, and access control according to your deployment; capabilities vary between open-source, cloud, and enterprise editions, so confirm the specifics in current documentation."
+    },
+    {
+      "q": "When is it clearly better to pick only one of them?",
+      "a": "Choose LlamaIndex alone when you need a full LLM application framework and are comfortable with a simple or alternate vector backend. Choose Qdrant alone when search quality, latency, and filtered retrieval are the main requirements and your application logic is already handled elsewhere. If you need both orchestration and robust vector search, adopting both is usually the pragmatic answer."
+    }
+  ]
+}

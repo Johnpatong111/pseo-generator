@@ -1,0 +1,96 @@
+{
+  "slug": "llamaindex-vs-qdrant",
+  "meta": {
+    "title": "LlamaIndex vs Qdrant (2026): quelle solution choisir ?",
+    "description": "Comparaison LlamaIndex vs Qdrant en 2026 : framework RAG contre base vectorielle. Critères, exemples de code et recommandations pour bien choisir votre brique IA."
+  },
+  "toolA": {
+    "name": "LlamaIndex"
+  },
+  "toolB": {
+    "name": "Qdrant"
+  },
+  "verdict": "LlamaIndex et Qdrant ne jouent pas le même rôle : LlamaIndex orchestre le pipeline RAG (ingestion, indexation, requêtes) tandis que Qdrant excelle comme moteur de stockage et de recherche vectorielle. Le plus souvent, on les combine : Qdrant comme backend de vecteurs et LlamaIndex comme couche d'orchestration. Choisissez LlamaIndex pour prototyper vite une application de question-réponse sur documents ; choisissez Qdrant si vous avez besoin d'une recherche vectorielle performante, filtrée et exploitable via API.",
+  "comparison": [
+    {
+      "category": "Rôle et positionnement dans une architecture IA",
+      "toolA": "LlamaIndex est un framework d'orchestration orienté données pour applications LLM : il gère le chargement, le découpage, l'indexation et la récupération. Il abstrait plusieurs backends de stockage, dont des bases vectorielles externes, ce qui en fait une couche haut niveau.",
+      "toolB": "Qdrant est une base de données vectorielle dédiée, exposée via API HTTP/gRPC, qui stocke des points avec payload et gère la recherche par similarité. Elle ne fournit pas nativement d'orchestration RAG complète et se concentre sur la persistance et la recherche.",
+      "winner": "tie"
+    },
+    {
+      "category": "Prise en main et courbe d'apprentissage",
+      "toolA": "LlamaIndex propose une API Python de haut niveau avec de nombreux concepts (index, retriever, query engine) qui accélèrent le prototypage. En contrepartie, la richesse des abstractions peut demander du temps pour maîtriser les cas avancés, selon la version utilisée.",
+      "toolB": "Qdrant s'utilise via un client Python simple ou l'API REST et se lance facilement avec Docker. La courbe est douce pour un usage basique, mais les fonctionnalités avancées (filtrage, quantification) demandent de lire la documentation.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Recherche vectorielle et filtrage",
+      "toolA": "LlamaIndex s'appuie sur les moteurs de recherche sous-jacents et ajoute des stratégies de récupération (reranking, fusion, requêtes multi-étapes). Ses performances dépendent donc fortement du backend vectoriel configuré.",
+      "toolB": "Qdrant est conçu pour la recherche par similarité à grande échelle avec un filtrage riche sur les payloads, et propose plusieurs types d'index et options de quantification. Ces capacités dépendent de la version et de la configuration du déploiement.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "LlamaIndex offre de nombreuses intégrations : lecteurs de documents, LLM, embeddings, bases vectorielles et outils d'évaluation. Cet écosystème large facilite l'assemblage d'un pipeline complet sans réécrire chaque brique.",
+      "toolB": "Qdrant s'intègre aux principaux frameworks et langages via des clients officiels et des connecteurs, et peut être utilisé indépendamment de tout framework RAG. Son écosystème est plus ciblé sur la recherche vectorielle que sur l'orchestration.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Déploiement et exploitation",
+      "toolA": "LlamaIndex est une bibliothèque qui s'exécute dans votre application ; l'exploitation dépend donc de votre infrastructure et des services externes appelés. Il n'impose pas de serveur dédié mais transfère la responsabilité de la persistance au backend choisi.",
+      "toolB": "Qdrant se déploie en local, en conteneur ou en cluster, avec des options de configuration pour la persistance et la haute disponibilité. Les détails, limites et fonctionnalités de clustering varient selon l'édition et la version.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage typiques",
+      "toolA": "LlamaIndex est adapté aux chatbots documentaires, à la recherche augmentée et aux pipelines d'extraction structurée sur corpus. Il excelle lorsqu'on veut enchaîner ingestion, indexation et requêtes avec un minimum de code.",
+      "toolB": "Qdrant est adapté aux systèmes de recommandation, à la recherche sémantique, à la déduplication et aux applications nécessitant une recherche vectorielle filtrée à forte charge. Il sert aussi de backend à des frameworks comme LlamaIndex.",
+      "winner": "tie"
+    },
+    {
+      "category": "Licence et coût d'adoption",
+      "toolA": "LlamaIndex est distribué sous licence open source permissive, avec des composants et services optionnels selon l'offre. Le coût réel dépend surtout des modèles et services externes que vous branchez.",
+      "toolB": "Qdrant est open source avec des éditions et offres gérées ; les fonctionnalités et conditions exactes varient selon la version et le plan. Vérifiez la documentation officielle pour les détails de licence et de tarification.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "from llama_index.core import VectorStoreIndex, SimpleDirectoryReader\n\ndocuments = SimpleDirectoryReader(\"data\").load_data()\nindex = VectorStoreIndex.from_documents(documents)\nquery_engine = index.as_query_engine()\nprint(query_engine.query(\"Bonjour, que contiennent ces documents ?\"))",
+    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.create_collection(\n    collection_name=\"hello\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"hello\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"texte\": \"Bonjour\"})],\n)\nprint(client.search(collection_name=\"hello\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))"
+  },
+  "faq": [
+    {
+      "q": "LlamaIndex et Qdrant sont-ils concurrents ou complémentaires ?",
+      "a": "Ils sont surtout complémentaires : LlamaIndex orchestre le pipeline RAG tandis que Qdrant stocke et recherche les vecteurs. Dans la pratique, on configure souvent Qdrant comme vector store de LlamaIndex pour combiner orchestration et recherche performante. Les deux peuvent néanmoins être utilisés séparément selon votre besoin."
+    },
+    {
+      "q": "Quel outil choisir pour démarrer rapidement un chatbot sur mes documents ?",
+      "a": "LlamaIndex est généralement le point de départ le plus direct, car il enchaîne chargement, indexation et requête en peu de lignes. Pour un petit volume, son stockage par défaut peut suffire, mais un backend dédié comme Qdrant devient pertinent à mesure que le corpus grandit. Évaluez d'abord la qualité de la récupération sur vos données réelles."
+    },
+    {
+      "q": "Qdrant peut-il remplacer LlamaIndex dans une application RAG ?",
+      "a": "Qdrant ne fournit pas nativement l'orchestration complète d'un pipeline RAG, comme le découpage, la gestion des requêtes multi-étapes ou l'intégration de LLM. Il peut servir de socle de récupération, mais vous devrez écrire la logique applicative autour. LlamaIndex reste plus adapté si vous voulez éviter de réimplémenter ces étapes."
+    },
+    {
+      "q": "Quels critères vérifier avant de choisir entre les deux ?",
+      "a": "Définissez d'abord si vous avez besoin d'orchestration (LlamaIndex) ou de stockage et recherche vectorielle (Qdrant), puis vérifiez les intégrations avec vos modèles et votre infrastructure. Tenez compte du volume de données, des besoins de filtrage et des contraintes de déploiement. Les fonctionnalités précises dépendent de la version et de la configuration, donc consultez la documentation officielle."
+    },
+    {
+      "q": "Les performances de LlamaIndex dépendent-elles de Qdrant ?",
+      "a": "Oui, en partie : LlamaIndex délègue la recherche vectorielle au backend configuré, donc la latence et la qualité de récupération dépendent de ce moteur. Avec Qdrant, les performances varient selon l'index, la quantification et la charge. Nous ne fournissons pas de benchmarks ici, car ils seraient propres à chaque déploiement."
+    },
+    {
+      "q": "Peut-on utiliser Qdrant sans LlamaIndex et inversement ?",
+      "a": "Oui, Qdrant s'utilise directement via son client ou son API, indépendamment de tout framework RAG. LlamaIndex peut fonctionner avec d'autres vector stores ou un stockage simple selon le cas. Le choix dépend surtout de la flexibilité souhaitée et du niveau d'abstraction recherché."
+    },
+    {
+      "q": "Quelles limites garder en tête pour chaque outil ?",
+      "a": "LlamaIndex ajoute une couche d'abstraction dont les comportements évoluent selon la version, ce qui impose de suivre les notes de version. Qdrant demande de gérer l'exploitation du service et sa configuration pour tirer parti de ses fonctions avancées. Dans les deux cas, validez vos choix sur vos données et vos contraintes réelles."
+    },
+    {
+      "q": "Comment les combiner concrètement en 2026 ?",
+      "a": "Configurez Qdrant comme vector store dans LlamaIndex afin de séparer orchestration et stockage vectoriel. Cette architecture facilite la montée en charge de la recherche tout en conservant la souplesse du pipeline RAG. Vérifiez la compatibilité des versions du connecteur et de Qdrant avant mise en production."
+    }
+  ]
+}

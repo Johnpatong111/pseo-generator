@@ -1,0 +1,98 @@
+{
+  "slug": "terraform-vs-kubernetes",
+  "meta": {
+    "title": "Terraform vs Kubernetes (2026): ¿Qué solución elegir?",
+    "description": "Comparamos Terraform y Kubernetes en 2026: diferencias clave, casos de uso, seguridad, integraciones y criterios para elegir la herramienta adecuada en tu infraestructura."
+  },
+  "toolA": {
+    "name": "Terraform"
+  },
+  "toolB": {
+    "name": "Kubernetes"
+  },
+  "verdict": "No son rivales: Terraform aprovisiona la infraestructura y Kubernetes orquesta contenedores en ejecución. Usa Terraform para redes, clústeres y servicios cloud versionados; usa Kubernetes para desplegar y escalar aplicaciones con alta disponibilidad. Muchas organizaciones los combinan: Terraform crea el clúster y Kubernetes ejecuta las cargas. La elección depende del problema, del equipo y del modelo operativo.",
+  "comparison": [
+    {
+      "category": "Propósito principal y modelo de uso",
+      "toolA": "Terraform es una herramienta de infraestructura como código declarativa que permite definir, versionar y aprovisionar recursos en proveedores cloud y otras plataformas mediante archivos de configuración. Su enfoque se centra en el ciclo de vida de la infraestructura: creación, modificación y destrucción controlada de recursos. No ejecuta aplicaciones ni orquesta contenedores en tiempo de ejecución por sí mismo.",
+      "toolB": "Kubernetes es una plataforma de orquestación de contenedores que programa, escala y gestiona cargas de trabajo en un clúster. Su modelo se basa en objetos declarativos como Pods, Deployments y Services, y en controladores que reconcilian el estado deseado con el real. No está diseñado para aprovisionar la infraestructura base fuera del clúster, aunque puede integrarse con proveedores cloud.",
+      "winner": "tie"
+    },
+    {
+      "category": "Gestión de infraestructura y recursos cloud",
+      "toolA": "Terraform destaca en la creación y gestión de infraestructura multi-cloud: redes, subredes, grupos de seguridad, clústeres de Kubernetes, bases de datos gestionadas y otros servicios. Su estado permite planificar cambios y detectar desviaciones, aunque requiere una gestión cuidadosa del archivo de estado y de los bloqueos. Es especialmente útil para equipos que necesitan reproducibilidad y auditoría de la infraestructura.",
+      "toolB": "Kubernetes gestiona recursos dentro del clúster (CPU, memoria, almacenamiento persistente, configuración) y puede aprovisionar almacenamiento o balanceadores mediante integraciones con el proveedor cloud. Sin embargo, no sustituye a una herramienta de IaC para crear la infraestructura subyacente; su ámbito es la capa de aplicación y los recursos internos del clúster. Para infraestructura externa, normalmente se combina con Terraform u otras herramientas.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Despliegue y orquestación de aplicaciones",
+      "toolA": "Terraform puede desplegar algunos recursos de aplicación, como funciones serverless o servicios gestionados, pero no está pensado para orquestar contenedores, gestionar réplicas, balanceo de carga interno o actualizaciones progresivas. Su modelo de ejecución es por lotes (plan/apply) y no mantiene un bucle de reconciliación continuo para cargas de trabajo.",
+      "toolB": "Kubernetes está diseñado específicamente para desplegar y orquestar aplicaciones en contenedores: gestiona réplicas, balanceo de carga, actualizaciones graduales, autoescalado y recuperación ante fallos. Su bucle de reconciliación continua asegura que el estado real converja al deseado, lo que facilita la operación de aplicaciones dinámicas. Es la opción natural para microservicios y cargas variables.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Curva de aprendizaje y complejidad operativa",
+      "toolA": "Terraform tiene una sintaxis relativamente accesible (HCL) y un flujo de trabajo predecible (init, plan, apply). La complejidad aumenta con la escala: gestión de estados remotos, módulos, dependencias entre recursos y proveedores. Para equipos pequeños, puede ser más sencillo de adoptar que Kubernetes, aunque exige disciplina en el control de versiones y la revisión de planes.",
+      "toolB": "Kubernetes tiene una curva de aprendizaje notablemente más pronunciada: conceptos como Pods, Services, Ingress, volúmenes, RBAC, operadores y redes requieren formación específica. La operación de un clúster (actualizaciones, monitorización, seguridad) puede ser compleja y a menudo se delega en servicios gestionados. Para equipos sin experiencia, la adopción inicial puede ser costosa en tiempo y esfuerzo.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosistema, integraciones y extensibilidad",
+      "toolA": "Terraform cuenta con un amplio ecosistema de proveedores (AWS, Azure, GCP, VMware, GitHub, etc.) y módulos reutilizables. Su integración con pipelines CI/CD es común y está bien documentada. La extensibilidad se basa en proveedores y módulos, aunque no está pensada para ejecutar lógica de aplicación en tiempo de ejecución.",
+      "toolB": "Kubernetes tiene un ecosistema muy extenso: operadores, controladores de ingress, service meshes, herramientas de observabilidad y políticas de seguridad. Su API extensible permite adaptar la plataforma a múltiples casos de uso. La integración con herramientas de CI/CD y con proveedores cloud es habitual, aunque la fragmentación del ecosistema puede complicar la selección de componentes.",
+      "winner": "tie"
+    },
+    {
+      "category": "Seguridad y gestión de secretos",
+      "toolA": "Terraform puede gestionar recursos de seguridad (grupos de seguridad, políticas IAM, cifrado) y admite la integración con gestores de secretos externos. El archivo de estado puede contener datos sensibles, por lo que se recomienda cifrarlo y restringir el acceso. La seguridad depende en gran medida de las prácticas del equipo y de la configuración de los proveedores.",
+      "toolB": "Kubernetes ofrece mecanismos de seguridad como RBAC, políticas de red, Pod Security Standards y gestión de secretos nativa, aunque los Secret no están cifrados por defecto en etcd. La seguridad del clúster requiere configuración cuidadosa y, a menudo, herramientas adicionales. Las versiones y los proveedores gestionados pueden variar en las funciones de seguridad disponibles, por lo que conviene verificar la documentación actual.",
+      "winner": "tie"
+    },
+    {
+      "category": "Escalabilidad y rendimiento",
+      "toolA": "Terraform no está diseñado para escalar cargas de trabajo en tiempo real; su escalabilidad se refiere a la gestión de grandes cantidades de recursos y a la organización del código en módulos. El rendimiento depende del proveedor y de la complejidad del plan; estados muy grandes pueden ralentizar las operaciones. No ofrece autoescalado de aplicaciones.",
+      "toolB": "Kubernetes está diseñado para escalar aplicaciones horizontal y verticalmente, con autoescalado de pods y nodos mediante HPA, VPA y Cluster Autoscaler. Puede manejar cargas variables y alta disponibilidad, aunque el rendimiento depende de la configuración del clúster, la red y el almacenamiento. En clústeres grandes, la gestión de recursos y la latencia del API pueden ser factores a considerar.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Coste y modelo de licenciamiento",
+      "toolA": "Terraform es de código abierto con licencia BUSL (Business Source License) desde la versión 1.6, lo que afecta a ciertos usos comerciales; existe una versión enterprise de HashiCorp y alternativas como OpenTofu. El coste principal es el tiempo de aprendizaje y la gestión operativa, no la licencia en sí. Los precios y condiciones pueden variar, por lo que conviene consultar la licencia vigente.",
+      "toolB": "Kubernetes es de código abierto (Apache 2.0) y no tiene coste de licencia, pero su operación puede implicar costes de infraestructura (nodos, balanceadores, almacenamiento) y de personal. Los servicios gestionados como EKS, GKE o AKS cobran por el plano de control y los recursos asociados; los precios varían según el proveedor y la región. La comparación de costes debe incluir el coste total de propiedad.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Terraform y Kubernetes son herramientas competidoras o complementarias?",
+      "a": "No son competidoras directas: Terraform aprovisiona infraestructura, incluidos clústeres de Kubernetes, y Kubernetes orquesta contenedores dentro de un clúster. En la mayoría de arquitecturas se usan juntas: Terraform crea la red, el clúster y los servicios gestionados, y Kubernetes despliega las aplicaciones. Elegir una u otra depende de la capa que necesites gestionar, no de una sustitución total."
+    },
+    {
+      "q": "¿Puedo usar Terraform para desplegar aplicaciones en Kubernetes?",
+      "a": "Sí, el proveedor de Terraform para Kubernetes permite gestionar objetos como Deployments, Services o ConfigMaps. Sin embargo, no es el enfoque más habitual para el ciclo de vida de aplicaciones, ya que Terraform está orientado a cambios planificados y no a la reconciliación continua. Para despliegues de aplicaciones suele preferirse GitOps con Argo CD o Flux, o kubectl y Helm, reservando Terraform para la infraestructura base."
+    },
+    {
+      "q": "¿Necesito Kubernetes si ya uso Terraform?",
+      "a": "Depende de si necesitas orquestar contenedores con alta disponibilidad, autoescalado y actualizaciones progresivas. Si tus aplicaciones son funciones serverless o servicios gestionados, puede que Terraform sea suficiente. Si ejecutas microservicios en contenedores y necesitas un entorno dinámico, Kubernetes aporta capacidades que Terraform no cubre. La decisión debe basarse en los requisitos de las cargas de trabajo."
+    },
+    {
+      "q": "¿Qué herramienta es más segura para gestionar secretos?",
+      "a": "Ninguna de las dos está especializada en gestión de secretos: Terraform puede exponer datos sensibles en el estado y Kubernetes almacena Secret sin cifrado por defecto en etcd. En ambos casos se recomienda integrar un gestor de secretos externo como Vault, AWS Secrets Manager o Azure Key Vault y aplicar el principio de mínimo privilegio. La seguridad efectiva depende de la configuración y las prácticas del equipo, no solo de la herramienta."
+    },
+    {
+      "q": "¿Cuál es más adecuada para equipos pequeños sin experiencia en DevOps?",
+      "a": "Terraform suele ser más accesible para equipos pequeños que necesitan aprovisionar infraestructura de forma reproducible, gracias a su sintaxis declarativa y flujo plan/apply. Kubernetes requiere más conocimientos y esfuerzo operativo, aunque los servicios gestionados reducen la carga. Si el equipo no tiene experiencia en contenedores, empezar con Terraform para la infraestructura y posponer Kubernetes hasta que sea necesario puede ser una estrategia razonable."
+    },
+    {
+      "q": "¿Cómo se integran Terraform y Kubernetes en un flujo CI/CD?",
+      "a": "Un patrón común es usar Terraform en etapas de aprovisionamiento para crear el clúster, redes y servicios gestionados, y herramientas de GitOps o kubectl y Helm para desplegar aplicaciones en Kubernetes. Terraform puede invocarse desde pipelines con revisión de planes y aprobaciones manuales, mientras que Kubernetes se sincroniza con el estado deseado del repositorio. La integración exacta depende de la plataforma CI/CD y de las políticas de la organización."
+    },
+    {
+      "q": "¿Qué limitaciones tiene Terraform que Kubernetes no cubre?",
+      "a": "Terraform no orquesta contenedores en tiempo de ejecución, no gestiona réplicas ni balanceo de carga interno, y no mantiene un bucle de reconciliación continua para aplicaciones. Tampoco está pensado para autoescalado de cargas de trabajo. Kubernetes cubre esas necesidades, pero a cambio introduce complejidad operativa y requiere una curva de aprendizaje mayor. Por eso suelen complementarse en lugar de sustituirse."
+    },
+    {
+      "q": "¿Qué limitaciones tiene Kubernetes que Terraform no cubre?",
+      "a": "Kubernetes no está diseñado para aprovisionar infraestructura externa al clúster, como redes, subredes, bases de datos gestionadas o políticas IAM, de forma declarativa y multi-cloud. Tampoco ofrece un plan de cambios de infraestructura con estado versionado como Terraform. Para gestionar esos recursos se necesita una herramienta de IaC; Kubernetes se centra en la capa de aplicación y los recursos internos del clúster."
+    }
+  ]
+}

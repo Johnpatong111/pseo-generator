@@ -1,0 +1,98 @@
+{
+  "slug": "docker-vs-nomad",
+  "meta": {
+    "title": "Docker vs Nomad (2026): Which option should you choose?",
+    "description": "Compare Docker and Nomad in 2026: orchestration, workload types, setup complexity, security, ecosystem, and use cases to pick the right fit for your team."
+  },
+  "toolA": {
+    "name": "Docker"
+  },
+  "toolB": {
+    "name": "Nomad"
+  },
+  "verdict": "Docker (via Docker Swarm or Compose) is the better fit for teams that mainly ship containerized services and want a single, familiar toolchain and ecosystem for building and running them. Nomad is the stronger choice when you need one scheduler for containers plus non-container workloads (VMs, binaries, batch jobs) and prefer a simpler operational footprint than Kubernetes without giving up scheduling features. Many organizations use both: Docker for build and local development, Nomad for production orchestration.",
+  "comparison": [
+    {
+      "category": "Orchestration capabilities for containerized workloads",
+      "toolA": "Docker's orchestration story centers on Docker Swarm, which is bundled with the Docker Engine and offers services, replicas, rolling updates, overlay networking, and secrets out of the box. Swarm is deliberately simple and can be enabled with a single command, but its scheduling and policy features are more limited than those of dedicated orchestrators, and Docker's own investment has shifted toward Compose and the broader container ecosystem rather than new Swarm features. For many small and mid-sized deployments its capabilities are sufficient.",
+      "toolB": "Nomad is a general-purpose scheduler with first-class support for containers via its Docker and other task drivers, and it adds constraints, affinities, spread, rolling and canary deployments, and multi-region federation. It supports jobs of type service, batch, and system, which makes it flexible across container and non-container workloads. Its feature depth for scheduling policies generally exceeds Swarm's, though it requires separate installation and a running cluster to be useful.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Non-container and heterogeneous workload support",
+      "toolA": "Docker is fundamentally oriented around containers; running VMs, JVM binaries, or raw executables natively is not what the Docker Engine is designed to do, though you can package most applications into images. If your estate includes non-container workloads, Docker alone does not schedule them, and you would typically need additional tooling. This narrows its scope compared with a general-purpose scheduler.",
+      "toolB": "Nomad can schedule containers alongside raw binaries, Java applications, QEMU or Firecracker VMs (subject to driver and version availability), and batch jobs through a pluggable task driver system. This lets teams consolidate orchestration of mixed estates onto one control plane rather than running separate systems. The practical breadth depends on which drivers are enabled and supported in your version.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Learning curve and operational complexity",
+      "toolA": "Docker's learning curve is comparatively gentle because most developers already use the Docker CLI and Dockerfiles, and Compose files are approachable for local and small production setups. Swarm mode adds little operational overhead since it is part of the Engine, but a production-grade Docker setup still needs careful planning for networking, storage, and secrets. The toolchain is cohesive, so there are fewer moving parts to learn at once.",
+      "toolB": "Nomad has a single binary that acts as both server and client agent, which simplifies installation compared with many distributed systems, and its job specification files (HCL or JSON) are generally readable. However, operating a production cluster requires understanding Raft consensus, server quorum, ACLs, and integration with Consul and Vault for service discovery and secrets. Teams without prior HashiCorp experience should expect a meaningful ramp-up.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosystem, integrations, and tooling",
+      "toolA": "Docker has an exceptionally broad ecosystem: Docker Hub, Docker Desktop, Compose, BuildKit, and extensive third-party support, along with documentation and community content that is easy to find. Integrations with CI systems, registries, and cloud platforms are widespread. The trade-off is that some orchestration-adjacent features live outside Docker's core scope, so you may combine it with other tools.",
+      "toolB": "Nomad integrates tightly with HashiCorp's stack, including Consul for service discovery and health checking and Vault for secrets management, and it offers a native HTTP API, CLI, and a web UI. It also supports CSI storage plugins and can run alongside Kubernetes. Its ecosystem is smaller than Docker's, and guidance can be less abundant, but the integrations it does offer are well-regarded for production operations.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and secrets management",
+      "toolA": "Docker provides Swarm secrets for distributing sensitive data to services and supports user namespaces, seccomp, AppArmor, and capability controls, with security posture depending heavily on host configuration and image hygiene. Secrets are stored in the Raft log and delivered to containers, which is adequate for many deployments but less feature-rich than dedicated secret managers. Hardening guidance varies with Engine version and platform.",
+      "toolB": "Nomad's ACL system provides fine-grained policies for namespaces, jobs, and nodes, and it is designed to integrate with Vault for dynamic secrets rather than static values. Combined with Consul intentions and mTLS for service-to-service communication, this can support stricter security models. The strength of these controls depends on correct configuration and licensing tier for some enterprise features.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Community, support, and long-term viability",
+      "toolA": "Docker has a very large user base, extensive public documentation, and a wide range of commercial offerings through Docker, Inc. Its brand recognition means hiring and troubleshooting are generally easier. The company's product direction has evolved over time, so teams should track which components receive active development versus maintenance.",
+      "toolB": "Nomad is maintained by HashiCorp (now part of IBM) and has an active release cadence, with an open-source core and paid enterprise features. Its community is smaller than Docker's but engaged, and commercial support is available. Long-term viability is reinforced by its role in HashiCorp's platform, though adoption trends are worth monitoring for strategic decisions.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scalability and production orchestration depth",
+      "toolA": "Docker Swarm handles clustering and scaling with manager and worker nodes, and it can serve many services reliably within the limits of its scheduling model. It lacks some advanced scheduling primitives, autoscaling integrations, and multi-region federation that larger or more dynamic environments may require. For modest scale and stable workloads, it remains a pragmatic option.",
+      "toolB": "Nomad is designed for large clusters and multi-region federation, with bin packing, node draining, and preemption controls that suit dynamic environments. It has been used at significant scale in production, and enterprise features add namespaces and advanced governance. Actual performance and limits depend on cluster sizing, workload profile, and version, so capacity planning still matters.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Local development and CI/CD workflow",
+      "toolA": "Docker Compose and Docker Desktop make it straightforward to reproduce services locally and to build images in CI, and the same artifacts move naturally into Swarm or other orchestrators. The developer experience is mature, with broad IDE and CI integrations. This tightens the loop between development and deployment for container-first teams.",
+      "toolB": "Nomad is primarily a production and cluster scheduling tool; local development usually relies on Docker or other tools, with Nomad used for integration or staging environments. Its CLI and job files are scriptable and fit well into CI/CD pipelines, but it does not replace developer-focused tooling. Teams often pair the two.",
+      "winner": "toolA"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is Nomad a replacement for Docker?",
+      "a": "No. Nomad is a scheduler and orchestrator, while Docker is a container platform for building, packaging, and running containers. In practice, Nomad commonly schedules Docker containers through its Docker task driver, so the two are complementary rather than directly interchangeable. Choose Nomad when you need broader scheduling of mixed workloads; keep Docker for image building and local development."
+    },
+    {
+      "q": "Should I use Docker Swarm or Nomad for production in 2026?",
+      "a": "Docker Swarm is a reasonable fit for relatively small, container-only deployments where simplicity and an existing Docker workflow matter most. Nomad is generally the stronger option when you need advanced scheduling, multi-region operation, or the ability to run non-container workloads alongside containers. Evaluate your workload mix, team skills, and required governance features before deciding, and test both against realistic traffic patterns."
+    },
+    {
+      "q": "Does Nomad require Consul and Vault?",
+      "a": "Nomad can run on its own, but service discovery and secrets management are typically handled by Consul and Vault, respectively, in production HashiCorp-based architectures. Some Nomad features and workflows assume these integrations, so check the documentation for your version. If you adopt Nomad, plan for the operational overhead of these components unless you substitute alternatives."
+    },
+    {
+      "q": "Which tool is easier to learn for a small team?",
+      "a": "Docker is usually easier for developers already comfortable with Dockerfiles and Compose, since the tooling is familiar and Swarm mode adds little overhead. Nomad's single binary is simple to install, but running it reliably requires understanding cluster consensus, ACLs, and related integrations. A small team with limited operations experience will typically move faster with Docker first."
+    },
+    {
+      "q": "Can Docker and Nomad be used together?",
+      "a": "Yes, and it is a common pattern. Teams often use Docker to build and test images locally and in CI, then deploy those images to Nomad in production for richer scheduling and heterogeneous workload support. This division lets each tool do what it does best, though it does mean maintaining familiarity with both."
+    },
+    {
+      "q": "How do security features compare between Docker and Nomad?",
+      "a": "Docker offers container-level isolation controls plus Swarm secrets, and its security depends heavily on host hardening and image practices. Nomad provides namespaced ACL policies and integrates with Vault for dynamic secrets and Consul for mTLS, which can support stricter models when configured correctly. Exact capabilities depend on version and, for some features, licensing tier, so verify against current documentation."
+    },
+    {
+      "q": "Which option scales better for large clusters?",
+      "a": "Nomad is generally designed for larger and more dynamic clusters, with multi-region federation, bin packing, and preemption controls, and it has been used at substantial scale. Docker Swarm can scale for many services but offers fewer advanced scheduling primitives. Real-world limits depend on cluster size, workload characteristics, and version, so benchmark your specific scenario rather than relying on general claims."
+    },
+    {
+      "q": "Is there a cost difference between Docker and Nomad?",
+      "a": "Both have open-source cores, and both vendors offer commercial products and support plans with their own pricing, which changes over time. Rather than assuming costs, check current pricing for Docker subscriptions and HashiCorp's Nomad offerings against your support and feature needs. Operational costs, including staffing and infrastructure, often outweigh license differences."
+    }
+  ]
+}

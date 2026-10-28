@@ -1,0 +1,102 @@
+{
+  "slug": "openfga-vs-aws",
+  "meta": {
+    "title": "OpenFGA vs AWS (2026): quelle solution choisir ?",
+    "description": "Comparatif OpenFGA vs AWS en 2026 : autorisation fine-grained, IAM et Cedar, coûts d'exploitation, portabilité, sécurité et intégration. Critères détaillés, exemples de code et FAQ pour choisir."
+  },
+  "toolA": {
+    "name": "OpenFGA"
+  },
+  "toolB": {
+    "name": "AWS"
+  },
+  "verdict": "OpenFGA convient aux équipes qui veulent un moteur d'autorisation fine-grained, indépendant du cloud et basé sur des modèles déclaratifs, avec un contrôle accru sur l'hébergement et l'évolution du modèle. AWS reste plus pertinent lorsque l'on est déjà sur AWS et que l'on souhaite s'appuyer sur des services managés et des mécanismes d'IAM natifs. Un mix (OpenFGA pour l'autorisation applicative, IAM pour les ressources cloud) est fréquent. Les deux exigent une configuration rigoureuse et des tests dédiés.",
+  "comparison": [
+    {
+      "category": "Nature du service et positionnement : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA est un moteur d'autorisation open source (projet CNCF, en incubation à ma connaissance) qui met en œuvre le modèle ReBAC de type Zanzibar pour répondre à des questions d'autorisation applicative, notamment sur des relations entre objets. Il se déploie comme un service à interroger depuis les applications, avec une API HTTP/gRPC et des SDK officiels. Son périmètre est volontairement centré sur l'autorisation fine-grained, pas sur la gestion d'identités ou de ressources cloud.",
+      "toolB": "AWS n'est pas un produit unique mais un ensemble de services : IAM, IAM Identity Center, AWS Verified Permissions (basé sur Cedar), Cognito et d'autres briques couvrant identité et autorisation. IAM gère les permissions d'accès aux ressources AWS, tandis que Verified Permissions cible l'autorisation applicative externe. Le périmètre est donc très large, mais chaque besoin suppose de choisir le bon service et de comprendre leur articulation.",
+      "winner": "tie"
+    },
+    {
+      "category": "Modèle d'autorisation et expressivité : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA s'appuie sur un langage de modélisation déclaratif (DSL) pour décrire les types, les relations et les permissions, ce qui permet d'exprimer des règles ReBAC complexes (héritage, relations imbriquées, hiérarchies). La vérification et le test du modèle font partie des pratiques recommandées, et la lisibilité du modèle facilite la revue par les équipes. En revanche, les cas très spécifiques ou les décisions non liées à des relations peuvent demander des contournements.",
+      "toolB": "Verified Permissions utilise le langage de politique Cedar, de type ABAC/policy-based, avec une séparation claire entre politiques et données d'entités. IAM applique également des politiques JSON évaluées par AWS, mais leur logique et leur arrière-plan diffèrent de Cedar. Ces approches sont puissantes pour des règles fondées sur des attributs et des contextes, mais l'expression de relations profondes entre objets peut être moins directe qu'avec un modèle ReBAC dédié.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Intégration à l'écosystème et portabilité : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA est indépendant du fournisseur cloud : on peut l'héberger sur n'importe quel Kubernetes ou serveur, ce qui favorise la portabilité et évite un verrouillage fort. Il s'intègre aux applications via des SDK et ne présume pas de la manière dont les identités sont gérées en amont, ce qui laisse de la souplesse. En contrepartie, l'exploitation, la mise à l'échelle et la supervision restent à la charge de l'équipe, sauf recours à une offre managée tierce.",
+      "toolB": "AWS est évidemment très intégré à l'écosystème AWS : IAM, Cognito, Verified Permissions, Lambda, API Gateway, S3 et le reste communiquent nativement. Cette intégration réduit l'effort d'assemblage lorsque l'infrastructure est déjà sur AWS. En revanche, la portabilité hors AWS est limitée pour ces services, et une migration ultérieure demanderait une réécriture des politiques et des flux d'authentification.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Exploitation, hébergement et charge opérationnelle : évaluation détaillée de ce critère.",
+      "toolA": "L'auto-hébergement d'OpenFGA suppose de gérer le service, les bases de données de stockage (selon le backend retenu), les sauvegardes, la mise à jour des versions et la supervision. Les offres managées tierces peuvent alléger cette charge, mais elles introduisent une dépendance à un fournisseur supplémentaire et des coûts récurrents. La complexité réelle dépend fortement du volume de requêtes, du nombre de tuples et du mode de déploiement choisi.",
+      "toolB": "Les services AWS concernés sont managés : AWS opère l'infrastructure, la disponibilité et les mises à jour de sécurité, ce qui réduit la charge d'exploitation pour l'équipe. Il reste toutefois à concevoir une architecture de politiques et d'identités, à surveiller les coûts et à gérer les quotas et limites de service. La contrepartie est une dépendance aux spécificités d'AWS et à sa tarification à l'usage.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité, gouvernance et journalisation : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA s'appuie sur une authentification par preshared key ou des mécanismes de type OIDC selon la configuration, et l'équipe doit définir ses propres règles de durcissement, de rotation des secrets et de cloisonnement réseau. La journalisation et l'audit dépendent de l'implémentation et des outils de supervision déployés autour du service. La transparence du code ouvert facilite les revues de sécurité, mais elle ne remplace pas une configuration soignée.",
+      "toolB": "AWS propose des mécanismes matures et documentés : journalisation via CloudTrail, politiques IAM granulaires, chiffrement natif et contrôle d'accès centralisé. Verified Permissions ajoute une journalisation des décisions d'autorisation et des audits, sous réserve de configuration. En contrepartie, la surface de configuration est vaste et une mauvaise politique IAM ou un rôle trop permissif peut créer des failles, d'où l'importance des contrôles et des outils d'analyse.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Coûts et modèle économique : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA lui-même est open source et gratuit à l'usage, mais le coût total inclut l'infrastructure, les bases de données, la supervision, les sauvegardes et le temps d'ingénierie. Une offre managée tierce ajoute un abonnement dont le montant dépend du fournisseur et du volume. Il est donc prudent de raisonner en coût total de possession plutôt qu'en simple licence logicielle.",
+      "toolB": "AWS facture à l'usage selon les services : IAM est généralement gratuit, tandis que Verified Permissions, Cognito, Lambda ou API Gateway sont facturés selon des grilles publiées, susceptibles d'évoluer. Il est important de consulter la tarification officielle et de projeter les coûts à partir du volume attendu. La prévisibilité budgétaire demande de la surveillance et parfois des optimisations d'architecture.",
+      "winner": "tie"
+    },
+    {
+      "category": "Écosystème, support et maturité : évaluation détaillée de ce critère.",
+      "toolA": "La communauté OpenFGA est active, avec une documentation et des SDK, et le projet est porté par la CNCF, ce qui offre des garanties de gouvernance. Le support dépend toutefois de la communauté ou d'un prestataire, et l'on ne bénéficie pas d'un support commercial intégré par défaut. La maturité du projet évolue avec les versions, qu'il faut suivre pour connaître les fonctionnalités exactes.",
+      "toolB": "AWS bénéficie d'un support commercial, d'une documentation abondante et d'un écosystème de partenaires très large. Les services évoluent fréquemment et les fonctionnalités disponibles dépendent de la région et du moment. Cette maturité se paie en complexité : il faut du personnel formé et des processus de gouvernance adaptés.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Cas d'usage idéal et adéquation au projet : évaluation détaillée de ce critère.",
+      "toolA": "OpenFGA est particulièrement adapté aux produits multi-tenant avec des permissions relationnelles complexes, aux équipes qui veulent garder la main sur le modèle d'autorisation et éviter un verrouillage fournisseur. Il convient aussi aux environnements hybrides ou multi-cloud. À l'inverse, une équipe sans expertise en exploitation de services peut sous-estimer la charge opérationnelle.",
+      "toolB": "AWS convient bien aux organisations déjà engagées dans AWS, qui recherchent des services managés et une intégration native avec leurs identités et leurs ressources cloud. Il est judicieux lorsque la priorité est de réduire l'exploitation et de s'appuyer sur des mécanismes éprouvés. En revanche, une architecture multi-cloud ou un besoin de modèle relationnel profond peuvent rendre l'approche moins naturelle.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# docker-compose minimal pour lancer OpenFGA (développement local)\nservices:\n  openfga:\n    image: openfga/openfga:latest\n    command: run\n    environment:\n      - OPENFGA_DATASTORE_ENGINE=memory\n    ports:\n      - \"8080:8080\"\n      - \"8081:8081\"\n\n# Après démarrage, vérifier que l'API répond :\n# curl http://localhost:8080/healthz",
+    "tech2Snippet": "// Exemple minimal avec AWS SDK for JavaScript v3 : lister les buckets S3\n// (nécessite des identifiants AWS valides avec les droits adéquats)\nimport { S3Client, ListBucketsCommand } from \"@aws-sdk/client-s3\";\n\nconst client = new S3Client({ region: \"eu-west-3\" });\nconst result = await client.send(new ListBucketsCommand({}));\nconsole.log((result.Buckets ?? []).map((b) => b.Name));"
+  },
+  "faq": [
+    {
+      "q": "OpenFGA peut-il remplacer entièrement AWS IAM ?",
+      "a": "Non, OpenFGA et AWS IAM ne répondent pas au même besoin. OpenFGA gère l'autorisation applicative fine-grained entre objets de votre application, tandis qu'AWS IAM contrôle l'accès aux ressources AWS elles-mêmes (S3, EC2, Lambda, etc.). Dans une architecture sur AWS, il est courant de les combiner : IAM pour l'infrastructure cloud et OpenFGA pour les permissions métier. Le choix dépend donc de la frontière que vous tracez entre autorisation applicative et autorisation d'infrastructure."
+    },
+    {
+      "q": "Faut-il préférer AWS Verified Permissions plutôt qu'OpenFGA pour un projet déjà sur AWS ?",
+      "a": "Si votre projet est déjà fortement ancré dans AWS et que vous souhaitez un service managé avec une facturation à l'usage, AWS Verified Permissions (basé sur Cedar) est un candidat naturel. En revanche, si votre modèle d'autorisation repose sur des relations profondes entre objets et que vous voulez éviter un verrouillage fournisseur, OpenFGA peut mieux convenir. La décision doit s'appuyer sur une comparaison du modèle, des coûts projetés et de la charge d'exploitation, pas seulement sur l'écosystème existant."
+    },
+    {
+      "q": "Quel est le coût réel d'OpenFGA en production ?",
+      "a": "OpenFGA est open source, mais son coût total inclut l'infrastructure d'hébergement, le stockage, la supervision, les sauvegardes, les montées de version et le temps d'ingénierie. Une offre managée tierce ajoute un abonnement dont le montant varie selon le fournisseur et le volume. Il est donc préférable d'estimer le coût total de possession, en tenant compte du nombre de tuples, du volume de requêtes et des exigences de disponibilité."
+    },
+    {
+      "q": "AWS IAM est-il suffisant pour des permissions applicatives complexes ?",
+      "a": "AWS IAM est conçu pour contrôler l'accès aux ressources AWS et ne couvre pas nativement les permissions métier entre objets applicatifs. Pour des règles applicatives complexes, AWS propose Verified Permissions avec le langage Cedar, ou l'on peut utiliser un moteur externe comme OpenFGA. La bonne réponse dépend de la nature des règles : attributs et contexte plutôt que relations, ou modèle relationnel profond. Une évaluation du modèle d'autorisation est indispensable avant de choisir."
+    },
+    {
+      "q": "La sécurité est-elle meilleure avec l'un ou l'autre ?",
+      "a": "Les deux approches peuvent être sécurisées, mais elles exigent des efforts différents. AWS fournit des mécanismes matures et managés (CloudTrail, politiques IAM, chiffrement) avec une vaste documentation, au prix d'une configuration complexe. OpenFGA offre transparence et contrôle, mais la sécurité repose sur le durcissement de votre déploiement, la gestion des secrets et la supervision. Aucune solution n'est sécurisée par défaut : la rigueur de configuration et les tests sont déterminants."
+    },
+    {
+      "q": "Peut-on utiliser OpenFGA sur AWS sans sortir de l'écosystème ?",
+      "a": "Oui, OpenFGA peut être hébergé sur AWS, par exemple sur EKS ou ECS, avec une base de données compatible pour le stockage. On reste alors dans l'écosystème AWS pour l'infrastructure, tout en conservant un moteur open source et portable. Cette approche combine la flexibilité d'OpenFGA avec les services managés AWS pour l'hébergement. Il faut toutefois prévoir la supervision, les sauvegardes et les mises à jour du service."
+    },
+    {
+      "q": "Quelle solution choisir pour un produit multi-tenant ?",
+      "a": "Pour un produit multi-tenant avec des permissions relationnelles complexes, OpenFGA est souvent pertinent grâce à son modèle ReBAC et à sa portabilité. Si le multi-tenant est entièrement hébergé sur AWS et que les règles sont davantage fondées sur des attributs, Verified Permissions ou une combinaison avec IAM peut suffire. La décision dépend surtout de la nature des règles et de la volonté de s'engager ou non sur un fournisseur unique."
+    },
+    {
+      "q": "Comment démarrer un comparatif fiable entre OpenFGA et AWS ?",
+      "a": "Commencez par formaliser vos besoins d'autorisation : relations entre objets, attributs, contexte, volume de tuples et exigences de latence. Ensuite, testez chaque option sur un périmètre restreint avec vos propres scénarios, en vérifiant la documentation officielle de la version utilisée. Enfin, comparez le coût total de possession et la charge d'exploitation, en gardant à l'esprit que les fonctionnalités et tarifs évoluent et doivent être vérifiés à la date de votre décision."
+    }
+  ]
+}

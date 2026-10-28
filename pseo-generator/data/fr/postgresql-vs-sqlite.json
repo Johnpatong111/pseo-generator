@@ -1,0 +1,96 @@
+{
+  "slug": "postgresql-vs-sqlite",
+  "meta": {
+    "title": "PostgreSQL vs SQLite (2026): quelle solution choisir ?",
+    "description": "Comparatif PostgreSQL vs SQLite en 2026 : architecture, concurrence, types de données, déploiement, sécurité et cas d'usage pour choisir la base de données adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "SQLite brille pour les applications locales, embarquées ou à faible écriture concurrente, grâce à sa simplicité de déploiement et sa fiabilité éprouvée. PostgreSQL s'impose dès qu'il faut des accès concurrents soutenus, des types avancés, une sécurité granulaire ou une réplication. Le choix dépend surtout du mode de déploiement et du profil de charge, à valider par votre propre évaluation.",
+  "comparison": [
+    {
+      "category": "Architecture et modèle de déploiement",
+      "toolA": "PostgreSQL fonctionne comme un serveur de bases de données séparé auquel les clients se connectent via le réseau, ce qui implique d'installer, configurer et administrer un service dédié. Cette séparation permet de partager une base entre plusieurs applications et de la placer derrière un pare-feu ou un pooler de connexions.",
+      "toolB": "SQLite est une bibliothèque embarquée qui stocke l'ensemble de la base dans un fichier unique, sans processus serveur ni port réseau. L'intégration se fait directement dans l'application, ce qui simplifie le déploiement, la sauvegarde par simple copie de fichier et la portabilité entre systèmes.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Concurrence et montée en charge",
+      "toolA": "PostgreSQL gère nativement de nombreuses connexions simultanées avec un contrôle de concurrence multiversion (MVCC), adapté aux applications web multi-utilisateurs. Les performances réelles dépendent fortement du dimensionnement, du matériel, du schéma et de la charge, et des outils de réplication existent pour la disponibilité.",
+      "toolB": "SQLite applique un verrou en écriture : un seul écrivain à la fois, tandis que les lectures peuvent se poursuivre en mode WAL. Cela convient très bien à des charges majoritairement en lecture ou à faible concurrence d'écriture, mais devient un goulot d'étranglement si les écritures concurrentes sont nombreuses.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Types de données et fonctionnalités SQL",
+      "toolA": "PostgreSQL propose un riche éventail de types (JSONB, tableaux, plages, types géométriques, UUID natif, types énumérés) et des fonctionnalités avancées comme les index partiels, les index GIN/GiST, les vues matérialisées, les fonctions fenêtrées abouties et les CTE récursives. Ces capacités en font un choix courant pour des besoins analytiques ou métier complexes.",
+      "toolB": "SQLite prend en charge un noyau SQL solide, y compris les CTE, les fonctions fenêtrées et le type JSON, mais avec un système de types plus souple et moins strict. Il ne dispose pas du même catalogue de types avancés ni de tous les index spécialisés, ce qui limite certains usages analytiques ou géospatiaux.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Installation, exploitation et coût opérationnel",
+      "toolA": "L'installation de PostgreSQL nécessite un service, des sauvegardes planifiées, une gestion des mises à jour, des rôles et des paramètres de performance. Ce coût d'exploitation est justifié dans un contexte serveur, mais il reste plus élevé qu'une bibliothèque embarquée, indépendamment du coût des logiciels eux-mêmes.",
+      "toolB": "SQLite ne requiert aucune installation de serveur : la base est créée à la première utilisation et suit l'application. Cela réduit fortement les opérations d'exploitation, notamment pour les applications de bureau, mobiles, les tests ou les prototypes, même s'il faut tout de même gérer les sauvegardes et les migrations de schéma.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Sécurité et contrôle d'accès",
+      "toolA": "PostgreSQL dispose d'un système de rôles, de privilèges granulaires, d'authentification configurable et de mécanismes de chiffrement des connexions selon la configuration. La sécurité dépend toutefois d'un durcissement rigoureux du serveur, des mots de passe et des règles réseau, et non d'un réglage par défaut.",
+      "toolB": "SQLite s'appuie principalement sur les permissions du système de fichiers pour protéger le fichier de base, sans gestion native de comptes utilisateurs multiples. Des extensions comme SQLCipher permettent de chiffrer le fichier, mais la sécurité des accès applicatifs doit être assurée par l'application elle-même.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, outils et support des langages",
+      "toolA": "PostgreSQL bénéficie d'un écosystème très large : pilotes pour la plupart des langages, ORM, outils de migration, de supervision et services managés chez de nombreux hébergeurs. Sa documentation officielle est abondante et la communauté active, ce qui facilite le diagnostic des problèmes rencontrés.",
+      "toolB": "SQLite est intégré ou facilement accessible dans presque tous les langages et frameworks, souvent sans dépendance externe. Son API est stable et sa documentation officielle concise, mais les outils de supervision et d'exploitation à grande échelle sont moins nombreux que ceux de PostgreSQL.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cas d'usage typiques et limites",
+      "toolA": "PostgreSQL convient aux applications web multi-utilisateurs, aux backends d'API, aux entrepôts de données légers et aux systèmes nécessitant des transactions robustes et des requêtes complexes. Ses limites apparaissent surtout en cas de besoin d'embarqué léger ou de très forte simplicité d'exploitation.",
+      "toolB": "SQLite est particulièrement adapté aux applications mobiles, de bureau, aux appareils embarqués, aux fichiers de données locaux et aux environnements de test. Il devient un mauvais choix si plusieurs processus doivent écrire intensément en parallèle ou si l'on a besoin d'une administration centralisée et de rôles distincts.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "# Exemple minimal illustratif avec psycopg (PostgreSQL)\nimport psycopg\n\nwith psycopg.connect(\"host=localhost dbname=postgres user=postgres password=postgres\") as conn:\n    with conn.cursor() as cur:\n        cur.execute(\"CREATE TABLE IF NOT EXISTS hello (id serial PRIMARY KEY, message text)\")\n        cur.execute(\"INSERT INTO hello (message) VALUES (%s)\", (\"Hello, World!\",))\n        cur.execute(\"SELECT message FROM hello ORDER BY id DESC LIMIT 1\")\n        print(cur.fetchone()[0])\n    conn.commit()",
+    "tech2Snippet": "# Exemple minimal illustratif avec le module sqlite3 (SQLite)\nimport sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"CREATE TABLE hello (id INTEGER PRIMARY KEY, message TEXT)\")\ncur.execute(\"INSERT INTO hello (message) VALUES (?)\", (\"Hello, World!\",))\ncur.execute(\"SELECT message FROM hello ORDER BY id DESC LIMIT 1\")\nprint(cur.fetchone()[0])\nconn.commit()\nconn.close()"
+  },
+  "faq": [
+    {
+      "q": "Quel outil convient le mieux à une application web multi-utilisateurs ?",
+      "a": "Une application web avec de nombreux utilisateurs qui écrivent simultanément s'accommode généralement mieux de PostgreSQL, grâce à sa gestion native de la concurrence et à son contrôle d'accès par rôles. SQLite peut suffire si le trafic reste modéré et si les écritures sont peu nombreuses, mais il faut alors vérifier le profil réel de charge avant de choisir."
+    },
+    {
+      "q": "SQLite est-il adapté à une application mobile ou de bureau ?",
+      "a": "Oui, SQLite est un choix courant et pertinent pour les applications mobiles et de bureau, car il ne nécessite aucun serveur et s'intègre directement dans l'application. Il faut toutefois prévoir la gestion des migrations de schéma et des sauvegardes, et rester attentif aux limites de concurrence en écriture selon l'usage."
+    },
+    {
+      "q": "PostgreSQL est-il plus difficile à administrer que SQLite ?",
+      "a": "PostgreSQL demande une installation serveur, une configuration réseau, des sauvegardes et une gestion des rôles, ce qui représente un coût d'exploitation plus élevé que SQLite. SQLite est plus simple à déployer, mais il ne dispense pas de gérer les sauvegardes, les migrations et la protection du fichier de base."
+    },
+    {
+      "q": "Peut-on utiliser SQLite en production avec plusieurs serveurs applicatifs ?",
+      "a": "SQLite stocke la base dans un fichier local, ce qui le rend peu adapté à un partage entre plusieurs serveurs distants qui écriraient simultanément. Pour une architecture multi-instances, PostgreSQL ou un service de base de données centralisé est généralement plus approprié, sauf montage particulier à valider soigneusement."
+    },
+    {
+      "q": "Quelles sont les limites de PostgreSQL pour un usage embarqué ?",
+      "a": "PostgreSQL nécessite un processus serveur et une administration dédiée, ce qui l'alourdit fortement pour un usage embarqué, mobile ou hors ligne. SQLite reste bien plus pertinent dans ces contextes, tandis que PostgreSQL s'impose surtout lorsque la centralisation et la concurrence réseau sont importantes."
+    },
+    {
+      "q": "Les deux outils gèrent-ils les transactions et les contraintes ?",
+      "a": "Les deux prennent en charge les transactions ACID et les contraintes courantes, avec des garanties qui dépendent de la configuration et du mode d'utilisation. PostgreSQL offre un contrôle plus strict des types et davantage de fonctionnalités avancées, tandis que SQLite reste plus souple sur les types et suffisant pour de nombreux besoins applicatifs."
+    },
+    {
+      "q": "Que faut-il vérifier avant de migrer de SQLite vers PostgreSQL ?",
+      "a": "Il faut vérifier la compatibilité du schéma, les différences de types, les requêtes spécifiques et le traitement des identifiants, ainsi que les performances réelles sous votre charge. Une migration réussie repose sur des tests de non-régression et une stratégie de sauvegarde, plutôt que sur une simple conversion mécanique du fichier de base."
+    },
+    {
+      "q": "Existe-t-il des alternatives à considérer en 2026 ?",
+      "a": "Oui, selon le besoin, des bases serveur comme MySQL ou MariaDB, des bases orientées documents comme MongoDB, ou des moteurs embarqués comme DuckDB pour l'analyse peuvent être envisagés. Le choix doit être guidé par les contraintes de déploiement, de concurrence et de compétences de l'équipe, évaluées sur votre propre contexte."
+    }
+  ]
+}

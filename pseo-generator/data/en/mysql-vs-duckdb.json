@@ -1,0 +1,98 @@
+{
+  "slug": "mysql-vs-duckdb",
+  "meta": {
+    "title": "MySQL vs DuckDB (2026): Which option should you choose?",
+    "description": "MySQL vs DuckDB in 2026: compare architecture, analytics performance, transactions, concurrency, ecosystem, and cost to pick the right database for your workload."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "Choose MySQL when you need a mature, concurrent, transactional OLTP database behind an application, with replication, fine-grained access control, and a vast hosting ecosystem. Choose DuckDB when your work is analytical: querying files and in-process data, running fast columnar scans and aggregations on a single machine, or embedding analytics in Python, R, or a data pipeline. Many teams use both, with MySQL as the system of record and DuckDB as the analytical engine.",
+  "comparison": [
+    {
+      "category": "Architecture and deployment model",
+      "toolA": "MySQL is a client-server relational database management system. A separate server process owns storage and handles connections from many clients over a network, which enables centralized data, remote access, and independent scaling of application and database tiers. Deployment ranges from a local install to managed cloud services.",
+      "toolB": "DuckDB is an embedded, in-process analytical database that runs inside your application, much like SQLite but columnar and vectorized. There is no server to administer by default; the database is a file or an in-memory instance, and concurrent multi-client access over a network is not its primary design goal.",
+      "winner": "tie"
+    },
+    {
+      "category": "Workload fit: OLTP versus OLAP",
+      "toolA": "MySQL is optimized for online transaction processing: many small, short reads and writes, row-oriented storage, and indexed point lookups. It is a common system of record for web applications, SaaS products, and content platforms where per-row operations dominate.",
+      "toolB": "DuckDB is optimized for online analytical processing: large scans, joins, and aggregations over columnar data. Vectorized execution and compression make it fast for reporting and exploratory analysis on a single machine, but it is not intended as a high-concurrency transactional backend for an application.",
+      "winner": "tie"
+    },
+    {
+      "category": "Concurrency and multi-user access",
+      "toolA": "MySQL is built for many concurrent client connections and supports transaction isolation levels, row-level locking in InnoDB, and replication for read scaling and failover. This makes it suitable for multi-tenant applications and teams writing simultaneously.",
+      "toolB": "DuckDB uses a single-writer model with limited concurrent write support; multiple readers can work with a database, but heavy concurrent write workloads from many clients are not its strength. Workloads that need many simultaneous writers are better served by a server-based database.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analytical query performance",
+      "toolA": "MySQL can execute analytical queries, and recent versions have improved optimizer and window function support, but row-oriented storage and lack of native columnar execution can slow large scans and aggregations compared with columnar engines. Performance depends heavily on schema design, indexing, and version.",
+      "toolB": "DuckDB's columnar engine, vectorized execution, and compression are designed for analytical speed on a single node, often outperforming row stores on scan-heavy aggregations. Actual results depend on data size, query shape, hardware, and version, so benchmarking your own workload is advised.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, tooling, and language support",
+      "toolA": "MySQL has decades of ecosystem maturity: drivers for virtually every language, GUI tools, ORMs, backup utilities, monitoring, and a large pool of operational expertise. Managed offerings are widely available from major cloud providers.",
+      "toolB": "DuckDB offers strong integration with Python, R, Java, and data tooling, and can query Parquet, CSV, and Arrow data directly, which fits modern data science and pipeline workflows. Its operational tooling ecosystem is younger and smaller than MySQL's, though it is growing quickly.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "MySQL provides a mature privilege system with user accounts, roles, granular grants, TLS for connections, and options for encryption at rest depending on storage engine and deployment. These controls are well documented and battle-tested for multi-user server environments.",
+      "toolB": "DuckDB has a simpler security model suited to embedded use; access control is limited compared with a multi-user server, and protection typically relies on file-system permissions and the surrounding application. For shared, multi-user environments with strict access requirements, a server database is the safer default.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cost and operational overhead",
+      "toolA": "MySQL itself is open source, but running it in production involves server provisioning, backups, upgrades, monitoring, and possibly managed-service fees. Total cost depends on hosting, scale, and staffing; managed plans vary by provider and should be checked against current pricing.",
+      "toolB": "DuckDB is open source and embedded, so there is no server to run and no separate service bill; costs are mainly compute and storage where you run it. That low overhead is attractive for analytics, but it does not replace the operational guarantees of a managed transactional database.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Transactions and data integrity",
+      "toolA": "MySQL with InnoDB supports ACID transactions, foreign keys, and crash recovery, which are essential for application data integrity. These guarantees are central to its role as a system of record.",
+      "toolB": "DuckDB also supports ACID transactions and provides transactional guarantees for its single-writer model, which is sufficient for many analytical pipelines. However, its transaction and concurrency model is not designed for the high-contention, multi-writer patterns typical of OLTP applications.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Should I use MySQL or DuckDB for a web application backend?",
+      "a": "For a typical web application backend with many concurrent users performing inserts, updates, and lookups, MySQL is the appropriate choice because it is designed for concurrent transactional workloads. DuckDB is not intended as a multi-user transactional server. You can still use DuckDB alongside MySQL for reporting or offline analytics."
+    },
+    {
+      "q": "Can DuckDB replace MySQL for analytics reporting?",
+      "a": "DuckDB is often a strong fit for analytical reporting, especially when data lives in Parquet or CSV files or when queries scan large tables on a single machine. It does not provide the same multi-user server model, so reporting teams that need shared concurrent access may prefer a server-based warehouse or MySQL with read replicas. Evaluate with your own data and query patterns."
+    },
+    {
+      "q": "Is MySQL fast enough for analytical queries in 2026?",
+      "a": "MySQL can handle analytical queries, and its optimizer and SQL feature set have improved over time, but row-oriented storage may be slower than a columnar engine for large scans and aggregations. Whether it is fast enough depends on data volume, indexing, schema design, and query complexity. Benchmark representative queries before deciding."
+    },
+    {
+      "q": "Does DuckDB support multiple concurrent writers?",
+      "a": "DuckDB uses a single-writer model, so concurrent write access from many clients is limited compared with a server database. Multiple readers can access a database, but write-heavy multi-user applications should use a database designed for that pattern. This limitation matters most for OLTP-style workloads."
+    },
+    {
+      "q": "Which option is easier to operate in production?",
+      "a": "DuckDB has less operational overhead because it is embedded and requires no server process, which suits analytics scripts and pipelines. MySQL requires server administration, backups, monitoring, and upgrades, but mature managed services reduce that burden. The easier option depends on whether you need a shared, always-on transactional service."
+    },
+    {
+      "q": "Can I use MySQL and DuckDB together?",
+      "a": "Yes, a common pattern is to keep transactional data in MySQL as the system of record and export or replicate it for analytical processing in DuckDB. This separates OLTP and OLAP workloads and lets each engine do what it is designed for. The integration approach depends on your data pipeline and freshness requirements."
+    },
+    {
+      "q": "Which database is more secure for multi-user access?",
+      "a": "MySQL offers a mature privilege system with users, roles, granular grants, and TLS support, which fits multi-user server environments. DuckDB's security model is simpler and relies more on file-system permissions and the hosting application. For strict shared-access requirements, MySQL is generally the safer default."
+    },
+    {
+      "q": "Is DuckDB free to use, and is MySQL free?",
+      "a": "Both are open source, but costs differ in practice. DuckDB is embedded, so there is no server bill, while MySQL production deployments incur hosting, backup, monitoring, and staffing costs, or managed-service fees. Always check current licensing and provider pricing, since plans and terms can change."
+    }
+  ]
+}

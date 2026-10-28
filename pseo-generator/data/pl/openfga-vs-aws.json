@@ -1,0 +1,98 @@
+{
+  "slug": "openfga-vs-aws",
+  "meta": {
+    "title": "OpenFGA vs AWS (2026): które rozwiązanie wybrać?",
+    "description": "Porównanie OpenFGA i mechanizmów autoryzacji w AWS w 2026 r.: model uprawnień, skalowanie, koszty, bezpieczeństwo i zgodność. Wskazówki, komu opłaca się które podejście."
+  },
+  "toolA": {
+    "name": "OpenFGA"
+  },
+  "toolB": {
+    "name": "AWS"
+  },
+  "verdict": "OpenFGA wybierz, gdy potrzebujesz elastycznego modelu uprawnień opartego na relacjach (ReBAC), chcesz uniezależnić logikę autoryzacji od infrastruktury chmurowej i planujesz wdrożenie OpenFGA samodzielnie lub jako usługę zarządzaną. AWS będzie lepszy, gdy priorytetem jest integracja z istniejącym ekosystemem chmury, gotowe mechanizmy tożsamości i polityk oraz zarządzanie zgodne z modelem odpowiedzialności AWS. Uwaga: dokładne możliwości, limity i ceny zależą od wersji OpenFGA, wybranego planu oraz konkretnych usług AWS i regionu — przed decyzją zweryfikuj aktualną dokumentację.",
+  "comparison": [
+    {
+      "category": "Model uprawnień i wyrazistość polityk",
+      "toolA": "OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar. Pozwala definiować schematy typów, relacji i reguł w języku DSL oraz sprawdzać uprawnienia zapytaniami o dostęp, co dobrze odwzorowuje złożone zależności typu „użytkownik należy do zespołu, który zarządza zasobem”. Elastyczność jest duża, ale wymaga zaprojektowania i utrzymania modelu autoryzacji.",
+      "toolB": "AWS oferuje wiele mechanizmów autoryzacji: polityki IAM, polityki zasobowe, role, uprawnienia w usługach typu S3 czy API Gateway oraz usługi zarządzania tożsamością. Model jest silnie powiązany z poszczególnymi usługami i sprawdza się w scenariuszach chmurowych, lecz wyrażanie złożonych relacji biznesowych bywa mniej naturalne niż w dedykowanym ReBAC. Zachowanie zależy od konfiguracji usług i regionu.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Integracja z ekosystemem chmurowym",
+      "toolA": "OpenFGA jest projektem otwartoźródłowym i może działać na dowolnej infrastrukturze — lokalnie, w kontenerach, na Kubernetes lub jako usługa zarządzana oferowana przez dostawców. Integrację z tożsamością aplikacji trzeba zaprojektować samodzielnie, np. poprzez mapowanie identyfikatorów użytkowników z systemu logowania na relacje w magazynie uprawnień. Daje to niezależność od chmury, ale zwiększa zakres prac integracyjnych.",
+      "toolB": "AWS zapewnia natywną integrację z IAM, Cognito, organizacjami i wieloma usługami, co upraszcza zarządzanie tożsamością i politykami w obrębie chmury. Jeśli aplikacja już działa w AWS, wykorzystanie tych mechanizmów bywa szybsze niż budowa osobnej warstwy autoryzacji. Ograniczeniem jest silniejsze powiązanie z modelem i usługami AWS.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Skalowanie i wydajność",
+      "toolA": "OpenFGA projektowano z myślą o obsłudze dużych wolumenów zapytań o uprawnienia i przechowywaniu relacji w zewnętrznej bazie danych. Rzeczywista wydajność zależy od wybranej bazy, konfiguracji klastra, rozmiaru modelu oraz wzorców zapytań, dlatego wymaga testów w docelowym środowisku. OpenFGA nie gwarantuje konkretnych opóźnień bez uwzględnienia tych czynników.",
+      "toolB": "Usługi AWS są zaprojektowane do skalowania w modelu chmurowym, a ich wydajność zależy od wybranej usługi, limitu przepustowości, regionu i konfiguracji. IAM oraz polityki zasobowe są wysoko dostępne w ramach modelu odpowiedzialności AWS, lecz złożone scenariusze autoryzacji mogą wymagać wielu wywołań i dodatkowego buforowania.",
+      "winner": "tie"
+    },
+    {
+      "category": "Bezpieczeństwo i model odpowiedzialności",
+      "toolA": "Bezpieczeństwo wdrożenia OpenFGA zależy w dużej mierze od operatora: konfiguracji TLS, uwierzytelniania, kontroli dostępu do magazynu relacji, kopii zapasowych i aktualizacji. Projekt jest otwarty, więc można go audytować, ale odpowiedzialność za hardening i zgodność spoczywa na zespole wdrażającym lub dostawcy usługi zarządzanej.",
+      "toolB": "AWS stosuje podział odpowiedzialności: dostawca odpowiada za bezpieczeństwo chmury, a klient za konfigurację zasobów, polityk i tożsamości. Dostępne są mechanizmy takie jak IAM, CloudTrail, KMS i polityki organizacyjne, które wspierają audyt i kontrolę. Błędy w politykach IAM mogą jednak prowadzić do nadmiernych uprawnień, dlatego kluczowe są przeglądy i testy.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Szybkość wdrożenia i złożoność operacyjna",
+      "toolA": "Wdrożenie OpenFGA wymaga uruchomienia usługi, wyboru i utrzymania bazy danych, zdefiniowania modelu autoryzacji oraz integracji z systemem tożsamości aplikacji. Zespoły znające ReBAC mogą szybko uzyskać elastyczny mechanizm, ale całość oznacza dodatkowy komponent do monitorowania i aktualizowania. Korzystanie z oferty zarządzanej redukuje część prac operacyjnych.",
+      "toolB": "W AWS wiele mechanizmów autoryzacji jest dostępnych od razu i integruje się z istniejącymi zasobami chmurowymi. Dla prostych scenariuszy wdrożenie bywa szybsze, natomiast złożone polityki IAM i wiele usług mogą zwiększać złożoność oraz ryzyko błędów konfiguracyjnych.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Koszty i przewidywalność",
+      "toolA": "OpenFGA jako oprogramowanie otwartoźródłowe nie wiąże się z opłatą licencyjną, ale generuje koszty infrastruktury, bazy danych, monitoringu i pracy zespołu. Wariant zarządzany ma własny cennik zależny od dostawcy i planu. Całkowity koszt posiadania trzeba oszacować indywidualnie, uwzględniając wolumen zapytań i wymagania dotyczące niezawodności.",
+      "toolB": "Koszty AWS zależą od wykorzystanych usług, regionu, wolumenu żądań i modelu rozliczania; część mechanizmów tożsamości i polityk jest wliczona w inne usługi, a inne mogą generować opłaty. Bez analizy konkretnej architektury trudno podać uniwersalną kwotę, dlatego warto korzystać z kalkulatora kosztów i monitoringu budżetu.",
+      "winner": "tie"
+    },
+    {
+      "category": "Zgodność, audyt i przenośność",
+      "toolA": "OpenFGA można wdrażać w środowiskach spełniających wymagania organizacji, w tym lokalnie lub u wybranego dostawcy, co sprzyja przenośności między chmurami. Zgodność z regulacjami zależy od sposobu hostowania, konfiguracji i procesów organizacji, a nie jest automatycznie zapewniona przez samo oprogramowanie. Audyt wymaga włączenia logów i kontroli dostępu po stronie operatora.",
+      "toolB": "AWS oferuje liczne certyfikacje i mechanizmy audytu, a CloudTrail oraz polityki organizacyjne wspierają śledzenie działań. Zgodność z konkretnymi regulacjami zależy jednak od wybranych usług, regionu i konfiguracji klienta, więc nie należy zakładać jej bez weryfikacji. Przenośność poza AWS jest ograniczona ze względu na specyfikę mechanizmów tożsamości i polityk.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Dojrzałość ekosystemu i wsparcie",
+      "toolA": "OpenFGA rozwija się jako projekt otwartoźródłowy z dokumentacją, zestawami SDK i społecznością, a wsparcie komercyjne zależy od wybranego dostawcy lub planu. Zespół musi samodzielnie śledzić zmiany wersji i planować aktualizacje. To dobre rozwiązanie dla organizacji, które cenią kontrolę i elastyczność.",
+      "toolB": "AWS ma szeroki ekosystem dokumentacji, szkoleń, wsparcia technicznego w ramach planów pomocy oraz wielu integracji partnerskich. Dostępność konkretnych funkcji i poziom wsparcia zależą od planu i usługi, ale ogólna dojrzałość ekosystemu jest wysoka. Wiąże się to jednak z większym przywiązaniem do dostawcy.",
+      "winner": "toolB"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Które narzędzie lepiej pasuje do projektu z rozbudowanymi relacjami uprawnień?",
+      "a": "Jeśli uprawnienia wynikają z relacji, np. przynależności do zespołów, hierarchii zasobów i delegowania dostępu, OpenFGA jest zwykle naturalniejszym wyborem, ponieważ powstało właśnie do modelu ReBAC. W AWS można osiągnąć podobne efekty, łącząc IAM z logiką aplikacji, ale przy dużym skomplikowaniu staje się to trudniejsze w utrzymaniu. Decyzję warto poprzeć prototypem i testami wydajności na realnym modelu."
+    },
+    {
+      "q": "Czy OpenFGA można wdrożyć w AWS?",
+      "a": "Tak, OpenFGA można uruchomić na infrastrukturze AWS, np. w kontenerach lub na Kubernetes, i podłączyć do zarządzanej bazy danych. Wymaga to jednak samodzielnego zaprojektowania dostępności, kopii zapasowych, monitoringu i bezpieczeństwa. Alternatywą jest skorzystanie z oferty zarządzanej, jeśli odpowiada wymaganiom organizacji."
+    },
+    {
+      "q": "Czy AWS IAM wystarczy do autoryzacji w aplikacji biznesowej?",
+      "a": "IAM sprawdza się w kontroli dostępu do zasobów AWS i operacji chmurowych, ale nie jest uniwersalnym mechanizmem uprawnień biznesowych w aplikacji. W wielu przypadkach potrzebna jest dodatkowa warstwa logiki, np. oparta na OpenFGA lub własnym modelu uprawnień. Zakres wykorzystania IAM zależy od architektury i tego, czy użytkownicy są zarządzani przez usługi AWS."
+    },
+    {
+      "q": "Które rozwiązanie jest tańsze?",
+      "a": "Nie da się wskazać uniwersalnie tańszej opcji, ponieważ koszt OpenFGA obejmuje infrastrukturę, bazę danych, monitoring i nakład pracy, a w wariancie zarządzanym również opłaty dostawcy. Koszt AWS zależy od wykorzystanych usług, regionu, wolumenu żądań i planu wsparcia. Rzetelne porównanie wymaga oszacowania całkowitego kosztu posiadania dla konkretnej architektury i skali."
+    },
+    {
+      "q": "Jak wygląda kwestia bezpieczeństwa w obu podejściach?",
+      "a": "W OpenFGA odpowiedzialność za hardening, uwierzytelnianie, szyfrowanie i kontrolę dostępu do magazynu relacji ponosi operator lub dostawca usługi zarządzanej. W AWS obowiązuje model współdzielonej odpowiedzialności, w którym dostawca zabezpiecza chmurę, a klient konfiguruje polityki i tożsamości. W obu przypadkach największym ryzykiem są błędy konfiguracji, dlatego potrzebne są przeglądy, testy i audyt."
+    },
+    {
+      "q": "Czy OpenFGA uzależnia od jednego dostawcy chmury?",
+      "a": "OpenFGA jest projektem otwartoźródłowym i można go hostować w różnych środowiskach, co sprzyja przenośności. Trzeba jednak pamiętać, że wybór bazy danych, usług zarządzanych i integracji z systemem tożsamości może wprowadzić zależność od konkretnego dostawcy. Przed wdrożeniem warto ocenić, jak trudna będzie migracja i czy model autoryzacji jest przenośny."
+    },
+    {
+      "q": "Jakie kompetencje zespołu są potrzebne do wdrożenia każdego rozwiązania?",
+      "a": "OpenFGA wymaga zrozumienia modelu ReBAC, umiejętności projektowania schematu relacji oraz utrzymania usługi i bazy danych. AWS wymaga znajomości IAM, polityk zasobowych i modelu odpowiedzialności, a przy złożonych scenariuszach także umiejętności debugowania uprawnień. W obu przypadkach kluczowe są testy regresyjne autoryzacji i dokumentacja modelu."
+    },
+    {
+      "q": "Od czego zacząć porównanie przed wyborem?",
+      "a": "Najpierw warto opisać przypadki użycia uprawnień, wymagania dotyczące opóźnień, skalę i regulacje, a następnie zbudować mały prototyp w obu podejściach. Należy zweryfikować aktualną dokumentację OpenFGA i wybranych usług AWS, ponieważ funkcje, limity i ceny zmieniają się wraz z wersjami i planami. Dopiero wyniki testów i analiza kosztów całkowitych powinny przesądzić o wyborze."
+    }
+  ]
+}

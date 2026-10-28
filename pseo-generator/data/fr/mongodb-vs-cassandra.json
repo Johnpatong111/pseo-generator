@@ -1,0 +1,102 @@
+{
+  "slug": "mongodb-vs-cassandra",
+  "meta": {
+    "title": "MongoDB vs Apache Cassandra (2026): quelle solution choisir ?",
+    "description": "Comparaison MongoDB vs Apache Cassandra en 2026 : modèle de données, cohérence, scalabilité, exploitation et cas d'usage pour choisir la base adaptée à votre projet."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "Apache Cassandra"
+  },
+  "verdict": "MongoDB convient aux applications à modèle documentaire évolutif, aux requêtes variées et aux équipes qui privilégient la productivité ; son sharding et ses transactions multi-documents ont des limites selon la version et la topologie. Cassandra excelle pour les écritures massives, la disponibilité multi-site et les très gros volumes, au prix d'une modélisation par requête et d'une exploitation plus exigeante. Le choix dépend surtout du profil de lecture/écriture et des compétences internes.",
+  "comparison": [
+    {
+      "category": "Modèle de données et flexibilité du schéma : évalue la manière dont chaque outil structure l'information et tolère les évolutions.",
+      "toolA": "MongoDB stocke des documents BSON au sein de collections, avec un schéma flexible par document et des index secondaires nombreux. Cette souplesse accélère les itérations produit, mais impose une discipline applicative pour éviter des documents hétérogènes difficiles à interroger ; le schéma validateur optionnel aide à encadrer les données selon la version.",
+      "toolB": "Cassandra organise les données en tables de type clé-valeur large, avec des colonnes de clustering et une clé de partitionnement qui déterminent la distribution. Le schéma est déclaré (CQL) et relativement rigide ; toute nouvelle requête nécessite souvent une table dédiée, ce qui demande une conception en amont centrée sur les accès.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cohérence et modèle de distribution : compare les garanties de cohérence et le comportement en cas de panne réseau.",
+      "toolA": "MongoDB privilégie par défaut la cohérence forte sur le nœud primaire d'un replica set, avec des lectures secondaires possibles selon les read preferences. Le sharding répartit les collections par clé de shard, mais les transactions multi-documents restent plus coûteuses et la cohérence globale dépend du niveau de lecture choisi et de la configuration.",
+      "toolB": "Cassandra est un système AP orienté disponibilité, avec une cohérence ajustable par requête (ONE, QUORUM, ALL). Les écritures sont généralement très tolérantes aux pannes de nœuds, mais les opérations batch et les lectures multi-partitions peuvent perdre en performance ; les mécanismes de réparation et de réconciliation (read repair, hinted handoff) demandent un suivi opérationnel.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scalabilité horizontale : examine la capacité à monter en charge en ajoutant des nœuds et l'effort de répartition.",
+      "toolA": "MongoDB se scale horizontalement via le sharding, avec des serveurs de configuration et des routeurs mongos à administrer. La distribution est efficace lorsque la clé de shard est bien choisie, mais une mauvaise clé peut créer des chunks déséquilibrés ; la montée en charge demande une planification et un monitoring attentif selon la version et la charge.",
+      "toolB": "Cassandra est conçue nativement en pair-à-pair, sans nœud maître, et répartit les données via un anneau de tokens et une réplication configurable. L'ajout de nœuds est prévu pour rester linéaire sur les écritures, à condition de disposer d'une bonne stratégie de compaction et d'un dimensionnement correct du cluster ; la charge de réparation reste à anticiper.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Langage de requête et expressivité : mesure la richesse des requêtes et la couverture des besoins analytiques ou applicatifs.",
+      "toolA": "MongoDB propose MQL, un langage riche avec filtres, agrégations pipeline, jointures via $lookup et index composés ou géospatiaux. Cette expressivité permet de traiter de nombreux besoins directement dans la base, même si les agrégations complexes peuvent être plus gourmandes que des requêtes d'un moteur relationnel dédié.",
+      "toolB": "Cassandra utilise CQL, proche de SQL, mais limité à des requêtes simples et contraintes par la clé de partitionnement et de clustering. Les agrégations et jointures ne sont pas conçues pour être exécutées côté serveur à grande échelle ; il faut souvent pré-calculer ou externaliser le traitement analytique.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Exploitation, administration et observabilité : compare la complexité opérationnelle et les outils de suivi.",
+      "toolA": "MongoDB fournit plusieurs outils d'administration (mongod, mongos, replica sets), des métriques et des options de monitoring via Atlas ou des solutions tierces. L'exploitation reste abordable pour une équipe maîtrisant les configurations de replica set ; la gestion du sharding et des migrations de chunks peut toutefois exiger une expertise dédiée.",
+      "toolB": "Cassandra demande une maîtrise plus poussée de l'exploitation : tuning de la JVM, suivi des compactages, gestion des réparations et de la pression disque. Les outils de monitoring sont disponibles, mais la complexité intrinsèque du système peut nécessiter une équipe SRE expérimentée ; la documentation officielle et les opérateurs Kubernetes améliorent toutefois la situation selon les versions.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Écosystème, drivers et intégrations : évalue les bibliothèques clientes, la documentation et les offres managées.",
+      "toolA": "MongoDB bénéficie d'un écosystème mature : drivers officiels dans de nombreux langages, MongoDB Atlas en offre managée, et de multiples intégrations BI et recherche. La documentation est abondante, même si certaines fonctionnalités avancées dépendent de la version et du niveau d'offre souscrit.",
+      "toolB": "Cassandra dispose de drivers officiels (DataStax et autres) et de distributions managées, mais l'écosystème est plus restreint et les intégrations analytiques demandent souvent des passerelles externes. Les contributions open source sont solides, tandis que les offres commerciales et le support varient selon le fournisseur.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Sécurité et conformité : compare l'authentification, le chiffrement et les options de contrôle d'accès.",
+      "toolA": "MongoDB propose l'authentification SCRAM, TLS, des rôles granulaires et le chiffrement au repos dans Atlas ou via des mécanismes natifs selon l'édition. Les options de conformité dépendent de l'offre cloud et du contrat de service ; elles doivent être vérifiées pour chaque version déployée.",
+      "toolB": "Cassandra offre l'authentification par mot de passe, la gestion des rôles et le chiffrement TLS entre nœuds et clients, avec des options de chiffrement au repos via la distribution choisie. La configuration de sécurité est davantage à la charge de l'exploitant, ce qui accentue la nécessité d'audits et de bonnes pratiques.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cas d'usage applicatifs : identifie les contextes où chaque outil est le plus naturel.",
+      "toolA": "MongoDB est adapté aux catalogues produits, profils utilisateurs, gestion de contenu et applications où les requêtes varient et où les itérations de schéma sont fréquentes. Il reste pertinent pour des charges modérées à élevées avec replica set ou sharding, mais peut ne pas être optimal pour des écritures massives de séries temporelles pures sans architecture dédiée.",
+      "toolB": "Cassandra excelle pour les données massives en écriture, les logs, l'IoT et les systèmes devant rester disponibles sur plusieurs datacenters. Elle est performante lorsque les requêtes sont connues à l'avance et alignées sur la clé de partition, mais moins adaptée aux requêtes ad hoc ou aux needings analytiques complexes.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "import { MongoClient } from 'mongodb';\n\nconst client = new MongoClient('mongodb://localhost:27017');\nawait client.connect();\nconst db = client.db('test');\nawait db.collection('messages').insertOne({ text: 'Hello, World!' });\nconst doc = await db.collection('messages').findOne({ text: 'Hello, World!' });\nconsole.log(doc);\nawait client.close();",
+    "tech2Snippet": "CREATE KEYSPACE IF NOT EXISTS demo\n  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};\n\nCREATE TABLE IF NOT EXISTS demo.messages (\n  id int PRIMARY KEY,\n  text text\n);\n\nINSERT INTO demo.messages (id, text) VALUES (1, 'Hello, World!');\n\nSELECT text FROM demo.messages WHERE id = 1;"
+  },
+  "faq": [
+    {
+      "q": "Quel outil convient le mieux à un projet de catalogue produit ?",
+      "a": "MongoDB est généralement plus naturel pour un catalogue produit, car la flexibilité du document et les index permettent de gérer des attributs hétérogènes et des requêtes variées plus facilement. Cassandra reste possible si les accès sont très prédictibles et que le volume d'écriture est majeur, mais il faut alors concevoir une table par requête et accepter une expressivité moindre."
+    },
+    {
+      "q": "MongoDB ou Cassandra pour des écritures massives de séries temporelles ?",
+      "a": "Cassandra est souvent plus adaptée aux écritures massives et distribuées, grâce à son modèle pair-à-pair et à sa réplication tolérante aux pannes. MongoDB peut convenir avec un sharding bien conçu ou des collections time series dédiées, mais l'efficacité dépend de la charge et de la configuration ; aucune garantie de performance absolue ne peut être avancée sans benchmark adapté."
+    },
+    {
+      "q": "Quelle différence de cohérence entre MongoDB et Cassandra ?",
+      "a": "MongoDB privilégie par défaut une cohérence forte sur le primaire du replica set, avec des lectures secondaires optionnelles. Cassandra offre une cohérence ajustable par requête, ce qui permet de privilégier la vitesse ou la solidité selon le besoin, mais implique une compréhension fine des quorums et des mécanismes de réparation."
+    },
+    {
+      "q": "Faut-il choisir Cassandra pour une application multi-datacenters ?",
+      "a": "Cassandra est conçue pour les déploiements multi-datacenters, avec une réplication configurable et une disponibilité en cas de panne de site. MongoDB peut aussi se déployer sur plusieurs zones avec des replica sets inter-régions, mais la latence et les coûts de synchronisation doivent être évalués au cas par cas ; le choix dépend de la priorité accordée à la disponibilité et à la localité des lectures."
+    },
+    {
+      "q": "MongoDB est-il plus simple à exploiter que Cassandra ?",
+      "a": "De manière générale, MongoDB est considéré comme plus accessible pour une équipe maîtrisant déjà les bases documentaires, notamment grâce aux replica sets et aux offres managées. Cassandra demande une expertise plus spécifique en JVM, compaction et réparation de données, mais cette différence s'atténue avec des services managés et des opérateurs matures."
+    },
+    {
+      "q": "Peut-on faire des requêtes ad hoc complexes avec Cassandra ?",
+      "a": "Cassandra n'est pas conçue pour des requêtes ad hoc complexes : les accès doivent respecter la clé de partition et les colonnes de clustering, et les agrégations côté serveur sont limitées. Pour des analyses exploratoires, il vaut mieux exporter les données vers un moteur analytique ou pré-calculer des vues adaptées ; MongoDB offre davantage d'expressivité avec son pipeline d'agrégation."
+    },
+    {
+      "q": "Quels critères vérifier avant de choisir entre MongoDB et Cassandra ?",
+      "a": "Il faut analyser le profil des lectures et écritures, la tolérance aux pannes, les besoins de cohérence, la localisation géographique et les compétences internes. Un test de charge représentatif de votre charge réelle, sur la version et le mode de déploiement envisagés, reste indispensable avant de figer une décision."
+    },
+    {
+      "q": "Les deux bases sont-elles open source ?",
+      "a": "MongoDB propose une édition communautaire open source et des offres commerciales avec des fonctionnalités et des services supplémentaires ; la licence historique a évolué et doit être vérifiée selon la version utilisée. Cassandra est un projet Apache open source sous licence Apache 2.0, avec des distributions commerciales et des services managés proposés par plusieurs fournisseurs."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "slug": "mongodb-vs-postgresql",
+  "meta": {
+    "title": "MongoDB vs PostgreSQL (2026): quelle solution choisir ?",
+    "description": "Comparatif 2026 MongoDB vs PostgreSQL : modèle de données, requêtes, transactions, scalabilité et coûts. Critères détaillés et conseils pour bien choisir sa base de données."
+  },
+  "toolA": {
+    "name": "MongoDB"
+  },
+  "toolB": {
+    "name": "PostgreSQL"
+  },
+  "verdict": "MongoDB convient aux applications à modèle documentaire évolutif, aux charges d'écriture distribuées et aux équipes qui veulent itérer vite sur des schémas flexibles. PostgreSQL reste le choix par défaut pour les données fortement relationnelles, la conformité stricte et les requêtes analytiques complexes. Beaucoup d'architectures combinent les deux : PostgreSQL comme source de vérité transactionnelle, MongoDB pour des besoins documentaires ciblés. Le bon choix dépend surtout du modèle de données et des contraintes d'intégrité, pas d'un classement absolu.",
+  "comparison": [
+    {
+      "category": "Modèle de données et flexibilité du schéma",
+      "toolA": "MongoDB stocke des documents BSON dans des collections, sans schéma imposé au niveau de la base : chaque document peut avoir une structure différente. Cette flexibilité accélère les itérations sur des objets imbriqués, mais elle déplace la validation vers l'application ou vers les validateurs de schéma JSON proposés par le serveur. Selon la version, ces validateurs couvrent un sous-ensemble des contraintes et ne remplacent pas un modèle relationnel strict.",
+      "toolB": "PostgreSQL est une base relationnelle qui impose des tables, des colonnes typées et des contraintes déclaratives. Il propose aussi les types JSONB et des colonnes composites, ce qui permet de stocker des documents tout en conservant des garanties relationnelles sur le reste du modèle. Cette rigueur réduit les incohérences mais demande des migrations explicites lorsque le modèle évolue.",
+      "winner": "tie"
+    },
+    {
+      "category": "Langage de requête et puissance d'analyse",
+      "toolA": "MongoDB s'interroge avec un langage de filtres et un pipeline d'agrégation, complétés par MongoDB Query Language côté shell et pilotes. Le pipeline est expressif pour les transformations par étapes et les données imbriquées, mais les jointures se limitent à l'opérateur $lookup et certaines analyses multi-collections restent moins naturelles qu'en SQL. Les performances dépendent fortement de l'indexation et du modelage des documents.",
+      "toolB": "PostgreSQL utilise SQL, un standard riche avec jointures, sous-requêtes, fonctions de fenêtrage, CTE récursives et un optimiseur mature. Les requêtes analytiques complexes et les rapports multi-tables y sont généralement plus lisibles et plus faciles à optimiser. L'ajout d'extensions comme PostGIS ou pg_stat_statements élargit encore le champ des possibles, sous réserve de les installer et de les configurer.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Transactions et garanties d'intégrité",
+      "toolA": "MongoDB prend en charge les transactions multi-documents sur les replica sets et les clusters shardés, avec des garanties ACID configurables selon le write concern et le read concern. Ces transactions fonctionnent bien, mais leur coût et leurs limites dépendent de la topologie et de la charge. Les contraintes d'intégrité référentielle ne sont pas natives et doivent être gérées côté application.",
+      "toolB": "PostgreSQL offre des transactions ACID complètes depuis longtemps, avec contraintes de clés étrangères, unicité, CHECK et isolation configurable, y compris le niveau sérialisable. Ces garanties sont déclaratives et vérifiées par le moteur, ce qui simplifie la fiabilité des données critiques. Le compromis est une plus grande discipline de schéma et de migration.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "MongoDB est conçu dès l'origine pour le sharding horizontal natif, avec un routage automatique par clé de shard et des replica sets pour la haute disponibilité. Cette architecture facilite la montée en charge sur des volumes d'écriture importants, mais le choix de la clé de shard conditionne fortement les performances et l'équilibrage. Une mauvaise clé peut créer des hotspots difficiles à corriger sans réorganisation.",
+      "toolB": "PostgreSQL scale verticalement et via des réplicas en lecture, tandis que le partitionnement déclaratif aide à gérer de gros volumes. Le sharding horizontal natif n'est pas intégré au cœur du produit et repose sur des extensions ou des outils externes comme Citus, dont le comportement dépend de la version. Les charges très distribuées demandent donc une architecture plus étudiée.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Extensibilité et écosystème",
+      "toolA": "MongoDB propose un écosystème intégré : Atlas pour l'hébergement managé, Compass, des pilotes officiels pour de nombreux langages et des services comme Atlas Search ou Atlas Vector Search selon l'offre. L'extension du serveur lui-même est plus limitée que celle d'une base relationnelle, et certaines fonctionnalités avancées sont liées à l'offre cloud. Les tarifs et disponibilités varient selon la région et le plan.",
+      "toolB": "PostgreSQL bénéficie d'une extensibilité reconnue : types personnalisés, fonctions, extensions comme PostGIS, pgvector, TimescaleDB ou Citus, et un large choix d'hébergeurs managés. Cette richesse permet d'adapter la base à des besoins variés sans changer de moteur, mais la qualité et la maintenance des extensions sont inégales. Il faut vérifier la compatibilité avec la version et l'hébergeur retenus.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Exploitation, sauvegardes et sécurité",
+      "toolA": "MongoDB propose des sauvegardes, une authentification par rôles, le chiffrement au repos et en transit selon l'offre, ainsi que des journaux d'audit dans les versions adaptées. L'exploitation d'un cluster shardé demande une bonne maîtrise des composants mongos, config servers et replica sets. Les fonctionnalités de sécurité et de sauvegarde varient entre Community, Enterprise et Atlas.",
+      "toolB": "PostgreSQL offre une authentification flexible via pg_hba.conf, des rôles, le chiffrement en transit avec SSL/TLS et des sauvegardes par pg_dump ou PITR via WAL. Son exploitation est bien documentée et outillée, mais la sécurité repose sur une configuration soignée des accès réseau et des droits. Les fonctions d'audit avancées proviennent souvent d'extensions tierces.",
+      "winner": "tie"
+    },
+    {
+      "category": "Coût total et simplicité de mise en route",
+      "toolA": "MongoDB est disponible en édition Community gratuite et via Atlas avec un niveau gratuit limité, puis des offres payantes selon la taille et les fonctionnalités. La mise en route est rapide avec Atlas, mais les coûts peuvent augmenter avec le sharding, le stockage et les services additionnels. Les tarifs exacts dépendent du fournisseur cloud et de la région.",
+      "toolB": "PostgreSQL est open source sous licence permissive et largement proposé par des hébergeurs managés à des tarifs variés. Une instance auto-hébergée est peu coûteuse en licence mais demande du temps d'exploitation, de sauvegarde et de mise à jour. Le coût total dépend donc surtout de l'équipe et du niveau de service attendu.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cas d'usage et adéquation projet",
+      "toolA": "MongoDB est pertinent pour des catalogues produits hétérogènes, des profils utilisateurs évolutifs, des journaux d'événements ou des applications où le document est l'unité naturelle. Il brille lorsque le schéma change souvent et que les lectures portent sur des objets complets. En revanche, les relations complexes et les contraintes fortes y sont plus coûteuses à modéliser.",
+      "toolB": "PostgreSQL est adapté aux applications transactionnelles classiques, à la finance, aux systèmes d'information et aux analyses décisionnelles. Il gère bien les relations complexes, les rapports et les données géospatiales via PostGIS. Pour des documents très hétérogènes, JSONB aide mais ne dispense pas d'une réflexion sur la modélisation.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "// MongoDB : exemple minimal avec le pilote officiel Node.js\n// npm install mongodb\nconst { MongoClient } = require('mongodb');\n\n(async () => {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('messages');\n  await collection.insertOne({ texte: 'Hello, World!', creeLe: new Date() });\n  const doc = await collection.findOne({ texte: 'Hello, World!' });\n  console.log(doc);\n  await client.close();\n})();",
+    "tech2Snippet": "-- PostgreSQL : exemple minimal avec psql\nCREATE TABLE messages (\n  id SERIAL PRIMARY KEY,\n  texte TEXT NOT NULL,\n  cree_le TIMESTAMPTZ DEFAULT now()\n);\n\nINSERT INTO messages (texte) VALUES ('Hello, World!');\n\nSELECT id, texte, cree_le FROM messages ORDER BY id DESC LIMIT 1;"
+  },
+  "faq": [
+    {
+      "q": "Quel outil convient le mieux à une application avec des relations complexes ?",
+      "a": "PostgreSQL est généralement le choix le plus naturel lorsque les données sont fortement relationnelles, avec des jointures nombreuses et des contraintes d'intégrité à garantir. Ses clés étrangères, ses transactions et son optimiseur SQL simplifient la cohérence sur le long terme. MongoDB peut gérer des relations via $lookup ou des références applicatives, mais cela demande plus de discipline et reste moins direct pour des rapports multi-tables. Si les relations sont au cœur du domaine métier, PostgreSQL réduit les risques de modélisation."
+    },
+    {
+      "q": "MongoDB est-il adapté aux transactions bancaires ou critiques ?",
+      "a": "MongoDB prend en charge les transactions multi-documents ACID sur replica sets et clusters shardés, mais leur coût et leurs limites dépendent de la topologie et de la charge. Pour des opérations financières exigeant des contraintes référentielles strictes et un audit fin, PostgreSQL reste souvent plus simple à sécuriser. Il faut évaluer le write concern, le read concern et le niveau de cohérence attendu avant de s'engager. Un test de charge représentatif du cas réel est recommandé."
+    },
+    {
+      "q": "Peut-on utiliser PostgreSQL comme base documentaire ?",
+      "a": "Oui, PostgreSQL propose le type JSONB, indexable avec GIN, ce qui permet de stocker des documents et d'interroger leur contenu. Cela fonctionne bien pour des attributs secondaires ou des structures variables, tout en conservant un noyau relationnel solide. Cependant, un usage documentaire intensif perd une partie des bénéfices du relationnel et demande une bonne maîtrise des index et de la normalisation. Il est souvent pertinent de combiner JSONB et colonnes classiques plutôt que de tout stocker en JSON."
+    },
+    {
+      "q": "Quelle base choisir pour une équipe qui change souvent de schéma ?",
+      "a": "MongoDB offre plus de souplesse lorsque la structure des documents évolue rapidement, car aucune migration n'est imposée pour ajouter un champ. Cette liberté doit s'accompagner de validateurs et de conventions d'équipe pour éviter la dérive des données. PostgreSQL demande des migrations explicites, mais celles-ci rendent les changements traçables et limitent les surprises en production. Le choix dépend donc du rythme réel des évolutions et du besoin de contrôle du schéma."
+    },
+    {
+      "q": "MongoDB ou PostgreSQL pour des analyses et des rapports ?",
+      "a": "PostgreSQL est généralement plus à l'aise pour les analyses complexes grâce à SQL, aux fonctions de fenêtrage, aux CTE et à un optimiseur éprouvé. Son écosystème d'outils BI est large et les requêtes multi-tables y sont plus naturelles. MongoDB propose un pipeline d'agrégation puissant pour des rapports orientés documents, mais les analyses transverses et les jointures restent plus limitées. Pour un entrepôt décisionnel ou des rapports métier riches, PostgreSQL est souvent le choix le plus direct."
+    },
+    {
+      "q": "Comment se comparent les performances de MongoDB et PostgreSQL ?",
+      "a": "Il n'existe pas de réponse universelle : les performances dépendent du modèle de données, des index, de la charge, de la configuration et de la version. MongoDB peut être très efficace pour lire un document complet et pour des écritures distribuées, tandis que PostgreSQL excelle sur les jointures et les requêtes relationnelles optimisées. Un benchmark public ne remplace pas un test sur votre propre jeu de données et vos propres requêtes. Comparez toujours avec des scénarios proches de votre production."
+    },
+    {
+      "q": "Quelles sont les limites de sécurité à vérifier avant de choisir ?",
+      "a": "Les deux bases proposent authentification, gestion des rôles et chiffrement en transit, mais les fonctions d'audit avancées et de chiffrement au repos varient selon l'édition ou l'offre managée. Avec MongoDB, vérifiez les options de sécurité disponibles dans Atlas ou Enterprise et la configuration réseau des clusters. Avec PostgreSQL, contrôlez pg_hba.conf, les droits, TLS et la gestion des sauvegardes. Dans les deux cas, une revue de configuration et une politique de mise à jour régulière sont indispensables."
+    },
+    {
+      "q": "Faut-il forcément choisir une seule base pour tout le projet ?",
+      "a": "Non, de nombreuses architectures combinent PostgreSQL comme source de vérité transactionnelle et MongoDB pour des besoins documentaires ou des flux ciblés. Cette approche permet d'utiliser chaque moteur là où il est le plus pertinent, mais elle ajoute de la complexité d'exploitation et de synchronisation. Il faut évaluer la charge d'exploitation, la cohérence des données entre systèmes et les compétences de l'équipe. Pour un projet de taille modeste, une seule base bien maîtrisée est souvent plus rentable."
+    }
+  ]
+}

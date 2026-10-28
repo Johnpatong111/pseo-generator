@@ -1,0 +1,88 @@
+{
+  "slug": "postgresql-vs-sqlite",
+  "meta": {
+    "title": "PostgreSQL vs SQLite (2026): ¿Qué solución elegir?",
+    "description": "Comparamos PostgreSQL y SQLite en 2026: rendimiento, concurrencia, escalabilidad, seguridad y casos de uso. Descubre cuál conviene a tu proyecto."
+  },
+  "toolA": {
+    "name": "PostgreSQL"
+  },
+  "toolB": {
+    "name": "SQLite"
+  },
+  "verdict": "PostgreSQL conviene a aplicaciones con múltiples usuarios, cargas concurrentes, datos relacionales complejos y necesidad de escalar horizontalmente. SQLite es idóneo para aplicaciones de escritorio, móviles, dispositivos embebidos y prototipos de un solo usuario, donde su simplicidad y ausencia de servidor son ventajas decisivas. La elección depende de la concurrencia, el volumen de datos y los requisitos de integridad y operación.",
+  "comparison": [
+    {
+      "category": "Arquitectura y modelo de ejecución",
+      "toolA": "PostgreSQL es un sistema gestor de bases de datos relacional cliente-servidor que se ejecuta como un proceso independiente y atiende a múltiples clientes a través de la red. Su arquitectura permite separar la base de datos de la aplicación y escalar el servidor de forma independiente, aunque requiere instalación, configuración y mantenimiento continuo.",
+      "toolB": "SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de datos, sin proceso servidor ni configuración de red. Esta simplicidad reduce la operación y el despliegue, pero limita la base de datos a la aplicación que la incorpora y complica el acceso concurrente desde múltiples procesos o equipos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Rendimiento y concurrencia",
+      "toolA": "PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y escritura, con control de concurrencia multiversión (MVCC) que reduce los bloqueos entre transacciones. Su rendimiento depende en gran medida de la configuración del servidor, el hardware y el diseño del esquema, y puede escalar vertical y horizontalmente con réplicas de lectura.",
+      "toolB": "SQLite ofrece un rendimiento excelente para operaciones de lectura y para cargas de escritura secuenciales en aplicaciones de un solo usuario o con baja concurrencia. Sin embargo, su modelo de bloqueo a nivel de archivo limita las escrituras concurrentes: en configuraciones típicas, un escritor bloquea a otros escritores, lo que puede convertirse en un cuello de botella en aplicaciones multiusuario con muchas escrituras simultáneas.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Escalabilidad y volumen de datos",
+      "toolA": "PostgreSQL puede gestionar bases de datos de gran tamaño, con miles de millones de filas y terabytes de información, siempre que el hardware y la configuración acompañen. Admite particionamiento de tablas, réplicas de lectura, conexiones en paralelo y herramientas de replicación lógica y física, lo que facilita el crecimiento tanto vertical como horizontal.",
+      "toolB": "SQLite está pensado para bases de datos de hasta varios terabytes, aunque en la práctica su rendimiento y gestión se degradan con volúmenes muy grandes y cargas concurrentes. No ofrece réplica nativa ni escalado horizontal, por lo que su uso se circunscribe a aplicaciones locales o a entornos donde el tamaño y la concurrencia son acotados.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Integridad, transacciones y funciones SQL",
+      "toolA": "PostgreSQL cumple ampliamente con ACID y ofrece transacciones robustas, restricciones de integridad referencial, disparadores, vistas materializadas, procedimientos almacenados en varios lenguajes y un rico conjunto de tipos de datos (JSONB, arrays, rangos, geoespaciales con PostGIS). Su modelo de bloqueo y MVCC favorece la consistencia incluso con alta concurrencia.",
+      "toolB": "SQLite también cumple con ACID y soporta transacciones, claves foráneas (si se activan explícitamente), disparadores y la mayor parte del SQL estándar. No obstante, carece de procedimientos almacenados, tipos de datos avanzados y algunas funciones analíticas presentes en PostgreSQL, lo que limita su expresividad en esquemas complejos.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "PostgreSQL incluye un sistema de roles y privilegios granular, autenticación configurable (contraseña, certificado, GSSAPI, etc.), cifrado de conexiones mediante SSL/TLS y auditoría a través de extensiones. Su modelo cliente-servidor permite separar la base de datos de la aplicación y aplicar políticas de seguridad centralizadas.",
+      "toolB": "SQLite carece de un sistema de usuarios y permisos integrado; la seguridad depende de los permisos del sistema de archivos y del cifrado opcional mediante extensiones como SQLCipher. Al ser una biblioteca embebida, cualquier aplicación con acceso al archivo de base de datos puede leerlo o modificarlo, lo que exige confiar en el entorno de ejecución.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Facilidad de despliegue y mantenimiento",
+      "toolA": "PostgreSQL requiere instalar y configurar un servidor, gestionar copias de seguridad, actualizaciones, ajustes de rendimiento y monitorización. Herramientas como Docker o los servicios gestionados en la nube simplifican la operación, pero sigue siendo un componente infraestructural que exige atención continuada.",
+      "toolB": "SQLite no necesita instalación ni servidor: basta con enlazar la biblioteca y abrir un archivo. Las copias de seguridad se reducen a copiar el archivo, y no hay procesos que monitorizar ni configuraciones de red que ajustar, lo que simplifica enormemente el desarrollo y el despliegue en entornos locales o embebidos.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Casos de uso típicos y ecosistema",
+      "toolA": "PostgreSQL es habitual en aplicaciones web y móviles con backend, sistemas empresariales, plataformas SaaS, análisis de datos y aplicaciones geoespaciales, gracias a su ecosistema de extensiones y a la amplia disponibilidad de servicios gestionados. Su comunidad es grande y activa, con documentación extensa y soporte comercial.",
+      "toolB": "SQLite es la opción predominante en aplicaciones móviles (Android e iOS), navegadores, sistemas embebidos, aplicaciones de escritorio y prototipos, donde se valora su ligereza y su naturaleza sin configuración. Su ecosistema es muy amplio en esos ámbitos, aunque no compite en escenarios de servidor multiusuario.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Qué herramienta se adapta mejor a una aplicación web con múltiples usuarios?",
+      "a": "Para una aplicación web con varios usuarios concurrentes que realizan lecturas y escrituras, PostgreSQL suele ser la opción más adecuada porque gestiona la concurrencia con MVCC y permite escalar con réplicas. SQLite puede servir para prototipos o para aplicaciones con muy baja concurrencia de escritura, pero su bloqueo a nivel de archivo limita el rendimiento cuando varios usuarios escriben a la vez. La decisión final depende del volumen de tráfico y de los requisitos de disponibilidad."
+    },
+    {
+      "q": "¿SQLite es adecuado para producción en 2026?",
+      "a": "Sí, SQLite se usa ampliamente en producción en aplicaciones móviles, de escritorio y embebidas, así como en algunos servicios web con cargas ligeras. Su fiabilidad y su cumplimiento de ACID están bien establecidos, pero conviene evaluar la concurrencia y el volumen de datos previstos. Para sistemas multiusuario con muchas escrituras simultáneas, PostgreSQL ofrece un mejor encaje."
+    },
+    {
+      "q": "¿PostgreSQL puede ejecutarse en un dispositivo embebido o en una aplicación de escritorio?",
+      "a": "PostgreSQL puede instalarse en dispositivos con recursos suficientes, pero su arquitectura cliente-servidor y su consumo de recursos lo hacen poco práctico para entornos embebidos con limitaciones de memoria y almacenamiento. En aplicaciones de escritorio, SQLite suele ser más sencillo porque no requiere un servidor ni configuración de red. La elección depende de si la aplicación necesita acceso concurrente desde varios procesos o equipos."
+    },
+    {
+      "q": "¿Cómo afecta la concurrencia al rendimiento de SQLite frente a PostgreSQL?",
+      "a": "En SQLite, las escrituras concurrentes se serializan mediante bloqueos, de modo que un escritor puede bloquear a otros hasta que finalice su transacción; esto puede ser aceptable con baja concurrencia pero degrada el rendimiento con muchas escrituras simultáneas. PostgreSQL utiliza MVCC y bloqueos a nivel de fila, lo que permite un mayor paralelismo entre transacciones. La magnitud de la diferencia depende de la configuración, el hardware y el patrón de acceso."
+    },
+    {
+      "q": "¿Qué opción ofrece mejores garantías de seguridad para datos sensibles?",
+      "a": "PostgreSQL incorpora roles, privilegios granulares, autenticación configurable y cifrado de conexiones, lo que facilita aplicar políticas de seguridad centralizadas. SQLite no tiene un sistema de usuarios integrado y su seguridad depende de los permisos del sistema de archivos y del cifrado opcional mediante extensiones. Para datos sensibles en un entorno multiusuario, PostgreSQL suele ofrecer un control más robusto."
+    },
+    {
+      "q": "¿Es difícil migrar de SQLite a PostgreSQL si el proyecto crece?",
+      "a": "La migración es viable en muchos casos porque ambos sistemas comparten una base SQL considerable, pero existen diferencias en tipos de datos, funciones, sintaxis de algunas consultas y gestión de transacciones que requieren adaptación. Herramientas y guías pueden facilitar el proceso, aunque conviene planificarlo con pruebas y validación de datos. La complejidad depende del tamaño del esquema y de las funcionalidades específicas utilizadas."
+    },
+    {
+      "q": "¿Qué criterios debo priorizar al elegir entre PostgreSQL y SQLite?",
+      "a": "Prioriza la concurrencia de escritura, el volumen de datos esperado, la necesidad de escalar horizontalmente y los requisitos de seguridad y control de acceso. Si la aplicación es local, de un solo usuario o con baja concurrencia, SQLite simplifica el despliegue y el mantenimiento. Si necesitas múltiples usuarios simultáneos, integridad compleja y crecimiento, PostgreSQL es la opción más sólida."
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "slug": "sqlite-vs-duckdb",
+  "meta": {
+    "title": "SQLite vs DuckDB (2026): Which option should you choose?",
+    "description": "SQLite vs DuckDB in 2026: compare workloads, concurrency, analytics performance, SQL features, deployment, and tooling to pick the right embedded database."
+  },
+  "toolA": {
+    "name": "SQLite"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "Choose SQLite for transactional, row-oriented applications where you need a mature, battle-tested embedded engine: mobile apps, desktop software, local web backends, caches, and configuration stores. Choose DuckDB for analytical workloads such as data exploration, reporting, and transforming large columnar datasets, often within notebooks or data pipelines. Many teams use both, since they solve different problems.",
+  "comparison": [
+    {
+      "category": "Primary workload and data model",
+      "toolA": "SQLite is a row-oriented relational engine built for online transaction processing: many small reads and writes, frequent inserts and updates, and low-latency point lookups. It powers local storage in browsers, mobile operating systems, and countless desktop applications.",
+      "toolB": "DuckDB is a column-oriented analytical engine designed for online analytical processing: scans, aggregations, joins, and grouping over large tables. It reads data efficiently in vectors and compresses columns, which suits reporting and data science work far better than row-at-a-time access.",
+      "winner": "tie"
+    },
+    {
+      "category": "Analytical query performance",
+      "toolA": "SQLite executes analytical queries correctly but is not optimized for wide scans or large aggregations; performance on multi-million-row grouping and join workloads tends to be modest and can degrade as data grows. Its strength is predictable, low-overhead transactional access rather than analytical throughput.",
+      "toolB": "DuckDB uses vectorized execution, columnar storage, and parallel query processing, which generally delivers strong performance on aggregations and joins over large datasets, especially when data fits on a single machine. Exact results depend on version, hardware, memory limits, and data layout, so benchmark your own workload before committing.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Concurrency and multi-client access",
+      "toolA": "SQLite supports multiple readers and, depending on journaling mode, a single writer at a time; write transactions are serialized. In write-ahead logging mode, reads can proceed while a write occurs, but concurrent writers still block. It works best when access is local and contention is low.",
+      "toolB": "DuckDB allows one read-write process to open a database at a time, with read-only access possible from multiple processes, and it is not designed as a multi-user server. Its concurrency model suits single-analyst or pipeline scenarios rather than many simultaneous writers.",
+      "winner": "toolA"
+    },
+    {
+      "category": "SQL features and extensibility",
+      "toolA": "SQLite offers a substantial SQL dialect with indexes, views, triggers, common table expressions, window functions in modern versions, JSON functions, and full-text search via an extension. It has a stable C API and bindings for nearly every language, plus a plugin-style extension mechanism.",
+      "toolB": "DuckDB implements a rich analytical SQL dialect including window functions, list and struct types, table functions, and support for reading Parquet, CSV, and JSON directly. It also supports extensions, including community ones, and can query data without a heavy import step.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ecosystem, tooling, and portability",
+      "toolA": "SQLite is embedded in virtually every major platform, with a single-file database format that is portable across architectures and backed by decades of documentation and tooling. Compatibility is extremely broad, and backup and transport are straightforward because the database is one file.",
+      "toolB": "DuckDB ships as a library and CLI with strong Python, R, Java, and Node.js integrations, and it integrates well with data-frame libraries and notebook workflows. Its ecosystem is younger than SQLite's but is growing quickly; the single-file format and read-only mode make sharing datasets practical.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Deployment and operational simplicity",
+      "toolA": "SQLite requires no server, no configuration, and no separate process; it is a library that stores data in a file. This makes deployment trivial, though schema migrations and backup policy are still the developer's responsibility, and network file systems can cause locking issues.",
+      "toolB": "DuckDB is also serverless and embedded, with zero setup for local analytical work and no daemon to manage. It is not intended to serve many concurrent clients over a network, and very large datasets may exceed available memory unless configured appropriately.",
+      "winner": "tie"
+    },
+    {
+      "category": "Transactions and data integrity",
+      "toolA": "SQLite provides full ACID transactions with atomic commit, rollback, and crash recovery, and it enforces constraints and foreign keys when enabled. Its durability depends on journaling mode and file-system behavior, but integrity guarantees are mature and widely relied upon.",
+      "toolB": "DuckDB supports ACID transactions for its single read-write process and provides crash recovery, including write-ahead logging. Its transactional guarantees are solid for its intended analytical use, but it is not a drop-in replacement for a multi-user transactional database server.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and access control",
+      "toolA": "SQLite has no built-in user accounts or role-based access control; security is typically handled at the application or file-system level. Optional encryption is available through third-party extensions and SQLCipher-style builds, so teams must plan for data protection deliberately.",
+      "toolB": "DuckDB similarly lacks a multi-user authentication layer, as it is an embedded engine without server-side roles. Access control is delegated to the host process and file permissions; check current documentation for any encryption or extension-based options before relying on them.",
+      "winner": "tie"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Should I use SQLite or DuckDB for a mobile or desktop application?",
+      "a": "SQLite is usually the better fit because it is optimized for transactional operations, is embedded in most mobile platforms, and handles many small reads and writes efficiently. DuckDB can work in-process but is aimed at analytical queries and is less suited to app-style CRUD workloads."
+    },
+    {
+      "q": "Can DuckDB replace SQLite in a production web backend?",
+      "a": "Not comfortably in most cases. DuckDB permits only one read-write process per database and is not designed for many concurrent clients writing over a network, while SQLite supports multiple connections with serialized writes and is widely used in local web backends. If your backend needs multi-user transactional access, a client-server database may be the better choice than either embedded engine."
+    },
+    {
+      "q": "Which tool handles large CSV and Parquet files better?",
+      "a": "DuckDB is specifically built to scan and query columnar formats such as Parquet and to aggregate large CSV files efficiently, often without importing them first. SQLite can store and query such data once loaded, but it does not natively read Parquet and its row-oriented layout is less efficient for wide scans."
+    },
+    {
+      "q": "Are both databases really ACID compliant?",
+      "a": "Yes, both provide ACID transactions for their intended access patterns. SQLite is designed for concurrent readers and serialized writers, while DuckDB's transactional guarantees apply to its single read-write process, so verify your concurrency requirements against each engine's documentation."
+    },
+    {
+      "q": "Which is easier to deploy and back up?",
+      "a": "Both are embedded and serverless, so deployment is simply shipping a library and a database file. SQLite's single-file format makes copying and archiving straightforward, while DuckDB also uses a file-based format but its write-ahead log and single-writer model affect backup procedures, so plan accordingly."
+    },
+    {
+      "q": "Is DuckDB faster than SQLite for analytics?",
+      "a": "Generally, yes for scans, aggregations, and joins over substantial datasets, because DuckDB uses columnar storage, vectorized execution, and parallelism. Exceptions exist for tiny tables or point lookups, and absolute results depend on version, hardware, memory, and query shape, so benchmark with your own data."
+    },
+    {
+      "q": "Can I use both SQLite and DuckDB in the same project?",
+      "a": "Yes, and many teams do. A common pattern is to keep application state in SQLite and export or attach data for analytical queries in DuckDB, or to use SQLite as a transactional store and DuckDB for reporting over Parquet files. Separating the two avoids forcing one engine into a workload it was not designed for."
+    },
+    {
+      "q": "Which tool is better for a data science notebook?",
+      "a": "DuckDB is generally the stronger choice in notebooks because it reads Pandas data frames, Parquet, and CSV directly and runs fast aggregations with a rich SQL dialect. SQLite remains useful when you need durable transactional storage or compatibility with an existing application schema."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "slug": "mysql-vs-duckdb",
+  "meta": {
+    "title": "MySQL vs DuckDB (2026): welche Lösung passt besser?",
+    "description": "MySQL vs DuckDB im Vergleich 2026: Transaktionen, Analytics, Betrieb, Ökosystem und Einsatzszenarien praxisnah erklärt – inklusive klarer Empfehlung für Ihr Projekt."
+  },
+  "toolA": {
+    "name": "MySQL"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "MySQL ist die richtige Wahl für klassische Web-, OLTP- und Mehrbenutzer-Anwendungen mit dauerhaftem Serverbetrieb, Transaktionen und breiter Ökosystem-Unterstützung. DuckDB eignet sich vor allem für analytische Arbeit direkt in Prozessen und Dateien, etwa bei lokalen Auswertungen, Data-Science-Pipelines und eingebetteten Analysen ohne Serverbetrieb. Eine Kombination beider Systeme ist in vielen Architekturen sinnvoll: MySQL für operative Daten, DuckDB für lokale Auswertungen und Ad-hoc-Analysen.",
+  "comparison": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "MySQL läuft klassisch als Client-Server-Datenbanksystem mit dauerhaft laufendem Serverprozess, der Verbindungen von vielen Clients gleichzeitig bedient. Der Betrieb erfordert Konfiguration, Benutzerverwaltung und in der Regel Monitoring, dafür ist das Modell für zentrale Mehrbenutzeranwendungen erprobt.",
+      "toolB": "DuckDB ist eine prozessinterne, spaltenorientierte Datenbank, die ohne separaten Server direkt in eine Anwendung oder ein Analysewerkzeug eingebettet wird. Sie arbeitet typischerweise mit einer einzelnen Datenbankdatei, was den Einstieg erleichtert, aber nicht dem klassischen Mehrbenutzer-Servermodell entspricht.",
+      "winner": "tie"
+    },
+    {
+      "category": "Transactionale Arbeitslasten (OLTP)",
+      "toolA": "MySQL ist für viele gleichzeitige, kurze Transaktionen mit Zeilen- und Tabellensperren sowie Transaktionsisolation (abhängig vom Storage-Engine, meist InnoDB) ausgelegt. INSERT-, UPDATE- und DELETE-lastige Anwendungen mit hoher Parallelität gehören zu den typischen Einsatzfeldern.",
+      "toolB": "DuckDB ist für analytische Abfragen optimiert und unterstützt ACID-Transaktionen innerhalb eines Prozesses, ist aber nicht auf hohe Mengen paralleler Schreibtransaktionen vieler Clients ausgelegt. Für operative Anwendungen mit vielen gleichzeitigen Einzeltransaktionen ist es daher ungeeignet.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analytische Abfragen (OLAP)",
+      "toolA": "MySQL kann analytische Abfragen ausführen und bietet dafür Indizes sowie je nach Version und Konfiguration auch Optimierungen, ist aber zeilenorientiert auf operative Lasten ausgerichtet. Bei großen Scans und komplexen Aggregationen über viele Spalten stößt es im Vergleich zu spezialisierten Spaltensystemen häufig früher an Grenzen.",
+      "toolB": "DuckDB ist spaltenorientiert und auf vektorisierte Ausführung ausgelegt, was große Scans, Aggregationen, Joins und Window-Funktionen begünstigt. Komplexe analytische Abfragen auf Dateien wie Parquet oder CSV gehören zu den Kernanwendungsfällen.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ökosystem, Treiber und Integration",
+      "toolA": "MySQL verfügt über eine sehr breite Treiber- und Tool-Landschaft für zahlreiche Programmiersprachen und BI-Werkzeuge sowie über etablierte Replikation und Backup-Werkzeuge. Die Verbreitung erleichtert die Einbindung in bestehende Unternehmensumgebungen.",
+      "toolB": "DuckDB bietet offizielle Clients unter anderem für Python, R, Java, Node.js und CLI sowie eine breite Anbindung an Analyse- und Data-Science-Werkzeuge. Das Ökosystem wächst schnell, ist aber im Unternehmensumfeld weniger verbreitet als das von MySQL.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Mehrbenutzerbetrieb und Rechteverwaltung",
+      "toolA": "MySQL unterstützt Benutzerkonten, Rollen und granulare Rechteverwaltung sowie zentrale Zugriffskontrolle über den Server. Dadurch lassen sich mehrere Personen und Anwendungen mit differenzierten Berechtigungen kontrolliert auf dieselbe Datenbank zugreifen.",
+      "toolB": "DuckDB ist primär für eingebettete Nutzung konzipiert; bei einer einzelnen Datenbankdatei ist gleichzeitiger Schreibzugriff durch mehrere Prozesse nicht auf klassische Mehrbenutzer-Szenarien ausgelegt. Rechteverwaltung und Mandantenfähigkeit auf Serverebene sind daher deutlich eingeschränkter.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Analyse von Dateien und Austauschformaten",
+      "toolA": "MySQL arbeitet primär mit Tabellen in seiner eigenen Speicher-Engine; Datenimport aus CSV oder anderen Formaten erfolgt über Importwerkzeuge oder Ladeprozesse. Analysen direkt auf externen Dateien sind nicht Teil des Kernmodells.",
+      "toolB": "DuckDB kann Parquet-, CSV- und JSON-Dateien direkt abfragen, ohne diese vorher in eine Datenbank zu laden. Das macht es für Ad-hoc-Auswertungen und Austauschformate in Datenpipelines besonders praktisch.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Skalierung und Betriebsaufwand",
+      "toolA": "MySQL lässt sich horizontal über Replikation sowie bestimmte Cluster- oder verwaltete Angebote skalieren, was zusätzlichen Betriebs- und Konfigurationsaufwand bedeutet. Als etabliertes System gibt es dafür viele dokumentierte Muster, aber die Komplexität wächst mit der Architektur.",
+      "toolB": "DuckDB skaliert innerhalb eines Prozesses sehr gut für analytische Workloads und kann je nach Konfiguration mehrere Threads nutzen. Es ist jedoch kein verteiltes Mehrknotensystem, sodass horizontale Skalierung über Maschinengrenzen hinweg Einschränkungen unterliegt.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Lizenz, Kosten und Reifegrad",
+      "toolA": "MySQL ist in einer Community Edition sowie in kommerziellen Editionen mit zusätzlichen Funktionen verfügbar, wobei Kosten und Leistungsumfang von der gewählten Edition und dem Betriebsmodell abhängen. Das System ist seit vielen Jahren produktionserprobt und weit verbreitet.",
+      "toolB": "DuckDB ist als Open-Source-Projekt unter MIT-Lizenz verfügbar und kann kostenlos eingesetzt werden, wobei Support und Integration in kommerzielle Plattformen von Drittanbietern abhängen. Die Entwicklung ist sehr aktiv, das Projekt ist jünger als MySQL und entsprechend weniger lange im breiten Produktivbetrieb etabliert.",
+      "winner": "tie"
+    }
+  ],
+  "codeExamples": {
+    "tech1Snippet": "-- MySQL: Client starten und minimales Hello-World-Beispiel\nCREATE DATABASE IF NOT EXISTS hello;\nUSE hello;\n\nCREATE TABLE IF NOT EXISTS greets (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  message VARCHAR(100) NOT NULL\n);\n\nINSERT INTO greets (message) VALUES ('Hallo, Welt!');\nSELECT id, message FROM greets;",
+    "tech2Snippet": "# DuckDB: minimales Hello-World-Beispiel in Python\nimport duckdb\n\ncon = duckdb.connect()\ncon.execute(\"CREATE TABLE greets (id INTEGER, message VARCHAR)\")\ncon.execute(\"INSERT INTO greets VALUES (1, 'Hallo, Welt!')\")\nprint(con.execute(\"SELECT id, message FROM greets\").fetchall())"
+  },
+  "faq": [
+    {
+      "q": "Welches Tool eignet sich besser für ein klassisches Webprojekt mit vielen Nutzern?",
+      "a": "Für ein klassisches Webprojekt mit vielen gleichzeitigen Nutzern, dauerhaftem Serverbetrieb und häufigen Einzeltransaktionen ist MySQL die passendere Wahl. DuckDB ist als eingebettete analytische Datenbank nicht für hohe Parallelität vieler operativer Schreibzugriffe ausgelegt und würde in diesem Szenario an seine konzeptionellen Grenzen stoßen."
+    },
+    {
+      "q": "Kann ich mit DuckDB große CSV- und Parquet-Dateien direkt analysieren?",
+      "a": "Ja, DuckDB kann CSV-, Parquet- und JSON-Dateien direkt abfragen, ohne dass diese vorher in eine Datenbank geladen werden müssen. Das ist besonders praktisch für lokale Auswertungen und Data-Science-Pipelines. Wie schnell solche Abfragen laufen, hängt von Dateigröße, Spaltenstruktur, verfügbarem Arbeitsspeicher und Konfiguration ab."
+    },
+    {
+      "q": "Eignet sich MySQL für analytische Auswertungen im Data-Science-Umfeld?",
+      "a": "MySQL kann analytische Abfragen ausführen und verfügt über Indizes sowie vielfältige Werkzeuge zur Anbindung an BI-Systeme. Für große Scans und komplexe Aggregationen über viele Spalten ist es jedoch zeilenorientiert und im Vergleich zu spezialisierten Spaltendatenbanken häufig weniger effizient. Wie stark dieser Unterschied ausfällt, hängt von Datenmenge, Schema und Abfrageform ab."
+    },
+    {
+      "q": "Können MySQL und DuckDB gemeinsam in derselben Architektur eingesetzt werden?",
+      "a": "Ja, eine Kombination ist in vielen Architekturen sinnvoll: MySQL verantwortet die operativen Daten und Transaktionen, während DuckDB Daten für lokale oder analytische Auswertungen direkt aus Dateien oder exportierten Extrakten verarbeitet. Ob sich ein solcher Aufbau lohnt, hängt von Ihren Datenflüssen und der gewünschten Aktualität der Analysen ab; eine pauschale Garantie für bestimmte Leistungswerte gibt es nicht."
+    },
+    {
+      "q": "Wie unterscheiden sich MySQL und DuckDB beim Mehrbenutzerbetrieb?",
+      "a": "MySQL ist als Client-Server-System auf viele gleichzeitige Benutzer und Anwendungen mit zentraler Rechteverwaltung ausgelegt. DuckDB ist primär eingebettet und arbeitet typischerweise mit einer einzelnen Datenbankdatei, wobei gleichzeitige Schreibzugriffe mehrerer Prozesse nicht dem klassischen Mehrbenutzer-Servermodell entsprechen. Für mandantenfähige Unternehmensanwendungen mit zentraler Zugriffskontrolle ist MySQL in der Regel die passendere Wahl."
+    },
+    {
+      "q": "Welche Rolle spielt die Lizenz bei der Entscheidung?",
+      "a": "MySQL ist in einer Community Edition sowie in kommerziellen Editionen verfügbar, wobei konkrete Kosten und Funktionsumfang von der Edition und dem Betriebsmodell abhängen. DuckDB ist unter der MIT-Lizenz als Open Source verfügbar und kann ohne Lizenzkosten eingesetzt werden, während Support und Integration in kommerzielle Plattformen von Drittanbietern abhängen. Prüfen Sie die Lizenzbedingungen für Ihren konkreten Anwendungsfall, bevor Sie eine verbindliche Entscheidung treffen."
+    },
+    {
+      "q": "Brauche ich für DuckDB einen Datenbankserver?",
+      "a": "Nein, DuckDB ist eine prozessinterne Datenbank und benötigt keinen separaten Serverprozess; sie wird typischerweise als Bibliothek in eine Anwendung oder ein Analysewerkzeug eingebunden. Das vereinfacht den Einstieg und eignet sich gut für lokale Auswertungen. Für zentrale Mehrbenutzeranwendungen mit dauerhafter Serverbereitstellung ist dagegen ein Server-System wie MySQL erforderlich."
+    },
+    {
+      "q": "Wie steht es um Reifegrad und Produktionserfahrung der beiden Systeme?",
+      "a": "MySQL ist seit vielen Jahren in zahlreichen Produktivumgebungen etabliert und entsprechend gut dokumentiert. DuckDB ist jünger, entwickelt sich sehr aktiv und gewinnt im Analyseumfeld schnell an Bedeutung, hat aber weniger lange Tradition im breiten operativen Produktivbetrieb. Der Reifegrad sollte daher immer im Kontext Ihres konkreten Einsatzzwecks und Ihrer Anforderungen bewertet werden."
+    }
+  ]
+}
