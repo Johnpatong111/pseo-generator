@@ -1437,40 +1437,47 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           </div>
         </div>
 
+        {relatedStacks.length > 0 && (
+          <section
+            aria-labelledby="related-stacks-heading"
+            className="mt-14 border-t border-slate-200 pt-10 dark:border-slate-800"
+          >
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-6 dark:border-indigo-900 dark:bg-indigo-950/25 sm:p-8">
+              <h2
+                id="related-stacks-heading"
+                className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white"
+              >
+                {text.relatedStacks}
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {text.relatedStacksDescription}
+              </p>
+              <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {relatedStacks.map(({ comparison: related, sharedToolName }) => (
+                  <li key={related.slug}>
+                    <Link
+                      href={getComparisonUrl(locale, related.slug)}
+                      className="block h-full rounded-xl border border-slate-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700"
+                    >
+                      <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                        {text.relatedThrough} {sharedToolName}
+                      </span>
+                      <span className="mt-2 block font-semibold text-slate-900 dark:text-white">
+                        {related.toolA.name} vs {related.toolB.name}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
         {relatedComparisons.length > 0 && (
           <section
             aria-labelledby="related-comparisons"
-            className="mt-14 border-t border-slate-200 pt-10 dark:border-slate-800"
+            className="mt-10 border-t border-slate-200 pt-10 dark:border-slate-800"
           >
-            {relatedStacks.length > 0 && (
-              <div className="mb-10 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-6 dark:border-indigo-900 dark:bg-indigo-950/25 sm:p-8">
-                <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
-                  {text.relatedStacks}
-                </h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  {text.relatedStacksDescription}
-                </p>
-                <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {relatedStacks.map(
-                    ({ comparison: related, sharedToolName }) => (
-                    <li key={related.slug}>
-                      <Link
-                        href={getComparisonUrl(locale, related.slug)}
-                        className="block h-full rounded-xl border border-slate-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700"
-                      >
-                        <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                          {text.relatedThrough} {sharedToolName}
-                        </span>
-                        <span className="mt-2 block font-semibold text-slate-900 dark:text-white">
-                          {related.toolA.name} vs {related.toolB.name}
-                        </span>
-                      </Link>
-                    </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-            )}
             <h2
               id="related-comparisons"
               className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
