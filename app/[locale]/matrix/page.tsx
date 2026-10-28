@@ -73,11 +73,11 @@ function createMatrixData(locale: Locale): {
   pairs: MatrixPair[];
 } {
   const technologyMap = new Map<string, MatrixTechnology>();
-  const pairs: MatrixPair[] = [];
+  const pairMap = new Map<string, MatrixPair>();
 
   for (const comparison of getComparisons(locale)) {
     const [toolAId, toolBId] = comparison.slug.split("-vs-");
-    if (!toolAId || !toolBId) {
+    if (!toolAId || !toolBId || toolAId === toolBId) {
       continue;
     }
 
@@ -116,14 +116,21 @@ function createMatrixData(locale: Locale): {
       technologyMap.set(tool.id, technology);
     }
 
-    pairs.push({ slug: comparison.slug, toolA: toolAId, toolB: toolBId });
+    const pairKey = [toolAId, toolBId].sort().join("|");
+    if (!pairMap.has(pairKey)) {
+      pairMap.set(pairKey, {
+        slug: comparison.slug,
+        toolA: toolAId,
+        toolB: toolBId,
+      });
+    }
   }
 
   return {
     technologies: [...technologyMap.values()]
       .filter((technology) => technology.categories.length > 0)
       .sort((left, right) => left.name.localeCompare(right.name)),
-    pairs,
+    pairs: [...pairMap.values()],
   };
 }
 

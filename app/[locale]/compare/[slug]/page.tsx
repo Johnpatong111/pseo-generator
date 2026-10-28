@@ -301,8 +301,61 @@ const openGraphLocales = {
   fr: "fr_FR",
 } as const;
 
+const titleFocus = {
+  pl: {
+    frontend: "funkcje, wydajność i ekosystem",
+    backend: "API, wydajność i wdrożenie",
+    databases: "modele danych, wydajność i zastosowania",
+    "ai-models": "modele, kontekst i koszty API",
+    devops: "wdrożenie, skalowanie i koszty",
+    css: "stylowanie, komponenty i workflow",
+    general: "funkcje i zastosowania",
+  },
+  en: {
+    frontend: "features, performance & ecosystem",
+    backend: "APIs, performance & deployment",
+    databases: "data models, performance & use cases",
+    "ai-models": "models, context & API pricing",
+    devops: "deployment, scaling & costs",
+    css: "styling, components & developer workflow",
+    general: "features and use cases",
+  },
+  es: {
+    frontend: "funciones, rendimiento y ecosistema",
+    backend: "API, rendimiento e implementación",
+    databases: "modelos de datos, rendimiento y usos",
+    "ai-models": "modelos, contexto y costes de API",
+    devops: "despliegue, escalabilidad y costes",
+    css: "estilos, componentes y flujo de desarrollo",
+    general: "funciones y casos de uso",
+  },
+  de: {
+    frontend: "Funktionen, Leistung und Ökosystem",
+    backend: "APIs, Leistung und Bereitstellung",
+    databases: "Datenmodelle, Leistung und Anwendungsfälle",
+    "ai-models": "Modelle, Kontext und API-Kosten",
+    devops: "Bereitstellung, Skalierung und Kosten",
+    css: "Styling, Komponenten und Entwickler-Workflow",
+    general: "Funktionen und Anwendungsfälle",
+  },
+  fr: {
+    frontend: "fonctionnalités, performances et écosystème",
+    backend: "API, performances et déploiement",
+    databases: "modèles de données, performances et usages",
+    "ai-models": "modèles, contexte et tarifs API",
+    devops: "déploiement, évolutivité et coûts",
+    css: "styles, composants et flux de développement",
+    general: "fonctionnalités et cas d’usage",
+  },
+} as const;
+
 function getComparisonUrl(locale: Locale, slug: string): string {
   return `/${locale}/compare/${slug}`;
+}
+
+function getComparisonTitle(comparison: Comparison, locale: Locale): string {
+  const category = getComparisonCategories(comparison.slug)[0] ?? "general";
+  return `${comparison.toolA.name} vs ${comparison.toolB.name}: ${titleFocus[locale][category]}`;
 }
 
 function getLocalizedSlug(locale: Locale, slug: string): string | undefined {
@@ -336,6 +389,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     return {};
   }
 
+  const title = getComparisonTitle(comparison, localeParam);
   const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
     LOCALES.flatMap((locale) => {
@@ -348,7 +402,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   const defaultSlug = getLocalizedSlug("en", slug);
 
   return {
-    title: comparison.meta.title,
+    title,
     description: comparison.meta.description,
     alternates: {
       canonical,
@@ -360,7 +414,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
       },
     },
     openGraph: {
-      title: comparison.meta.title,
+      title,
       description: comparison.meta.description,
       url: canonical,
       type: "article",
@@ -372,13 +426,14 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 function getStructuredData(comparison: Comparison, locale: Locale) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
+  const title = getComparisonTitle(comparison, locale);
 
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Article",
-        headline: comparison.meta.title,
+        headline: title,
         description: comparison.meta.description,
         inLanguage: locale,
         mainEntityOfPage: pageUrl,
@@ -431,6 +486,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
 
   const text = copy[locale];
   const relatedComparisons = getRelatedComparisons(comparison, locale);
+  const title = getComparisonTitle(comparison, locale);
   const scores = getScores(comparison);
   const structuredData = JSON.stringify(getStructuredData(comparison, locale)).replace(
     /</g,
@@ -449,7 +505,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             {text.category}
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
-            {comparison.toolA.name} vs {comparison.toolB.name}
+            {title}
           </h1>
           <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
             {comparison.verdict}
@@ -495,7 +551,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               </a>
             </div>
             <ComparisonActions
-              title={`${comparison.toolA.name} vs ${comparison.toolB.name}`}
+              title={title}
               summary={comparison.verdict}
               labels={{
                 copy: text.copySummary,

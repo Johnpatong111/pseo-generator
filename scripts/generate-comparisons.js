@@ -9,9 +9,55 @@ loadEnvConfig(projectRoot);
 
 const dataDirectory = path.join(projectRoot, "data");
 const currentYear = new Date().getFullYear();
+const titleFocus = {
+  pl: {
+    frontend: "funkcje, wydajność i ekosystem",
+    backend: "API, wydajność i wdrożenie",
+    databases: "modele danych, wydajność i zastosowania",
+    "ai-models": "modele, kontekst i koszty API",
+    devops: "wdrożenie, skalowanie i koszty",
+    css: "stylowanie, komponenty i workflow",
+    general: "funkcje i zastosowania",
+  },
+  en: {
+    frontend: "features, performance & ecosystem",
+    backend: "APIs, performance & deployment",
+    databases: "data models, performance & use cases",
+    "ai-models": "models, context & API pricing",
+    devops: "deployment, scaling & costs",
+    css: "styling, components & developer workflow",
+    general: "features and use cases",
+  },
+  es: {
+    frontend: "funciones, rendimiento y ecosistema",
+    backend: "API, rendimiento e implementación",
+    databases: "modelos de datos, rendimiento y usos",
+    "ai-models": "modelos, contexto y costes de API",
+    devops: "despliegue, escalabilidad y costes",
+    css: "estilos, componentes y flujo de desarrollo",
+    general: "funciones y casos de uso",
+  },
+  de: {
+    frontend: "Funktionen, Leistung und Ökosystem",
+    backend: "APIs, Leistung und Bereitstellung",
+    databases: "Datenmodelle, Leistung und Anwendungsfälle",
+    "ai-models": "Modelle, Kontext und API-Kosten",
+    devops: "Bereitstellung, Skalierung und Kosten",
+    css: "Styling, Komponenten und Entwickler-Workflow",
+    general: "Funktionen und Anwendungsfälle",
+  },
+  fr: {
+    frontend: "fonctionnalités, performances et écosystème",
+    backend: "API, performances et déploiement",
+    databases: "modèles de données, performances et usages",
+    "ai-models": "modèles, contexte et tarifs API",
+    devops: "déploiement, évolutivité et coûts",
+    css: "styles, composants et flux de développement",
+    general: "fonctionnalités et cas d’usage",
+  },
+};
 const locales = {
   pl: {
-    question: "które rozwiązanie wybrać?",
     requirements:
       'Użyj wyłącznie naturalnego polskiego (pl-PL), poprawnej polskiej składni, interpunkcji i specjalistycznej terminologii. Nie używaj angielskich zdań, nagłówków ani tekstów zastępczych. Każda odpowiedź FAQ musi być naturalna po polsku.',
     verdict: "Zwięzła, wyważona rekomendacja wskazująca, komu i dlaczego opłaca się wybrać każdą z opcji.",
@@ -30,7 +76,6 @@ const locales = {
       'Uwzględnij co najmniej sześć różnych kryteriów, które rzeczywiście pasują do porównywanych narzędzi. Każde kryterium omów w co najmniej dwóch pełnych zdaniach dla obu narzędzi, a pole "winner" ustaw na "toolA", "toolB" lub "tie" zgodnie z uzasadnioną oceną. Zachowaj rzetelność E-E-A-T: nie wymyślaj własnych testów, osobistego doświadczenia, źródeł, benchmarków, gwarancji ani niezweryfikowanych cen; zaznaczaj zależność od wersji, planu, konfiguracji i obciążenia. Sprawdź twierdzenia o dostępności funkcji, bezpieczeństwie i kompatybilności. Opis meta ma mieć od 100 do 200 znaków. Zachowaj podany slug i nazwy narzędzi. Nie dodawaj pól i nie zostawiaj pustych wartości.',
   },
   en: {
-    question: "Which option should you choose?",
     requirements:
       "Write exclusively in natural, idiomatic English (en-US). Use correct English grammar, punctuation, and technical terminology. Do not include Polish or Spanish sentences, headings, or placeholder text. Write every FAQ answer naturally in English.",
     verdict: "A concise, balanced recommendation explaining who should choose each option and why.",
@@ -50,7 +95,6 @@ const locales = {
       'Include at least six distinct criteria that genuinely apply to the compared tools. Describe both tools in at least two complete sentences for each criterion, and set "winner" to "toolA", "toolB", or "tie" based on a reasoned assessment. Follow E-E-A-T principles: do not invent first-hand tests, personal experience, sources, benchmarks, guarantees, or unverified prices; qualify claims that depend on version, plan, configuration, or workload. Verify claims about feature availability, security, and compatibility. Keep the meta description between 100 and 200 characters. Preserve the supplied slug and tool names. Do not add fields or leave values empty.',
   },
   es: {
-    question: "¿Qué solución elegir?",
     requirements:
       "Escribe exclusivamente en español natural y fluido (es-ES), con gramática, puntuación y terminología técnica correctas. No incluyas frases, encabezados ni textos de relleno en polaco o inglés. Redacta todas las respuestas frecuentes en español natural.",
     verdict: "Una recomendación breve y equilibrada que explique a quién le conviene cada opción y por qué.",
@@ -70,7 +114,6 @@ const locales = {
       'Incluye al menos seis criterios distintos que sean pertinentes para las herramientas comparadas. Describe ambas opciones en al menos dos frases completas por criterio y asigna "winner" a "toolA", "toolB" o "tie" según una evaluación justificada. Aplica los principios E-E-A-T: no inventes pruebas propias, experiencia personal, fuentes, benchmarks, garantías ni precios sin verificar; matiza las afirmaciones que dependan de la versión, el plan, la configuración o la carga de trabajo. Verifica las afirmaciones sobre funciones, seguridad y compatibilidad. Mantén la descripción meta entre 100 y 200 caracteres. Conserva exactamente el slug y los nombres proporcionados. No añadas campos ni dejes valores vacíos.',
   },
   de: {
-    question: "welche Lösung passt besser?",
     requirements:
       "Schreibe ausschließlich in natürlichem, idiomatischem Deutsch (de-DE) mit korrekter Grammatik, Zeichensetzung und technischer Terminologie. Verwende keine polnischen, englischen oder spanischen Sätze, Überschriften oder Platzhalter. Verfasse alle FAQ-Antworten auf natürlichem Deutsch.",
     verdict: "Eine knappe, ausgewogene Empfehlung, die erklärt, für wen sich welche Option eignet und warum.",
@@ -90,7 +133,6 @@ const locales = {
       'Nenne mindestens sechs unterschiedliche Kriterien, die tatsächlich zu den verglichenen Tools passen. Beschreibe beide Tools für jedes Kriterium mit mindestens zwei vollständigen Sätzen und setze "winner" anhand einer begründeten Bewertung auf "toolA", "toolB" oder "tie". Beachte E-E-A-T: Erfinde keine eigenen Tests, persönliche Erfahrungen, Quellen, Benchmarks, Garantien oder ungeprüften Preise. Kennzeichne Aussagen, die von Version, Tarif, Konfiguration oder Arbeitslast abhängen. Achte auf die Richtigkeit von Aussagen zu Funktionen, Sicherheit und Kompatibilität. Die Meta-Beschreibung muss 100–200 Zeichen umfassen. Übernimm den vorgegebenen Slug und die Tool-Namen exakt. Füge keine Felder hinzu und lasse keine Werte leer.',
   },
   fr: {
-    question: "quelle solution choisir ?",
     requirements:
       "Rédige exclusivement en français naturel et idiomatique (fr-FR), avec une grammaire, une ponctuation et une terminologie technique correctes. N’inclus aucune phrase, aucun titre ni texte provisoire en polonais, anglais ou espagnol. Rédige toutes les réponses FAQ dans un français naturel.",
     verdict: "Une recommandation concise et équilibrée qui explique à qui convient chaque option et pourquoi.",
@@ -361,9 +403,31 @@ function getApiClient() {
   };
 }
 
+function getComparisonTitle(slug, toolA, toolB, locale) {
+  const topicCategory = Object.entries(categories).find(([, slugs]) =>
+    slugs.includes(slug),
+  )?.[0];
+  const categoryId =
+    topicCategory?.includes("AI")
+      ? "ai-models"
+      : topicCategory === "Frontend & Meta-frameworks"
+        ? "frontend"
+        : topicCategory === "Backend & Runtimes"
+          ? "backend"
+          : topicCategory === "Databases & ORM"
+            ? "databases"
+            : topicCategory === "DevOps & Cloud"
+              ? "devops"
+              : topicCategory === "CSS & UI"
+                ? "css"
+                : "general";
+
+  return `${toolA} vs ${toolB}: ${titleFocus[locale][categoryId]}`;
+}
+
 function buildPrompt(slug, toolA, toolB, locale) {
  const language = locales[locale];
- const title = `${toolA} vs ${toolB} (${currentYear}): ${language.question}`;
+ const title = getComparisonTitle(slug, toolA, toolB, locale);
  const aiModelRequirements = aiModelComparisonSlugs.has(slug)
    ? `
 
@@ -465,7 +529,7 @@ function requireString(value, field) {
   return value.trim();
 }
 
-function validateComparison(value, slug, toolA, toolB) {
+function validateComparison(value, slug, toolA, toolB, locale) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error("The API response must be a JSON object.");
   }
@@ -492,7 +556,8 @@ function validateComparison(value, slug, toolA, toolB) {
     throw new Error(`The API response must compare "${toolA}" against "${toolB}".`);
   }
 
-  const title = requireString(value.meta.title, "meta.title");
+  requireString(value.meta.title, "meta.title");
+  const title = getComparisonTitle(slug, toolA, toolB, locale);
   const description = requireString(value.meta.description, "meta.description");
   if (description.length < 100 || description.length > 200) {
     throw new Error(
@@ -669,7 +734,13 @@ async function generateComparison(
     }
 
     try {
-      comparison = validateComparison(JSON.parse(content), slug, toolA, toolB);
+      comparison = validateComparison(
+        JSON.parse(content),
+        slug,
+        toolA,
+        toolB,
+        locale,
+      );
       break;
     } catch (error) {
       const reason = error instanceof Error ? error.message : "Unknown comparison validation error.";
