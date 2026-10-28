@@ -12,6 +12,7 @@ import {
   isLocale,
   LOCALES,
   type Comparison,
+  type ComparisonCriterion,
   type Locale,
 } from "../../../../lib/comparisons";
 import { getComparisonCategories } from "../../../../lib/taxonomy";
@@ -27,7 +28,17 @@ interface ComparisonPageProps {
 const copy = {
   pl: {
     category: "Porównanie technologii",
-    details: "Porównanie funkcji",
+    details: "Macierz parametrów technicznych",
+    advantage: "Przewaga",
+    tie: "Podobny poziom",
+    decision: "Kiedy wybrać które rozwiązanie?",
+    chooseIf: "Wybierz, jeśli…",
+    noClearAdvantage:
+      "Dostępne kryteria nie wskazują jednoznacznego zwycięzcy. Rozważ te konkretne różnice w kontekście swojego projektu:",
+    context: "Kontekst techniczny i kompromisy",
+    evidenceBasedContext:
+      "Poniższe różnice wynikają bezpośrednio z opisanych kryteriów porównania.",
+    overallFit: "Dopasowanie do projektu (na podstawie podsumowania)",
     codeExamples: "Przykłady kodu",
     copyCode: "Kopiuj kod",
     copiedCode: "Kod skopiowany.",
@@ -58,7 +69,17 @@ const copy = {
   },
   en: {
     category: "Technology comparison",
-    details: "Feature comparison",
+    details: "Technical feature matrix",
+    advantage: "Edge",
+    tie: "Comparable",
+    decision: "When to choose each option",
+    chooseIf: "Choose this option if…",
+    noClearAdvantage:
+      "The available criteria do not establish a clear winner. Consider these specific differences in the context of your project:",
+    context: "Technical context and trade-offs",
+    evidenceBasedContext:
+      "These differences are drawn directly from the comparison criteria below.",
+    overallFit: "Project fit (based on the available recommendation)",
     codeExamples: "Code examples",
     copyCode: "Copy code",
     copiedCode: "Code copied.",
@@ -89,7 +110,17 @@ const copy = {
   },
   es: {
     category: "Comparativa de tecnologías",
-    details: "Comparación de funciones",
+    details: "Matriz de características técnicas",
+    advantage: "Ventaja",
+    tie: "Nivel similar",
+    decision: "Cuándo elegir cada opción",
+    chooseIf: "Elige esta opción si…",
+    noClearAdvantage:
+      "Los criterios disponibles no señalan un ganador claro. Valora estas diferencias concretas según las necesidades de tu proyecto:",
+    context: "Contexto técnico y compromisos",
+    evidenceBasedContext:
+      "Estas diferencias se basan directamente en los criterios de comparación siguientes.",
+    overallFit: "Adecuación al proyecto (según la recomendación disponible)",
     codeExamples: "Ejemplos de código",
     copyCode: "Copiar código",
     copiedCode: "Código copiado.",
@@ -120,7 +151,17 @@ const copy = {
   },
   de: {
     category: "Technologievergleich",
-    details: "Funktionsvergleich",
+    details: "Technische Vergleichsmatrix",
+    advantage: "Vorteil",
+    tie: "Vergleichbar",
+    decision: "Wann welche Option wählen?",
+    chooseIf: "Wähle diese Option, wenn …",
+    noClearAdvantage:
+      "Die verfügbaren Kriterien zeigen keinen eindeutigen Sieger. Berücksichtige diese konkreten Unterschiede im Kontext deines Projekts:",
+    context: "Technischer Kontext und Zielkonflikte",
+    evidenceBasedContext:
+      "Diese Unterschiede ergeben sich direkt aus den folgenden Vergleichskriterien.",
+    overallFit: "Projekteignung (basierend auf der verfügbaren Empfehlung)",
     codeExamples: "Codebeispiele",
     copyCode: "Code kopieren",
     copiedCode: "Code kopiert.",
@@ -151,7 +192,17 @@ const copy = {
   },
   fr: {
     category: "Comparatif de technologies",
-    details: "Comparaison des fonctionnalités",
+    details: "Matrice des caractéristiques techniques",
+    advantage: "Avantage",
+    tie: "Comparable",
+    decision: "Quand choisir chaque solution ?",
+    chooseIf: "Choisissez cette solution si…",
+    noClearAdvantage:
+      "Les critères disponibles ne désignent pas de gagnant évident. Évaluez ces différences concrètes selon les besoins de votre projet :",
+    context: "Contexte technique et compromis",
+    evidenceBasedContext:
+      "Ces différences découlent directement des critères de comparaison ci-dessous.",
+    overallFit: "Adéquation au projet (selon la recommandation disponible)",
     codeExamples: "Exemples de code",
     copyCode: "Copier le code",
     copiedCode: "Code copié.",
@@ -185,6 +236,14 @@ const copy = {
   {
     category: string;
     details: string;
+    advantage: string;
+    tie: string;
+    decision: string;
+    chooseIf: string;
+    noClearAdvantage: string;
+    context: string;
+    evidenceBasedContext: string;
+    overallFit: string;
     codeExamples: string;
     copyCode: string;
     copiedCode: string;
@@ -238,6 +297,32 @@ const chartCategories = [
   },
 ] as const;
 
+function getComparisonCriteria(
+  comparison: Comparison,
+  locale: Locale,
+): ComparisonCriterion[] {
+  if (comparison.comparison && comparison.comparison.length > 0) {
+    return comparison.comparison;
+  }
+
+  const sentences =
+    comparison.verdict.match(/[^.!?]+[.!?]?/g)?.map((sentence) => sentence.trim()) ??
+    [];
+  const findToolContext = (name: string) =>
+    sentences.find((sentence) =>
+      sentence.toLocaleLowerCase().includes(name.toLocaleLowerCase()),
+    ) ?? comparison.verdict;
+
+  return [
+    {
+      category: copy[locale].overallFit,
+      toolA: findToolContext(comparison.toolA.name),
+      toolB: findToolContext(comparison.toolB.name),
+      winner: "tie",
+    },
+  ];
+}
+
 function getScores(comparison: Comparison) {
   const criteria = comparison.comparison ?? [];
 
@@ -265,6 +350,53 @@ function getScores(comparison: Comparison) {
       evidenceCount: relevantCriteria.length,
     };
   });
+}
+
+function getDecisionCriteria(
+  comparison: Comparison,
+  tool: "toolA" | "toolB",
+  locale: Locale,
+): ComparisonCriterion[] {
+  const criteria = getComparisonCriteria(comparison, locale);
+  const wins = criteria.filter((criterion) => criterion.winner === tool);
+  return (wins.length > 0 ? wins : criteria).slice(0, 3);
+}
+
+function getDecisionCopy(
+  comparison: Comparison,
+  tool: "toolA" | "toolB",
+  locale: Locale,
+): string | undefined {
+  const savedRecommendation = comparison.decisionFramework?.[tool];
+  if (savedRecommendation) {
+    return savedRecommendation;
+  }
+
+  const criteria = getDecisionCriteria(comparison, tool, locale);
+  if (criteria.length === 0) {
+    return undefined;
+  }
+
+  const evidence = criteria
+    .map((criterion) => {
+      const description = criterion[tool];
+      return `${criterion.category}: ${description}`;
+    })
+    .join(" ");
+
+  const hasWins = criteria.some((criterion) => criterion.winner === tool);
+  const name = tool === "toolA" ? comparison.toolA.name : comparison.toolB.name;
+  const prefix = hasWins
+    ? {
+        pl: `Wybierz ${name}, jeśli opisane przewagi odpowiadają wymaganiom projektu.`,
+        en: `Choose ${name} when the strengths described here match your project requirements.`,
+        es: `Elige ${name} cuando las ventajas descritas coincidan con los requisitos de tu proyecto.`,
+        de: `Wähle ${name}, wenn die beschriebenen Stärken zu den Anforderungen deines Projekts passen.`,
+        fr: `Choisissez ${name} si les atouts décrits correspondent aux exigences de votre projet.`,
+      }[locale]
+    : copy[locale].noClearAdvantage;
+
+  return `${prefix} ${evidence}`;
 }
 
 function getRelatedComparisons(comparison: Comparison, locale: Locale) {
@@ -427,17 +559,32 @@ function getStructuredData(comparison: Comparison, locale: Locale) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
   const title = getComparisonTitle(comparison, locale);
+  const categories = getComparisonCategories(comparison.slug);
+  const keywords = [
+    comparison.toolA.name,
+    comparison.toolB.name,
+    ...categories,
+    ...(comparison.comparison ?? []).map(({ category }) => category),
+  ];
 
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Article",
+        "@type": "TechArticle",
         headline: title,
         description: comparison.meta.description,
+        abstract: comparison.introduction ?? comparison.verdict,
         inLanguage: locale,
         mainEntityOfPage: pageUrl,
         about: [comparison.toolA.name, comparison.toolB.name],
+        articleSection: categories,
+        keywords,
+        isPartOf: {
+          "@type": "WebSite",
+          name: "SnippetsLibrary",
+          url: absoluteSiteUrl(`/${locale}`),
+        },
       },
       {
         "@type": "BreadcrumbList",
@@ -487,6 +634,8 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const text = copy[locale];
   const relatedComparisons = getRelatedComparisons(comparison, locale);
   const title = getComparisonTitle(comparison, locale);
+  const comparisonCriteria = getComparisonCriteria(comparison, locale);
+  const contextCriteria = comparisonCriteria.slice(0, 2);
   const scores = getScores(comparison);
   const structuredData = JSON.stringify(getStructuredData(comparison, locale)).replace(
     /</g,
@@ -511,6 +660,47 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             {comparison.verdict}
           </p>
         </header>
+
+        <section
+          aria-labelledby="technical-context"
+          className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-8"
+        >
+          <h2
+            id="technical-context"
+            className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white"
+          >
+            {text.context}
+          </h2>
+          {comparison.introduction ? (
+            <p className="mt-4 max-w-5xl text-base leading-7 text-slate-600 dark:text-slate-300">
+              {comparison.introduction}
+            </p>
+          ) : (
+            <>
+              <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                {text.evidenceBasedContext}
+              </p>
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {contextCriteria.map((criterion) => (
+                  <article
+                    key={criterion.category}
+                    className="rounded-xl bg-slate-50 p-5 dark:bg-slate-950"
+                  >
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                      {criterion.category}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                      <strong>{comparison.toolA.name}:</strong> {criterion.toolA}
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                      <strong>{comparison.toolB.name}:</strong> {criterion.toolB}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
+        </section>
 
         <div className="mb-10 grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
           <section
@@ -647,7 +837,31 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                 {text.contents}
               </h2>
               <ol className="space-y-2.5">
-                {(comparison.comparison ?? []).map((criterion, index) => (
+                <li>
+                  <a
+                    href="#technical-context"
+                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
+                  >
+                    {text.context}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#decision-framework"
+                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
+                  >
+                    {text.decision}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#comparison-details"
+                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
+                  >
+                    {text.details}
+                  </a>
+                </li>
+                {comparisonCriteria.map((criterion, index) => (
                   <li key={criterion.category}>
                     <a
                       href={`#criterion-${index + 1}`}
@@ -680,7 +894,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           </aside>
 
           <div className="min-w-0">
-            {comparison.comparison && comparison.comparison.length > 0 && (
+            {comparisonCriteria.length > 0 && (
               <section aria-labelledby="comparison-details" className="mb-12 scroll-mt-24">
                 <h2
                   id="comparison-details"
@@ -701,10 +915,13 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                         <th scope="col" className="p-4 font-semibold">
                           {comparison.toolB.name}
                         </th>
+                        <th scope="col" className="p-4 font-semibold">
+                          {text.advantage}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {comparison.comparison.map((criterion, index) => (
+                      {comparisonCriteria.map((criterion, index) => (
                         <tr
                           key={criterion.category}
                           id={`criterion-${index + 1}`}
@@ -712,20 +929,19 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                         >
                           <th scope="row" className="p-4 font-medium">
                             {criterion.category}
-                            {criterion.winner !== "tie" && (
-                              <span className="mt-2 block text-xs text-indigo-600 dark:text-indigo-400">
-                                {text.winner}:{" "}
-                                {criterion.winner === "toolA"
-                                  ? comparison.toolA.name
-                                  : comparison.toolB.name}
-                              </span>
-                            )}
                           </th>
                           <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
                             {criterion.toolA}
                           </td>
                           <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
                             {criterion.toolB}
+                          </td>
+                          <td className="p-4 text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                            {criterion.winner === "tie"
+                              ? text.tie
+                              : criterion.winner === "toolA"
+                                ? comparison.toolA.name
+                                : comparison.toolB.name}
                           </td>
                         </tr>
                       ))}
@@ -734,6 +950,43 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                 </div>
               </section>
             )}
+
+            <section
+              id="decision-framework"
+              aria-labelledby="decision-framework-heading"
+              className="mb-12 scroll-mt-24"
+            >
+              <h2
+                id="decision-framework-heading"
+                className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+              >
+                {text.decision}
+              </h2>
+              <div className="grid gap-5 md:grid-cols-2">
+                {([
+                  ["toolA", comparison.toolA],
+                  ["toolB", comparison.toolB],
+                ] as const).map(([tool, technology]) => {
+                  const recommendation = getDecisionCopy(comparison, tool, locale);
+
+                  return (
+                    <article
+                      key={technology.name}
+                      className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+                    >
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {text.chooseIf} {technology.name}
+                      </h3>
+                      {recommendation && (
+                        <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                          {recommendation}
+                        </p>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
 
             <ArchitectureDiagram
               toolA={comparison.toolA.name}

@@ -24,6 +24,11 @@ export interface ComparisonCodeExamples {
   tech2Snippet: string;
 }
 
+export interface ComparisonDecisionFramework {
+  toolA: string;
+  toolB: string;
+}
+
 export interface Comparison {
   slug: string;
   locale: Locale;
@@ -38,6 +43,8 @@ export interface Comparison {
     name: string;
   };
   verdict: string;
+  introduction?: string;
+  decisionFramework?: ComparisonDecisionFramework;
   comparison?: ComparisonCriterion[];
   codeExamples?: ComparisonCodeExamples;
   faq: ComparisonFaq[];
@@ -122,6 +129,26 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     };
   }
 
+  let decisionFramework: ComparisonDecisionFramework | undefined;
+  if (value.decisionFramework !== undefined) {
+    if (!isRecord(value.decisionFramework)) {
+      throw new TypeError(`Expected "decisionFramework" to be an object in ${fileName}.`);
+    }
+
+    decisionFramework = {
+      toolA: requireString(
+        value.decisionFramework.toolA,
+        "decisionFramework.toolA",
+        fileName,
+      ),
+      toolB: requireString(
+        value.decisionFramework.toolB,
+        "decisionFramework.toolB",
+        fileName,
+      ),
+    };
+  }
+
   return {
     slug: requireString(value.slug, "slug", fileName),
     locale,
@@ -136,6 +163,11 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
       name: requireString(value.toolB.name, "toolB.name", fileName),
     },
     verdict: requireString(value.verdict, "verdict", fileName),
+    introduction:
+      value.introduction === undefined
+        ? undefined
+        : requireString(value.introduction, "introduction", fileName),
+    decisionFramework,
     comparison,
     codeExamples,
     faq,

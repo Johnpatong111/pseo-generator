@@ -56,6 +56,20 @@ const titleFocus = {
     general: "fonctionnalités et cas d’usage",
   },
 };
+const deepDiveRequirements = {
+  pl: `Napisz unikalny wstęp (180–500 znaków) opisujący konkretną różnicę, synergię lub konflikt architektoniczny między narzędziami, oparty na ich rzeczywistych cechach. Dodaj "decisionFramework" z osobną rekomendacją dla każdego narzędzia (80–400 znaków): wskaż profil projektu, wymaganie lub kompromis, dla którego ta opcja jest lepsza. Uwzględnij w kryteriach macierzy parametry takie jak wydajność, koszt, łatwość integracji, licencja i środowisko uruchomieniowe tylko wtedy, gdy mają zastosowanie; nie zgaduj nieznanych wartości ani nie powtarzaj generycznych treści.`,
+  en: `Write a unique introduction (180–500 characters) explaining a concrete difference, synergy, or architectural trade-off between these tools, grounded in their actual characteristics. Add "decisionFramework" with a separate recommendation for each tool (80–400 characters): identify the project profile, requirement, or trade-off for which that option is preferable. Include matrix criteria such as performance, cost, integration effort, license, and runtime only where applicable; do not guess unknown values or repeat generic copy.`,
+  es: `Escribe una introducción única (180–500 caracteres) que explique una diferencia, sinergia o conflicto arquitectónico concreto entre estas herramientas, basándose en sus características reales. Añade "decisionFramework" con una recomendación independiente para cada herramienta (80–400 caracteres): indica el perfil de proyecto, requisito o compromiso para el que conviene más esa opción. Incluye criterios como rendimiento, coste, facilidad de integración, licencia y entorno de ejecución solo cuando sean pertinentes; no inventes datos desconocidos ni repitas texto genérico.`,
+  de: `Verfasse eine individuelle Einleitung (180–500 Zeichen), die einen konkreten Unterschied, eine Synergie oder einen Architekturkonflikt zwischen den Tools anhand ihrer tatsächlichen Eigenschaften erklärt. Ergänze "decisionFramework" mit einer eigenen Empfehlung für jedes Tool (80–400 Zeichen): Nenne Projektprofil, Anforderung oder Kompromiss, für den diese Option besser geeignet ist. Berücksichtige Kriterien wie Leistung, Kosten, Integrationsaufwand, Lizenz und Laufzeitumgebung nur, wenn sie zutreffen; erfinde keine unbekannten Werte und wiederhole keine allgemeinen Textbausteine.`,
+  fr: `Rédigez une introduction unique (180–500 caractères) qui explique une différence, une synergie ou un conflit architectural concret entre ces outils, à partir de leurs caractéristiques réelles. Ajoutez "decisionFramework" avec une recommandation distincte pour chaque outil (80–400 caractères) : précisez le profil de projet, l’exigence ou le compromis pour lequel cette option est préférable. Incluez des critères comme les performances, le coût, la facilité d’intégration, la licence et l’environnement d’exécution uniquement lorsqu’ils sont pertinents ; n’inventez aucune valeur inconnue et évitez les formulations génériques.`,
+};
+const technicalMatrixRequirements = {
+  pl: `W tabeli kryteriów uwzględnij co najmniej sześć odrębnych, praktycznych wymiarów technicznych. Wybierz adekwatne do narzędzi aspekty, takie jak wydajność i jej zależności, koszty/licencja, integracja i wdrożenie, runtime/architektura, skalowanie, bezpieczeństwo lub kompatybilność. Nie wymuszaj niepasujących wierszy i nie wymyślaj liczb; odróżniaj fakty od zależnych od kontekstu ocen.`,
+  en: `Include at least six distinct, practical technical dimensions in the comparison matrix. Select dimensions relevant to these tools, such as performance and its dependencies, cost/license, integration and deployment, runtime/architecture, scaling, security, or compatibility. Do not force irrelevant rows or invent figures; distinguish documented facts from context-dependent assessments.`,
+  es: `Incluye al menos seis dimensiones técnicas distintas y útiles en la matriz. Elige las pertinentes para estas herramientas, como rendimiento y sus dependencias, coste/licencia, integración y despliegue, entorno de ejecución/arquitectura, escalabilidad, seguridad o compatibilidad. No fuerces criterios irrelevantes ni inventes cifras; distingue los hechos documentados de las valoraciones dependientes del contexto.`,
+  de: `Berücksichtige in der Vergleichsmatrix mindestens sechs unterschiedliche, praxisrelevante technische Dimensionen. Wähle passend zu den Tools etwa Leistung und ihre Einflussfaktoren, Kosten/Lizenz, Integration und Bereitstellung, Laufzeit/Architektur, Skalierung, Sicherheit oder Kompatibilität. Erzwinge keine irrelevanten Kriterien und erfinde keine Zahlen; unterscheide belegte Fakten von kontextabhängigen Einschätzungen.`,
+  fr: `Incluez au moins six dimensions techniques distinctes et utiles dans la matrice. Choisissez celles qui correspondent aux outils, par exemple les performances et leurs facteurs, le coût/la licence, l’intégration et le déploiement, l’environnement d’exécution/l’architecture, la montée en charge, la sécurité ou la compatibilité. N’imposez pas de critères non pertinents et n’inventez aucun chiffre ; distinguez les faits documentés des évaluations dépendantes du contexte.`,
+};
 const locales = {
   pl: {
     requirements:
@@ -457,6 +471,11 @@ Return only valid JSON, without Markdown, using exactly this schema:
  "toolA": { "name": "${toolA}" },
  "toolB": { "name": "${toolB}" },
  "verdict": "${language.verdict}",
+ "introduction": "...",
+ "decisionFramework": {
+   "toolA": "...",
+   "toolB": "..."
+ },
  "comparison": [
    {
      "category": "${language.criterionExample}",
@@ -479,6 +498,8 @@ ${language.qualityRequirements}
 ${language.faqMinimum}
 ${language.verdictMinimum}
 ${language.descriptionMinimum}
+${deepDiveRequirements[locale]}
+${technicalMatrixRequirements[locale]}
 ${aiModelRequirements}
 ${fableRequirements}
 ${astraDbRequirements}
@@ -568,6 +589,37 @@ function validateComparison(value, slug, toolA, toolB, locale) {
   const verdict = requireString(value.verdict, "verdict");
   if (verdict.length < 60 || verdict.length > 600) {
     throw new Error("The verdict must be between 60 and 600 characters.");
+  }
+
+  const introduction = requireString(value.introduction, "introduction");
+  if (introduction.length < 180 || introduction.length > 800) {
+    throw new Error("The introduction must be between 180 and 800 characters.");
+  }
+
+  if (
+    !value.decisionFramework ||
+    typeof value.decisionFramework !== "object" ||
+    Array.isArray(value.decisionFramework)
+  ) {
+    throw new Error("The generated comparison must contain a decisionFramework object.");
+  }
+
+  const decisionFramework = {
+    toolA: requireString(
+      value.decisionFramework.toolA,
+      "decisionFramework.toolA",
+    ),
+    toolB: requireString(
+      value.decisionFramework.toolB,
+      "decisionFramework.toolB",
+    ),
+  };
+  for (const [tool, recommendation] of Object.entries(decisionFramework)) {
+    if (recommendation.length < 80 || recommendation.length > 500) {
+      throw new Error(
+        `The ${tool} decision recommendation must be between 80 and 500 characters.`,
+      );
+    }
   }
 
   if (!Array.isArray(value.comparison) || value.comparison.length < 6) {
@@ -663,6 +715,8 @@ function validateComparison(value, slug, toolA, toolB, locale) {
     toolA: { name: toolA },
     toolB: { name: toolB },
     verdict,
+    introduction,
+    decisionFramework,
     comparison,
     codeExamples,
     faq,
