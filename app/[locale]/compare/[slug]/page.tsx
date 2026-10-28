@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import AffiliateBanner from "../../../../components/AffiliateBanner";
 import ArchitectureDiagram from "../../../../components/ArchitectureDiagram";
 import CodeComparison from "../../../../components/CodeComparison";
+import ComparisonMatcher from "../../../../components/ComparisonMatcher";
 import ComparisonActions from "../../../../components/ComparisonActions";
 import {
   getComparisonCodeExamples,
@@ -14,6 +15,7 @@ import {
   LOCALES,
   type Comparison,
   type ComparisonCriterion,
+  type ComparisonFaq,
   type Locale,
 } from "../../../../lib/comparisons";
 import {
@@ -53,6 +55,20 @@ const copy = {
     home: "Strona główna",
     comparison: "Porównania",
     breadcrumb: "Okruszki nawigacyjne",
+    matcherTitle: "Kalkulator dopasowania do projektu",
+    matcherDescription: "Ustaw wagi priorytetów. Wynik opiera się na kryteriach porównania dostępnych na tej stronie.",
+    matcherPerformance: "Wydajność",
+    matcherUsability: "Łatwość użycia",
+    matcherScalability: "Skalowalność",
+    matcherFit: "dopasowanie",
+    matcherRecommended: "Na podstawie wybranych wag rekomendujemy:",
+    matcherBalanced: "Oba rozwiązania uzyskały taki sam wynik dla wybranych priorytetów.",
+    matcherNoEvidence: "Brak bezpośrednich danych dla tego priorytetu.",
+    matcherNoPriorities: "Ustaw co najmniej jeden priorytet z dostępnymi danymi, aby zobaczyć rekomendację.",
+    matcherPercent: "%",
+    relatedStacks: "Sprawdź powiązane stacki",
+    relatedStacksDescription: "Poznaj alternatywne zestawienia narzędzi współdzielących jeden element z tym porównaniem.",
+    relatedThrough: "Powiązane przez",
     quickVerdict: "Szybki werdykt",
     recommendation: "Najważniejsze wnioski",
     contents: "Spis treści",
@@ -95,6 +111,20 @@ const copy = {
     home: "Home",
     comparison: "Comparisons",
     breadcrumb: "Breadcrumb",
+    matcherTitle: "Project fit calculator",
+    matcherDescription: "Set your priority weights. Scores are based on the comparison evidence available on this page.",
+    matcherPerformance: "Performance",
+    matcherUsability: "Ease of use",
+    matcherScalability: "Scalability",
+    matcherFit: "fit",
+    matcherRecommended: "Based on your selected weights, we recommend:",
+    matcherBalanced: "Both options scored equally for your selected priorities.",
+    matcherNoEvidence: "No direct evidence is available for this priority.",
+    matcherNoPriorities: "Set at least one priority with available evidence to see a recommendation.",
+    matcherPercent: "%",
+    relatedStacks: "Explore related stacks",
+    relatedStacksDescription: "Discover alternative tool pairings that share one technology with this comparison.",
+    relatedThrough: "Related through",
     quickVerdict: "Quick verdict",
     recommendation: "The bottom line",
     contents: "On this page",
@@ -137,6 +167,20 @@ const copy = {
     home: "Inicio",
     comparison: "Comparativas",
     breadcrumb: "Ruta de navegación",
+    matcherTitle: "Calculadora de adecuación al proyecto",
+    matcherDescription: "Ajusta el peso de tus prioridades. La puntuación se basa en los criterios disponibles en esta página.",
+    matcherPerformance: "Rendimiento",
+    matcherUsability: "Facilidad de uso",
+    matcherScalability: "Escalabilidad",
+    matcherFit: "adecuación",
+    matcherRecommended: "Según las prioridades seleccionadas, recomendamos:",
+    matcherBalanced: "Ambas opciones obtuvieron la misma puntuación para tus prioridades.",
+    matcherNoEvidence: "No hay datos directos para esta prioridad.",
+    matcherNoPriorities: "Selecciona al menos una prioridad con datos disponibles para ver una recomendación.",
+    matcherPercent: "%",
+    relatedStacks: "Explora stacks relacionados",
+    relatedStacksDescription: "Descubre combinaciones alternativas que comparten una tecnología con esta comparativa.",
+    relatedThrough: "Relacionado por",
     quickVerdict: "Veredicto rápido",
     recommendation: "Conclusión",
     contents: "En esta página",
@@ -179,6 +223,20 @@ const copy = {
     home: "Startseite",
     comparison: "Vergleiche",
     breadcrumb: "Brotkrumennavigation",
+    matcherTitle: "Projekt-Fit-Rechner",
+    matcherDescription: "Lege die Gewichtung deiner Prioritäten fest. Die Bewertung basiert auf den Vergleichskriterien dieser Seite.",
+    matcherPerformance: "Leistung",
+    matcherUsability: "Benutzerfreundlichkeit",
+    matcherScalability: "Skalierbarkeit",
+    matcherFit: "Eignung",
+    matcherRecommended: "Basierend auf deinen Gewichtungen empfehlen wir:",
+    matcherBalanced: "Beide Optionen erzielen für deine Prioritäten das gleiche Ergebnis.",
+    matcherNoEvidence: "Für diese Priorität liegen keine direkten Vergleichsdaten vor.",
+    matcherNoPriorities: "Wähle mindestens eine Priorität mit vorhandenen Daten, um eine Empfehlung zu erhalten.",
+    matcherPercent: "%",
+    relatedStacks: "Ähnliche Technologie-Stacks entdecken",
+    relatedStacksDescription: "Entdecke alternative Tool-Kombinationen, die eine Technologie mit diesem Vergleich teilen.",
+    relatedThrough: "Verknüpft über",
     quickVerdict: "Kurzfazit",
     recommendation: "Die wichtigsten Erkenntnisse",
     contents: "Auf dieser Seite",
@@ -221,6 +279,20 @@ const copy = {
     home: "Accueil",
     comparison: "Comparatifs",
     breadcrumb: "Fil d’Ariane",
+    matcherTitle: "Calculateur d’adéquation au projet",
+    matcherDescription: "Ajustez le poids de vos priorités. Le score s’appuie sur les critères de comparaison disponibles sur cette page.",
+    matcherPerformance: "Performance",
+    matcherUsability: "Facilité d’utilisation",
+    matcherScalability: "Évolutivité",
+    matcherFit: "adéquation",
+    matcherRecommended: "Selon vos priorités, nous recommandons :",
+    matcherBalanced: "Les deux solutions obtiennent le même score selon vos priorités.",
+    matcherNoEvidence: "Aucune donnée directe n’est disponible pour cette priorité.",
+    matcherNoPriorities: "Choisissez au moins une priorité avec des données disponibles pour obtenir une recommandation.",
+    matcherPercent: "%",
+    relatedStacks: "Découvrir des stacks associés",
+    relatedStacksDescription: "Explorez des associations alternatives qui partagent une technologie avec ce comparatif.",
+    relatedThrough: "Associé via",
     quickVerdict: "Verdict rapide",
     recommendation: "L’essentiel",
     contents: "Sur cette page",
@@ -263,6 +335,20 @@ const copy = {
     home: string;
     comparison: string;
     breadcrumb: string;
+    matcherTitle: string;
+    matcherDescription: string;
+    matcherPerformance: string;
+    matcherUsability: string;
+    matcherScalability: string;
+    matcherFit: string;
+    matcherRecommended: string;
+    matcherBalanced: string;
+    matcherNoEvidence: string;
+    matcherNoPriorities: string;
+    matcherPercent: string;
+    relatedStacks: string;
+    relatedStacksDescription: string;
+    relatedThrough: string;
     quickVerdict: string;
     recommendation: string;
     contents: string;
@@ -412,10 +498,14 @@ function getDecisionCopy(
 
 function getRelatedComparisons(comparison: Comparison, locale: Locale) {
   const tools = comparison.slug.split("-vs-");
+  const reversedSlug = `${tools[1]}-vs-${tools[0]}`;
   const categories = getComparisonCategories(comparison.slug);
 
   return getLocalizedComparisons(locale)
-    .filter((candidate) => candidate.slug !== comparison.slug)
+    .filter(
+      (candidate) =>
+        candidate.slug !== comparison.slug && candidate.slug !== reversedSlug,
+    )
     .map((candidate) => ({
       comparison: candidate,
       sharedCategories: getComparisonCategories(candidate.slug).filter(
@@ -434,6 +524,230 @@ function getRelatedComparisons(comparison: Comparison, locale: Locale) {
     )
     .slice(0, 8)
     .map(({ comparison: related }) => related);
+}
+
+function getRelatedStackComparisons(comparison: Comparison, locale: Locale) {
+  const tools = comparison.slug.split("-vs-");
+  const reversedSlug = `${tools[1]}-vs-${tools[0]}`;
+  const comparisons = getLocalizedComparisons(locale);
+  const toolFrequency = new Map<string, number>();
+
+  for (const candidate of comparisons) {
+    for (const tool of candidate.slug.split("-vs-")) {
+      toolFrequency.set(tool, (toolFrequency.get(tool) ?? 0) + 1);
+    }
+  }
+
+  return comparisons
+    .filter(
+      (candidate) =>
+        candidate.slug !== comparison.slug && candidate.slug !== reversedSlug,
+    )
+    .map((candidate) => {
+      const [candidateA, candidateB] = candidate.slug.split("-vs-");
+      const sharedTool = [candidateA, candidateB].find((tool) =>
+        tools.includes(tool),
+      );
+      const complementaryTool =
+        sharedTool === candidateA ? candidateB : candidateA;
+      const sharedToolName =
+        sharedTool === candidateA ? candidate.toolA.name : candidate.toolB.name;
+
+      return {
+        comparison: candidate,
+        sharedTool,
+        complementaryTool,
+        sharedToolName,
+      };
+    })
+    .filter(
+      (
+        candidate,
+      ): candidate is typeof candidate & {
+        sharedTool: string;
+        complementaryTool: string;
+        sharedToolName: string;
+      } =>
+        Boolean(
+          candidate.sharedTool &&
+            candidate.complementaryTool &&
+            candidate.sharedToolName,
+        ),
+    )
+    .sort(
+      (left, right) =>
+        (toolFrequency.get(right.complementaryTool) ?? 0) -
+          (toolFrequency.get(left.complementaryTool) ?? 0) ||
+        left.comparison.slug.localeCompare(right.comparison.slug),
+    )
+    .slice(0, 4)
+    .map(({ comparison: related, sharedToolName }) => ({
+      comparison: related,
+      sharedToolName,
+    }));
+}
+
+const faqTopics = {
+  migration:
+    /migration|migrate|migrat|migración|migrar|umstieg|migrier|migrer|umstellen|wechseln zu|wechsel von/i,
+  costs:
+    /cost|costs|pricing|price|precio|coste|costo|kosten|preis|coût|tarif|koszt/i,
+  performance:
+    /performance|rendimiento|desempeño|wydajno|opóźn|latenc|throughput|speed|leistung|latence|débit/i,
+} as const;
+
+type FaqTopic = keyof typeof faqTopics;
+
+function getTopicFallbackFaq(
+  topic: FaqTopic,
+  comparison: Comparison,
+  locale: Locale,
+): ComparisonFaq {
+  const toolA = comparison.toolA.name;
+  const toolB = comparison.toolB.name;
+  const criteria = comparison.comparison ?? [];
+  const criterionPattern =
+    topic === "costs"
+      ? /cost|pricing|price|precio|coste|costo|kosten|preis|coût|tarif|koszt/i
+      : /performance|rendimiento|desempeño|wydajno|opóźn|latenc|throughput|speed|leistung|latence|débit/i;
+  const criterion = criteria.find(({ category }) =>
+    criterionPattern.test(category),
+  );
+  const evidence = criterion
+    ? `${toolA}: ${criterion.toolA} ${toolB}: ${criterion.toolB}`
+    : undefined;
+
+  const fallbackCopy: Record<
+    Locale,
+    Record<FaqTopic, { q: string; a: string }>
+  > = {
+    pl: {
+      migration: {
+        q: `Jak zaplanować migrację z ${toolA} do ${toolB}?`,
+        a: `Najpierw zinwentaryzuj używane funkcje, formaty danych i integracje ${toolA}, a następnie sprawdź ich odpowiedniki w ${toolB}. Przygotuj migrację pilotażową, testy zgodności i wydajności oraz plan wycofania zmian; przed przełączeniem produkcji wykonaj kopię zapasową i zweryfikuj wyniki na rzeczywistym obciążeniu.`,
+      },
+      costs: {
+        q: `Jak porównać całkowity koszt ${toolA} i ${toolB}?`,
+        a: evidence
+          ? `Dostępne kryterium kosztowe wskazuje: ${evidence} To punkt wyjścia, nie stała wycena — sprawdź aktualny cennik, licencje, hosting, transfer danych, wsparcie i koszty utrzymania dla przewidywanego obciążenia.`
+          : `W danych tego porównania nie ma bezpośredniej wyceny ${toolA} i ${toolB}. Porównaj aktualne licencje lub ceny API, hosting, transfer danych, wsparcie i utrzymanie, przeliczając je dla tego samego przewidywanego obciążenia.`,
+      },
+      performance: {
+        q: `Jak rzetelnie porównać wydajność ${toolA} i ${toolB}?`,
+        a: evidence
+          ? `W dostępnych kryteriach: ${evidence} Wynik w produkcji zależy jednak od konfiguracji i obciążenia; przed decyzją uruchom ten sam test z reprezentatywnymi danymi i zmierz opóźnienia oraz przepustowość.`
+          : `Ta strona nie zawiera bezpośredniego pomiaru wydajności ${toolA} i ${toolB}. Porównaj je na tym samym, reprezentatywnym obciążeniu i danych, mierząc opóźnienia, przepustowość oraz zużycie zasobów.`,
+      },
+    },
+    en: {
+      migration: {
+        q: `How should I plan a migration from ${toolA} to ${toolB}?`,
+        a: `Inventory the ${toolA} features, data formats, and integrations you rely on, then verify their equivalents in ${toolB}. Run a pilot with compatibility and performance tests, keep a rollback plan, and take a verified backup before switching production traffic.`,
+      },
+      costs: {
+        q: `How should I compare the total cost of ${toolA} and ${toolB}?`,
+        a: evidence
+          ? `The available cost criterion says: ${evidence} Treat this as a comparison point, not a fixed quote; verify current pricing, licensing, hosting, data transfer, support, and maintenance for your expected workload.`
+          : `This comparison does not include a direct price quote for ${toolA} or ${toolB}. Compare current licensing or API rates, hosting, data transfer, support, and maintenance against the same expected workload.`,
+      },
+      performance: {
+        q: `How can I fairly benchmark ${toolA} against ${toolB}?`,
+        a: evidence
+          ? `The available criteria report: ${evidence} Production results still depend on configuration and workload, so test both with representative data and measure latency and throughput before deciding.`
+          : `This page does not provide direct performance measurements for ${toolA} and ${toolB}. Benchmark both with the same representative data and workload, measuring latency, throughput, and resource use.`,
+      },
+    },
+    es: {
+      migration: {
+        q: `¿Cómo planificar una migración de ${toolA} a ${toolB}?`,
+        a: `Haz un inventario de las funciones, formatos de datos e integraciones de ${toolA} y confirma sus equivalentes en ${toolB}. Prueba primero una migración piloto, valida compatibilidad y rendimiento, prepara una vuelta atrás y verifica una copia de seguridad antes de cambiar producción.`,
+      },
+      costs: {
+        q: `¿Cómo comparar el coste total de ${toolA} y ${toolB}?`,
+        a: evidence
+          ? `El criterio de costes disponible indica: ${evidence} Es una referencia, no un presupuesto fijo: comprueba precios y licencias actuales, alojamiento, transferencia de datos, soporte y mantenimiento según la carga prevista.`
+          : `Esta comparativa no incluye un precio directo de ${toolA} ni ${toolB}. Compara licencias o tarifas de API actuales, alojamiento, transferencia de datos, soporte y mantenimiento para la misma carga prevista.`,
+      },
+      performance: {
+        q: `¿Cómo comparar de forma justa el rendimiento de ${toolA} y ${toolB}?`,
+        a: evidence
+          ? `Los criterios disponibles indican: ${evidence} El resultado real depende de la configuración y la carga; prueba ambos con datos representativos y mide latencia y capacidad antes de decidir.`
+          : `Esta página no incluye mediciones directas del rendimiento de ${toolA} y ${toolB}. Evalúalos con la misma carga y datos representativos, midiendo latencia, capacidad y consumo de recursos.`,
+      },
+    },
+    de: {
+      migration: {
+        q: `Wie plane ich eine Migration von ${toolA} zu ${toolB}?`,
+        a: `Erfasse zunächst die genutzten Funktionen, Datenformate und Integrationen von ${toolA} und prüfe die entsprechenden Möglichkeiten in ${toolB}. Teste eine Pilotmigration auf Kompatibilität und Leistung, plane einen Rollback und erstelle vor der Produktionsumstellung ein geprüftes Backup.`,
+      },
+      costs: {
+        q: `Wie vergleiche ich die Gesamtkosten von ${toolA} und ${toolB}?`,
+        a: evidence
+          ? `Das verfügbare Kostenkriterium besagt: ${evidence} Das ist ein Vergleichspunkt, kein Festpreis. Prüfe aktuelle Preise, Lizenzen, Hosting, Datentransfer, Support und Wartung für deine erwartete Auslastung.`
+          : `Dieser Vergleich enthält keine direkten Preisangaben für ${toolA} oder ${toolB}. Vergleiche aktuelle Lizenz- oder API-Kosten, Hosting, Datentransfer, Support und Wartung anhand derselben erwarteten Auslastung.`,
+      },
+      performance: {
+        q: `Wie vergleiche ich die Leistung von ${toolA} und ${toolB} fair?`,
+        a: evidence
+          ? `Die verfügbaren Kriterien nennen: ${evidence} Die Ergebnisse im Betrieb hängen dennoch von Konfiguration und Last ab. Teste beide mit repräsentativen Daten und miss Latenz und Durchsatz.`
+          : `Diese Seite enthält keine direkten Leistungsmessungen für ${toolA} und ${toolB}. Vergleiche beide mit denselben repräsentativen Daten und derselben Last und miss Latenz, Durchsatz und Ressourcenverbrauch.`,
+      },
+    },
+    fr: {
+      migration: {
+        q: `Comment planifier une migration de ${toolA} vers ${toolB} ?`,
+        a: `Recensez les fonctionnalités, formats de données et intégrations utilisés avec ${toolA}, puis vérifiez leurs équivalents dans ${toolB}. Effectuez un pilote, testez la compatibilité et les performances, prévoyez un retour arrière et validez une sauvegarde avant le basculement en production.`,
+      },
+      costs: {
+        q: `Comment comparer le coût total de ${toolA} et ${toolB} ?`,
+        a: evidence
+          ? `Le critère de coût disponible indique : ${evidence} Il s’agit d’un repère, pas d’un devis fixe : vérifiez les tarifs et licences actuels, l’hébergement, le transfert de données, le support et la maintenance selon la charge prévue.`
+          : `Ce comparatif ne fournit pas de tarif direct pour ${toolA} ou ${toolB}. Comparez les licences ou tarifs API actuels, l’hébergement, le transfert de données, le support et la maintenance pour une même charge prévisionnelle.`,
+      },
+      performance: {
+        q: `Comment comparer équitablement les performances de ${toolA} et ${toolB} ?`,
+        a: evidence
+          ? `Les critères disponibles indiquent : ${evidence} Les résultats réels dépendent toutefois de la configuration et de la charge. Testez les deux avec des données représentatives et mesurez latence et débit.`
+          : `Cette page ne contient pas de mesures directes des performances de ${toolA} et ${toolB}. Testez-les avec les mêmes données et la même charge représentatives, en mesurant latence, débit et ressources utilisées.`,
+      },
+    },
+  };
+
+  return fallbackCopy[locale][topic];
+}
+
+function getFocusedFaq(
+  comparison: Comparison,
+  locale: Locale,
+): ComparisonFaq[] {
+  const { faq } = comparison;
+  const selected = new Set<number>();
+  const focused = (Object.keys(faqTopics) as FaqTopic[]).map((topic) => {
+    const bestMatch = faq
+      .map((item, index) => ({
+        item,
+        index,
+        score: !selected.has(index) && faqTopics[topic].test(item.q)
+          ? 3 + (faqTopics[topic].test(item.a) ? 1 : 0)
+          : 0,
+      }))
+      .filter(({ score }) => score > 0)
+      .sort((left, right) => right.score - left.score || left.index - right.index)[0];
+
+    if (bestMatch) {
+      selected.add(bestMatch.index);
+      return bestMatch.item;
+    }
+
+    return getTopicFallbackFaq(topic, comparison, locale);
+  });
+
+  const remaining = faq.findIndex((_, index) => !selected.has(index));
+  if (remaining !== -1) {
+    focused.push(faq[remaining]);
+  }
+
+  return focused;
 }
 
 const openGraphLocales = {
@@ -569,7 +883,8 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 function getStructuredData(
   comparison: Comparison,
   locale: Locale,
-  category?: { id: CategoryId; name: string },
+  category: { id: CategoryId; name: string } | undefined,
+  faq: ComparisonFaq[],
 ) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
@@ -632,8 +947,10 @@ function getStructuredData(
       },
       {
         "@type": "FAQPage",
+        "@id": `${pageUrl}#faq`,
+        url: pageUrl,
         inLanguage: locale,
-        mainEntity: comparison.faq.map(({ q, a }) => ({
+        mainEntity: faq.map(({ q, a }) => ({
           "@type": "Question",
           name: q,
           acceptedAnswer: {
@@ -660,7 +977,9 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
 
   const text = copy[locale];
   const relatedComparisons = getRelatedComparisons(comparison, locale);
+  const relatedStacks = getRelatedStackComparisons(comparison, locale);
   const title = getComparisonTitle(comparison, locale);
+  const focusedFaq = getFocusedFaq(comparison, locale);
   const comparisonCriteria = getComparisonCriteria(comparison, locale);
   const codeExamples = getComparisonCodeExamples(comparison);
   const primaryCategory = getComparisonCategories(slug)[0];
@@ -673,7 +992,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const contextCriteria = comparisonCriteria.slice(0, 2);
   const scores = getScores(comparison);
   const structuredData = JSON.stringify(
-    getStructuredData(comparison, locale, category),
+    getStructuredData(comparison, locale, category, focusedFaq),
   ).replace(/</g, "\\u003c");
 
   return (
@@ -712,6 +1031,24 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         </ol>
       </nav>
       <article>
+        <ComparisonMatcher
+          toolA={comparison.toolA.name}
+          toolB={comparison.toolB.name}
+          criteria={comparisonCriteria}
+          labels={{
+            title: text.matcherTitle,
+            description: text.matcherDescription,
+            performance: text.matcherPerformance,
+            usability: text.matcherUsability,
+            scalability: text.matcherScalability,
+            fit: text.matcherFit,
+            recommended: text.matcherRecommended,
+            balanced: text.matcherBalanced,
+            noEvidence: text.matcherNoEvidence,
+            noPriorities: text.matcherNoPriorities,
+            percent: text.matcherPercent,
+          }}
+        />
         <header className="mb-8 max-w-4xl">
           <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
             {text.category}
@@ -1086,7 +1423,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                 {text.faq}
               </h2>
               <div className="space-y-3">
-                {comparison.faq.map(({ q, a }) => (
+                {focusedFaq.map(({ q, a }) => (
                   <details
                     key={q}
                     className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
@@ -1105,6 +1442,35 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             aria-labelledby="related-comparisons"
             className="mt-14 border-t border-slate-200 pt-10 dark:border-slate-800"
           >
+            {relatedStacks.length > 0 && (
+              <div className="mb-10 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-6 dark:border-indigo-900 dark:bg-indigo-950/25 sm:p-8">
+                <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                  {text.relatedStacks}
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                  {text.relatedStacksDescription}
+                </p>
+                <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {relatedStacks.map(
+                    ({ comparison: related, sharedToolName }) => (
+                    <li key={related.slug}>
+                      <Link
+                        href={getComparisonUrl(locale, related.slug)}
+                        className="block h-full rounded-xl border border-slate-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-700"
+                      >
+                        <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                          {text.relatedThrough} {sharedToolName}
+                        </span>
+                        <span className="mt-2 block font-semibold text-slate-900 dark:text-white">
+                          {related.toolA.name} vs {related.toolB.name}
+                        </span>
+                      </Link>
+                    </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+            )}
             <h2
               id="related-comparisons"
               className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
