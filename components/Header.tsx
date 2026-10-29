@@ -9,6 +9,10 @@ import {
   type Locale,
 } from "../lib/locales";
 import { CATEGORY_IDS, categoryCopy } from "../lib/taxonomy";
+import CommandMenu, {
+  type SearchCategory,
+  type SearchComparison,
+} from "./CommandMenu";
 
 const localeLabels: Record<Locale, string> = {
   pl: "PL",
@@ -53,9 +57,16 @@ const matrixLabels: Record<Locale, string> = {
 interface HeaderProps {
   locale: Locale;
   comparisonSlugsByLocale: Record<Locale, string[]>;
+  searchComparisons: SearchComparison[];
+  searchCategories: SearchCategory[];
 }
 
-export default function Header({ locale, comparisonSlugsByLocale }: HeaderProps) {
+export default function Header({
+  locale,
+  comparisonSlugsByLocale,
+  searchComparisons,
+  searchCategories,
+}: HeaderProps) {
   const pathname = usePathname() ?? `/${locale}`;
   const match = /^\/(pl|en|es|de|fr)\/compare\/([^/]+)\/?$/.exec(pathname);
   const comparisonSlug = match?.[2];
@@ -129,6 +140,11 @@ export default function Header({ locale, comparisonSlugsByLocale }: HeaderProps)
         aria-label={categoryNavLabels[locale]}
         className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 pb-3 sm:px-8"
       >
+        <CommandMenu
+          locale={locale}
+          comparisons={searchComparisons}
+          categories={searchCategories}
+        />
         <Link
           href={`/${locale}/matrix`}
           className="shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-indigo-300 dark:hover:bg-indigo-950"

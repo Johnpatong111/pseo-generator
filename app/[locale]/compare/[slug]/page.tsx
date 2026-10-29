@@ -5,6 +5,7 @@ import AffiliateBanner from "../../../../components/AffiliateBanner";
 import ArchitectureDiagram from "../../../../components/ArchitectureDiagram";
 import CodeComparison from "../../../../components/CodeComparison";
 import ComparisonMatcher from "../../../../components/ComparisonMatcher";
+import ComparisonTableOfContents from "../../../../components/ComparisonTableOfContents";
 import ComparisonViewToggle from "../../../../components/ComparisonViewToggle";
 import ComparisonActions from "../../../../components/ComparisonActions";
 import {
@@ -1034,6 +1035,17 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const structuredData = JSON.stringify(
     getStructuredData(comparison, locale, category, focusedFaq),
   ).replace(/</g, "\\u003c");
+  const tocSections = [
+    { id: "technical-context", label: text.context },
+    { id: "quick-verdict", label: text.quickVerdict },
+    { id: "score-chart", label: text.chartTitle },
+    { id: "comparison-details", label: text.details },
+    { id: "decision-framework-heading", label: text.decision },
+    ...(codeExamples
+      ? [{ id: "code-examples", label: text.codeExamples }]
+      : []),
+    { id: "faq", label: text.faq },
+  ];
   const matcherLabels = {
     title: text.matcherTitle,
     description: text.matcherDescription,
@@ -1225,7 +1237,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         >
           <h2
             id="technical-context"
-            className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white"
+            className="scroll-mt-24 text-xl font-semibold tracking-tight text-slate-900 dark:text-white"
           >
             {text.context}
           </h2>
@@ -1262,8 +1274,9 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
 
         <div className="mb-10 grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
           <section
-            aria-labelledby="quick-verdict"
-            className="overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-6 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
+            id="quick-verdict"
+            aria-labelledby="quick-verdict-heading"
+            className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-6 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="inline-flex items-center rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
@@ -1273,7 +1286,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                 {text.recommendation}
               </span>
             </div>
-            <h2 id="quick-verdict" className="sr-only">
+            <h2 id="quick-verdict-heading" className="sr-only">
               {text.quickVerdict}
             </h2>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-800 dark:text-slate-100">
@@ -1317,7 +1330,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           >
             <h2
               id="score-chart"
-              className="mb-6 text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
+              className="mb-6 scroll-mt-24 text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
             >
               {text.chartTitle}
             </h2>
@@ -1387,68 +1400,10 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
 
         <div className="grid items-start gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12">
           <aside className="lg:sticky lg:top-24">
-            <nav
-              aria-label={text.contents}
-              className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
-            >
-              <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">
-                {text.contents}
-              </h2>
-              <ol className="space-y-2.5">
-                <li>
-                  <a
-                    href="#technical-context"
-                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                  >
-                    {text.context}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#decision-framework"
-                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                  >
-                    {text.decision}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#comparison-details"
-                    className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                  >
-                    {text.details}
-                  </a>
-                </li>
-                {comparisonCriteria.map((criterion, index) => (
-                  <li key={criterion.category}>
-                    <a
-                      href={`#criterion-${index + 1}`}
-                      className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                    >
-                      {criterion.category}
-                    </a>
-                  </li>
-                ))}
-                {codeExamples && (
-                  <li>
-                    <a
-                      href="#code-examples"
-                      className="text-sm leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                    >
-                      {text.codeExamples}
-                    </a>
-                  </li>
-                )}
-                <li>
-                  <a
-                    href="#faq"
-                    className="text-sm font-medium leading-5 text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
-                  >
-                    {text.faq}
-                  </a>
-                </li>
-              </ol>
-            </nav>
+            <ComparisonTableOfContents
+              title={text.contents}
+              sections={tocSections}
+            />
           </aside>
 
           <div className="min-w-0">
@@ -1456,7 +1411,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               <section aria-labelledby="comparison-details" className="mb-12 scroll-mt-24">
                 <h2
                   id="comparison-details"
-                  className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                  className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
                 >
                   {text.details}
                 </h2>
@@ -1516,7 +1471,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             >
               <h2
                 id="decision-framework-heading"
-                className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
               >
                 {text.decision}
               </h2>
@@ -1554,7 +1509,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             <section aria-labelledby="faq" className="scroll-mt-24">
               <h2
                 id="faq"
-                className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
               >
                 {text.faq}
               </h2>
