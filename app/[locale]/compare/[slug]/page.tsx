@@ -5,6 +5,7 @@ import AffiliateBanner from "../../../../components/AffiliateBanner";
 import ArchitectureDiagram from "../../../../components/ArchitectureDiagram";
 import CodeComparison from "../../../../components/CodeComparison";
 import ComparisonMatcher from "../../../../components/ComparisonMatcher";
+import ComparisonViewToggle from "../../../../components/ComparisonViewToggle";
 import ComparisonActions from "../../../../components/ComparisonActions";
 import {
   getComparisonCodeExamples,
@@ -56,11 +57,14 @@ const copy = {
     home: "Strona główna",
     comparison: "Porównania",
     breadcrumb: "Okruszki nawigacyjne",
+    viewNavigation: "Tryb porównania",
+    quickView: "Szybkie podsumowanie",
+    deepView: "Głęboka analiza",
     matcherTitle: "Kalkulator dopasowania do projektu",
     matcherDescription: "Ustaw wagi priorytetów. Wynik opiera się na kryteriach porównania dostępnych na tej stronie.",
     matcherPerformance: "Wydajność",
-    matcherUsability: "Łatwość użycia",
-    matcherScalability: "Skalowalność",
+    matcherCost: "Koszt / cena API",
+    matcherDeployment: "Łatwość wdrożenia",
     matcherFit: "dopasowanie",
     matcherRecommended: "Na podstawie wybranych wag rekomendujemy:",
     matcherBalanced: "Oba rozwiązania uzyskały taki sam wynik dla wybranych priorytetów.",
@@ -112,11 +116,14 @@ const copy = {
     home: "Home",
     comparison: "Comparisons",
     breadcrumb: "Breadcrumb",
+    viewNavigation: "Comparison view",
+    quickView: "Quick summary",
+    deepView: "Deep analysis",
     matcherTitle: "Project fit calculator",
     matcherDescription: "Set your priority weights. Scores are based on the comparison evidence available on this page.",
     matcherPerformance: "Performance",
-    matcherUsability: "Ease of use",
-    matcherScalability: "Scalability",
+    matcherCost: "Cost / API pricing",
+    matcherDeployment: "Ease of deployment",
     matcherFit: "fit",
     matcherRecommended: "Based on your selected weights, we recommend:",
     matcherBalanced: "Both options scored equally for your selected priorities.",
@@ -168,11 +175,14 @@ const copy = {
     home: "Inicio",
     comparison: "Comparativas",
     breadcrumb: "Ruta de navegación",
+    viewNavigation: "Vista de la comparativa",
+    quickView: "Resumen rápido",
+    deepView: "Análisis en profundidad",
     matcherTitle: "Calculadora de adecuación al proyecto",
     matcherDescription: "Ajusta el peso de tus prioridades. La puntuación se basa en los criterios disponibles en esta página.",
     matcherPerformance: "Rendimiento",
-    matcherUsability: "Facilidad de uso",
-    matcherScalability: "Escalabilidad",
+    matcherCost: "Coste / precio de API",
+    matcherDeployment: "Facilidad de implementación",
     matcherFit: "adecuación",
     matcherRecommended: "Según las prioridades seleccionadas, recomendamos:",
     matcherBalanced: "Ambas opciones obtuvieron la misma puntuación para tus prioridades.",
@@ -224,11 +234,14 @@ const copy = {
     home: "Startseite",
     comparison: "Vergleiche",
     breadcrumb: "Brotkrumennavigation",
+    viewNavigation: "Vergleichsansicht",
+    quickView: "Kurzüberblick",
+    deepView: "Detaillierte Analyse",
     matcherTitle: "Projekt-Fit-Rechner",
     matcherDescription: "Lege die Gewichtung deiner Prioritäten fest. Die Bewertung basiert auf den Vergleichskriterien dieser Seite.",
     matcherPerformance: "Leistung",
-    matcherUsability: "Benutzerfreundlichkeit",
-    matcherScalability: "Skalierbarkeit",
+    matcherCost: "Kosten / API-Preis",
+    matcherDeployment: "Einfache Bereitstellung",
     matcherFit: "Eignung",
     matcherRecommended: "Basierend auf deinen Gewichtungen empfehlen wir:",
     matcherBalanced: "Beide Optionen erzielen für deine Prioritäten das gleiche Ergebnis.",
@@ -280,11 +293,14 @@ const copy = {
     home: "Accueil",
     comparison: "Comparatifs",
     breadcrumb: "Fil d’Ariane",
+    viewNavigation: "Mode de comparaison",
+    quickView: "Résumé rapide",
+    deepView: "Analyse approfondie",
     matcherTitle: "Calculateur d’adéquation au projet",
     matcherDescription: "Ajustez le poids de vos priorités. Le score s’appuie sur les critères de comparaison disponibles sur cette page.",
     matcherPerformance: "Performance",
-    matcherUsability: "Facilité d’utilisation",
-    matcherScalability: "Évolutivité",
+    matcherCost: "Coût / tarif API",
+    matcherDeployment: "Facilité de déploiement",
     matcherFit: "adéquation",
     matcherRecommended: "Selon vos priorités, nous recommandons :",
     matcherBalanced: "Les deux solutions obtiennent le même score selon vos priorités.",
@@ -336,11 +352,14 @@ const copy = {
     home: string;
     comparison: string;
     breadcrumb: string;
+    viewNavigation: string;
+    quickView: string;
+    deepView: string;
     matcherTitle: string;
     matcherDescription: string;
     matcherPerformance: string;
-    matcherUsability: string;
-    matcherScalability: string;
+    matcherCost: string;
+    matcherDeployment: string;
     matcherFit: string;
     matcherRecommended: string;
     matcherBalanced: string;
@@ -1015,6 +1034,136 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const structuredData = JSON.stringify(
     getStructuredData(comparison, locale, category, focusedFaq),
   ).replace(/</g, "\\u003c");
+  const matcherLabels = {
+    title: text.matcherTitle,
+    description: text.matcherDescription,
+    performance: text.matcherPerformance,
+    cost: text.matcherCost,
+    deployment: text.matcherDeployment,
+    fit: text.matcherFit,
+    recommended: text.matcherRecommended,
+    balanced: text.matcherBalanced,
+    noEvidence: text.matcherNoEvidence,
+    noPriorities: text.matcherNoPriorities,
+    percent: text.matcherPercent,
+  };
+  const renderMatcher = () => (
+    <ComparisonMatcher
+      toolA={comparison.toolA.name}
+      toolB={comparison.toolB.name}
+      criteria={comparisonCriteria}
+      labels={matcherLabels}
+    />
+  );
+  const decisionCards = () =>
+    ([
+      ["toolA", comparison.toolA],
+      ["toolB", comparison.toolB],
+    ] as const).map(([tool, technology]) => {
+      const recommendation = getDecisionCopy(comparison, tool, locale);
+
+      return (
+        <article
+          key={technology.name}
+          className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        >
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {text.chooseIf} {technology.name}
+          </h3>
+          {recommendation && (
+            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+              {recommendation}
+            </p>
+          )}
+        </article>
+      );
+    });
+  const quickContent = (
+    <div className="space-y-8">
+      <section
+        aria-labelledby="quick-summary-heading"
+        className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-6 dark:border-indigo-900 dark:bg-indigo-950/30 sm:p-8"
+      >
+        <h2
+          id="quick-summary-heading"
+          className="text-xl font-semibold text-slate-900 dark:text-white"
+        >
+          {text.quickVerdict}
+        </h2>
+        <p className="mt-4 text-base leading-7 text-slate-700 dark:text-slate-200">
+          {comparison.verdict}
+        </p>
+      </section>
+
+      <section aria-labelledby="quick-key-criteria-heading">
+        <h2
+          id="quick-key-criteria-heading"
+          className="mb-4 text-xl font-semibold text-slate-900 dark:text-white"
+        >
+          {text.details}
+        </h2>
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+          <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+            <thead className="bg-slate-100 dark:bg-slate-900">
+              <tr>
+                <th scope="col" className="p-4 font-semibold">
+                  {text.criterion}
+                </th>
+                <th scope="col" className="p-4 font-semibold">
+                  {comparison.toolA.name}
+                </th>
+                <th scope="col" className="p-4 font-semibold">
+                  {comparison.toolB.name}
+                </th>
+                <th scope="col" className="p-4 font-semibold">
+                  {text.advantage}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonCriteria.slice(0, 4).map((criterion, index) => (
+                <tr
+                  key={criterion.category}
+                  className="border-t border-slate-200 align-top dark:border-slate-800"
+                >
+                  <th scope="row" className="p-4 font-medium">
+                    {criterion.category}
+                  </th>
+                  <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                    {criterion.toolA}
+                  </td>
+                  <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                    {criterion.toolB}
+                  </td>
+                  <td className="p-4 font-medium text-indigo-700 dark:text-indigo-300">
+                    {criterion.winner === "tie"
+                      ? text.tie
+                      : criterion.winner === "toolA"
+                        ? comparison.toolA.name
+                        : comparison.toolB.name}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="quick-decision-heading"
+        className="scroll-mt-24"
+      >
+        <h2
+          id="quick-decision-heading"
+          className="mb-5 text-xl font-semibold text-slate-900 dark:text-white"
+        >
+          {text.decision}
+        </h2>
+        <div className="grid gap-5 md:grid-cols-2">{decisionCards()}</div>
+        <div className="mt-6">{renderMatcher()}</div>
+      </section>
+    </div>
+  );
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-8 sm:py-16">
@@ -1052,24 +1201,6 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         </ol>
       </nav>
       <article>
-        <ComparisonMatcher
-          toolA={comparison.toolA.name}
-          toolB={comparison.toolB.name}
-          criteria={comparisonCriteria}
-          labels={{
-            title: text.matcherTitle,
-            description: text.matcherDescription,
-            performance: text.matcherPerformance,
-            usability: text.matcherUsability,
-            scalability: text.matcherScalability,
-            fit: text.matcherFit,
-            recommended: text.matcherRecommended,
-            balanced: text.matcherBalanced,
-            noEvidence: text.matcherNoEvidence,
-            noPriorities: text.matcherNoPriorities,
-            percent: text.matcherPercent,
-          }}
-        />
         <header className="mb-8 max-w-4xl">
           <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
             {text.category}
@@ -1077,11 +1208,17 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
             {title}
           </h1>
-          <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
-            {comparison.verdict}
-          </p>
         </header>
 
+        <ComparisonViewToggle
+          labels={{
+            navigation: text.viewNavigation,
+            quick: text.quickView,
+            deep: text.deepView,
+          }}
+          quickContent={quickContent}
+          deepContent={
+            <>
         <section
           aria-labelledby="technical-context"
           className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-8"
@@ -1383,30 +1520,8 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               >
                 {text.decision}
               </h2>
-              <div className="grid gap-5 md:grid-cols-2">
-                {([
-                  ["toolA", comparison.toolA],
-                  ["toolB", comparison.toolB],
-                ] as const).map(([tool, technology]) => {
-                  const recommendation = getDecisionCopy(comparison, tool, locale);
-
-                  return (
-                    <article
-                      key={technology.name}
-                      className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
-                    >
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                        {text.chooseIf} {technology.name}
-                      </h3>
-                      {recommendation && (
-                        <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
-                          {recommendation}
-                        </p>
-                      )}
-                    </article>
-                  );
-                })}
-              </div>
+              <div className="grid gap-5 md:grid-cols-2">{decisionCards()}</div>
+              <div className="mt-6">{renderMatcher()}</div>
             </section>
 
             <ArchitectureDiagram
@@ -1524,6 +1639,9 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             </ul>
           </section>
         )}
+            </>
+          }
+        />
       </article>
     </main>
   );

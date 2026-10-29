@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { ComparisonCriterion } from "../lib/comparisons";
 
-type Priority = "performance" | "usability" | "scalability";
+type Priority = "performance" | "cost" | "deployment";
 
 interface ComparisonMatcherProps {
   toolA: string;
@@ -13,8 +13,8 @@ interface ComparisonMatcherProps {
     title: string;
     description: string;
     performance: string;
-    usability: string;
-    scalability: string;
+    cost: string;
+    deployment: string;
     fit: string;
     recommended: string;
     balanced: string;
@@ -26,14 +26,22 @@ interface ComparisonMatcherProps {
 
 const priorityPatterns: Record<Priority, RegExp> = {
   performance:
-    /performance|rendimiento|wydajno|leistung|latency|latenz|latence|throughput|debit|speed|velocidad|schnelligkeit|benchmark|response time|opóźn|opcion|latência/i,
-  usability:
-    /learning curve|developer experience|ease of use|usability|facilidad|curva de aprendizaje|experiencia de desarrollo|łatwość|krzywa uczenia|ergonom|simplicity|simplicidad|einstieg|benutzerfreund|courbe d’apprentissage|facilité d’utilisation/i,
-  scalability:
-    /scalability|scalable|scaling|scale|escalabilidad|escalable|skalierbarkeit|skalier|évolutivité|mise à l’échelle|skala|skalowal|high availability|availability|distribution|concurrency|deployment|infrastructure|infraestructura|bereitstellung|déploiement|wdrożen|dostępność/i,
+    /performance|rendimiento|wydajno|leistung|latency|latenz|latence|throughput|debit|speed|velocidad|schnelligkeit|benchmark|response time|opozn/i,
+  cost:
+    /cost|pricing|price|precio|coste|costo|kosten|preis|cout|tarif|koszt|cena|precios|preisgestaltung/i,
+  deployment:
+    /deployment|deploy|implementation|integration|setup|installation|hosting|migration|wdroz|integrac|konfigur|bereitstellung|implementierung|einrichtung|deploiement|mise en place|despliegue|implementacion|instalacion/i,
 };
 
-const priorities: Priority[] = ["performance", "usability", "scalability"];
+const priorities: Priority[] = ["performance", "cost", "deployment"];
+
+function matchesPriority(category: string, priority: Priority): boolean {
+  const heading = category
+    .split(/[.!?]/, 1)[0]
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return priorityPatterns[priority].test(heading);
+}
 
 export default function ComparisonMatcher({
   toolA,
@@ -41,22 +49,23 @@ export default function ComparisonMatcher({
   criteria,
   labels,
 }: ComparisonMatcherProps) {
+  const matcherId = useId();
   const [weights, setWeights] = useState<Record<Priority, number>>({
     performance: 50,
-    usability: 50,
-    scalability: 50,
+    cost: 50,
+    deployment: 50,
   });
 
   const result = useMemo(() => {
     const evidence: Record<Priority, ComparisonCriterion[]> = {
       performance: criteria.filter((criterion) =>
-        priorityPatterns.performance.test(criterion.category),
+        matchesPriority(criterion.category, "performance"),
       ),
-      usability: criteria.filter((criterion) =>
-        priorityPatterns.usability.test(criterion.category),
+      cost: criteria.filter((criterion) =>
+        matchesPriority(criterion.category, "cost"),
       ),
-      scalability: criteria.filter((criterion) =>
-        priorityPatterns.scalability.test(criterion.category),
+      deployment: criteria.filter((criterion) =>
+        matchesPriority(criterion.category, "deployment"),
       ),
     };
 
@@ -104,12 +113,12 @@ export default function ComparisonMatcher({
 
   return (
     <section
-      aria-labelledby="comparison-matcher-title"
+      aria-labelledby={`${matcherId}-title`}
       className="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-6 dark:border-indigo-900 dark:bg-indigo-950/30 sm:p-8"
     >
       <div className="mb-6">
         <h2
-          id="comparison-matcher-title"
+          id={`${matcherId}-title`}
           className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white"
         >
           {labels.title}
@@ -145,7 +154,7 @@ export default function ComparisonMatcher({
             />
             {criteria.every(
               (criterion) =>
-                !priorityPatterns[priority].test(criterion.category),
+                !matchesPriority(criterion.category, priority),
             ) && (
               <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
                 {labels.noEvidence}
