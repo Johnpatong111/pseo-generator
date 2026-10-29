@@ -18,6 +18,7 @@ import {
   type ComparisonFaq,
   type Locale,
 } from "../../../../lib/comparisons";
+import { BRAND_NAME } from "../../../../lib/locales";
 import {
   categoryCopy,
   getComparisonCategories,
@@ -812,7 +813,13 @@ function getComparisonUrl(locale: Locale, slug: string): string {
 
 function getComparisonTitle(comparison: Comparison, locale: Locale): string {
   const category = getComparisonCategories(comparison.slug)[0] ?? "general";
-  return `${comparison.toolA.name} vs ${comparison.toolB.name}: ${titleFocus[locale][category]}`;
+  const comparisonName = `${comparison.toolA.name} vs ${comparison.toolB.name}`;
+  const topicSuffix = `: ${titleFocus[locale][category]}`;
+  const titleLimit = 60 - ` | ${BRAND_NAME}`.length;
+
+  return comparisonName.length + topicSuffix.length <= titleLimit
+    ? `${comparisonName}${topicSuffix}`
+    : comparisonName;
 }
 
 function getLocalizedSlug(locale: Locale, slug: string): string | undefined {
@@ -847,6 +854,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   }
 
   const title = getComparisonTitle(comparison, localeParam);
+  const seoTitle = `${title} | ${BRAND_NAME}`;
   const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
     LOCALES.flatMap((locale) => {
@@ -859,8 +867,15 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   const defaultSlug = getLocalizedSlug("en", slug);
 
   return {
-    title,
+    title: { absolute: seoTitle },
     description: comparison.meta.description,
+    authors: [
+      {
+        name: "SnippetsLibrary Team",
+        url: absoluteSiteUrl("/"),
+      },
+    ],
+    publisher: "SnippetsLibrary Team",
     alternates: {
       canonical,
       languages: {
@@ -871,11 +886,17 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
       },
     },
     openGraph: {
-      title,
+      title: seoTitle,
       description: comparison.meta.description,
       url: canonical,
+      siteName: BRAND_NAME,
       type: "article",
       locale: openGraphLocales[localeParam],
+    },
+    twitter: {
+      card: "summary",
+      title: seoTitle,
+      description: comparison.meta.description,
     },
   };
 }
