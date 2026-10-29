@@ -114,7 +114,7 @@ export default function ComparisonMatcher({
   return (
     <section
       aria-labelledby={`${matcherId}-title`}
-      className="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-6 dark:border-indigo-900 dark:bg-indigo-950/30 sm:p-8"
+      className="mb-8 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 dark:border-indigo-900 dark:bg-indigo-950/30 sm:p-8"
     >
       <div className="mb-6">
         <h2
@@ -150,7 +150,7 @@ export default function ComparisonMatcher({
                 }))
               }
               aria-label={labels[priority]}
-              className="h-2 w-full cursor-pointer accent-indigo-600"
+              className="h-11 w-full cursor-pointer touch-pan-y accent-indigo-600"
             />
             {criteria.every(
               (criterion) =>
@@ -166,7 +166,7 @@ export default function ComparisonMatcher({
 
       <div
         aria-live="polite"
-        className="mt-6 rounded-xl border border-white/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+        className="mt-6 rounded-xl border border-white/80 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"
       >
         <p className="font-semibold text-slate-900 dark:text-white">
           {recommendation}
@@ -179,7 +179,7 @@ export default function ComparisonMatcher({
             ].map(({ name, score, color }) => (
               <div key={name}>
                 <div className="mb-1 flex justify-between gap-2 text-sm">
-                  <span className="font-medium text-slate-700 dark:text-slate-200">
+                  <span className="min-w-0 break-words font-medium text-slate-700 dark:text-slate-200">
                     {name} {labels.fit}
                   </span>
                   <span className="font-semibold tabular-nums text-slate-900 dark:text-white">

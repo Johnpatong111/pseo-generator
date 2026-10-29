@@ -211,15 +211,15 @@ export default async function LocalizedHomePage({
   const comparisons = getComparisons(locale);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
-      <header className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+    <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-8 sm:py-24">
+      <header className="mx-auto mb-10 max-w-3xl text-center sm:mb-16">
         <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
           {text.eyebrow}
         </p>
-        <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
           {text.heading}
         </h1>
-        <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
+        <p className="mt-5 text-base leading-7 text-slate-600 dark:text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
           {text.intro}
         </p>
       </header>

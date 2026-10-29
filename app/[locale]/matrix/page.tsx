@@ -189,7 +189,7 @@ export default async function MatrixPage({ params }: MatrixPageProps) {
   const text = pageCopy[locale];
 
   return (
-    <main className="mx-auto min-h-[70vh] w-full max-w-7xl px-6 py-12 sm:px-8 lg:py-16">
+    <main className="mx-auto min-h-[70vh] w-full max-w-7xl px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
       <header className="mb-8 max-w-3xl">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-700 dark:text-indigo-300">
           {BRAND_NAME}

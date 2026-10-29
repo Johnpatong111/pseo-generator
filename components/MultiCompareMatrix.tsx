@@ -226,7 +226,7 @@ export default function MultiCompareMatrix({
 
   return (
     <div className="space-y-8">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-7">
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-7">
         <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
           {text.criterion}
         </h2>
@@ -241,7 +241,7 @@ export default function MultiCompareMatrix({
             id="matrix-category"
             value={category}
             onChange={(event) => changeCategory(event.target.value as CategoryId)}
-            className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+            className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
           >
             {categories.map((id) => (
               <option key={id} value={id}>
@@ -297,7 +297,7 @@ export default function MultiCompareMatrix({
         </p>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
               <caption className="sr-only">{text.tableCaption}</caption>
               <thead className="bg-slate-100 dark:bg-slate-800">

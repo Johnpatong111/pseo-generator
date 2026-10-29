@@ -223,7 +223,7 @@ export default function CommandMenu({
         type="button"
         onClick={() => setIsOpen(true)}
         aria-label={`${text.open} (⌘/Ctrl+K)`}
-        className="inline-flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:px-3 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-indigo-300"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 text-sm font-medium text-slate-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:min-w-0 sm:justify-start sm:px-3 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-indigo-300"
       >
         <svg
           aria-hidden="true"
@@ -243,7 +243,7 @@ export default function CommandMenu({
       {isOpen &&
         createPortal(
         <div
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/50 px-4 pt-[12vh] backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/50 px-3 py-4 backdrop-blur-sm sm:px-4 sm:pt-[12vh]"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setIsOpen(false);
@@ -254,7 +254,7 @@ export default function CommandMenu({
             role="dialog"
             aria-modal="true"
             aria-label={text.open}
-            className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+            className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
           >
             <div className="flex items-center gap-3 border-b border-slate-200 px-4 dark:border-slate-800">
               <svg
@@ -287,7 +287,7 @@ export default function CommandMenu({
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label={text.close}
-                className="rounded-md px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:hover:bg-slate-800"
+                className="min-h-11 min-w-11 rounded-md px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:hover:bg-slate-800"
               >
                 Esc
               </button>
@@ -297,7 +297,7 @@ export default function CommandMenu({
               id="command-menu-results"
               role="listbox"
               aria-label={text.open}
-              className="max-h-[55vh] overflow-y-auto p-2"
+              className="max-h-[calc(100dvh-12rem)] overflow-y-auto p-2 sm:max-h-[55vh]"
             >
               {results.length === 0 ? (
                 <li className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
@@ -313,7 +313,7 @@ export default function CommandMenu({
                       aria-selected={activeIndex === index}
                       onMouseEnter={() => setActiveIndex(index)}
                       onClick={() => navigateTo(result.href)}
-                      className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition focus-visible:outline-2 focus-visible:outline-indigo-600 ${
+                      className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition focus-visible:outline-2 focus-visible:outline-indigo-600 sm:px-4 ${
                         activeIndex === index
                           ? "bg-indigo-50 text-indigo-900 dark:bg-indigo-950 dark:text-indigo-100"
                           : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"

@@ -161,7 +161,7 @@ export default function ComparisonSearch({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={text.searchPlaceholder}
-        className="mb-5 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
+        className="mb-5 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
       />
       <p aria-live="polite" className="sr-only">
         {text.resultCountLabel} {filteredComparisons.length}.
@@ -174,7 +174,7 @@ export default function ComparisonSearch({
               <Link
                 href={`/${locale}/compare/${comparison.slug}`}
                 hrefLang={locale}
-                className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500 dark:focus-visible:outline-indigo-400"
+                className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-600 sm:p-6 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500 dark:focus-visible:outline-indigo-400"
               >
                 <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                   {text.cardLabel}
@@ -217,7 +217,7 @@ export default function ComparisonSearch({
               <button
                 type="button"
                 onClick={openGenerationDialog}
-                className="mt-3 inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {text.generateCta}
               </button>
@@ -228,7 +228,7 @@ export default function ComparisonSearch({
 
       {isDialogOpen && (
         <div
-          className="fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-4"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget && !isGenerating) {
               setIsDialogOpen(false);
@@ -239,7 +239,7 @@ export default function ComparisonSearch({
             role="dialog"
             aria-modal="true"
             aria-labelledby="generate-comparison-title"
-            className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 sm:p-8"
+            className="my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-slate-800 dark:bg-slate-900 sm:p-8"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -258,7 +258,7 @@ export default function ComparisonSearch({
                 aria-label={text.close}
                 disabled={isGenerating}
                 onClick={() => setIsDialogOpen(false)}
-                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 dark:hover:bg-slate-800 dark:hover:text-white"
+                className="min-h-11 min-w-11 rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 <span aria-hidden="true">×</span>
               </button>
@@ -278,7 +278,7 @@ export default function ComparisonSearch({
                   maxLength={50}
                   value={toolA}
                   onChange={(event) => setToolA(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                 />
               </div>
               <div>
@@ -294,7 +294,7 @@ export default function ComparisonSearch({
                   maxLength={50}
                   value={toolB}
                   onChange={(event) => setToolB(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                  className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-950 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                 />
               </div>
               {generationError && (
@@ -305,7 +305,7 @@ export default function ComparisonSearch({
               <button
                 type="submit"
                 disabled={isGenerating}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {isGenerating && (
                   <span

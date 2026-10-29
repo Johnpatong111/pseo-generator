@@ -1114,20 +1114,20 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         >
           {text.details}
         </h2>
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+        <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 dark:border-slate-800">
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
             <thead className="bg-slate-100 dark:bg-slate-900">
               <tr>
-                <th scope="col" className="p-4 font-semibold">
+                <th scope="col" className="p-3 font-semibold sm:p-4">
                   {text.criterion}
                 </th>
-                <th scope="col" className="p-4 font-semibold">
+                <th scope="col" className="p-3 font-semibold sm:p-4">
                   {comparison.toolA.name}
                 </th>
-                <th scope="col" className="p-4 font-semibold">
+                <th scope="col" className="p-3 font-semibold sm:p-4">
                   {comparison.toolB.name}
                 </th>
-                <th scope="col" className="p-4 font-semibold">
+                <th scope="col" className="p-3 font-semibold sm:p-4">
                   {text.advantage}
                 </th>
               </tr>
@@ -1138,16 +1138,16 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                   key={criterion.category}
                   className="border-t border-slate-200 align-top dark:border-slate-800"
                 >
-                  <th scope="row" className="p-4 font-medium">
+                  <th scope="row" className="p-3 font-medium sm:p-4">
                     {criterion.category}
                   </th>
-                  <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                  <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
                     {criterion.toolA}
                   </td>
-                  <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                  <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
                     {criterion.toolB}
                   </td>
-                  <td className="p-4 font-medium text-indigo-700 dark:text-indigo-300">
+                  <td className="p-3 font-medium text-indigo-700 sm:p-4 dark:text-indigo-300">
                     {criterion.winner === "tie"
                       ? text.tie
                       : criterion.winner === "toolA"
@@ -1178,7 +1178,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   );
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12 sm:px-8 sm:py-16">
+    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: structuredData }}
@@ -1188,7 +1188,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <li>
             <Link
               href={`/${locale}`}
-              className="underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
+              className="inline-flex min-h-11 items-center underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
             >
               {text.home}
             </Link>
@@ -1199,7 +1199,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               <li>
                 <Link
                   href={`/${locale}/category/${category.id}`}
-                  className="underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
+                  className="inline-flex min-h-11 items-center underline-offset-4 hover:text-indigo-700 hover:underline dark:hover:text-indigo-300"
                 >
                   {category.name}
                 </Link>
@@ -1217,7 +1217,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <p className="mb-4 text-sm font-semibold tracking-wide text-indigo-600 dark:text-indigo-400">
             {text.category}
           </p>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
             {title}
           </h1>
         </header>
@@ -1233,7 +1233,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             <>
         <section
           aria-labelledby="technical-context"
-          className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-8"
+          className="mb-10 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-8"
         >
           <h2
             id="technical-context"
@@ -1254,7 +1254,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                 {contextCriteria.map((criterion) => (
                   <article
                     key={criterion.category}
-                    className="rounded-xl bg-slate-50 p-5 dark:bg-slate-950"
+                    className="rounded-xl bg-slate-50 p-4 dark:bg-slate-950 sm:p-5"
                   >
                     <h3 className="font-semibold text-slate-900 dark:text-white">
                       {criterion.category}
@@ -1276,7 +1276,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <section
             id="quick-verdict"
             aria-labelledby="quick-verdict-heading"
-            className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-6 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
+            className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-4 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="inline-flex items-center rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
@@ -1303,7 +1303,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               ))}
               <a
                 href="#comparison-details"
-                className="ml-auto inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="ml-auto inline-flex min-h-11 items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {text.viewDetails}
                 <span aria-hidden="true" className="ml-2">
@@ -1326,7 +1326,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
 
           <section
             aria-labelledby="score-chart"
-            className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8"
+            className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8"
           >
             <h2
               id="score-chart"
@@ -1411,24 +1411,24 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               <section aria-labelledby="comparison-details" className="mb-12 scroll-mt-24">
                 <h2
                   id="comparison-details"
-                  className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                  className="mb-5 scroll-mt-24 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white"
                 >
                   {text.details}
                 </h2>
-                <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 dark:border-slate-800">
                   <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
                     <thead className="bg-slate-100 dark:bg-slate-900">
                       <tr>
-                        <th scope="col" className="p-4 font-semibold">
+                        <th scope="col" className="p-3 font-semibold sm:p-4">
                           {text.criterion}
                         </th>
-                        <th scope="col" className="p-4 font-semibold">
+                        <th scope="col" className="p-3 font-semibold sm:p-4">
                           {comparison.toolA.name}
                         </th>
-                        <th scope="col" className="p-4 font-semibold">
+                        <th scope="col" className="p-3 font-semibold sm:p-4">
                           {comparison.toolB.name}
                         </th>
-                        <th scope="col" className="p-4 font-semibold">
+                        <th scope="col" className="p-3 font-semibold sm:p-4">
                           {text.advantage}
                         </th>
                       </tr>
@@ -1440,16 +1440,16 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                           id={`criterion-${index + 1}`}
                           className="scroll-mt-24 border-t border-slate-200 align-top dark:border-slate-800"
                         >
-                          <th scope="row" className="p-4 font-medium">
+                          <th scope="row" className="p-3 font-medium sm:p-4">
                             {criterion.category}
                           </th>
-                          <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                          <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
                             {criterion.toolA}
                           </td>
-                          <td className="p-4 leading-6 text-slate-600 dark:text-slate-300">
+                          <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
                             {criterion.toolB}
                           </td>
-                          <td className="p-4 text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                          <td className="p-3 text-sm font-medium text-indigo-700 sm:p-4 dark:text-indigo-300">
                             {criterion.winner === "tie"
                               ? text.tie
                               : criterion.winner === "toolA"
@@ -1471,7 +1471,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             >
               <h2
                 id="decision-framework-heading"
-                className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                className="mb-5 scroll-mt-24 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white"
               >
                 {text.decision}
               </h2>
@@ -1509,7 +1509,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             <section aria-labelledby="faq" className="scroll-mt-24">
               <h2
                 id="faq"
-                className="mb-5 scroll-mt-24 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+                className="mb-5 scroll-mt-24 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white"
               >
                 {text.faq}
               </h2>
@@ -1519,7 +1519,9 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                     key={q}
                     className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
                   >
-                    <summary className="cursor-pointer font-semibold">{q}</summary>
+                    <summary className="flex min-h-11 cursor-pointer items-center font-semibold">
+                      {q}
+                    </summary>
                     <p className="mt-3 leading-7 text-slate-600 dark:text-slate-300">{a}</p>
                   </details>
                 ))}
@@ -1571,7 +1573,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           >
             <h2
               id="related-comparisons"
-              className="mb-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white"
+              className="mb-5 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white"
             >
               {text.related}
             </h2>

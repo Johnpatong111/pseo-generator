@@ -87,19 +87,19 @@ export default function ComparisonTableOfContents({
   return (
     <nav
       aria-label={title}
-      className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+      className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"
     >
       <h2 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">
         {title}
       </h2>
-      <ol className="space-y-2.5">
+      <ol className="flex flex-wrap gap-2 lg:block lg:space-y-2.5">
         {sections.map(({ id, label }) => (
           <li key={id}>
             <a
               href={`#${id}`}
               onClick={(event) => navigateToSection(event, id)}
               aria-current={activeId === id ? "location" : undefined}
-              className={`block rounded-md text-sm leading-5 underline-offset-4 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+              className={`inline-flex min-h-11 items-center rounded-md px-2 text-sm leading-5 underline-offset-4 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 lg:min-h-0 lg:px-0 ${
                 activeId === id
                   ? "font-semibold text-indigo-700 dark:text-indigo-300"
                   : "text-slate-600 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"

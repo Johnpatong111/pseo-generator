@@ -211,7 +211,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
   return (
     <section
       aria-labelledby="stack-wizard-title"
-      className="mb-14 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-6 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/50 dark:via-slate-900 dark:to-violet-950/30"
+      className="mb-14 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-4 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/50 dark:via-slate-900 dark:to-violet-950/30"
     >
       <div className="mx-auto max-w-4xl">
         <p className="text-sm font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
@@ -253,7 +253,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
                     setProject(option.id);
                     setStep(2);
                   }}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-indigo-400 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-500"
+                  className="min-h-11 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-indigo-400 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-500"
                 >
                   <span className="block font-semibold text-slate-900 dark:text-white">
                     {option.label}
@@ -281,7 +281,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
                     setPriority(option.id);
                     setStep(3);
                   }}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-indigo-400 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-500"
+                  className="min-h-11 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-indigo-400 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-500"
                 >
                   <span className="block font-semibold text-slate-900 dark:text-white">
                     {option.label}
@@ -295,7 +295,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="mt-4 text-sm font-semibold text-indigo-700 underline-offset-4 hover:underline dark:text-indigo-300"
+              className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-indigo-700 underline-offset-4 hover:underline dark:text-indigo-300"
             >
               {text.restart}
             </button>
@@ -316,7 +316,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href={`/${locale}/compare/${recommendedComparison.slug}`}
-                className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {text.viewComparison}
                 <span aria-hidden="true" className="ml-2">→</span>
@@ -324,7 +324,7 @@ export default function StackWizard({ comparisons, locale }: StackWizardProps) {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                className="min-h-11 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 {text.restart}
               </button>
