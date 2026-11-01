@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Shared task: load and return products from the selected category.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configure private, durable object storage for product catalogue images.",
+    "tech1Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;",
+    "tech2Snippet": "import * as gcp from \"@pulumi/gcp\";\n\nconst productImages = new gcp.storage.Bucket(\"product-images\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n  publicAccessPrevention: \"enforced\",\n  versioning: { enabled: true },\n});\nexport const productImageBucketName = productImages.name;"
   },
   "introduction": "AWS and Google Cloud address a related need, but differ in breadth of services and ecosystem maturity. AWS: AWS offers the widest catalog of cloud services, spanning infrastructure, databases, AI/ML, IoT, media and specialty… Google Cloud: Google Cloud covers the core infrastructure services well and has strong managed offerings for data, analytics,… The compute options and workload flexibility criterion adds another practical distinction: AWS provides EC2 virtual machines, Lambda serverless functions, container services including ECS and EKS, and… The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {

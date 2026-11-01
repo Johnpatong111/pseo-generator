@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Shared task: load and return products from the selected category.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configure private, durable object storage for product catalogue images.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;",
+    "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
   "introduction": "Pulumi and AWS address a related need, but differ in core purpose and scope. Pulumi: Pulumi is an infrastructure-as-code platform that lets teams define and manage cloud resources using general-purpose… AWS: AWS is a cloud platform offering compute, storage, networking, databases, and many managed services, not a single IaC… The language and developer experience criterion adds another practical distinction: Pulumi's primary advantage is that engineers can use familiar programming languages, enabling loops, conditionals,… The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {

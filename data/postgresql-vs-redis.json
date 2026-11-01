@@ -32,5 +32,10 @@
       "q": "When should I choose Redis over PostgreSQL?",
       "a": "Choose Redis for caching, session management, real-time leaderboards, pub/sub messaging, and any scenario requiring sub-millisecond latency and high throughput with ephemeral data."
     }
-  ]
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  }
 }

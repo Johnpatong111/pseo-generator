@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configurez un stockage objet privé et durable pour les images du catalogue.",
+    "tech1Snippet": "import * as gcp from \"@pulumi/gcp\";\n\nconst productImages = new gcp.storage.Bucket(\"product-images\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n  publicAccessPrevention: \"enforced\",\n  versioning: { enabled: true },\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;"
   },
   "faq": [
     {

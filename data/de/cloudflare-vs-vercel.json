@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Richte privaten, dauerhaften Objektspeicher für Produktkatalogbilder ein.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.vercel.com/v13/deployments\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}"
   },
   "faq": [
     {

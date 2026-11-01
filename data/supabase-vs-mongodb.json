@@ -1,1 +1,41 @@
-{"slug":"supabase-vs-mongodb","meta":{"title":"Supabase vs MongoDB (2026) - Which is better?","description":"Comparison of Supabase vs MongoDB."},"toolA":{"name":"Supabase"},"toolB":{"name":"MongoDB"},"verdict":"Supabase jest lepszym wyborem dla zespołów, które chcą relacyjnej bazy PostgreSQL z gotowym backendem (auth, storage, realtime, edge functions) i szybkim startem produktu. MongoDB sprawdzi się tam, gdzie kluczowa jest elastyczna, dokumentowa struktura danych, szeroka skalowalność pozioma i dojrzały ekosystem dla aplikacji o zmiennym schemacie.","faq":[{"q":"Is Supabase better than MongoDB?","a":"Nie ma jednoznacznej odpowiedzi - Supabase jest lepszy, gdy potrzebujesz relacyjnego SQL, wbudowanego auth/storage i szybkiego MVP, a MongoDB gdy potrzebujesz elastycznych dokumentów i skalowania poziomego przy zmiennym schemacie."},{"q":"Does Supabase use PostgreSQL?","a":"Tak, Supabase opiera się na PostgreSQL i udostępnia go przez API REST, GraphQL oraz realtime, zachowując pełną moc relacyjnej bazy danych."},{"q":"Is MongoDB free to use?","a":"MongoDB oferuje darmowy tier Atlas oraz w pełni open-source Community Edition; płatne są zaawansowane funkcje enterprise i wyższe limity chmury."},{"q":"Which is better for a startup MVP?","a":"Dla większości MVP Supabase bywa szybszy, bo dostarcza bazę, auth, storage i realtime w jednym; MongoDB wybierz, jeśli model danych jest dokumentowy i ma się często zmieniać."},{"q":"Can Supabase replace MongoDB?","a":"Częściowo - Supabase może przechowywać dane JSON w PostgreSQL, ale nie jest natywną bazą dokumentową; przy złożonych dokumentach i skalowaniu NoSQL MongoDB pozostaje lepszym wyborem."}]}
+{
+  "slug": "supabase-vs-mongodb",
+  "meta": {
+    "title": "Supabase vs MongoDB (2026) - Which is better?",
+    "description": "Comparison of Supabase vs MongoDB."
+  },
+  "toolA": {
+    "name": "Supabase"
+  },
+  "toolB": {
+    "name": "MongoDB"
+  },
+  "verdict": "Supabase jest lepszym wyborem dla zespołów, które chcą relacyjnej bazy PostgreSQL z gotowym backendem (auth, storage, realtime, edge functions) i szybkim startem produktu. MongoDB sprawdzi się tam, gdzie kluczowa jest elastyczna, dokumentowa struktura danych, szeroka skalowalność pozioma i dojrzały ekosystem dla aplikacji o zmiennym schemacie.",
+  "faq": [
+    {
+      "q": "Is Supabase better than MongoDB?",
+      "a": "Nie ma jednoznacznej odpowiedzi - Supabase jest lepszy, gdy potrzebujesz relacyjnego SQL, wbudowanego auth/storage i szybkiego MVP, a MongoDB gdy potrzebujesz elastycznych dokumentów i skalowania poziomego przy zmiennym schemacie."
+    },
+    {
+      "q": "Does Supabase use PostgreSQL?",
+      "a": "Tak, Supabase opiera się na PostgreSQL i udostępnia go przez API REST, GraphQL oraz realtime, zachowując pełną moc relacyjnej bazy danych."
+    },
+    {
+      "q": "Is MongoDB free to use?",
+      "a": "MongoDB oferuje darmowy tier Atlas oraz w pełni open-source Community Edition; płatne są zaawansowane funkcje enterprise i wyższe limity chmury."
+    },
+    {
+      "q": "Which is better for a startup MVP?",
+      "a": "Dla większości MVP Supabase bywa szybszy, bo dostarcza bazę, auth, storage i realtime w jednym; MongoDB wybierz, jeśli model danych jest dokumentowy i ma się często zmieniać."
+    },
+    {
+      "q": "Can Supabase replace MongoDB?",
+      "a": "Częściowo - Supabase może przechowywać dane JSON w PostgreSQL, ale nie jest natywną bazą dokumentową; przy złożonych dokumentach i skalowaniu NoSQL MongoDB pozostaje lepszym wyborem."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
+  }
+}

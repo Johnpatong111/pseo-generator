@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Richte privaten, dauerhaften Objektspeicher für Produktkatalogbilder ein.",
+    "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Docker\" },\n  });\n  await container.start();\n}",
+    "tech2Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Podman\" },\n  });\n  await container.start();\n}"
   },
   "faq": [
     {

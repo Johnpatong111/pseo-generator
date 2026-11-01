@@ -94,5 +94,10 @@
       "q": "Od czego zacząć wybór między Redis a Memcached?",
       "a": "Najpierw zdefiniuj, czy potrzebujesz trwałości, struktur danych, pub/sub lub skryptów — jeśli tak, Redis jest naturalnym kandydatem. Jeśli wystarczy ulotny cache kluc-wartość i zależy Ci na prostocie, Memcached może być wystarczający. Następnie sprawdź wymagania bezpieczeństwa, skalowania i kosztów w wybranym środowisku."
     }
-  ]
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\ntype MemcachedReader = {\n  get(key: string): Promise<string | null>;\n};\n\nexport async function listProducts(cache: MemcachedReader, productIds: readonly string[], categoryId: string) {\n  const values = await Promise.all(\n    productIds.slice(0, 50).map((id) => cache.get(`product:${id}`)),\n  );\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  }
 }

@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Richte privaten, dauerhaften Objektspeicher für Produktkatalogbilder ein.",
+    "tech1Snippet": "import { App, TerraformStack } from \"cdktf\";\nimport { S3Bucket } from \"@cdktf/provider-aws/lib/s3-bucket\";\nimport { S3BucketPublicAccessBlock } from \"@cdktf/provider-aws/lib/s3-bucket-public-access-block\";\nimport { Construct } from \"constructs\";\n\nclass ProductMediaStack extends TerraformStack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n    const bucket = new S3Bucket(this, \"productImages\", {\n      bucketPrefix: \"product-catalog-images-\",\n      forceDestroy: false,\n    });\n    new S3BucketPublicAccessBlock(this, \"privateImages\", {\n      bucket: bucket.id,\n      blockPublicAcls: true,\n      blockPublicPolicy: true,\n      ignorePublicAcls: true,\n      restrictPublicBuckets: true,\n    });\n  }\n}\n\nnew ProductMediaStack(new App(), \"product-media\");",
+    "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
   "faq": [
     {

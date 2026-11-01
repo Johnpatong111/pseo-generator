@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
-    "tech2Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}"
+    "scenario": "Chargez les produits actifs d’une catégorie avec le modèle de données du framework et renvoyez une liste typée.",
+    "tech1Snippet": "import { notFound } from \"next/navigation\";\nimport { productRepository } from \"@/lib/products\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport default async function CategoryPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) notFound();\n\n  const products: Product[] = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import { createResource } from \"solid-js\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nasync function loadProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50&sort=name`,\n  );\n  if (!response.ok) throw new Error(`Product request failed: ${response.status}`);\n  return (await response.json()) as Product[];\n}\n\nexport function createCategoryProducts(categoryId: () => string) {\n  return createResource(categoryId, loadProducts);\n}"
   },
   "faq": [
     {

@@ -1,1 +1,49 @@
-{"slug":"firebase-vs-postgresql","meta":{"title":"Firebase vs PostgreSQL (2026) - Which is better?","description":"Comparison of Firebase vs PostgreSQL: scalability, costs, vendor lock-in, real-time capabilities and when to choose each."},"toolA":{"name":"Firebase"},"toolB":{"name":"PostgreSQL"},"verdict":"Firebase wygrywa przy szybkim budowaniu aplikacji mobilnych i webowych z real-time, autoryzacją i hostingiem bez zarządzania serwerami. PostgreSQL jest lepszy dla systemów wymagających złożonych relacji, transakcji, SQL i pełnej kontroli nad danymi.","faq":[{"q":"Is Firebase better than PostgreSQL?","a":"To zależy od projektu: Firebase jest szybszy we wdrożeniu i oferuje gotowe usługi (Auth, Firestore, Cloud Functions), ale ma ograniczenia w zapytaniach i vendor lock-in. PostgreSQL oferuje pełny SQL, transakcje ACID, elastyczne modelowanie i brak uzależnienia od dostawcy, kosztem większego nakładu pracy operacyjnej."},{"q":"When should I use Firebase instead of PostgreSQL?","a":"Gdy potrzebujesz szybkiego MVP, real-time sync, uwierzytelniania i hostingu z minimalnym DevOps, a dane mają prostą strukturę lub są dokumentowe. Idealny dla startupów i aplikacji mobilnych."},{"q":"When should I use PostgreSQL instead of Firebase?","a":"Gdy wymagane są złożone relacje, raportowanie SQL, silne transakcje, integracje BI lub kontrola nad infrastrukturą i unikanie vendor lock-in. Dobre dla systemów finansowych, ERP i aplikacji o rosnącej złożoności danych."},{"q":"Does Firebase support SQL?","a":"Nie w klasycznym sensie. Firestore i Realtime Database to bazy NoSQL. SQL jest dostępny pośrednio przez BigQuery (eksport) lub Cloud SQL (osobny produkt PostgreSQL/MySQL), ale nie jest to natywna funkcja Firestore."},{"q":"Is PostgreSQL harder to scale than Firebase?","a":"PostgreSQL wymaga planowania skalowania (repliki, sharding, connection pooling), podczas gdy Firebase skaluje się automatycznie. Jednak PostgreSQL przy odpowiedniej architekturze obsługuje bardzo duże obciążenia i daje przewidywalne koszty."},{"q":"Which is cheaper, Firebase or PostgreSQL?","a":"Firebase ma darmowy plan i płatność za użycie, co bywa tanie na starcie, ale koszty rosną przy dużym ruchu. PostgreSQL jest darmowy jako oprogramowanie, lecz koszty generuje hosting i DevOps; przy dużym obciążeniu często wychodzi taniej."},{"q":"Can Firebase replace a backend entirely?","a":"Częściowo: oferuje Auth, bazę, storage, functions i hosting, co wystarcza dla wielu aplikacji. Brakuje jednak elastyczności pełnego backendu i zaawansowanych zapytań relacyjnych, więc złożone systemy zwykle wymagają dodatkowej warstwy serwerowej."}]}
+{
+  "slug": "firebase-vs-postgresql",
+  "meta": {
+    "title": "Firebase vs PostgreSQL (2026) - Which is better?",
+    "description": "Comparison of Firebase vs PostgreSQL: scalability, costs, vendor lock-in, real-time capabilities and when to choose each."
+  },
+  "toolA": {
+    "name": "Firebase"
+  },
+  "toolB": {
+    "name": "PostgreSQL"
+  },
+  "verdict": "Firebase wygrywa przy szybkim budowaniu aplikacji mobilnych i webowych z real-time, autoryzacją i hostingiem bez zarządzania serwerami. PostgreSQL jest lepszy dla systemów wymagających złożonych relacji, transakcji, SQL i pełnej kontroli nad danymi.",
+  "faq": [
+    {
+      "q": "Is Firebase better than PostgreSQL?",
+      "a": "To zależy od projektu: Firebase jest szybszy we wdrożeniu i oferuje gotowe usługi (Auth, Firestore, Cloud Functions), ale ma ograniczenia w zapytaniach i vendor lock-in. PostgreSQL oferuje pełny SQL, transakcje ACID, elastyczne modelowanie i brak uzależnienia od dostawcy, kosztem większego nakładu pracy operacyjnej."
+    },
+    {
+      "q": "When should I use Firebase instead of PostgreSQL?",
+      "a": "Gdy potrzebujesz szybkiego MVP, real-time sync, uwierzytelniania i hostingu z minimalnym DevOps, a dane mają prostą strukturę lub są dokumentowe. Idealny dla startupów i aplikacji mobilnych."
+    },
+    {
+      "q": "When should I use PostgreSQL instead of Firebase?",
+      "a": "Gdy wymagane są złożone relacje, raportowanie SQL, silne transakcje, integracje BI lub kontrola nad infrastrukturą i unikanie vendor lock-in. Dobre dla systemów finansowych, ERP i aplikacji o rosnącej złożoności danych."
+    },
+    {
+      "q": "Does Firebase support SQL?",
+      "a": "Nie w klasycznym sensie. Firestore i Realtime Database to bazy NoSQL. SQL jest dostępny pośrednio przez BigQuery (eksport) lub Cloud SQL (osobny produkt PostgreSQL/MySQL), ale nie jest to natywna funkcja Firestore."
+    },
+    {
+      "q": "Is PostgreSQL harder to scale than Firebase?",
+      "a": "PostgreSQL wymaga planowania skalowania (repliki, sharding, connection pooling), podczas gdy Firebase skaluje się automatycznie. Jednak PostgreSQL przy odpowiedniej architekturze obsługuje bardzo duże obciążenia i daje przewidywalne koszty."
+    },
+    {
+      "q": "Which is cheaper, Firebase or PostgreSQL?",
+      "a": "Firebase ma darmowy plan i płatność za użycie, co bywa tanie na starcie, ale koszty rosną przy dużym ruchu. PostgreSQL jest darmowy jako oprogramowanie, lecz koszty generuje hosting i DevOps; przy dużym obciążeniu często wychodzi taniej."
+    },
+    {
+      "q": "Can Firebase replace a backend entirely?",
+      "a": "Częściowo: oferuje Auth, bazę, storage, functions i hosting, co wystarcza dla wielu aplikacji. Brakuje jednak elastyczności pełnego backendu i zaawansowanych zapytań relacyjnych, więc złożone systemy zwykle wymagają dodatkowej warstwy serwerowej."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const productQuery = query(\n    collection(db, \"products\"),\n    where(\"categoryId\", \"==\", categoryId),\n    where(\"active\", \"==\", true),\n    orderBy(\"name\"),\n    limit(50),\n  );\n  const snapshot = await getDocs(productQuery);\n  return snapshot.docs.map((document) => {\n    const value = document.data();\n    return {\n      id: document.id,\n      name: String(value.name),\n      categoryId: String(value.categoryId),\n      active: value.active === true,\n      priceCents: Number(value.priceCents),\n    };\n  });\n}",
+    "tech2Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}"
+  }
+}

@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+    "scenario": "Exécutez une requête paramétrée sur les produits actifs, triée par nom et limitée à 50 lignes.",
+    "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "faq": [
     {

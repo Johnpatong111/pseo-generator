@@ -124,9 +124,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Ejecuta una consulta parametrizada de productos activos, ordenada por nombre y limitada a 50 filas.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "TypeORM y Mongoose responden a una necesidad similar, pero difieren en bases de datos y modelo de datos. TypeORM: TypeORM está diseñado en torno a entidades y repositorios con soporte para motores relacionales como PostgreSQL,… Mongoose: Mongoose es un ODM específico para MongoDB y no pretende abstraer bases de datos relacionales. El criterio de tipado y experiencia con typescript añade otra diferencia práctica: TypeORM está escrito en TypeScript y ofrece decoradores, entidades tipadas y repositorios genéricos que facilitan el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

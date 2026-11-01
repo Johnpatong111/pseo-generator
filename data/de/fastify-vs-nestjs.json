@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
-    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
+    "scenario": "Verarbeite eine gefilterte HTTP-Anfrage für aktive Produkte, validiere die Kategorie und begrenze die Ergebnisse.",
+    "tech1Snippet": "import Fastify from \"fastify\";\nimport { productRepository } from \"./products\";\n\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\n  \"/api/products\",\n  async (request, reply) => {\n    const categoryId = request.query.category;\n    if (!categoryId?.trim()) {\n      return reply.code(400).send({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return { products };\n  },\n);",
+    "tech2Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}"
   },
   "faq": [
     {

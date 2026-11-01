@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configura almacenamiento de objetos privado y duradero para imágenes del catálogo.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;",
+    "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
   "introduction": "Pulumi y AWS responden a una necesidad similar, pero difieren en modelo de producto y propósito. Pulumi: Pulumi es una plataforma de infraestructura como código que permite declarar recursos de nube mediante lenguajes de… AWS: AWS es un proveedor de nube pública con un catálogo amplio de servicios de cómputo, almacenamiento, redes, datos e… El criterio de lenguajes y curva de aprendizaje añade otra diferencia práctica: Pulumi admite TypeScript, JavaScript, Python, Go, C# y Java, lo que permite reutilizar conocimientos y bibliotecas del… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

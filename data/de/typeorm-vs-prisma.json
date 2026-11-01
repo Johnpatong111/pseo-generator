@@ -56,9 +56,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
-    "tech2Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();"
+    "scenario": "Führe eine parametrisierte Abfrage aktiver Produkte aus, sortiert nach Name und auf 50 Zeilen begrenzt.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nexport async function listProducts(categoryId: string) {\n  return prisma.product.findMany({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    orderBy: { name: \"asc\" },\n    take: 50,\n  });\n}"
   },
   "faq": [
     {

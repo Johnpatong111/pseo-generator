@@ -56,9 +56,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Richte privaten, dauerhaften Objektspeicher für Produktkatalogbilder ein.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
   "faq": [
     {

@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+    "scenario": "Produisez une réponse étayée sur le catalogue : récupérez les éléments pertinents et synthétisez uniquement les faits du contexte.",
+    "tech1Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}",
+    "tech2Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}"
   },
   "faq": [
     {

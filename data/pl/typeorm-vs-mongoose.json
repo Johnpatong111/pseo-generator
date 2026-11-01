@@ -126,9 +126,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
-    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "TypeORM i Mongoose odpowiadają na podobną potrzebę, ale różnią się w obszarze obsługiwane typy baz danych. TypeORM: TypeORM powstał z myślą o relacyjnych bazach danych i obsługuje m.in. Mongoose: Mongoose jest projektowany przede wszystkim dla MongoDB i korzysta ze sterownika oficjalnego. Kolejną istotną różnicę pokazuje kryterium „Modelowanie danych i schematy”: TypeORM opisuje strukturę danych za pomocą encji i dekoratorów lub schematów, co dobrze odwzorowuje tabele, relacje i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {

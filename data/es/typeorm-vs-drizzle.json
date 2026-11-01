@@ -120,9 +120,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
-    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
+    "scenario": "Ejecuta una consulta parametrizada de productos activos, ordenada por nombre y limitada a 50 filas.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nexport async function listProducts(categoryId: string) {\n  return db\n    .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n    .from(products)\n    .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n    .orderBy(asc(products.name))\n    .limit(50);\n}"
   },
   "introduction": "TypeORM y Drizzle ORM responden a una necesidad similar, pero difieren en madurez y estabilidad del proyecto. TypeORM: TypeORM es un ORM consolidado con años de desarrollo y una base amplia de usuarios en el ecosistema Node.js y… Drizzle ORM: Drizzle ORM es un proyecto más reciente que ha ganado adopción por su enfoque ligero y tipado. El criterio de tipado y seguridad de tipos en typescript añade otra diferencia práctica: TypeORM ofrece tipado a través de decoradores y definiciones de entidades, pero en consultas complejas con query… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "import type { ReactNode } from \"react\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\ntype ProductListProps = { products: Product[]; categoryId: string };\n\nexport function ProductList({ products, categoryId }: ProductListProps): ReactNode {\n  const visible = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n  return <ul>{visible.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
-    "tech2Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>"
+    "scenario": "Lade aktive Produkte einer Kategorie mit dem Datenmodell des Frameworks und gib eine typisierte Liste zurück.",
+    "tech1Snippet": "import type { ReactNode } from \"react\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function CategoryProducts({ products, categoryId }: {\n  products: Product[];\n  categoryId: string;\n}): ReactNode {\n  const visible = products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name))\n    .slice(0, 50);\n  return <ul>{visible.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import type { PageServerLoad } from \"./$types\";\nimport { productRepository } from \"$lib/server/products\";\n\nexport const load: PageServerLoad = async ({ url }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) return { products: [], error: \"category is required\" };\n\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n};"
   },
   "faq": [
     {

@@ -3,7 +3,7 @@ const path = require("node:path");
 const { loadEnvConfig } = require("@next/env");
 const OpenAI = require("openai");
 const { categories, comparisonSlugs } = require("./topics");
-const { createCodeExamples, scenarios } = require("../lib/snippet-catalog.cjs");
+const { createCodeExamples } = require("../lib/snippet-catalog.cjs");
 
 const projectRoot = path.resolve(__dirname, "..");
 loadEnvConfig(projectRoot);
@@ -818,10 +818,7 @@ function validateComparison(value, slug, toolA, toolB, locale) {
   });
 
   const categoryId = getCategoryId(slug);
-  const codeExamples = {
-    scenario: scenarios[locale],
-    ...createCodeExamples(slug, categoryId),
-  };
+  const codeExamples = createCodeExamples(slug, categoryId, locale);
 
   return {
     slug,

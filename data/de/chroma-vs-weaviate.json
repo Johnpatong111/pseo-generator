@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+    "scenario": "Erstelle eine beleggestützte Katalogantwort: Rufe passende Datensätze ab und fasse nur Fakten aus dem Kontext zusammen.",
+    "tech1Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}",
+    "tech2Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}"
   },
   "faq": [
     {

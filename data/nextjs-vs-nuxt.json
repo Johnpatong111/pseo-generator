@@ -94,5 +94,10 @@
       "q": "Jakie kryteria warto sprawdzić przed wyborem Next.js lub Nuxt?",
       "a": "Najważniejsze są kompetencje zespołu, wymagania dotyczące renderowania, hosting i skalowanie, bezpieczeństwo oraz dostępność potrzebnych integracji. Warto też ocenić koszty operacyjne i plan utrzymania. Praktyczny test na małym prototypie często dostarcza więcej informacji niż ogólne porównania."
     }
-  ]
+  ],
+  "codeExamples": {
+    "scenario": "Załaduj aktywne produkty wybranej kategorii w modelu danych danego frameworka i zwróć typowaną listę.",
+    "tech1Snippet": "import { notFound } from \"next/navigation\";\nimport { productRepository } from \"@/lib/products\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport default async function CategoryPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) notFound();\n\n  const products: Product[] = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function useCategoryProducts(categoryId: string) {\n  if (!categoryId.trim()) throw new Error(\"category is required\");\n  return useAsyncData<Product[]>(\n    `products:${categoryId}`,\n    () => $fetch(\"/api/products\", {\n      query: { category: categoryId, active: true, limit: 50, sort: \"name\" },\n    }),\n  );\n}"
+  }
 }

@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
-    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nexport async function listProducts(categoryId: string) {\n  return prisma.product.findMany({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    orderBy: { name: \"asc\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "Prisma i Mongoose odpowiadają na podobną potrzebę, ale różnią się w obszarze modelowanie danych i bezpieczeństwo typów. Prisma: Prisma opiera się na pliku schematu, z którego generuje typowany klient. Mongoose: Mongoose definiuje modele w kodzie i pozwala opisywać strukturę dokumentów, ale typowanie w TypeScripcie jest warstwą… Kolejną istotną różnicę pokazuje kryterium „Wsparcie baz danych i przenośność”: Prisma obsługuje relacyjne bazy danych oraz MongoDB, choć poziom wsparcia poszczególnych funkcji różni się w… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {

@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Skonfiguruj trwały, prywatny magazyn obiektów dla obrazów katalogu produktów.",
+    "tech1Snippet": "import * as gcp from \"@pulumi/gcp\";\n\nconst productImages = new gcp.storage.Bucket(\"product-images\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n  publicAccessPrevention: \"enforced\",\n  versioning: { enabled: true },\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;"
   },
   "introduction": "Google Cloud i Cloudflare odpowiadają na podobną potrzebę, ale różnią się w obszarze zakres usług i model chmury obliczeniowej. Google Cloud: Google Cloud oferuje szeroki zestaw usług IaaS i PaaS: Compute Engine, Google Kubernetes Engine, Cloud Run, Cloud… Cloudflare: Cloudflare koncentruje się na sieci brzegowej i usługach okołoaplikacyjnych: CDN, DNS, WAF, ochronie DDoS, Workers i… Kolejną istotną różnicę pokazuje kryterium „Wydajność i rozmieszczenie geograficzne”: Google Cloud udostępnia centra danych w wielu regionach świata, a wydajność zależy od wybranego regionu, typu maszyny… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {

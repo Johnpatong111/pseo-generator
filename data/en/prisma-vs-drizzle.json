@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Shared task: load and return products from the selected category.",
-    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
-    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
+    "scenario": "Run a parameterized query for active products in one category, sorted by name and limited to 50 rows.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nexport async function listProducts(categoryId: string) {\n  return prisma.product.findMany({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    orderBy: { name: \"asc\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nexport async function listProducts(categoryId: string) {\n  return db\n    .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n    .from(products)\n    .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n    .orderBy(asc(products.name))\n    .limit(50);\n}"
   },
   "introduction": "Prisma and Drizzle ORM address a related need, but differ in type safety and developer experience. Prisma: Prisma generates a fully typed client from its schema file, so queries, relations, and select statements are… Drizzle ORM: Drizzle ORM infers types directly from your TypeScript schema definitions, giving strong type safety without a… The schema definition and query style criterion adds another practical distinction: Prisma uses a declarative schema language with models, relations, and attributes, plus a generated client with methods… The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {

@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Shared task: load and return products from the selected category.",
-    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Run a parameterized query for active products in one category, sorted by name and limited to 50 rows.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nexport async function listProducts(categoryId: string) {\n  return prisma.product.findMany({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    orderBy: { name: \"asc\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "Prisma and Mongoose address a related need, but differ in database model and primary target. Prisma: Prisma is built as an ORM with first-class support for relational databases such as PostgreSQL, MySQL, SQLite, SQL… Mongoose: Mongoose is an ODM designed specifically for MongoDB and models documents, embedded subdocuments, and MongoDB-specific… The schema definition and type safety criterion adds another practical distinction: Prisma uses a declarative Prisma Schema Language file as the single source of truth, then generates a typed client… The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {

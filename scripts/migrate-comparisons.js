@@ -1,7 +1,7 @@
 const { readdirSync, readFileSync, writeFileSync } = require("node:fs");
 const path = require("node:path");
 const { getCategoryId, getComparisonTitle, getMetaDescription } = require("./generate-comparisons");
-const { createCodeExamples, scenarios } = require("../lib/snippet-catalog.cjs");
+const { createCodeExamples } = require("../lib/snippet-catalog.cjs");
 
 const root = path.resolve(__dirname, "..");
 const dataRoot = path.join(root, "data");
@@ -189,10 +189,7 @@ function migrateFile(locale, fileName, directory = path.join(dataRoot, locale)) 
       toolA: distinctiveDetail(criterion.toolA),
       toolB: distinctiveDetail(criterion.toolB),
     })),
-    codeExamples: {
-      scenario: scenarios[locale],
-      ...createCodeExamples(slug, category),
-    },
+    codeExamples: createCodeExamples(slug, category, locale),
   };
   if (
     migrated.introduction.length < 180 ||

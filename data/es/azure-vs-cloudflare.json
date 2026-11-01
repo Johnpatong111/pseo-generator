@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as azure from \"@pulumi/azure-native\";\n\nconst productsStorage = new azure.storage.StorageAccount(\"products\", {\n  resourceGroupName: resourceGroup.name,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n});\n\nexport const productStorageId = productsStorage.id;",
-    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configura almacenamiento de objetos privado y duradero para imágenes del catálogo.",
+    "tech1Snippet": "import * as azure from \"@pulumi/azure-native\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst resourceGroupName = config.require(\"resourceGroupName\");\nconst account = new azure.storage.StorageAccount(\"product-media\", {\n  resourceGroupName,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n  allowBlobPublicAccess: false,\n  minimumTlsVersion: \"TLS1_2\",\n});\nexport const productStorageAccountName = account.name;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;"
   },
   "introduction": "Microsoft Azure y Cloudflare responden a una necesidad similar, pero difieren en cobertura de servicios en la nube. Microsoft Azure: Azure ofrece un catálogo amplio de servicios gestionados: máquinas virtuales, Kubernetes (AKS), bases de datos,… Cloudflare: Cloudflare se centra en la red de borde: CDN, protección DDoS y WAF, DNS, funciones Workers, almacenamiento KV y… El criterio de rendimiento y red global añade otra diferencia práctica: Azure cuenta con una red global de centros de datos y servicios de CDN y Front Door para distribuir contenido. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

@@ -32,5 +32,10 @@
       "q": "When should I choose Supabase over Redis?",
       "a": "Wybierz Supabase, gdy potrzebujesz relacyjnej bazy danych z zapytaniami SQL, autentykacją, przechowywaniem plików i gotowym backendem. Redis wybierz, gdy priorytetem jest ultraszybki dostęp do danych w pamięci, buforowanie lub kolejki."
     }
-  ]
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
+    "tech2Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  }
 }

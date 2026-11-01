@@ -287,7 +287,6 @@ export function getComparisonCodeExamples(
 
   const category = getComparisonCategories(comparison.slug)[0] ?? "general";
   return {
-    scenario: scenarios[comparison.locale],
-    ...createCodeExamples(comparison.slug, category),
+    ...createCodeExamples(comparison.slug, category, comparison.locale),
   };
 }

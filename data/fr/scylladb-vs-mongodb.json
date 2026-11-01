@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+    "scenario": "Exécutez une requête paramétrée sur les produits actifs, triée par nom et limitée à 50 lignes.",
+    "tech1Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "faq": [
     {

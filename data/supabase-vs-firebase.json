@@ -74,5 +74,10 @@
       "q": "Czy mogę używać Supabase i Firebase razem?",
       "a": "Tak. Możesz na przykład przechowywać dane aplikacji w Supabase, a używać Firebase Cloud Messaging do wysyłania powiadomień. Trzeba jednak zaplanować integrację uwierzytelniania i utrzymanie dwóch zestawów usług."
     }
-  ]
+  ],
+  "codeExamples": {
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
+    "tech2Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const productQuery = query(\n    collection(db, \"products\"),\n    where(\"categoryId\", \"==\", categoryId),\n    where(\"active\", \"==\", true),\n    orderBy(\"name\"),\n    limit(50),\n  );\n  const snapshot = await getDocs(productQuery);\n  return snapshot.docs.map((document) => {\n    const value = document.data();\n    return {\n      id: document.id,\n      name: String(value.name),\n      categoryId: String(value.categoryId),\n      active: value.active === true,\n      priceCents: Number(value.priceCents),\n    };\n  });\n}"
+  }
 }

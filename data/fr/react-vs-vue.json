@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
-    "tech1Snippet": "import type { ReactNode } from \"react\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\ntype ProductListProps = { products: Product[]; categoryId: string };\n\nexport function ProductList({ products, categoryId }: ProductListProps): ReactNode {\n  const visible = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n  return <ul>{visible.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
-    "tech2Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>"
+    "scenario": "Chargez les produits actifs d’une catégorie avec le modèle de données du framework et renvoyez une liste typée.",
+    "tech1Snippet": "import type { ReactNode } from \"react\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function CategoryProducts({ products, categoryId }: {\n  products: Product[];\n  categoryId: string;\n}): ReactNode {\n  const visible = products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name))\n    .slice(0, 50);\n  return <ul>{visible.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import { computed, type Ref } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function useCategoryProducts(products: Ref<Product[]>, categoryId: Ref<string>) {\n  return computed(() =>\n    products.value\n      .filter((product) => product.active && product.categoryId === categoryId.value)\n      .sort((left, right) => left.name.localeCompare(right.name))\n      .slice(0, 50),\n  );\n}"
   },
   "faq": [
     {

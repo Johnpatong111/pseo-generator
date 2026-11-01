@@ -124,9 +124,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
-    "tech2Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();"
+    "scenario": "Ejecuta una consulta parametrizada de productos activos, ordenada por nombre y limitada a 50 filas.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
+    "tech2Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nexport async function listProducts(categoryId: string) {\n  return prisma.product.findMany({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    orderBy: { name: \"asc\" },\n    take: 50,\n  });\n}"
   },
   "introduction": "TypeORM y Prisma responden a una necesidad similar, pero difieren en madurez y ecosistema. TypeORM: TypeORM lleva años en el ecosistema TypeScript y cuenta con una base amplia de usuarios, conectores para numerosas… Prisma: Prisma es un proyecto más reciente pero con evolución muy activa y una comunidad creciente. El criterio de sistema de tipos y experiencia de desarrollo añade otra diferencia práctica: TypeORM aprovecha los decoradores de TypeScript y el tipado de las entidades, aunque parte del tipado se resuelve en… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

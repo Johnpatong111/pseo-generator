@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
-    "tech1Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
-    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+    "scenario": "Lade aktive Produkte einer Kategorie mit dem Datenmodell des Frameworks und gib eine typisierte Liste zurück.",
+    "tech1Snippet": "import { notFound } from \"next/navigation\";\nimport { productRepository } from \"@/lib/products\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport default async function CategoryPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) notFound();\n\n  const products: Product[] = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import type { GetServerData } from \"gatsby\";\nimport { productRepository } from \"../models/products.server\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport const getServerData: GetServerData = async ({ query }) => {\n  const categoryId = typeof query.category === \"string\" ? query.category : \"\";\n  if (!categoryId) return { status: 400, props: { products: [] as Product[] } };\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { props: { products } };\n};"
   },
   "faq": [
     {

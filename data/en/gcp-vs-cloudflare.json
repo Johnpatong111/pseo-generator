@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Shared task: load and return products from the selected category.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configure private, durable object storage for product catalogue images.",
+    "tech1Snippet": "import * as gcp from \"@pulumi/gcp\";\n\nconst productImages = new gcp.storage.Bucket(\"product-images\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n  publicAccessPrevention: \"enforced\",\n  versioning: { enabled: true },\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;"
   },
   "introduction": "Google Cloud and Cloudflare address a related need, but differ in core platform scope and primary use cases. Google Cloud: Google Cloud is a broad infrastructure and platform provider offering virtual machines, managed Kubernetes, serverless… Cloudflare: Cloudflare is primarily an edge network and security platform, with products spanning CDN, DNS, DDoS mitigation, a web… The compute and application hosting criterion adds another practical distinction: Google Cloud offers Compute Engine VMs, Google Kubernetes Engine, Cloud Run for containers, and Cloud Functions,… The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {

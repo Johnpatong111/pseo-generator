@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
-    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+    "scenario": "Configura almacenamiento de objetos privado y duradero para imágenes del catálogo.",
+    "tech1Snippet": "import * as gcp from \"@pulumi/gcp\";\n\nconst productImages = new gcp.storage.Bucket(\"product-images\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n  publicAccessPrevention: \"enforced\",\n  versioning: { enabled: true },\n});\nexport const productImageBucketName = productImages.name;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;"
   },
   "introduction": "Google Cloud y Cloudflare responden a una necesidad similar, pero difieren en alcance de la plataforma y modelo de servicio. Google Cloud: Google Cloud es una nube pública de propósito general que cubre infraestructura como servicio, plataforma como… Cloudflare: Cloudflare empezó como red de distribución de contenido y seguridad perimetral y ha ampliado su oferta con computación… El criterio de red global y rendimiento de entrega añade otra diferencia práctica: Google Cloud dispone de una red propia con centros de datos en muchas regiones y ofrece balanceadores de carga, CDN y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

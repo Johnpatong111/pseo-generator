@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
-    "tech1Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Ejecuta una consulta parametrizada de productos activos, ordenada por nombre y limitada a 50 filas.",
+    "tech1Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nexport async function listProducts(categoryId: string) {\n  return db\n    .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n    .from(products)\n    .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n    .orderBy(asc(products.name))\n    .limit(50);\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "Drizzle ORM y Mongoose responden a una necesidad similar, pero difieren en modelo de datos y motor de base de datos. Drizzle ORM: Drizzle ORM está diseñado para bases de datos relacionales y SQL, con soporte para motores como PostgreSQL, MySQL y… Mongoose: Mongoose es un ODM orientado principalmente a MongoDB, por lo que trabaja con documentos y colecciones en lugar de… El criterio de tipado y seguridad en tiempo de compilación añade otra diferencia práctica: Drizzle ORM genera tipos a partir del esquema y ofrece una experiencia de tipado fuerte en TypeScript, lo que ayuda a… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {

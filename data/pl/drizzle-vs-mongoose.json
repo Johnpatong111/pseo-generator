@@ -130,9 +130,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
-    "tech1Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);",
-    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+    "scenario": "Wykonaj parametryzowane zapytanie o aktywne produkty kategorii, posortowane po nazwie i ograniczone do 50 rekordów.",
+    "tech1Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nexport async function listProducts(categoryId: string) {\n  return db\n    .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n    .from(products)\n    .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n    .orderBy(asc(products.name))\n    .limit(50);\n}",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
   "introduction": "Drizzle ORM i Mongoose odpowiadają na podobną potrzebę, ale różnią się w obszarze model bazodanowy i zgodność z silnikami. Drizzle ORM: Drizzle ORM projektowano przede wszystkim pod relacyjne bazy SQL, takie jak PostgreSQL, MySQL czy SQLite, i w tych… Mongoose: Mongoose powstał jako warstwa modelowania dokumentów dla MongoDB i jego API jest silnie związane z modelem… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo typów i wsparcie TypeScript”: Drizzle ORM stawia na wnioskowanie typów z definicji schematu, dzięki czemu zapytania i wyniki są zwykle typowane bez… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
