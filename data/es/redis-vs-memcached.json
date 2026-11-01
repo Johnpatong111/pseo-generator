@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached (2026): ¿Qué solución elegir?",
-    "description": "Comparativa actualizada de Redis y Memcached en 2026: estructuras de datos, escalabilidad, persistencia, seguridad y casos de uso para elegir bien tu caché."
+    "title": "Redis vs Memcached: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Redis y Memcached: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Redis"
@@ -94,5 +94,49 @@
       "q": "¿Qué debo revisar antes de elegir en 2026?",
       "a": "Comprueba la versión y licencia de la herramienta, las funciones de seguridad disponibles, el soporte de tu proveedor y la compatibilidad con tus clientes. También conviene revisar si necesitas persistencia, clúster o estructuras avanzadas, porque eso inclina la balanza hacia Redis. Si solo buscas caché simple y fácil de operar, Memcached sigue siendo una opción razonable."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Redis y Memcached cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Redis encaja mejor cuando tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados,…. Memcached es preferible cuando tu proyecto prioriza facilidad de operación y mantenimiento: Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración.",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y estructuras soportadas",
+      "toolA": "Esto permite implementar caché, colas ligeras, rankings, contadores o sesiones sin añadir otro sistema, aunque conviene valorar el consumo de memoria según la estructura elegida.",
+      "toolB": "Su simplicidad reduce la superficie de configuración y el consumo por operación, pero obliga a gestionar en la aplicación cualquier lógica de listas, colas o agregaciones."
+    },
+    {
+      "category": "Persistencia y durabilidad de los datos",
+      "toolA": "Esto permite usar Redis como caché o como almacén con cierta durabilidad, aunque los modos más seguros implican costes de rendimiento y la durabilidad absoluta no está garantizada en todas las configuraciones.",
+      "toolB": "Es una decisión de diseño coherente con su función de caché efímera, pero lo descarta para casos donde necesites recuperar el estado tras un fallo."
+    },
+    {
+      "category": "Rendimiento y latencia bajo carga",
+      "toolA": "Las versiones recientes han incorporado mejoras de E/S multihilo, y el rendimiento real depende mucho del tamaño de los valores, la red y la configuración del clúster.",
+      "toolB": "Para cargas de caché puras y valores pequeños suele ofrecer una latencia muy competitiva, si bien el rendimiento efectivo varía según la versión, el hardware y el patrón de acceso."
+    },
+    {
+      "category": "Escalabilidad y distribución",
+      "toolA": "Su operación es más compleja que un despliegue simple, y algunos comandos multiclave requieren que las claves compartan ranura o un enfoque alternativo.",
+      "toolB": "Esto simplifica el despliegue, pero traslada a la aplicación la gestión de fallos, la coherencia y la redistribución de claves cuando cambia el número de nodos."
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Aun así, una configuración incorrecta puede dejar instancias accesibles, por lo que conviene revisar bind, firewalls y credenciales antes de exponer el servicio.",
+      "toolB": "Existen variantes y proxies que añaden TLS o autenticación, pero no forman parte del núcleo estándar y deben evaluarse como componentes adicionales."
+    },
+    {
+      "category": "Ecosistema, clientes y comunidad",
+      "toolA": "Su licencia ha cambiado en los últimos años, por lo que conviene revisar las condiciones de la versión y del proveedor que vayas a usar.",
+      "toolB": "Su ecosistema es menos activo que el de Redis, y algunas funciones avanzadas dependen de librerías o proxies de terceros."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Redis y Memcached responden a una necesidad similar, pero difieren en modelo de datos y estructuras soportadas. Redis: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs,… Memcached: Memcached está diseñado como una caché clave-valor pura: almacena blobs opacos asociados a una clave y no interpreta… El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: Redis ofrece persistencia mediante RDB (instantáneas) y AOF (registro de operaciones), con distintos niveles de fsync… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados,…",
+    "toolB": "tu proyecto prioriza facilidad de operación y mantenimiento: Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración."
+  }
 }

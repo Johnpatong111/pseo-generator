@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-gemini-2-5-pro",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Gemini 2.5 Pro (2026): Which option should you choose?",
-    "description": "Compare Claude 3.7 Sonnet and Gemini 2.5 Pro on context window, benchmarks, API pricing, latency, availability, and use cases to pick the right AI model for your needs in 2026."
+    "title": "Claude 3.7 Sonnet vs Gemini 2.5 Pro: Which one to choose in 2026? (models, context & API pricing & code compared)",
+    "description": "Compare Claude 3.7 Sonnet and Gemini 2.5 Pro architectural trade-offs, context windows, model APIs, and integration, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nmessage = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(message.content[0].text)",
-    "tech2Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"YOUR_API_KEY\")\nmodel = genai.GenerativeModel('gemini-2.5-pro')\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)"
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "How do safety and alignment features compare?",
       "a": "Claude 3.7 Sonnet is built with Anthropic's Constitutional AI and extensive safety measures, often preferred for sensitive applications. Gemini 2.5 Pro also includes robust safety filters and customization options, but Anthropic's approach is more transparent and widely adopted for enterprise safety requirements."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between Claude 3.7 Sonnet and Gemini 2.5 Pro changes how a project handles context retrieval and model integration, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "Claude 3.7 Sonnet is the better fit when your project prioritizes benchmark performance: published results on mmlu and humaneval: Anthropic reports Claude 3.7 Sonnet achieving around 86.5% on MMLU and 92% on HumanEval in its…. Gemini 2.5 Pro is a stronger fit when your project prioritizes context window: maximum input tokens per request: Gemini 2.5 Pro provides a context window of up to 1 million tokens (or 2 million in some preview….",
+  "tradeoffs": [
+    {
+      "category": "Context window: maximum input tokens per request",
+      "toolA": "This is sufficient for long documents and codebases, but exact limits depend on the plan and region.",
+      "toolB": "The exact limit may vary by access tier and model version."
+    },
+    {
+      "category": "Benchmark performance: published results on MMLU and HumanEval",
+      "toolA": "These scores are version-specific and may vary with evaluation settings.",
+      "toolB": "While slightly lower on these benchmarks, it excels in multimodal tasks not captured by these metrics."
+    },
+    {
+      "category": "API pricing per 1M input/output tokens",
+      "toolA": "Pricing may differ for enterprise or high-volume usage and is subject to change.",
+      "toolB": "Prices are version-dependent and should be verified on Google's official pricing page."
+    },
+    {
+      "category": "Latency and throughput: typical response times",
+      "toolA": "Actual performance depends on load and deployment region.",
+      "toolB": "Google provides performance tiers and caching options to manage latency."
+    },
+    {
+      "category": "Model access and open/closed availability",
+      "toolA": "Access requires an API key and adherence to Anthropic's usage policies; no open weights are provided.",
+      "toolB": "It offers free tiers for experimentation and enterprise integration via Google Cloud."
+    },
+    {
+      "category": "Practical use cases: ideal applications",
+      "toolA": "It is also well-suited for customer support and content moderation.",
+      "toolB": "It integrates seamlessly with Google Workspace and Cloud services."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet and Gemini 2.5 Pro address a related need, but differ in context window: maximum input tokens per request. Claude 3.7 Sonnet: Claude 3.7 Sonnet offers a 200,000-token context window on the Anthropic API, with some enterprise configurations… Gemini 2.5 Pro: Gemini 2.5 Pro provides a context window of up to 1 million tokens (or 2 million in some preview versions), enabling… The benchmark performance: published results on mmlu and humaneval criterion adds another practical distinction: Anthropic reports Claude 3.7 Sonnet achieving around 86.5% on MMLU and 92% on HumanEval in its official benchmarks,… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes benchmark performance: published results on mmlu and humaneval: Anthropic reports Claude 3.7 Sonnet achieving around 86.5% on MMLU and 92% on HumanEval in its…",
+    "toolB": "your project prioritizes context window: maximum input tokens per request: Gemini 2.5 Pro provides a context window of up to 1 million tokens (or 2 million in some preview…"
+  }
 }

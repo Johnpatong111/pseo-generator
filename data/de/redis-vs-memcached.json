@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached (2026): welche Lösung passt besser?",
-    "description": "Redis vs Memcached im Vergleich 2026: Datenmodelle, Persistenz, Clustering, Skalierung, Sicherheit und Betrieb. So treffen Sie die passende Wahl für Ihr Projekt."
+    "title": "Redis vs Memcached: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche Redis und Memcached: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Redis"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import redis\n\nclient = redis.Redis(host=\"localhost\", port=6379, decode_responses=True)\nclient.set(\"greeting\", \"Hallo, Welt!\")\nprint(client.get(\"greeting\"))",
-    "tech2Snippet": "from pymemcache.client.base import Client\n\nclient = Client((\"localhost\", 11211))\nclient.set(\"greeting\", \"Hallo, Welt!\")\nprint(client.get(\"greeting\").decode(\"utf-8\"))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es eine pauschale Empfehlung für 2026?",
       "a": "Eine pauschale Empfehlung wäre unseriös, weil beide Systeme ausgereift sind und ihre Stärken in unterschiedlichen Szenarien haben. Für reines, einfaches Caching ist Memcached oft ausreichend und leichtgewichtig, für vielseitige In-Memory-Anwendungsfälle ist Redis meist die flexiblere Wahl. Entscheidend sind Anforderungen, Betriebsmodell und die Erfahrung des Teams."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Redis und Memcached verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Redis passt besser, wenn dein Projekt priorisiert Datenmodell und Datenstrukturen: Redis bietet neben einfachen Strings eine breite Auswahl an Datenstrukturen wie Listen, Sets,…. Memcached ist geeigneter, wenn dein Projekt priorisiert Einsatz als reiner Cache: Memcached ist auf reines Caching spezialisiert und dadurch konzeptionell einfach: Werte mit TTL,….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Datenstrukturen",
+      "toolA": "Der genaue Funktionsumfang hängt von der eingesetzten Redis-Version ab.",
+      "toolB": "Komplexe Datenstrukturen müssen clientseitig serialisiert und verwaltet werden, was mehr Anwendungslogik bedeutet, aber das serverseitige Modell sehr berechenbar hält."
+    },
+    {
+      "category": "Persistenz und Datenverlust",
+      "toolA": "Für einen reinen Cache-Betrieb lässt sich Persistenz auch abschalten, um Overhead zu vermeiden.",
+      "toolB": "Wer dauerhafte Daten benötigt, muss diese außerhalb von Memcached speichern."
+    },
+    {
+      "category": "Skalierung und Clustering",
+      "toolA": "Details unterscheiden sich je nach eingesetzter Redis-Version oder verwaltetem Dienst.",
+      "toolB": "Das macht den Betrieb schlank, verlagert aber Verantwortung in die Anwendung."
+    },
+    {
+      "category": "Leistung und Speicherverwaltung",
+      "toolA": "Pauschale Leistungsaussagen sind ohne konkreten Benchmark nicht seriös.",
+      "toolB": "Auch hier gilt: konkrete Durchsatzwerte sind arbeitslast- und konfigurationsabhängig."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Welche Schutzfunktionen verfügbar sind, richtet sich nach der eingesetzten Version und dem Betriebsmodell.",
+      "toolB": "In offenen Netzen ist Memcached ohne zusätzliche Maßnahmen riskant."
+    },
+    {
+      "category": "Ökosystem, Clients und Betrieb",
+      "toolA": "Verwaltete Varianten können Funktionen und Preise je nach Anbieter und Tarif einschränken.",
+      "toolB": "Für reines Caching ist das Ökosystem meist völlig ausreichend."
+    }
+  ],
+  "introduction": "Redis und Memcached lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und datenstrukturen. Redis: Redis bietet neben einfachen Strings eine breite Auswahl an Datenstrukturen wie Listen, Sets, sortierte Sets, Hashes,… Memcached: Memcached ist bewusst als verteilter Key-Value-Speicher für flache Werte konzipiert und speichert im Kern Strings… Das Kriterium persistenz und datenverlust zeigt einen weiteren praktischen Unterschied: Redis kann Daten über RDB-Snapshots und AOF-Logs auf die Festplatte schreiben, wobei Grad der Dauerhaftigkeit,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Datenstrukturen: Redis bietet neben einfachen Strings eine breite Auswahl an Datenstrukturen wie Listen, Sets,…",
+    "toolB": "dein Projekt priorisiert Einsatz als reiner Cache: Memcached ist auf reines Caching spezialisiert und dadurch konzeptionell einfach: Werte mit TTL,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-llama-3-3",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Llama 3.3 (2026): ¿Qué solución elegir?",
-    "description": "Comparativa detallada entre Claude 3.7 Sonnet y Llama 3.3: ventana de contexto, rendimiento, precios de API, latencia, acceso y casos de uso para elegir en 2026."
+    "title": "Claude 3.7 Sonnet vs Llama 3.3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Claude 3.7 Sonnet y Llama 3.3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"])\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-8B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "¿Qué modelo tiene mejor latencia para aplicaciones en tiempo real?",
       "a": "La latencia de Claude 3.7 Sonnet depende de la carga del servicio y de la región, y Anthropic no garantiza tiempos fijos, aunque al ser gestionado suele ofrecer un rendimiento predecible. Llama 3.3 puede lograr latencias muy bajas si se ejecuta en hardware dedicado y optimizado, pero variará según la implementación y la carga. Para aplicaciones en tiempo real, es imprescindible medir en el entorno concreto y considerar técnicas como streaming o caché."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Claude 3.7 Sonnet y Llama 3.3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Claude 3.7 Sonnet encaja mejor cuando tu proyecto prioriza ventana de contexto y manejo de entradas largas: Claude 3.7 Sonnet, según la documentación de Anthropic, admite una ventana de contexto amplia que…. Llama 3.3 es preferible cuando tu proyecto prioriza precio de api por millón de tokens (entrada/salida): Llama 3.3, al ser un modelo abierto, no tiene un precio de API único; el coste depende del….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y manejo de entradas largas",
+      "toolA": "En la práctica, es adecuado para tareas que requieren mantener coherencia sobre grandes volúmenes de texto, aunque el rendimiento puede degradarse en los extremos del contexto.",
+      "toolB": "Esto ofrece flexibilidad, pero exige una gestión técnica mayor para aprovechar contextos largos sin penalizar el rendimiento."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU y HumanEval)",
+      "toolA": "Se recomienda consultar los informes oficiales actualizados y realizar pruebas propias con datos representativos.",
+      "toolB": "Además, las comparaciones directas entre modelos deben hacerse con la misma configuración y versión para ser justas."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "No se deben asumir tarifas fijas sin verificar la fecha y las condiciones de facturación.",
+      "toolB": "Esta flexibilidad permite optimizar costes, pero requiere comparar opciones y considerar los gastos de operación y mantenimiento."
+    },
+    {
+      "category": "Latencia y rendimiento en producción",
+      "toolA": "Para aplicaciones sensibles a la latencia, es recomendable medir en el entorno real y considerar el uso de streaming.",
+      "toolB": "No hay una cifra única de latencia; se debe evaluar en el contexto de despliegue."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto vs",
+      "toolA": "El acceso está sujeto a los términos de servicio y a las políticas de uso de Anthropic.",
+      "toolB": "La licencia puede tener restricciones para usos comerciales a gran escala, que deben revisarse."
+    },
+    {
+      "category": "Casos de uso prácticos y facilidad de integración",
+      "toolA": "Es adecuado para equipos que priorizan la rapidez de desarrollo y la calidad consistente sin gestionar infraestructura.",
+      "toolB": "Es una opción atractiva para organizaciones con capacidad de ingeniería y necesidades de personalización."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet y Llama 3.3 responden a una necesidad similar, pero difieren en ventana de contexto y manejo de entradas largas. Claude 3.7 Sonnet: Claude 3.7 Sonnet, según la documentación de Anthropic, admite una ventana de contexto amplia que permite procesar… Llama 3.3: Llama 3.3, al ser un modelo abierto, su ventana de contexto depende de la implementación y de la versión específica;… El criterio de rendimiento en benchmarks publicados (mmlu y humaneval) añade otra diferencia práctica: Anthropic publica resultados de benchmarks para Claude 3.7 Sonnet, incluyendo MMLU y HumanEval, aunque las cifras… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y manejo de entradas largas: Claude 3.7 Sonnet, según la documentación de Anthropic, admite una ventana de contexto amplia que…",
+    "toolB": "tu proyecto prioriza precio de api por millón de tokens (entrada/salida): Llama 3.3, al ser un modelo abierto, no tiene un precio de API único; el coste depende del…"
+  }
 }

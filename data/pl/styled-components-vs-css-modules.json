@@ -1,8 +1,8 @@
 {
   "slug": "styled-components-vs-css-modules",
   "meta": {
-    "title": "styled-components vs CSS Modules (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie styled-components i CSS Modules w 2026 roku: wydajność, typowanie, wsparcie dla React Server Components, ekosystem i realne scenariusze wdrożeń."
+    "title": "styled-components vs CSS Modules: co wybrać w 2026 — stylowanie, komponenty i workflow",
+    "description": "Porównaj styled-components i CSS Modules: oceń kompromisy architektoniczne w obszarze API komponentów, izolacji stylów i utrzymania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "styled-components"
@@ -94,5 +94,49 @@
       "q": "Czy CSS Modules wymagają specjalnej konfiguracji?",
       "a": "W popularnych bundlerach, takich jak Vite czy webpack, CSS Modules są zwykle dostępne po włączeniu odpowiedniej opcji lub wbudowane domyślnie dla plików z określonym rozszerzeniem. Szczegóły zależą od wersji narzędzia i szablonu projektu, więc przed wdrożeniem warto sprawdzić dokumentację konkretnego bundlera."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między styled-components a CSS Modules zmienia sposób podejścia do zarządzaniu stylami i komponowaniu interfejsu, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "styled-components będzie lepszy, gdy projekt stawia na kryterium „Typowanie i wsparcie dla TypeScript”: styled-components oferuje typy dla komponentów i propsów, a przy odpowiedniej konfiguracji można…. CSS Modules sprawdzi się, gdy projekt stawia na kryterium „Wydajność w czasie działania i rozmiar paczki”: CSS Modules są zazwyczaj przetwarzane na etapie budowania, a w przeglądarce zostaje głównie….",
+  "tradeoffs": [
+    {
+      "category": "Model stylowania i kolokacja z komponentem",
+      "toolA": "Taki model ułatwia refaktoryzację i usuwanie martwego kodu, lecz wiąże stylowanie z runtime'em biblioteki.",
+      "toolB": "Kolokacja jest możliwa przez import pliku modułu obok komponentu, ale style pozostają oddzielone od logiki, co bywa czytelniejsze dla osób znających klasyczny CSS."
+    },
+    {
+      "category": "Wydajność w czasie działania i rozmiar paczki",
+      "toolA": "Rzeczywisty wpływ zależy od wersji, konfiguracji, liczby komponentów i obciążenia aplikacji, więc nie da się go ująć jedną stałą liczbą.",
+      "toolB": "Ostateczny wynik zależy od konfiguracji bundlera, strategii ładowania CSS i stopnia współdzielenia klas, dlatego warto mierzyć go w konkretnym projekcie."
+    },
+    {
+      "category": "Wsparcie dla React Server Components i renderowania po stronie serwera",
+      "toolA": "W środowiskach z React Server Components pojawiają się ograniczenia, ponieważ biblioteka opiera się na kontekście i runtime, więc zgodność należy zweryfikować dla używanej wersji i konfiguracji frameworka.",
+      "toolB": "To upraszcza konfigurację w nowoczesnych frameworkach, choć szczegóły zależą od wsparcia bundlera i wersji frameworka."
+    },
+    {
+      "category": "Typowanie i wsparcie dla TypeScript",
+      "toolA": "Jakość typowania zależy od wersji biblioteki i definicji typów, a dynamiczne wartości nadal wymagają staranności, by uniknąć błędów w czasie działania.",
+      "toolB": "Typowanie jest prostsze i przewidywalne, ale nie obejmuje wartości CSS ani dynamicznych wariantów, więc walidacja stylów pozostaje po stronie autora lub lintera."
+    },
+    {
+      "category": "Krzywa nauki i znajomość CSS",
+      "toolA": "Z drugiej strony pozwala pisać CSS bezpośrednio w komponencie i ogranicza przełączanie kontekstu między plikami.",
+      "toolB": "Trzeba jednak opanować importowanie klas i świadome zarządzanie współdzielonymi stylami, aby uniknąć duplikacji i niespójności."
+    },
+    {
+      "category": "Dynamiczne style i motywy",
+      "toolA": "Elastyczność ta wiąże się jednak z kosztem obliczeń w czasie działania i potrzebą dbania o wydajność przy częstych zmianach.",
+      "toolB": "Dynamiczne wartości zależne od propsów wymagają natomiast ręcznego mapowania na klasy lub zmienne, więc bardzo złożone warianty bywają bardziej rozwlekłe."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import styled from \"styled-components\";\n\nconst ProductCardShell = styled.article`\n  display: grid;\n  gap: 0.75rem;\n  padding: 1rem;\n  border: 1px solid #cbd5e1;\n  border-radius: 0.75rem;\n`;\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <ProductCardShell aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </ProductCardShell>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
+  },
+  "introduction": "styled-components i CSS Modules odpowiadają na podobną potrzebę, ale różnią się w obszarze model stylowania i kolokacja z komponentem. styled-components: styled-components definiuje style w plikach JavaScript lub TypeScript jako szablony literałowe przypisane do… CSS Modules: CSS Modules opiera się na zwykłych plikach CSS importowanych do komponentu, a klasy są lokalnie zaszeregowane i… Kolejną istotną różnicę pokazuje kryterium „Wydajność w czasie działania i rozmiar paczki”: styled-components generuje style w czasie działania i utrzymuje dodatkowy kod biblioteki w bundlu, co zwiększa rozmiar… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Typowanie i wsparcie dla TypeScript”: styled-components oferuje typy dla komponentów i propsów, a przy odpowiedniej konfiguracji można…",
+    "toolB": "projekt stawia na kryterium „Wydajność w czasie działania i rozmiar paczki”: CSS Modules są zazwyczaj przetwarzane na etapie budowania, a w przeglądarce zostaje głównie…"
+  }
 }

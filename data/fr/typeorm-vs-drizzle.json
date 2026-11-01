@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-drizzle",
   "meta": {
-    "title": "TypeORM vs Drizzle ORM (2026): quelle solution choisir ?",
-    "description": "Comparatif TypeORM vs Drizzle ORM en 2026 : approche API, typage TypeScript, migrations, performances, écosystème et cas d'usage pour choisir votre ORM Node.js selon votre projet."
+    "title": "TypeORM vs Drizzle ORM: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez TypeORM et Drizzle ORM : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "TypeORM"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import 'reflect-metadata';\nimport { Entity, PrimaryGeneratedColumn, Column, DataSource } from 'typeorm';\n\n@Entity()\nclass User {\n  @PrimaryGeneratedColumn()\n  id!: number;\n\n  @Column()\n  name!: string;\n}\n\nconst dataSource = new DataSource({\n  type: 'sqlite',\n  database: ':memory:',\n  entities: [User],\n  synchronize: true,\n});\n\nasync function main() {\n  await dataSource.initialize();\n  const repo = dataSource.getRepository(User);\n  await repo.save(repo.create({ name: 'Hello, World!' }));\n  const users = await repo.find();\n  console.log(users);\n  await dataSource.destroy();\n}\n\nmain();",
-    "tech2Snippet": "import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';\nimport { drizzle } from 'drizzle-orm/better-sqlite3';\nimport Database from 'better-sqlite3';\nimport { eq } from 'drizzle-orm';\n\nconst users = sqliteTable('users', {\n  id: integer('id').primaryKey({ autoIncrement: true }),\n  name: text('name').notNull(),\n});\n\nconst sqlite = new Database(':memory:');\nconst db = drizzle(sqlite);\n\nasync function main() {\n  await db.run(sql`CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`);\n  await db.insert(users).values({ name: 'Hello, World!' });\n  const rows = await db.select().from(users).where(eq(users.name, 'Hello, World!'));\n  console.log(rows);\n}\n\nmain();"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Les deux outils sont-ils adaptés aux débutants ?",
       "a": "TypeORM est bien adapté aux débutants qui suivent des tutoriels classiques, car l'approche entités/repositories est très documentée, mais les décorateurs et la configuration peuvent dérouter au départ. Drizzle ORM est souvent plus intuitif pour qui connaît déjà SQL, car le schéma et les requêtes restent explicites. La meilleure option pour un débutant dépend de ses bases en SQL et du cadre pédagogique disponible."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre TypeORM et Drizzle ORM modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "TypeORM convient mieux lorsque votre projet privilégie support des bases de données et des drivers : TypeORM prend en charge de nombreuses bases relationnelles (PostgreSQL, MySQL, MariaDB, SQLite,…. Drizzle ORM est préférable lorsque votre projet privilégie approche de l'api et modèle mental : Drizzle ORM adopte une approche SQL-first : vous décrivez le schéma en TypeScript et composez des….",
+  "tradeoffs": [
+    {
+      "category": "Approche de l'API et modèle mental",
+      "toolA": "Ce style reste cohérent et bien documenté selon les versions.",
+      "toolB": "La contrepartie est une abstraction moindre pour les relations très riches, où l'on écrit parfois davantage de code."
+    },
+    {
+      "category": "Typage TypeScript et sécurité à la compilation",
+      "toolA": "Selon les versions, des améliorations ont été apportées, mais l'inférence reste parfois moins précise que sur des approches SQL-first.",
+      "toolB": "Le typage dépend de la version de TypeScript et du driver utilisé, mais l'expérience est généralement jugée très fiable."
+    },
+    {
+      "category": "Migrations et gestion du schéma",
+      "toolA": "La génération de migrations peut demander des ajustements selon la complexité du schéma et la base ciblée.",
+      "toolB": "Le comportement exact dépend de la version de drizzle-kit et du dialecte de base de données."
+    },
+    {
+      "category": "Support des bases de données et des drivers",
+      "toolA": "Le niveau de support et de maintenance peut varier selon le driver et la version.",
+      "toolB": "Il faut vérifier la compatibilité de votre base et de votre driver avant adoption."
+    },
+    {
+      "category": "Relations, chargement et requêtes complexes",
+      "toolA": "En contrepartie, le chargement des relations peut générer des requêtes inattendues si l'on ne maîtrise pas les options.",
+      "toolB": "Le résultat est généralement plus prévisible en production."
+    },
+    {
+      "category": "Performances et empreinte",
+      "toolA": "Il n'existe pas de garantie universelle : des mesures sur votre charge réelle restent nécessaires.",
+      "toolB": "Comme pour tout ORM, des benchmarks sur votre cas d'usage restent indispensables."
+    }
+  ],
+  "introduction": "TypeORM et Drizzle ORM répondent à un besoin proche, mais diffèrent sur approche de l'api et modèle mental. TypeORM : TypeORM propose une approche orientée entités avec des décorateurs et des classes, ce qui rappelle les ORM classiques… Drizzle ORM : Drizzle ORM adopte une approche SQL-first : vous décrivez le schéma en TypeScript et composez des requêtes proches du… Le critère « Typage TypeScript et sécurité à la compilation » met en évidence une autre différence pratique : TypeORM est écrit en TypeScript et fournit des types utiles via les entités et les repositories, mais certaines… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie support des bases de données et des drivers : TypeORM prend en charge de nombreuses bases relationnelles (PostgreSQL, MySQL, MariaDB, SQLite,…",
+    "toolB": "votre projet privilégie approche de l'api et modèle mental : Drizzle ORM adopte une approche SQL-first : vous décrivez le schéma en TypeScript et composez des…"
+  }
 }

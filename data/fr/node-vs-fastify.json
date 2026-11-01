@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-fastify",
   "meta": {
-    "title": "Node.js vs Fastify (2026): quelle solution choisir ?",
-    "description": "Node.js vs Fastify en 2026 : comparez le runtime et le framework web sur les performances, la sécurité, l’écosystème et l’adéquation à votre projet avant de trancher."
+    "title": "Node.js vs Fastify: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Node.js et Fastify : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createServer } from 'node:http';\n\nconst server = createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });\n  res.end(JSON.stringify({ message: 'Hello, World!' }));\n});\n\nserver.listen(3000, () => {\n  console.log('Serveur à l’écoute sur http://localhost:3000');\n});",
-    "tech2Snippet": "import Fastify from 'fastify';\n\nconst app = Fastify({ logger: true });\n\napp.get('/', async () => {\n  return { message: 'Hello, World!' };\n});\n\ntry {\n  await app.listen({ port: 3000 });\n} catch (err) {\n  app.log.error(err);\n  process.exit(1);\n}"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on utiliser Fastify avec tout l’écosystème Node.js ?",
       "a": "Fastify repose sur Node.js et permet d’utiliser de nombreuses bibliothèques npm, mais certaines dépendances nécessitent un adaptateur ou une vérification de compatibilité. Les plugins officiels couvrent les besoins courants, tandis que les bibliothèques moins courantes doivent être testées. Vérifiez la compatibilité avec votre version de Node.js et de Fastify avant adoption."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Node.js et Fastify modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Node.js convient mieux lorsque votre projet privilégie écosystème et compatibilité : Node.js bénéficie de l’écosystème npm le plus vaste de l’écosystème JavaScript et d’une…. Fastify est préférable lorsque votre projet privilégie performances et gestion de charge : Fastify met en avant un routeur arborescent, une sérialisation JSON compilée à partir de schémas….",
+  "tradeoffs": [
+    {
+      "category": "Nature et rôle de chaque outil",
+      "toolA": "Comparer les deux revient donc à comparer un runtime à une couche applicative bâtie dessus.",
+      "toolB": "Il ne remplace pas Node.js : il en dépend pour l’exécution."
+    },
+    {
+      "category": "Performances et gestion de charge",
+      "toolA": "Aucun gain universel ne peut être garanti sans mesure sur votre propre scénario.",
+      "toolB": "Il faut valider les gains attendus avec vos propres benchmarks plutôt que de se fier à des chiffres génériques."
+    },
+    {
+      "category": "Structure et expérience développeur",
+      "toolA": "Elle demande aussi plus de décisions initiales.",
+      "toolB": "La contrepartie est une courbe d’apprentissage liée à son modèle de plugins et à ses hooks."
+    },
+    {
+      "category": "Validation, sérialisation et sécurité applicative",
+      "toolA": "Les en-têtes de sécurité et la limitation de débit relèvent également de choix manuels.",
+      "toolB": "Une bonne couverture de validation dépend toujours des schémas que vous écrivez."
+    },
+    {
+      "category": "Écosystème et compatibilité",
+      "toolA": "Les ruptures entre versions majeures sont documentées et suivent un cycle de support défini par le projet.",
+      "toolB": "L’intégration est généralement fluide, mais doit être testée au cas par cas."
+    },
+    {
+      "category": "Courbe d’apprentissage et adoption",
+      "toolA": "En revanche, la maîtrise des bonnes pratiques applicatives demande de l’expérience.",
+      "toolB": "Les profils déjà familiers avec Express ou NestJS s’adaptent souvent plus vite."
+    }
+  ],
+  "introduction": "Node.js et Fastify répondent à un besoin proche, mais diffèrent sur nature et rôle de chaque outil. Node.js : Node.js est un environnement d’exécution JavaScript côté serveur basé sur le moteur V8 et la boucle d’événements. Fastify : Fastify est un framework HTTP pour Node.js orienté performance, validation de schémas et extensibilité par plugins. Le critère « Performances et gestion de charge » met en évidence une autre différence pratique : Les performances de Node.js dépendent fortement du code applicatif, du profil de charge, des versions et de la… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et compatibilité : Node.js bénéficie de l’écosystème npm le plus vaste de l’écosystème JavaScript et d’une…",
+    "toolB": "votre projet privilégie performances et gestion de charge : Fastify met en avant un routeur arborescent, une sérialisation JSON compilée à partir de schémas…"
+  }
 }

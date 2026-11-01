@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-openai-o3",
   "meta": {
-    "title": "Gemini 2.5 Pro vs OpenAI o3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Gemini 2.5 Pro i OpenAI o3 pod kątem kontekstu, wydajności, cen API, opóźnień i dostępności. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Gemini 2.5 Pro vs OpenAI o3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Gemini 2.5 Pro i OpenAI o3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"TWOJ_KLUCZ_API\")\nmodel = genai.GenerativeModel(\"gemini-2.5-pro\")\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"TWOJ_KLUCZ_API\")\nresponse = client.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model wybrać do prostego chatbota obsługującego klientów?",
       "a": "Do prostego chatbota oba modele mogą być wystarczające, ale Gemini 2.5 Pro może lepiej sprawdzić się przy długich historiach rozmów dzięki większemu oknu kontekstu. OpenAI o3 może zapewnić lepsze odpowiedzi w rozmowach wymagających rozumowania i precyzyjnego wnioskowania. Ostateczny wybór powinien zależeć od budżetu, opóźnień i testów na rzeczywistych rozmowach."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Gemini 2.5 Pro a OpenAI o3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Gemini 2.5 Pro będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może…. OpenAI o3 sprawdzi się, gdy projekt stawia na kryterium „Wyniki na benchmarkach (MMLU, HumanEval i inne)”: OpenAI o3 jest projektowany z naciskiem na rozumowanie, co przekłada się na wysokie wyniki w….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich wejść",
+      "toolA": "Należy jednak pamiętać, że rzeczywista dostępna długość kontekstu może być ograniczona przez ustawienia API i limity planu.",
+      "toolB": "Dokładny limit należy sprawdzić w dokumentacji OpenAIm dla wybranej wersji modelu, ponieważ może się różnić między planami."
+    },
+    {
+      "category": "Wyniki na benchmarkach (MMLU, HumanEval i inne)",
+      "toolA": "Warto porównywać wyniki dla konkretnej wersji i daty publikacji.",
+      "toolB": "Rzetelna ocena wymaga odniesienia do oficjalnych raportów producentów."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Aktualne stawki należy sprawdzić w oficjalnym cenniku Google Cloud.",
+      "toolB": "Dokładne stawki trzeba zweryfikować w dokumentacji OpenAIm, ponieważ podlegają zmianom."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "W zastosowaniach czasu rzeczywistego warto uwzględnić buforowanie i asynchroniczne przetwarzanie.",
+      "toolB": "Do aplikacji interaktywnych należy zaplanować obsługę dłuższych czasów odpowiedzi."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Dostępność funkcji może różnić się w zależności od regionu i planu.",
+      "toolB": "Zakres udostępnionych funkcji zależy od planu i wersji."
+    },
+    {
+      "category": "Zastosowania praktyczne i multimodalność",
+      "toolA": "Ograniczeniem może być dostępność poszczególnych modality w danym planie.",
+      "toolB": "W projektach multimodalnych warto zweryfikować, które funkcje są dostępne w wybranej wersji."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro i OpenAI o3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich wejść. Gemini 2.5 Pro: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może sięgać milionów tokenów. OpenAI o3: OpenAI o3 ma okno kontekstu mniejsze niż Gemini 2.5 Pro, choć nadal wystarczające do większości typowych zadań API. Kolejną istotną różnicę pokazuje kryterium „Wyniki na benchmarkach (MMLU, HumanEval i inne)”: Gemini 2.5 Pro osiąga konkurencyjne wyniki w testach wiedzy ogólnej, takich jak MMLU, oraz w zadaniach… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może…",
+    "toolB": "projekt stawia na kryterium „Wyniki na benchmarkach (MMLU, HumanEval i inne)”: OpenAI o3 jest projektowany z naciskiem na rozumowanie, co przekłada się na wysokie wyniki w…"
+  }
 }

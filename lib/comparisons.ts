@@ -1,5 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { createCodeExamples, scenarios } from "./snippet-catalog.cjs";
+import { getComparisonCategories } from "./taxonomy";
 import { LOCALES, type Locale } from "./locales";
 
 export { LOCALES };
@@ -20,8 +22,15 @@ export interface ComparisonFaq {
 }
 
 export interface ComparisonCodeExamples {
+  scenario: string;
   tech1Snippet: string;
   tech2Snippet: string;
+}
+
+export interface ComparisonTradeoff {
+  category: string;
+  toolA: string;
+  toolB: string;
 }
 
 export interface ComparisonDecisionFramework {
@@ -44,83 +53,14 @@ export interface Comparison {
   };
   verdict: string;
   introduction?: string;
+  heroSubtitle: string;
+  quickVerdict: string;
   decisionFramework?: ComparisonDecisionFramework;
   comparison?: ComparisonCriterion[];
+  tradeoffs: ComparisonTradeoff[];
   codeExamples?: ComparisonCodeExamples;
   faq: ComparisonFaq[];
 }
-
-let codeExamplesByTechnology: Map<string, string> | undefined;
-
-const fallbackCodeExamples: Record<string, string> = {
-  graphql: `const response = await fetch("https://api.example.com/graphql", {
-  method: "POST",
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify({ query: "{ __typename }" }),
-});
-const { data, errors } = await response.json();
-if (!response.ok || errors) throw new Error(JSON.stringify(errors));
-console.log(data);`,
-  rest: `const response = await fetch("https://api.example.com/v1/resources");
-if (!response.ok) {
-  throw new Error(\`Request failed: \${response.status}\`);
-}
-const resources = await response.json();
-console.log(resources);`,
-  python: `def main():
-    print("Hello, world!")
-
-
-if __name__ == "__main__":
-    main()`,
-  javascript: `function main() {
-  console.log("Hello, world!");
-}
-
-main();`,
-  supabase: `import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY,
-);
-const { data, error } = await supabase.from("your_table").select("*");
-if (error) throw error;
-console.log(data);`,
-  appwrite: `import { Client, Databases } from "appwrite";
-
-const client = new Client()
-  .setEndpoint(process.env.APPWRITE_ENDPOINT)
-  .setProject(process.env.APPWRITE_PROJECT_ID);
-const databases = new Databases(client);
-const result = await databases.listDocuments(
-  process.env.APPWRITE_DATABASE_ID,
-  process.env.APPWRITE_COLLECTION_ID,
-);
-console.log(result.documents);`,
-  firebase: `import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const snapshot = await getDocs(collection(db, "your_collection"));
-console.log(snapshot.docs.map((document) => document.data()));`,
-  vite: `npm create vite@latest my-app -- --template vanilla
-cd my-app
-npm install
-npm run dev`,
-  webpack: `const path = require("node:path");
-
-module.exports = {
-  mode: "development",
-  entry: "./src/index.js",
-  output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "dist"),
-    clean: true,
-  },
-};`,
-};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -158,6 +98,25 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     };
   });
 
+  let tradeoffs: ComparisonTradeoff[] | undefined;
+  if (value.tradeoffs !== undefined) {
+    if (!Array.isArray(value.tradeoffs)) {
+      throw new TypeError(`Expected "tradeoffs" to be an array in ${fileName}.`);
+    }
+
+    tradeoffs = value.tradeoffs.map((item, index) => {
+      if (!isRecord(item)) {
+        throw new TypeError(`Invalid trade-off ${index} in ${fileName}.`);
+      }
+
+      return {
+        category: requireString(item.category, `tradeoffs[${index}].category`, fileName),
+        toolA: requireString(item.toolA, `tradeoffs[${index}].toolA`, fileName),
+        toolB: requireString(item.toolB, `tradeoffs[${index}].toolB`, fileName),
+      };
+    });
+  }
+
   let comparison: ComparisonCriterion[] | undefined;
   if (value.comparison !== undefined) {
     if (!Array.isArray(value.comparison)) {
@@ -188,6 +147,10 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     }
 
     codeExamples = {
+      scenario:
+        value.codeExamples.scenario === undefined
+          ? scenarios[locale]
+          : requireString(value.codeExamples.scenario, "codeExamples.scenario", fileName),
       tech1Snippet: requireString(
         value.codeExamples.tech1Snippet,
         "codeExamples.tech1Snippet",
@@ -239,8 +202,23 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
       value.introduction === undefined
         ? undefined
         : requireString(value.introduction, "introduction", fileName),
+    heroSubtitle:
+      value.heroSubtitle === undefined
+        ? requireString(value.introduction ?? value.meta.description, "heroSubtitle", fileName)
+        : requireString(value.heroSubtitle, "heroSubtitle", fileName),
+    quickVerdict:
+      value.quickVerdict === undefined
+        ? requireString(value.verdict, "quickVerdict", fileName)
+        : requireString(value.quickVerdict, "quickVerdict", fileName),
     decisionFramework,
     comparison,
+    tradeoffs:
+      tradeoffs ??
+      (comparison ?? []).map(({ category, toolA, toolB }) => ({
+        category,
+        toolA: toolA.split(/(?<=[.!?])\s+/u)[0],
+        toolB: toolB.split(/(?<=[.!?])\s+/u)[0],
+      })),
     codeExamples,
     faq,
   };
@@ -269,22 +247,9 @@ function readComparisons(directory: string, locale: Locale): Comparison[] {
     });
 }
 
-export function getComparisons(locale: Locale = "pl"): Comparison[] {
-  const dataDirectory = join(process.cwd(), "data");
-  const comparisonsBySlug = new Map<string, Comparison>();
-
-  if (locale === "pl") {
-    for (const comparison of readComparisons(dataDirectory, locale)) {
-      comparisonsBySlug.set(comparison.slug, comparison);
-    }
-  }
-
-  for (const comparison of readComparisons(join(dataDirectory, locale), locale)) {
-    comparisonsBySlug.set(comparison.slug, comparison);
-  }
-
-  return [...comparisonsBySlug.values()].sort((left, right) =>
-    left.slug.localeCompare(right.slug),
+export function getComparisons(locale: Locale = "en"): Comparison[] {
+  return readComparisons(join(process.cwd(), "data", locale), locale).sort(
+    (left, right) => left.slug.localeCompare(right.slug),
   );
 }
 
@@ -296,52 +261,33 @@ export function getLocalizedComparisons(locale: Locale): Comparison[] {
 
 export function getComparisonBySlug(
   slug: string,
-  locale: Locale = "pl",
+  locale: Locale = "en",
 ): Comparison | undefined {
   return getComparisons(locale).find((comparison) => comparison.slug === slug);
 }
 
+export function isIndexableComparison(comparison: Comparison): boolean {
+  return (
+    comparison.meta.title.trim().length > 20 &&
+    comparison.meta.description.trim().length >= 100 &&
+    comparison.heroSubtitle.trim().length >= 60 &&
+    comparison.quickVerdict.trim().length >= 80 &&
+    (comparison.comparison?.length ?? 0) >= 6 &&
+    comparison.tradeoffs.length >= 4 &&
+    comparison.faq.length >= 5
+  );
+}
+
 export function getComparisonCodeExamples(
   comparison: Comparison,
-): ComparisonCodeExamples | undefined {
-  const [toolAId, toolBId] = comparison.slug.split("-vs-");
-  if (!toolAId || !toolBId) {
+): ComparisonCodeExamples {
+  if (comparison.codeExamples) {
     return comparison.codeExamples;
   }
 
-  if (!codeExamplesByTechnology) {
-    codeExamplesByTechnology = new Map(
-      Object.entries(fallbackCodeExamples),
-    );
-    for (const locale of ["de", "fr"] as const) {
-      for (const candidate of getLocalizedComparisons(locale)) {
-        const [candidateAId, candidateBId] = candidate.slug.split("-vs-");
-        if (candidate.codeExamples?.tech1Snippet && candidateAId) {
-          codeExamplesByTechnology.set(
-            candidateAId,
-            codeExamplesByTechnology.get(candidateAId) ??
-              candidate.codeExamples.tech1Snippet,
-          );
-        }
-        if (candidate.codeExamples?.tech2Snippet && candidateBId) {
-          codeExamplesByTechnology.set(
-            candidateBId,
-            codeExamplesByTechnology.get(candidateBId) ??
-              candidate.codeExamples.tech2Snippet,
-          );
-        }
-      }
-    }
-  }
-
-  const tech1Snippet =
-    comparison.codeExamples?.tech1Snippet ??
-    codeExamplesByTechnology.get(toolAId);
-  const tech2Snippet =
-    comparison.codeExamples?.tech2Snippet ??
-    codeExamplesByTechnology.get(toolBId);
-
-  return tech1Snippet && tech2Snippet
-    ? { tech1Snippet, tech2Snippet }
-    : comparison.codeExamples;
+  const category = getComparisonCategories(comparison.slug)[0] ?? "general";
+  return {
+    scenario: scenarios[comparison.locale],
+    ...createCodeExamples(comparison.slug, category),
+  };
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-qwen-2-5",
   "meta": {
-    "title": "Llama 3.3 vs Qwen 2.5 (2026): quelle solution choisir ?",
-    "description": "Comparaison 2026 de Llama 3.3 et Qwen 2.5 : performances, fenêtre de contexte, accès ouvert, tarifs API à vérifier, limites et cas d'usage pour choisir votre modèle."
+    "title": "Llama 3.3 vs Qwen 2.5: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Llama 3.3 et Qwen 2.5 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal illustratif avec l'API compatible OpenAI d'un fournisseur hébergeant Llama 3.3\n# Remplacez la base_url et le nom du modèle selon votre fournisseur\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://votre-fournisseur.example/v1\", api_key=\"VOTRE_CLE\")\nreponse = client.chat.completions.create(\n    model=\"llama-3.3-70b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, qui es-tu ?\"}],\n)\nprint(reponse.choices[0].message.content)",
-    "tech2Snippet": "# Exemple minimal illustratif avec l'API compatible OpenAI d'un fournisseur hébergeant Qwen 2.5\n# Remplacez la base_url et le nom du modèle selon votre fournisseur\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://votre-fournisseur.example/v1\", api_key=\"VOTRE_CLE\")\nreponse = client.chat.completions.create(\n    model=\"qwen2.5-72b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, qui es-tu ?\"}],\n)\nprint(reponse.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il privilégier Llama 3.3 ou Qwen 2.5 pour un RAG documentaire ?",
       "a": "Llama 3.3 bénéficie d'un écosystème d'outils très riche et d'une large disponibilité chez les hébergeurs, ce qui simplifie l'intégration d'un pipeline RAG. Qwen 2.5 offre des tailles variées et un bon multilinguisme, utile si vos documents sont multilingues. Dans les deux cas, la qualité du découpage, de la recherche et du reranking pèse souvent plus que le choix du modèle."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Llama 3.3 et Qwen 2.5 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Llama 3.3 convient mieux lorsque votre projet privilégie cas d'usage pratiques et écosystème : Llama 3.3 bénéficie d'un écosystème très large : outils d'inférence, bibliothèques, plateformes…. Qwen 2.5 est préférable lorsque votre projet privilégie latence et coût d'exploitation en production : Qwen 2.5 propose des variantes de tailles très différentes, ce qui permet d'ajuster le compromis….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et gestion des longues entrées",
+      "toolA": "La fenêtre annoncée ne garantit pas une récupération parfaite de l'information au centre d'un contexte très rempli : évaluez la qualité sur vos propres documents.",
+      "toolB": "Les petites versions ont souvent des fenêtres plus courtes, donc vérifiez la fiche du modèle précis avant de dimensionner une application RAG ou d'analyse documentaire."
+    },
+    {
+      "category": "Performance aux benchmarks publiés (MMLU, HumanEval)",
+      "toolA": "Ne comparez que des chiffres issus de protocoles comparables et consultez la fiche officielle actuelle plutôt que des tableaux de tiers.",
+      "toolB": "Les scores des petites variantes ne sont pas transposables aux grandes, et les comparaisons inter-familles doivent être lues avec prudence, car les conditions de test diffèrent souvent."
+    },
+    {
+      "category": "Tarification API par million de tokens entrée/sortie",
+      "toolA": "Il n'existe donc pas de prix officiel universel à citer sans vérifier la grille en vigueur du fournisseur choisi.",
+      "toolB": "Les prix peuvent aussi différer selon la taille du modèle et le mode de déploiement, ce qui impose une vérification sur la documentation tarifaire officielle au moment de la décision."
+    },
+    {
+      "category": "Latence et coût d'exploitation en production",
+      "toolA": "En auto-hébergement, prévoyez des GPU adaptés ou un service managé, et mesurez le temps jusqu'au premier token et le débit sur votre charge réelle.",
+      "toolB": "Comme pour Llama, les chiffres de latence dépendent de l'infrastructure et doivent être mesurés, pas supposés."
+    },
+    {
+      "category": "Accès, ouverture et licences",
+      "toolA": "Les poids sont largement disponibles et de nombreux fournisseurs proposent une API, mais les modalités exactes varient selon l'hébergeur et la version.",
+      "toolB": "L'accès se fait à la fois via des poids ouverts et via des API cloud, avec des conditions propres à chaque plateforme."
+    },
+    {
+      "category": "Multilingue et couverture linguistique",
+      "toolA": "Le français est généralement bien pris en charge, mais la qualité sur des langues moins représentées doit être testée sur vos données.",
+      "toolB": "La qualité reste inégale selon la langue et la tâche ; validez toujours avec un jeu d'évaluation représentatif."
+    }
+  ],
+  "introduction": "Llama 3.3 et Qwen 2.5 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et gestion des longues entrées. Llama 3.3 : Llama 3.3 est publié dans une variante texte de 70 milliards de paramètres avec une fenêtre de 128 000 tokens selon la… Qwen 2.5 : Qwen 2.5 existe en plusieurs tailles, de petites variantes à de grands modèles, et certaines références de la famille… Le critère « Performance aux benchmarks publiés (MMLU, HumanEval) » met en évidence une autre différence pratique : Meta publie pour Llama 3.3 des résultats sur des benchmarks académiques, notamment MMLU pour les connaissances… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie cas d'usage pratiques et écosystème : Llama 3.3 bénéficie d'un écosystème très large : outils d'inférence, bibliothèques, plateformes…",
+    "toolB": "votre projet privilégie latence et coût d'exploitation en production : Qwen 2.5 propose des variantes de tailles très différentes, ce qui permet d'ajuster le compromis…"
+  }
 }

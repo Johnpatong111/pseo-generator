@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite (2026): welche Lösung passt besser?",
-    "description": "MySQL vs SQLite im Vergleich 2026: Architektur, Betrieb, Skalierung, Sicherheit und Einsatzszenarien. So wählen Sie die passende Datenbank für Ihr Projekt."
+    "title": "MySQL vs SQLite: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche MySQL und SQLite: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "MySQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import mysql.connector\n\nconn = mysql.connector.connect(host=\"localhost\", user=\"root\", password=\"geheim\")\ncursor = conn.cursor()\ncursor.execute(\"CREATE DATABASE IF NOT EXISTS demo\")\ncursor.execute(\"USE demo\")\ncursor.execute(\"CREATE TABLE IF NOT EXISTS gruss (text VARCHAR(100))\")\ncursor.execute(\"INSERT INTO gruss (text) VALUES (%s)\", (\"Hallo, Welt!\",))\nconn.commit()\ncursor.execute(\"SELECT text FROM gruss\")\nprint(cursor.fetchone()[0])\ncursor.close()\nconn.close()",
-    "tech2Snippet": "import sqlite3\n\nconn = sqlite3.connect(\"demo.db\")\ncursor = conn.cursor()\ncursor.execute(\"CREATE TABLE IF NOT EXISTS gruss (text TEXT)\")\ncursor.execute(\"INSERT INTO gruss (text) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\ncursor.execute(\"SELECT text FROM gruss\")\nprint(cursor.fetchone()[0])\ncursor.close()\nconn.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie aufwendig ist der Betrieb im Vergleich?",
       "a": "SQLite verursacht praktisch keinen Verwaltungsaufwand, da kein Serverprozess betrieben werden muss und die Datenbank als Datei mitwandert. MySQL erfordert Installation, Konfiguration, Updates, Monitoring und Backups, was mehr Know-how und laufende Aufmerksamkeit bedeutet. Für kleine Teams kann dieser Unterschied stark ins Gewicht fallen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen MySQL und SQLite verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "MySQL passt besser, wenn dein Projekt priorisiert Nebenläufigkeit und Mehrbenutzerbetrieb: MySQL ist auf viele gleichzeitige Verbindungen ausgelegt und bietet mehrere Speicher-Engines sowie…. SQLite ist geeigneter, wenn dein Projekt priorisiert Architektur und Betriebsmodell: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die direkt in die Anwendung….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "Der Betrieb erfordert Installation, Konfiguration, Backup-Strategie und meist eine laufende Dienstverwaltung.",
+      "toolB": "Die gesamte Datenbank liegt in einer einzigen Datei, was Deployment und Sicherung deutlich vereinfacht."
+    },
+    {
+      "category": "Nebenläufigkeit und Mehrbenutzerbetrieb",
+      "toolA": "MySQL ist auf viele gleichzeitige Verbindungen ausgelegt und bietet mehrere Speicher-Engines sowie Zeilen-Sperren, die parallele Schreibzugriffe unterschiedlicher Clients ermöglichen.",
+      "toolB": "Bei hoher Schreibl rhetorik aus mehreren Prozessen oder Hosts stößt dieses Modell an Grenzen."
+    },
+    {
+      "category": "Skalierung und Verteilung",
+      "toolA": "Die tatsächliche Skalierung hängt stark von Version, Konfiguration und Arbeitslast ab.",
+      "toolB": "Für verteilte Systeme ist es nicht vorgesehen, was die Einsatzgrenzen klar definiert."
+    },
+    {
+      "category": "Sicherheit und Rechteverwaltung",
+      "toolA": "Die sichere Konfiguration erfordert Fachkenntnis, etwa bei Netzwerkbindung und Passwortrichtlinien.",
+      "toolB": "Verschlüsselung ist nicht in der Kernbibliothek enthalten und erfordert Erweiterungen wie SQLCipher."
+    },
+    {
+      "category": "Einfachheit und Wartungsaufwand",
+      "toolA": "Diese Aufgaben sind planbar, erfordern aber laufenden Betriebsaufwand.",
+      "toolB": "SQLite benötigt keinen Dienst und keine Serverwartung; ein Backup ist im einfachsten Fall das Kopieren der Datei in einem konsistenten Zustand. Das senkt den Einstieg deutlich."
+    },
+    {
+      "category": "SQL-Funktionsumfang",
+      "toolA": "MySQL deckt umfangreiche SQL-Funktionen ab, darunter Fensterfunktionen, CTEs, JSON-Unterstützung und Stored Procedures, wobei Details von der Version abhängen.",
+      "toolB": "Spezialfälle wie vollständige Stored-Procedure-Logik fehlen."
+    }
+  ],
+  "introduction": "MySQL und SQLite lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell. MySQL: MySQL arbeitet als eigenständiger Serverprozess, den Anwendungen über TCP oder Unix-Sockets ansprechen. SQLite: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die direkt in die Anwendung gelinkt wird. Das Kriterium nebenläufigkeit und mehrbenutzerbetrieb zeigt einen weiteren praktischen Unterschied: MySQL ist auf viele gleichzeitige Verbindungen ausgelegt und bietet mehrere Speicher-Engines sowie Zeilen-Sperren, die… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Nebenläufigkeit und Mehrbenutzerbetrieb: MySQL ist auf viele gleichzeitige Verbindungen ausgelegt und bietet mehrere Speicher-Engines sowie…",
+    "toolB": "dein Projekt priorisiert Architektur und Betriebsmodell: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die direkt in die Anwendung…"
+  }
 }

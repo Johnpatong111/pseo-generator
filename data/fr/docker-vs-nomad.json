@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-nomad",
   "meta": {
-    "title": "Docker vs Nomad (2026): quelle solution choisir ?",
-    "description": "Docker et Nomad répondent à des besoins différents : conteneurisation locale ou orchestration de flotte. Comparez-les sur 6 critères clés pour choisir votre outil en 2026."
+    "title": "Docker vs Nomad: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Docker et Nomad : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Docker"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "FROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]",
-    "tech2Snippet": "job \"hello\" {\n  datacenters = [\"dc1\"]\n  type = \"batch\"\n  group \"example\" {\n    task \"hello\" {\n      driver = \"docker\"\n      config {\n        image = \"alpine:3.20\"\n        command = \"echo\"\n        args    = [\"Hello, World!\"]\n      }\n    }\n  }\n}"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Docker Desktop est-il gratuit pour les entreprises ?",
       "a": "Docker Desktop est gratuit pour un usage personnel, l'éducation et les petites entreprises, mais une licence payante est requise pour les structures plus grandes ou les usages commerciaux dépassant certains seuils. Les conditions exactes et les tarifs évoluent régulièrement ; il est indispensable de consulter la grille tarifaire officielle de Docker avant de déployer l'outil en entreprise."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Docker et Nomad modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Docker convient mieux lorsque votre projet privilégie facilité de prise en main et courbe d'apprentissage : Docker propose une CLI simple (docker run, docker build) et une documentation abondante. Nomad est préférable lorsque votre projet privilégie orchestration et gestion de clusters : Nomad est conçu dès le départ pour orchestrer des charges sur un cluster de nœuds hétérogènes.",
+  "tradeoffs": [
+    {
+      "category": "Facilité de prise en main et courbe d'apprentissage",
+      "toolA": "La maîtrise des Dockerfiles et des bonnes pratiques de build demande toutefois un peu de pratique.",
+      "toolB": "La courbe est modérée pour un public habitué aux systèmes distribués."
+    },
+    {
+      "category": "Orchestration et gestion de clusters",
+      "toolA": "Docker reste excellent pour la conteneurisation, pas pour la planification distribuée à grande échelle.",
+      "toolB": "Sa capacité à faire tourner autre chose que des conteneurs est un atout différenciant, même si certaines fonctionnalités avancées dépendent de l'édition Enterprise."
+    },
+    {
+      "category": "Écosystème, intégrations et outillage",
+      "toolA": "La communauté est immense, ce qui facilite la résolution de problèmes et l'accès à des images prêtes à l'emploi.",
+      "toolB": "En revanche, l'écosystème tiers spécifiquement dédié à Nomad est plus restreint que celui de Docker, et certaines intégrations nécessitent plus de configuration manuelle."
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "La sécurité dépend toutefois fortement de la configuration de l'hôte et des privilèges accordés aux conteneurs ; un démon Docker mal protégé reste un risque majeur.",
+      "toolB": "La séparation des rôles via les ACL de Nomad est appréciable, mais la sécurité globale dépend aussi de la configuration du cluster et des pilotes utilisés."
+    },
+    {
+      "category": "Haute disponibilité et tolérance aux pannes",
+      "toolA": "Pour des charges critiques, Docker s'insère généralement dans une plateforme orchestrée par un tiers.",
+      "toolB": "Ces garanties dépendent du dimensionnement du cluster et de la configuration des jobs."
+    },
+    {
+      "category": "Cas d'usage : développement local vs production distribuée",
+      "toolA": "En production, Docker est souvent utilisé comme runtime de conteneurs au sein d'un orchestrateur plus large, plutôt que comme solution complète.",
+      "toolB": "Son intérêt dépend de la taille de l'infrastructure et des compétences internes."
+    }
+  ],
+  "introduction": "Docker et Nomad répondent à un besoin proche, mais diffèrent sur facilité de prise en main et courbe d'apprentissage. Docker : Docker propose une CLI simple (docker run, docker build) et une documentation abondante. Nomad : Nomad s'adresse plutôt à des équipes d'exploitation : il faut comprendre les notions de cluster, de nœuds et de jobs… Le critère « Orchestration et gestion de clusters » met en évidence une autre différence pratique : Docker seul ne fournit pas d'orchestrateur multi-nœuds robuste intégré : Docker Swarm existe mais reste moins… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie facilité de prise en main et courbe d'apprentissage : Docker propose une CLI simple (docker run, docker build) et une documentation abondante.",
+    "toolB": "votre projet privilégie orchestration et gestion de clusters : Nomad est conçu dès le départ pour orchestrer des charges sur un cluster de nœuds hétérogènes."
+  }
 }

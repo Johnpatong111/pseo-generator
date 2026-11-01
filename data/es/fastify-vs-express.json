@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-express",
   "meta": {
-    "title": "Fastify vs Express (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Fastify y Express en 2026: rendimiento, ecosistema, seguridad, TypeScript y casos de uso. Descubre qué framework de Node.js encaja mejor en tu próximo proyecto backend."
+    "title": "Fastify vs Express: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Fastify y Express: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Fastify"
@@ -94,5 +94,49 @@
       "q": "¿Fastify es adecuado para proyectos pequeños o prototipos?",
       "a": "Fastify puede usarse en proyectos pequeños, pero su curva de aprendizaje y su estructura basada en plugins pueden resultar excesivas para prototipos muy simples. Express, con su API minimalista, suele ser más rápido de configurar en las primeras etapas. No obstante, si prevés que el proyecto crecerá y necesitarás validación y tipado, empezar con Fastify puede ahorrar refactorizaciones futuras. La decisión depende del equilibrio entre velocidad inicial y escalabilidad."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Fastify y Express cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Fastify encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia: Fastify está diseñado para minimizar la sobrecarga: su enrutador optimizado y la serialización…. Express es preferible cuando tu proyecto prioriza ecosistema y madurez: Express es el framework web más popular de Node.js, con un ecosistema enorme de middleware y una….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento y eficiencia",
+      "toolA": "Su enfoque en la eficiencia lo hace adecuado para servicios de alto tráfico.",
+      "toolB": "Para cargas moderadas o proyectos donde la simplicidad prima, sigue siendo una opción perfectamente válida."
+    },
+    {
+      "category": "Ecosistema y madurez",
+      "toolA": "La documentación es clara y está bien mantenida.",
+      "toolB": "Esta ventaja se traduce en menor fricción para encontrar soporte, aunque a veces el ecosistema está fragmentado y con menos control de calidad."
+    },
+    {
+      "category": "Facilidad de aprendizaje y desarrollo",
+      "toolA": "Para equipos con experiencia en Node.js, la inversión inicial se compensa con un desarrollo más estructurado y menos errores en tiempo de ejecución.",
+      "toolB": "No obstante, esa libertad implica que el desarrollador debe tomar más decisiones sobre estructura y validación, lo que puede derivar en aplicaciones menos consistentes si no se sigue una disciplina adecuada."
+    },
+    {
+      "category": "Seguridad y validación de datos",
+      "toolA": "No obstante, la seguridad final depende de la configuración y de los plugins utilizados, y no debe considerarse una garantía absoluta.",
+      "toolB": "La seguridad, en cualquier caso, es responsabilidad del desarrollo y la configuración."
+    },
+    {
+      "category": "Soporte de TypeScript",
+      "toolA": "Esto lo convierte en una opción muy atractiva para proyectos nuevos con TypeScript.",
+      "toolB": "La experiencia puede requerir más anotaciones manuales y no se beneficia de la validación integrada de esquemas."
+    },
+    {
+      "category": "Mantenimiento y evolución",
+      "toolA": "La comunidad contribuye con plugins y reportes de errores.",
+      "toolB": "La comunidad sigue siendo muy activa en cuanto a soporte y middlewares."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Fastify y Express responden a una necesidad similar, pero difieren en rendimiento y eficiencia. Fastify: Fastify está diseñado para minimizar la sobrecarga: su enrutador optimizado y la serialización basada en esquemas le… Express: Express ofrece un rendimiento adecuado para la mayoría de aplicaciones, pero su modelo de middleware secuencial y la… El criterio de ecosistema y madurez añade otra diferencia práctica: Fastify cuenta con un ecosistema creciente de plugins oficiales (autenticación, bases de datos, métricas, etc.) y una… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia: Fastify está diseñado para minimizar la sobrecarga: su enrutador optimizado y la serialización…",
+    "toolB": "tu proyecto prioriza ecosistema y madurez: Express es el framework web más popular de Node.js, con un ecosistema enorme de middleware y una…"
+  }
 }

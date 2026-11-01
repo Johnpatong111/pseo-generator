@@ -1,8 +1,8 @@
 {
   "slug": "deno-vs-hono",
   "meta": {
-    "title": "Deno vs Hono (2026) : quelle solution choisir ?",
-    "description": "Comparaison Deno vs Hono en 2026 : runtime sécurisé face à un framework web ultrafin et portable. Critères, exemples de code, FAQ et recommandations pour bien choisir selon votre projet."
+    "title": "Deno vs Hono: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Deno et Hono : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Deno"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// server.ts\nDeno.serve((req: Request) => {\n  const url = new URL(req.url);\n  if (url.pathname === \"/\") {\n    return new Response(\"Hello, World!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  }\n  return new Response(\"Not Found\", { status: 404 });\n});\n\n// Lancer avec : deno run --allow-net server.ts",
-    "tech2Snippet": "// app.ts (Deno)\nimport { Hono } from \"jsr:@hono/hono\";\n\nconst app = new Hono();\n\napp.get(\"/\", (c) => c.text(\"Hello, World!\"));\n\nDeno.serve(app.fetch);\n\n// Lancer avec : deno run --allow-net app.ts"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel impact sur les tests et la qualité du code ?",
       "a": "Deno fournit des outils intégrés de test, de formatage et de lint, ce qui simplifie la standardisation au sein d'une équipe. Hono laisse le choix de l'outillage et s'intègre à des frameworks de test existants, ce qui offre de la flexibilité mais demande de définir des conventions. Dans les deux cas, la qualité dépend davantage de vos pratiques (revue de code, tests automatisés, couverture) que de l'outil lui-même."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Deno et Hono modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Deno convient mieux lorsque votre projet privilégie modèle de sécurité et permissions : Deno applique un modèle de permissions explicites : l'accès au réseau, au système de fichiers, aux…. Hono est préférable lorsque votre projet privilégie portabilité et compatibilité multi-runtime : Hono est conçu dès l'origine pour la portabilité : la même application peut viser Deno, Node.js,….",
+  "tradeoffs": [
+    {
+      "category": "Nature de l'outil et rôle dans une architecture",
+      "toolA": "Il se substitue globalement à Node.js dans une pile d'exécution et peut héberger aussi bien des scripts que des serveurs HTTP ou des fonctions serverless.",
+      "toolB": "Il ne fournit pas de runtime : il s'exécute au-dessus de Deno, Node.js, Bun, Cloudflare Workers ou d'autres environnements compatibles Fetch."
+    },
+    {
+      "category": "Modèle de sécurité et permissions",
+      "toolA": "Ce comportement réduit la surface d'attaque par défaut, mais impose de configurer finement les permissions en production et lors des tests, et certaines bibliothèques tierces peuvent nécessiter des permissions plus larges.",
+      "toolB": "Hono propose en revanche des utilitaires de sécurité comme la gestion des CORS, des en-têtes ou la protection CSRF à intégrer explicitement dans les middlewares."
+    },
+    {
+      "category": "Portabilité et compatibilité multi-runtime",
+      "toolA": "Les API spécifiques à Deno et le modèle de permissions ne se transposent pas directement vers Node.js ou Bun sans adaptation, même si Deno améliore progressivement sa compatibilité avec l'écosystème npm.",
+      "toolB": "Cette flexibilité facilite le changement d'hébergeur, mais certaines fonctionnalités dépendantes du runtime (stockage KV, bindings, WebSockets avancés) demandent des abstractions supplémentaires et une validation par environnement."
+    },
+    {
+      "category": "Écosystème, dépendances et gestion des modules",
+      "toolA": "Le support de npm s'est nettement amélioré avec les spécificateurs npm: et les fichiers node_modules optionnels, mais certaines bibliothèques Node natives ou fortement couplées au runtime peuvent encore poser des problèmes selon les versions.",
+      "toolB": "Sa dépendance vis-à-vis de l'écosystème sous-jacent reste réelle : une bibliothèque Node exotique peut ne pas fonctionner sur un runtime edge sans adaptation."
+    },
+    {
+      "category": "Expérience de développement et outillage",
+      "toolA": "Le support TypeScript est natif et sans étape de compilation préalable, mais l'adoption de conventions différentes de Node.js peut dérouter les équipes habituées à npm, ts-node ou aux configurations Jest/Vitest.",
+      "toolB": "Cette légèreté accélère la prise en main et laisse le choix de l'outillage, mais elle oblige à assembler soi-même la chaîne de tests, de validation de schéma et de déploiement, ce qui peut représenter un coût sur les projets complexes."
+    },
+    {
+      "category": "Performance et charge (avec nuance)",
+      "toolA": "Deno Deploy peut également introduire des caractéristiques de latence liées à l'edge.",
+      "toolB": "Toutefois, la performance perçue dépend surtout du runtime hôte, de la proximité réseau et de la base de données ; Hono n'apporte pas de gain garanti sans mesure dans votre contexte, et les comparaisons chiffrées doivent être reproduites sur votre environnement."
+    }
+  ],
+  "introduction": "Deno et Hono répondent à un besoin proche, mais diffèrent sur nature de l'outil et rôle dans une architecture. Deno : Deno est un runtime moderne pour JavaScript et TypeScript, écrit en Rust, qui fournit un moteur V8, une API standard,… Hono : Hono est un framework web léger centré sur le routage, les middlewares et la composition de handlers, avec une API… Le critère « Modèle de sécurité et permissions » met en évidence une autre différence pratique : Deno applique un modèle de permissions explicites : l'accès au réseau, au système de fichiers, aux variables… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de sécurité et permissions : Deno applique un modèle de permissions explicites : l'accès au réseau, au système de fichiers, aux…",
+    "toolB": "votre projet privilégie portabilité et compatibilité multi-runtime : Hono est conçu dès l'origine pour la portabilité : la même application peut viser Deno, Node.js,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "phi-4-vs-gemma-3",
   "meta": {
-    "title": "Phi-4 vs Gemma 3 (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Phi-4 y Gemma 3 en contexto, rendimiento, precios de API, latencia, acceso y casos de uso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "Phi-4 vs Gemma 3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Phi-4 y Gemma 3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Phi-4"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"google/gemma-3-4b-it\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "¿Qué modelo se integra mejor con herramientas de desarrollo existentes?",
       "a": "Ambos modelos cuentan con buen soporte en el ecosistema de Hugging Face y en frameworks como PyTorch y TensorFlow. Phi-4 tiene integración con Ollama y vLLM, lo que facilita su uso en entornos locales y servidores. Gemma 3, al ser parte del ecosistema de Google, se integra bien con Vertex AI y AI Studio, además de las herramientas estándar. La elección depende de las herramientas que ya utilices en tu flujo de trabajo."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Phi-4 y Gemma 3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Phi-4 encaja mejor cuando tu proyecto prioriza licencia y uso comercial: Phi-4 se publica bajo licencia MIT, que es permisiva y permite uso comercial, modificación y…. Gemma 3 es preferible cuando tu proyecto prioriza ventana de contexto: Gemma 3, en sus distintas variantes, ofrece ventanas de contexto que pueden alcanzar hasta 128 000….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto",
+      "toolA": "No obstante, este valor puede variar según la implementación y el proveedor de API, por lo que conviene confirmarlo en la ficha oficial actualizada.",
+      "toolB": "El valor exacto depende de la variante (por ejemplo, 1B, 4B, 12B, 27B) y del entorno de ejecución, así que debe verificarse en la documentación oficial de Gemma 3."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "No se dispone de una comparación directa y actualizada con Gemma 3 en este documento, por lo que cualquier comparación numérica debe tomarse con cautela y verificarse en fuentes oficiales.",
+      "toolB": "Sin embargo, la comparabilidad entre modelos exige idénticos prompts y configuraciones, algo que no siempre está garantizado en los informes públicos; por ello, se recomienda consultar los resultados oficiales más recientes."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "No se debe asumir un precio único; es imprescindible consultar las tarifas actuales en la plataforma que se vaya a utilizar, ya que pueden cambiar con frecuencia.",
+      "toolB": "Algunos proveedores ofrecen precios por token, pero estos cambian según la región y el volumen, por lo que hay que verificar las tarifas vigentes en cada caso."
+    },
+    {
+      "category": "Latencia",
+      "toolA": "Al ser un modelo relativamente pequeño, puede ofrecer respuestas rápidas en GPUs consumer, pero no hay una cifra oficial de latencia garantizada; se debe medir en el entorno de despliegue previsto.",
+      "toolB": "Al igual que con Phi-4, no existe una latencia oficial universal y conviene realizar pruebas en la configuración concreta."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto/cerrado)",
+      "toolA": "Está disponible para descarga en plataformas como Hugging Face y también a través de Azure AI y otros proveedores.",
+      "toolB": "Google ofrece acceso a través de Vertex AI y AI Studio, y los pesos están disponibles para descarga, lo que facilita despliegues locales y personalizados."
+    },
+    {
+      "category": "Casos de uso prácticos",
+      "toolA": "Es adecuado para asistentes locales, análisis de documentos y aplicaciones educativas donde el coste computacional es crítico.",
+      "toolB": "Su flexibilidad lo hace apto tanto para prototipos en la nube como para despliegues en el borde."
+    }
+  ],
+  "introduction": "Phi-4 y Gemma 3 responden a una necesidad similar, pero difieren en ventana de contexto. Phi-4: Phi-4, en su versión publicada por Microsoft, maneja una ventana de contexto de 16 000 tokens según la documentación… Gemma 3: Gemma 3, en sus distintas variantes, ofrece ventanas de contexto que pueden alcanzar hasta 128 000 tokens en algunos… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: Phi-4 ha reportado resultados competitivos en MMLU y HumanEval en su anuncio inicial, aunque las cifras concretas… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza licencia y uso comercial: Phi-4 se publica bajo licencia MIT, que es permisiva y permite uso comercial, modificación y…",
+    "toolB": "tu proyecto prioriza ventana de contexto: Gemma 3, en sus distintas variantes, ofrece ventanas de contexto que pueden alcanzar hasta 128 000…"
+  }
 }

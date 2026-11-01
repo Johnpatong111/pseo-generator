@@ -1,8 +1,8 @@
 {
   "slug": "tailwind-vs-css-modules",
   "meta": {
-    "title": "Tailwind CSS vs CSS Modules (2026) : quelle solution choisir ?",
-    "description": "Comparatif 2026 Tailwind CSS vs CSS Modules : utilitaires atomiques contre styles scopés. Critères, exemples de code, FAQ et recommandations selon votre projet."
+    "title": "Tailwind CSS vs CSS Modules: lequel choisir en 2026 — styles, composants et flux de développement",
+    "description": "Comparez Tailwind CSS et CSS Modules : évaluez les compromis architecturaux liés à API des composants, isolation des styles et maintenance et consultez des exemples TypeScript pour choisir le bon…"
   },
   "toolA": {
     "name": "Tailwind CSS"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import React from 'react';\n\nexport default function Hello() {\n  return (\n    <h1 className=\"text-2xl font-bold text-blue-600 p-4\">\n      Hello, World!\n    </h1>\n  );\n}\n\n/* Prérequis : Tailwind CSS installé et configuré dans le pipeline PostCSS du projet. */",
-    "tech2Snippet": "// Hello.module.css\n.title {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: #2563eb;\n  padding: 1rem;\n}\n\n// Hello.jsx\nimport React from 'react';\nimport styles from './Hello.module.css';\n\nexport default function Hello() {\n  return <h1 className={styles.title}>Hello, World!</h1>;\n}"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className=\"grid gap-3 rounded-xl border border-slate-200 p-4 shadow-sm\" aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on utiliser CSS Modules avec tous les outils de build modernes ?",
       "a": "CSS Modules est pris en charge par de nombreux bundlers et frameworks courants, notamment Vite, webpack et Next.js, mais les options et le comportement exact peuvent différer. Il est donc recommandé de vérifier la documentation de votre outil de build et de tester votre configuration avant de standardiser la pratique. Le recours à une convention de nommage claire reste utile, même avec ce scoping automatique."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Tailwind CSS et CSS Modules modifie la manière de gérer la gestion des styles et la composition des interfaces ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Tailwind CSS convient mieux lorsque votre projet privilégie maintenabilité et cohérence du design system : Tailwind CSS favorise la cohérence grâce à une échelle de spacing, de couleurs et de typographie…. CSS Modules est préférable lorsque votre projet privilégie encapsulation et prévention des conflits de style : CSS Modules garantit un scoping local par défaut : chaque classe devient unique au niveau du….",
+  "tradeoffs": [
+    {
+      "category": "Modèle d'écriture et approche",
+      "toolA": "Cette approche concentre le style près de la structure HTML/JSX mais peut rendre le rendu moins lisible sur des éléments très chargés.",
+      "toolB": "Les noms de classes sont scopés localement par l'outil de build, ce qui limite les collisions sans imposer une syntaxe particulière."
+    },
+    {
+      "category": "Encapsulation et prévention des conflits de style",
+      "toolA": "L'isolation repose donc davantage sur la discipline d'usage et la composition que sur un mécanisme de scoping automatique.",
+      "toolB": "C'est un avantage net sur les bases de code importantes ou les styles hérités."
+    },
+    {
+      "category": "Courbe d'apprentissage",
+      "toolA": "Une fois ce vocabulaire intégré, beaucoup de développeurs gagnent en rapidité, mais l'aisance dépend fortement de l'habitude.",
+      "toolB": "La nouveauté se limite au mécanisme d'import et au scoping, ce qui rend la prise en main généralement plus douce pour un profil à l'aise en CSS."
+    },
+    {
+      "category": "Performance et poids du CSS final",
+      "toolA": "Il est prudent de mesurer sur son propre projet plutôt que de généraliser.",
+      "toolB": "Sur de très grandes bases, la duplication de règles entre modules peut toutefois alourdir le bundle sans outillage adapté."
+    },
+    {
+      "category": "Maintenabilité et cohérence du design system",
+      "toolA": "En contrepartie, modifier un style récurrent peut nécessiter une recherche globale dans les fichiers de composants.",
+      "toolB": "La cohérence globale dépend toutefois de la discipline de l'équipe et de la présence éventuelle de variables CSS partagées."
+    },
+    {
+      "category": "Intégration avec les frameworks et l'outillage",
+      "toolA": "La compatibilité exacte dépend de la version de Tailwind et du framework utilisé, donc il faut se référer à la documentation officielle à jour.",
+      "toolB": "Le comportement précis et les options diffèrent selon l'outil de build, ce qui justifie une vérification au cas par cas."
+    }
+  ],
+  "introduction": "Tailwind CSS et CSS Modules répondent à un besoin proche, mais diffèrent sur modèle d'écriture et approche. Tailwind CSS : Tailwind CSS repose sur des classes utilitaires atomiques appliquées directement dans le balisage, ce qui évite de… CSS Modules : CSS Modules conserve une écriture CSS classique : vous rédigez des sélecteurs dans un fichier dédié, puis les importez… Le critère « Encapsulation et prévention des conflits de style » met en évidence une autre différence pratique : Tailwind CSS évite la plupart des conflits de nommage puisque les classes utilitaires sont globales par conception et… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie maintenabilité et cohérence du design system : Tailwind CSS favorise la cohérence grâce à une échelle de spacing, de couleurs et de typographie…",
+    "toolB": "votre projet privilégie encapsulation et prévention des conflits de style : CSS Modules garantit un scoping local par défaut : chaque classe devient unique au niveau du…"
+  }
 }

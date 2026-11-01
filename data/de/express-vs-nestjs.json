@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-nestjs",
   "meta": {
-    "title": "Express vs NestJS (2026): welche Lösung passt besser?",
-    "description": "Express vs NestJS im Vergleich 2026: Architektur, Struktur, Typsicherheit, Lernkurve, Ökosystem und Einsatzgebiete – mit klarer Empfehlung für Ihr Projekt."
+    "title": "Express vs NestJS: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Express und NestJS: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Express"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hello, World!');\n});\n\napp.listen(3000, () => {\n  console.log('Server läuft auf Port 3000');\n});",
-    "tech2Snippet": "import { Module, Controller, Get } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\n\n@Controller()\nclass AppController {\n  @Get()\n  getHello(): string {\n    return 'Hello, World!';\n  }\n}\n\n@Module({ controllers: [AppController] })\nclass AppModule {}\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\nbootstrap();"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte ich die Entscheidung praktisch treffen?",
       "a": "Sinnvoll ist ein kurzer Prototyp mit beiden Frameworks entlang der wichtigsten Anforderungen des Projekts. Bewerten Sie dabei Kriterien wie Teamkenntnisse, Wartbarkeit, Testing, Integration bestehender Bibliotheken und Deployment-Ziel. Vermeiden Sie die Übernahme fremder Benchmarks ohne Bezug zum eigenen Szenario, da die Ergebnisse stark von Konfiguration und Arbeitslast abhängen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Express und NestJS verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Express passt besser, wenn dein Projekt priorisiert Lernkurve und Einstieg: Express gilt als sehr einsteigerfreundlich, weil wenige Konzepte ausreichen, um einen ersten…. NestJS ist geeigneter, wenn dein Projekt priorisiert Architektur und Projektstruktur: NestJS bringt eine stark meinungsbildende Architektur mit Modulen, Controllern, Providern und….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Projektstruktur",
+      "toolA": "Die Projektstruktur bleibt weitgehend dem Team überlassen, was schnelle Einstiege ermöglicht, aber bei wachsender Codebasis ohne eigene Konventionen zu Inkonsistenzen führen kann.",
+      "toolB": "Diese Konventionen erleichtern die Orientierung in größeren Projekten, erfordern aber, dass sich das Team an das Framework-Muster hält."
+    },
+    {
+      "category": "Typsicherheit und Sprachunterstützung",
+      "toolA": "Die Typsicherheit hängt stark von der Disziplin des Teams und zusätzlichen Typisierungswerkzeugen ab.",
+      "toolB": "Dadurch profitieren Entwickler von besserer Autovervollständigung und früher Fehlererkennung, sofern die TypeScript-Konfiguration korrekt gepflegt wird."
+    },
+    {
+      "category": "Lernkurve und Einstieg",
+      "toolA": "Wer bereits JavaScript und HTTP-Grundlagen kennt, kann in kurzer Zeit produktiv arbeiten.",
+      "toolB": "Der Einstieg ist daher steiler, zahlt sich jedoch aus, wenn das Team ohnehin eine strukturierte Architektur benötigt."
+    },
+    {
+      "category": "Flexibilität und Freiheitsgrade",
+      "toolA": "Diese Freiheit ist ein Vorteil für individuelle Anforderungen, kann aber zu unterschiedlichen Lösungswegen im selben Projekt führen.",
+      "toolB": "Die Flexibilität ist vorhanden, wird jedoch durch die Framework-Konventionen gerahmt."
+    },
+    {
+      "category": "Ökosystem und Middleware-Unterstützung",
+      "toolA": "Diese Verbreitung erleichtert die Integration bestehender Lösungen erheblich.",
+      "toolB": "Das Ökosystem ist groß, aber teilweise mittelbar über die NestJS-Abstraktionen erreichbar."
+    },
+    {
+      "category": "Wartbarkeit und Skalierung im Team",
+      "toolA": "Ohne klare Vorgaben können größere Teams schneller unterschiedliche Muster entwickeln.",
+      "toolB": "Die Wartbarkeit profitiert besonders dann, wenn mehrere Entwickler über längere Zeit am selben Projekt arbeiten."
+    }
+  ],
+  "introduction": "Express und NestJS lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und projektstruktur. Express: Express ist ein minimalistisches Framework, das im Kern Routing und Middleware bereitstellt. NestJS: NestJS bringt eine stark meinungsbildende Architektur mit Modulen, Controllern, Providern und Services mit. Das Kriterium typsicherheit und sprachunterstützung zeigt einen weiteren praktischen Unterschied: Express ist in erster Linie für JavaScript konzipiert und lässt sich mit TypeScript nutzen, wobei Typen für Request,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Lernkurve und Einstieg: Express gilt als sehr einsteigerfreundlich, weil wenige Konzepte ausreichen, um einen ersten…",
+    "toolB": "dein Projekt priorisiert Architektur und Projektstruktur: NestJS bringt eine stark meinungsbildende Architektur mit Modulen, Controllern, Providern und…"
+  }
 }

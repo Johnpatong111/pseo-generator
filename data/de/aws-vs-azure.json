@@ -1,8 +1,8 @@
 {
   "slug": "aws-vs-azure",
   "meta": {
-    "title": "AWS vs Microsoft Azure (2026): welche Lösung passt besser?",
-    "description": "AWS vs Microsoft Azure im Vergleich 2026: Stärken bei Compute, Hybrid-Cloud, Integration, Sicherheit, Datenbanken und Kosten – plus klare Empfehlung pro Szenario."
+    "title": "AWS vs Microsoft Azure: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche AWS und Microsoft Azure: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "AWS"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import boto3\n\ns3 = boto3.client(\"s3\", region_name=\"eu-central-1\")\ns3.create_bucket(\n    Bucket=\"mein-hello-world-bucket\",\n    CreateBucketConfiguration={\"LocationConstraint\": \"eu-central-1\"}\n)\ns3.put_object(Bucket=\"mein-hello-world-bucket\", Key=\"hello.txt\", Body=b\"Hello, World!\")\nprint(s3.get_object(Bucket=\"mein-hello-world-bucket\", Key=\"hello.txt\")[\"Body\"].read().decode())",
-    "tech2Snippet": "from azure.identity import DefaultAzureCredential\nfrom azure.storage.blob import BlobServiceClient\n\nservice = BlobServiceClient(\n    account_url=\"https://meinaccount.blob.core.windows.net\",\n    credential=DefaultAzureCredential()\n)\ncontainer = service.get_container_client(\"hello-world\")\ntry:\n    container.create_container()\nexcept Exception:\n    pass\ncontainer.upload_blob(name=\"hello.txt\", data=b\"Hello, World!\", overwrite=True)\nprint(container.download_blob(\"hello.txt\").readall().decode())"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as azure from \"@pulumi/azure-native\";\n\nconst productsStorage = new azure.storage.StorageAccount(\"products\", {\n  resourceGroupName: resourceGroup.name,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n});\n\nexport const productStorageId = productsStorage.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Lohnt sich ein Wechsel der Cloud-Plattform?",
       "a": "Ein Wechsel ist selten allein wegen einzelner Funktionen sinnvoll, sondern vor allem bei klaren strategischen Vorteilen wie besserer Integration, geringerem Betriebsaufwand oder regulatorischen Anforderungen. Migrationskosten, Datenübertragung, Neuentwicklung proprietärer Dienste und Schulungsaufwand müssen realistisch eingerechnet werden. Häufig ist eine Multi-Cloud-Strategie mit klar getrennten Verantwortlichkeiten sinnvoller als ein vollständiger Plattformwechsel."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen AWS und Microsoft Azure verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "AWS passt besser, wenn dein Projekt priorisiert Breite des Serviceportfolios: AWS bietet ein sehr breites Portfolio über Compute, Speicher, Datenbanken, Analytics, KI und IoT,…. Microsoft Azure ist geeigneter, wenn dein Projekt priorisiert Hybrid-Cloud und Multi-Cloud-Management: Azure positioniert sich mit Azure Arc, Azure Stack und erweiterten Management-Diensten deutlich….",
+  "tradeoffs": [
+    {
+      "category": "Breite des Serviceportfolios",
+      "toolA": "Die Verfügbarkeit einzelner Dienste kann je nach Region abweichen.",
+      "toolB": "Das Angebot ist regional unterschiedlich verfügbar."
+    },
+    {
+      "category": "Hybrid-Cloud und Multi-Cloud-Management",
+      "toolA": "Der Aufwand für einheitliches Management über Standorte hinweg ist planbar, aber nicht trivial.",
+      "toolB": "Die tatsächlichen Fähigkeiten hängen vom gewählten Arc-Umfang und den Lizenzbedingungen ab."
+    },
+    {
+      "category": "Integration in Unternehmens-IT (Identity, Windows, M365)",
+      "toolA": "Die Qualität der Integration hängt stark von der konkreten Identitätsarchitektur ab.",
+      "toolB": "Lizenzmodelle beeinflussen Funktionsumfang und Kosten erheblich."
+    },
+    {
+      "category": "Reife und Rechen-Optionen",
+      "toolA": "Preise und Leistung variieren nach Instanztyp, Region und Laufzeitmodell.",
+      "toolB": "Leistung und Kosten sind stark von SKU, Region und Skalierungskonfiguration abhängig."
+    },
+    {
+      "category": "Datenbanken und Datenplattform",
+      "toolA": "Das richtige Preis- und Kapazitätsmodell entscheidet stark über die Wirtschaftlichkeit.",
+      "toolB": "Cosmos DB erfordert eine sorgfältige Wahl des Konsistenz- und Partitionierungsmodells, und die Kosten variieren je nach Modus."
+    },
+    {
+      "category": "Sicherheit, Compliance und Governance",
+      "toolA": "Zertifizierungen und regionale Compliance-Angebote unterscheiden sich je nach Dienst und Region.",
+      "toolB": "Wirksamkeit und Umfang hängen vom gewählten Tarif und der Konfiguration ab."
+    }
+  ],
+  "introduction": "AWS und Microsoft Azure lösen ein ähnliches Problem, unterscheiden sich jedoch bei breite des serviceportfolios. AWS: AWS bietet ein sehr breites Portfolio über Compute, Speicher, Datenbanken, Analytics, KI und IoT, wobei viele Dienste… Microsoft Azure: Azure deckt die Kernbereiche ebenfalls umfassend ab und ergänzt sie um starke Plattformdienste aus dem… Das Kriterium hybrid-cloud und multi-cloud-management zeigt einen weiteren praktischen Unterschied: AWS bietet mit Outposts, Direct Connect und ECS Anywhere sowie verschiedenen Governance-Diensten solide Bausteine für… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Breite des Serviceportfolios: AWS bietet ein sehr breites Portfolio über Compute, Speicher, Datenbanken, Analytics, KI und IoT,…",
+    "toolB": "dein Projekt priorisiert Hybrid-Cloud und Multi-Cloud-Management: Azure positioniert sich mit Azure Arc, Azure Stack und erweiterten Management-Diensten deutlich…"
+  }
 }

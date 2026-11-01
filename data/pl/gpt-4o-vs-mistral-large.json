@@ -1,8 +1,8 @@
 {
   "slug": "gpt-4o-vs-mistral-large",
   "meta": {
-    "title": "GPT-4o vs Mistral Large (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie GPT-4o i Mistral Large w 2026: kontekst, wydajność, ceny API, opóźnienia, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "GPT-4o vs Mistral Large: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj GPT-4o i Mistral Large: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "GPT-4o"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "import os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest lepszy pod kątem zgodności z RODO?",
       "a": "Mistral AI, jako firma europejska, często podkreśla zgodność z RODO, a wersje open-weight można wdrożyć lokalnie, co ułatwia kontrolę nad danymi osobowymi. OpenAI również oferuje mechanizmy zgodności, ale szczegóły zależą od planu i regionu. Ostateczna ocena wymaga analizy umowy powierzenia przetwarzania danych i polityki prywatności dostawcy, a nie tylko kraju pochodzenia."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między GPT-4o a Mistral Large zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "GPT-4o będzie lepszy, gdy projekt stawia na kryterium „Możliwości multimodalne i integracje”: GPT-4o obsługuje wejście tekstowe i obrazowe (a w niektórych wersjach także dźwiękowe), co…. Mistral Large sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: Mistral AI udostępnia cennik dla modeli Mistral Large w API, z rozbiciem na tokeny wejściowe i….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Należy zweryfikować aktualny limit w dokumentacji OpenAI, ponieważ może się zmieniać.",
+      "toolB": "Zaleca się sprawdzenie oficjalnej dokumentacji Mistral AI."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych",
+      "toolA": "Aby porównać oba modele, trzeba znać dokładne wersje i identyczną procedurę testową.",
+      "toolB": "Bez jednoznacznego wskazania wersji i metodyki nie można rzetelnie stwierdzić, który model jest lepszy na podstawie samych liczb."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Przed wdrożeniem należy zweryfikować aktualny cennik.",
+      "toolB": "Należy sprawdzić oficjalną stronę cennika Mistral AI, ponieważ podane kwoty mogą być nieaktualne."
+    },
+    {
+      "category": "Opóźnienia (latency) i przepustowość",
+      "toolA": "Wersje i konfiguracje mogą wpływać na czas odpowiedzi.",
+      "toolB": "Bez własnych pomiarów można porównywać jedynie jakościowo, a nie na podstawie stałych liczb."
+    },
+    {
+      "category": "Dostępność modelu i tryb open/closed",
+      "toolA": "Dostępność może się różnić w zależności od planu i regionu.",
+      "toolB": "Należy sprawdzić konkretną wersję i licencję."
+    },
+    {
+      "category": "Możliwości multimodalne i integracje",
+      "toolA": "GPT-4o obsługuje wejście tekstowe i obrazowe (a w niektórych wersjach także dźwiękowe), co umożliwia analizę dokumentów, zdjęć i interfejsów. OpenAI oferuje również narzędzia takie jak function calling i integracje z ekosystemem. Zakres funkcji zależy od wersji i planu.",
+      "toolB": "Przed wyborem warto sprawdzić, czy dana wersja obsługuje potrzebne modality."
+    }
+  ],
+  "introduction": "GPT-4o i Mistral Large odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. GPT-4o: GPT-4o oferuje okno kontekstu rzędu 128 tysięcy tokenów (wartość zależna od wersji i planu). Mistral Large: Mistral Large w wersji API oferuje okno kontekstu 128 tysięcy tokenów (dla wersji z 2025 roku; nowsze wersje mogą mieć… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych”: OpenAI publikuje wyniki GPT-4o m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Możliwości multimodalne i integracje”: GPT-4o obsługuje wejście tekstowe i obrazowe (a w niektórych wersjach także dźwiękowe), co…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: Mistral AI udostępnia cennik dla modeli Mistral Large w API, z rozbiciem na tokeny wejściowe i…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie SolidJS i Qwik w 2026 roku: szczegółowe różnice w wydajności, hydratacji, ekosystemie i krzywej nauki. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "SolidJS vs Qwik: co wybrać w 2026 — funkcje, wydajność i ekosystem",
+    "description": "Porównaj SolidJS i Qwik: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "SolidJS"
@@ -94,5 +94,49 @@
       "q": "Czy wyniki wydajnościowe z porównań frameworków są wiarygodne?",
       "a": "Ogólne benchmarki mogą być mylące, ponieważ nie odwzorowują dokładnie Twojej aplikacji, konfiguracji ani wzorca obciążenia. Wiarygodne wnioski daje pomiar w docelowym środowisku, z uwzględnieniem wersji frameworka i sposobu budowania. Traktuj publiczne zestawienia jako wskazówkę, a nie gwarancję."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między SolidJS a Qwik zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "SolidJS będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: SolidJS ma zwarte API i składnię zbliżoną do Reacta, co ułatwia start osobom znającym JSX. Qwik sprawdzi się, gdy projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest….",
+  "tradeoffs": [
+    {
+      "category": "Model reaktywności i sposób aktualizacji interfejsu",
+      "toolA": "Zachowanie zależy od wersji biblioteki i użytych prymitywów (createSignal, createMemo, createEffect).",
+      "toolB": "Efektywność zależy od sposobu podziału kodu i konfiguracji serializacji stanu w danej wersji."
+    },
+    {
+      "category": "Hydratacja i czas do interaktywności",
+      "toolA": "Nie ma gwarancji stałych wyników — trzeba je mierzyć w konkretnym projekcie i środowisku.",
+      "toolB": "Rzeczywisty efekt zależy od architektury aplikacji, wersji frameworka i konfiguracji bundlera."
+    },
+    {
+      "category": "Krzywa nauki i czytelność kodu",
+      "toolA": "Dokumentacja i przykłady są dostępne, ale społeczność jest mniejsza niż w przypadku najpopularniejszych frameworków.",
+      "toolB": "Zespół z doświadczeniem w metaframeworkach szybciej odnajdzie się w tym modelu."
+    },
+    {
+      "category": "Ekosystem, biblioteki i integracje",
+      "toolA": "Przy wyborze warto sprawdzić kompatybilność z użytą wersją i planem wsparcia.",
+      "toolB": "Dostępność funkcji i stabilność zależą od wersji oraz tempa rozwoju projektu."
+    },
+    {
+      "category": "Wydajność aplikacji pod obciążeniem",
+      "toolA": "Bez pomiarów w docelowym środowisku nie można zakładać przewagi w każdym scenariuszu.",
+      "toolB": "Wyniki silnie zależą od wzorca aplikacji i wersji frameworka, dlatego wymagają weryfikacji w testach obciążeniowych."
+    },
+    {
+      "category": "Renderowanie po stronie serwera i metaframeworki",
+      "toolA": "Dla prostych aplikacji SPA SSR może być w ogóle niepotrzebne.",
+      "toolB": "Zakres funkcji i stabilność zależą od wersji oraz konfiguracji hostingu."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  },
+  "introduction": "SolidJS i Qwik odpowiadają na podobną potrzebę, ale różnią się w obszarze model reaktywności i sposób aktualizacji interfejsu. SolidJS: SolidJS opiera się na drobnoziarnistej reaktywności z sygnałami; aktualizacje trafiają bezpośrednio do węzłów DOM bez… Qwik: Qwik również korzysta z sygnałów, ale łączy je z podejściem opartym na „leniwym” wczytywaniu kodu i wznawianiu stanu… Kolejną istotną różnicę pokazuje kryterium „Hydratacja i czas do interaktywności”: SolidJS stosuje klasyczną hydratację, ale dzięki brakowi wirutalnego DOM-u jest ona relatywnie lekka. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: SolidJS ma zwarte API i składnię zbliżoną do Reacta, co ułatwia start osobom znającym JSX.",
+    "toolB": "projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest…"
+  }
 }

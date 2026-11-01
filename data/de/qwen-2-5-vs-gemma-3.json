@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-gemma-3",
   "meta": {
-    "title": "Qwen 2.5 vs Gemma 3 (2026): welche Lösung passt besser?",
-    "description": "Qwen 2.5 und Gemma 3 im Vergleich: Kontextfenster, Benchmarks, API-Kosten, Latenz, Zugang und Einsatzszenarien. Eine fundierte Entscheidungshilfe für 2026."
+    "title": "Qwen 2.5 vs Gemma 3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Qwen 2.5 und Gemma 3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoProcessor, AutoModelForImageTextToText\n\nmodel_id = \"google/gemma-3-4b-it\"\nprocessor = AutoProcessor.from_pretrained(model_id)\nmodel = AutoModelForImageTextToText.from_pretrained(model_id, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": [{\"type\": \"text\", \"text\": \"Hello, World!\"}]}]\ninputs = processor.apply_chat_template(messages, add_generation_prompt=True, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(processor.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Modell eignet sich besser für den Einsatz auf Edge-Geräten?",
       "a": "Gemma 3 wurde mit einem besonderen Fokus auf Effizienz entwickelt und bietet mit den 1B- und 4B-Varianten Modelle, die auch auf Geräten mit begrenzten Ressourcen laufen können. Qwen 2.5 stellt ebenfalls kleine Varianten wie 0,5B und 1,5B bereit, die für Edge-Szenarien geeignet sind. Die tatsächliche Eignung hängt von der Quantisierung, der verfügbaren Rechenleistung und dem Speicher ab; für sehr ressourcenbeschränkte Umgebungen lohnt sich ein Vergleich der kleinsten Varianten beider Modelle anhand der offiziellen Dokumentation."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Qwen 2.5 und Gemma 3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Qwen 2.5 passt besser, wenn dein Projekt priorisiert Kontextfenster: Qwen 2.5 bietet je nach Modellgröße und Variante unterschiedliche Kontextfenster; die größeren…. Gemma 3 ist geeigneter, wenn dein Projekt priorisiert Latenz: Gemma 3 wurde auf Effizienz optimiert und zeigt insbesondere bei den kleineren Varianten (z.",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Die genauen Werte sind versionsabhängig und sollten in der offiziellen Dokumentation überprüft werden.",
+      "toolB": "Auch hier gilt: Die exakten Limits hängen von der spezifischen Version und dem Deployment ab und sind in der Google-Dokumentation zu prüfen."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Da die Benchmarks von Version zu Version aktualisiert werden, sollten die aktuellen Zahlen direkt bei Alibaba Cloud oder auf Hugging Face eingesehen werden.",
+      "toolB": "Google stellt die Benchmark-Ergebnisse in den offiziellen Model Cards bereit; für eine belastbare Entscheidung sind die jeweils neuesten Angaben zu konsultieren, da sich die Vergleichbarkeit durch unterschiedliche Evaluierungs-Setups unterscheiden kann."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Token",
+      "toolA": "Konkrete Preisangaben sind ohne Prüfung der aktuellen Preisliste nicht belastbar und sollten vor der Entscheidung direkt beim Anbieter eingeholt werden.",
+      "toolB": "Da es sich um ein offenes Modell handelt, können auch eigene Hosting-Kosten anfallen, die je nach Infrastruktur stark schwanken – genaue Preise sind den aktuellen Tarifseiten zu entnehmen."
+    },
+    {
+      "category": "Latenz",
+      "toolA": "Da keine offiziellen standardisierten Latenzbenchmarks vorliegen, ist eine qualitative Einschätzung nur unter Berücksichtigung der eigenen Arbeitslast möglich.",
+      "toolB": "Für die großen Varianten steigt die Latenz entsprechend der Parameterzahl; genaue Messwerte sind ohne eigene Tests nicht verfügbar und sollten nicht als allgemeingültig angenommen werden."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Zusätzlich bietet Alibaba Cloud eine kommerzielle API an, sodass sowohl lokale als auch verwaltete Nutzung möglich ist.",
+      "toolB": "Damit ist Gemma 3 ebenfalls sowohl lokal als auch über Cloud-Dienste nutzbar, allerdings mit anderen Lizenzbedingungen als Qwen 2.5."
+    },
+    {
+      "category": "Multimodalität",
+      "toolA": "Wer reine Textverarbeitung benötigt, findet in Qwen 2.5 eine breite Auswahl, für Bild- und Videoaufgaben ist die VL-Serie zu prüfen.",
+      "toolB": "Die multimodalen Fähigkeiten sind je nach Modellgröße unterschiedlich ausgeprägt und sollten anhand der offiziellen Dokumentation validiert werden."
+    }
+  ],
+  "introduction": "Qwen 2.5 und Gemma 3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Qwen 2.5: Qwen 2.5 bietet je nach Modellgröße und Variante unterschiedliche Kontextfenster; die größeren Textmodelle… Gemma 3: Gemma 3 wurde mit einem Fokus auf Effizienz entwickelt und bietet je nach Variante ein Kontextfenster von… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für Qwen 2.5 liegen veröffentlichte Ergebnisse zu MMLU und HumanEval vor, die je nach Modellgröße variieren; die… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Qwen 2.5 bietet je nach Modellgröße und Variante unterschiedliche Kontextfenster; die größeren…",
+    "toolB": "dein Projekt priorisiert Latenz: Gemma 3 wurde auf Effizienz optimiert und zeigt insbesondere bei den kleineren Varianten (z."
+  }
 }

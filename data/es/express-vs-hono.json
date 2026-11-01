@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-hono",
   "meta": {
-    "title": "Express vs Hono (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Express y Hono en 2026: rendimiento, tipado, ecosistema, compatibilidad con edge y curva de aprendizaje para elegir el framework HTTP adecuado."
+    "title": "Express vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Express y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Express"
@@ -88,5 +88,49 @@
       "q": "¿Cómo influye el tipo de despliegue en la elección?",
       "a": "Si despliegas en servidores Node.js tradicionales o en plataformas gestionadas para Node, Express reduce la fricción. Si tu arquitectura se apoya en serverless o edge, Hono simplifica la portabilidad, aunque deberás verificar el soporte de tus dependencias en cada plataforma."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Express y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Express encaja mejor cuando tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware,…. Hono es preferible cuando tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento y eficiencia en peticiones",
+      "toolA": "Su modelo de middleware encadenado añade algo de sobrecarga por petición, y los resultados varían según versión de Node y tipo de carga.",
+      "toolB": "Aun así, el rendimiento real depende del runtime, del hardware y de la complejidad de la lógica, no solo del framework."
+    },
+    {
+      "category": "Sistema de tipos y experiencia de desarrollo",
+      "toolA": "La inferencia en rutas, parámetros y respuestas requiere trabajo adicional y no siempre es completa.",
+      "toolB": "Esto mejora el autocompletado y reduce errores en tiempo de compilación, especialmente en proyectos grandes."
+    },
+    {
+      "category": "Ecosistema y madurez",
+      "toolA": "Su estabilidad lo convierte en una apuesta segura para equipos con código heredado o requisitos conservadores.",
+      "toolB": "La disponibilidad de ejemplos y respuestas comunitarias es menor que en Express, lo que puede alargar la resolución de problemas poco frecuentes."
+    },
+    {
+      "category": "Compatibilidad con runtimes y despliegue edge",
+      "toolA": "Es ideal si tu infraestructura ya es Node tradicional.",
+      "toolB": "Esta portabilidad simplifica desplegar la misma aplicación en distintos entornos, aunque conviene validar las APIs específicas de cada plataforma."
+    },
+    {
+      "category": "Curva de aprendizaje y simplicidad",
+      "toolA": "Su documentación es extensa y abundan los ejemplos, lo que facilita incorporar nuevos desarrolladores a proyectos existentes.",
+      "toolB": "Para equipos sin experiencia en edge o en tipado estricto, la curva inicial puede ser algo mayor."
+    },
+    {
+      "category": "Middlewares y funciones integradas",
+      "toolA": "Muchas integraciones están probadas en producción durante años, aunque la calidad y el mantenimiento varían entre paquetes.",
+      "toolB": "La variedad es menor que en Express, pero al ser oficiales suelen estar bien mantenidos y alineados con el framework."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Express y Hono responden a una necesidad similar, pero difieren en rendimiento y eficiencia en peticiones. Express: Express es un framework consolidado sobre Node.js cuyo rendimiento, aunque correcto, no está optimizado para… Hono: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor latencia y mayor… El criterio de sistema de tipos y experiencia de desarrollo añade otra diferencia práctica: Express tiene tipados disponibles mediante @types/express, pero su API se concibió en JavaScript y el tipado es menos… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware,…",
+    "toolB": "tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor…"
+  }
 }

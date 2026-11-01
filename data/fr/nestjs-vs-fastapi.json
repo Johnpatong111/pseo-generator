@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-fastapi",
   "meta": {
-    "title": "NestJS vs FastAPI (2026) : quelle solution choisir ?",
-    "description": "Comparez NestJS et FastAPI en 2026 : architecture, performances, typage, écosystème, sécurité et cas d'usage. Conseils concrets pour choisir votre framework backend."
+    "title": "NestJS vs FastAPI: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez NestJS et FastAPI : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "NestJS"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// main.ts\nimport { NestFactory } from '@nestjs/core';\nimport { Module, Controller, Get } from '@nestjs/common';\n\n@Controller()\nclass AppController {\n  @Get()\n  hello(): string {\n    return 'Hello, World!';\n  }\n}\n\n@Module({ controllers: [AppController] })\nclass AppModule {}\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\nbootstrap();",
-    "tech2Snippet": "# main.py\nfrom fastapi import FastAPI\nfrom fastapi.responses import PlainTextResponse\n\napp = FastAPI()\n\n@app.get(\"/\", response_class=PlainTextResponse)\ndef hello() -> str:\n    return \"Hello, World!\""
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre les deux si l'équipe maîtrise les deux langages ?",
       "a": "Partez du produit : un service de données ou d'IA penche vers FastAPI, une application métier structurée et multi-équipes vers NestJS. Tenez compte du besoin de documentation automatique, de la structure imposée et de la facilité de recrutement. Un prototype réduit dans chaque techno, comparé selon les mêmes critères, aide souvent à trancher."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre NestJS et FastAPI modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "NestJS convient mieux lorsque votre projet privilégie architecture et structure imposée du projet : NestJS impose des concepts clairs : modules, contrôleurs, services, injection de dépendances et…. FastAPI est préférable lorsque votre projet privilégie typage, validation et documentation d'api : FastAPI combine les annotations de types Python avec Pydantic pour valider et sérialiser….",
+  "tradeoffs": [
+    {
+      "category": "Langage et cohérence avec l'écosystème existant",
+      "toolA": "En 2026, TypeScript reste le langage dominant du web applicatif, ce qui facilite le recrutement et la réutilisation des compétences.",
+      "toolB": "En revanche, la cohérence avec un frontend TypeScript n'est pas native et demande des conventions externes."
+    },
+    {
+      "category": "Architecture et structure imposée du projet",
+      "toolA": "La documentation officielle couvre ces patrons en détail.",
+      "toolB": "Cette souplesse accélère le démarrage, mais des projets volumineux peuvent devenir hétérogènes sans discipline d'équipe ni conventions internes."
+    },
+    {
+      "category": "Performances et modèle d'exécution",
+      "toolA": "Les performances dépendent fortement du code métier, de la base de données et de la configuration de déploiement, donc aucune comparaison chiffrée universelle n'est fiable sans benchmark contextualisé.",
+      "toolB": "Là encore, seul un test sur votre propre scénario est concluant."
+    },
+    {
+      "category": "Typage, validation et documentation d'API",
+      "toolA": "La documentation OpenAPI est générée via le module Swagger, ce qui demande un peu de configuration mais produit des spécifications propres et personnalisables.",
+      "toolB": "Il génère une documentation OpenAPI et une interface interactive (Swagger UI, ReDoc) quasiment sans effort, ce qui constitue un avantage net pour la productivité et la fiabilité des contrats d'API."
+    },
+    {
+      "category": "Écosystème, intégrations et maturité",
+      "toolA": "La communauté est active et de nombreuses entreprises publient des modules adaptés, mais l'ensemble reste centré sur l'univers JavaScript/TypeScript.",
+      "toolB": "Il faut parfois assembler soi-même les briques, ce qui apporte de la flexibilité mais demande de connaître les bons outils et leurs versions compatibles."
+    },
+    {
+      "category": "Tests et qualité logicielle",
+      "toolA": "Le framework est conçu pour faciliter les tests unitaires et d'intégration, même si la quantité de mocks peut augmenter avec l'architecture.",
+      "toolB": "L'absence de structure imposée signifie que la qualité des tests dépend surtout des conventions de l'équipe et de l'outillage choisi."
+    }
+  ],
+  "introduction": "NestJS et FastAPI répondent à un besoin proche, mais diffèrent sur langage et cohérence avec l'écosystème existant. NestJS : NestJS s'écrit en TypeScript (ou JavaScript) et s'appuie sur Node.js. FastAPI : FastAPI s'écrit en Python, un langage incontournable pour la data, le machine learning et l'automatisation. Le critère « Architecture et structure imposée du projet » met en évidence une autre différence pratique : NestJS impose des concepts clairs : modules, contrôleurs, services, injection de dépendances et décorateurs. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie architecture et structure imposée du projet : NestJS impose des concepts clairs : modules, contrôleurs, services, injection de dépendances et…",
+    "toolB": "votre projet privilégie typage, validation et documentation d'api : FastAPI combine les annotations de types Python avec Pydantic pour valider et sérialiser…"
+  }
 }

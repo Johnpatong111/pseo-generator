@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-llama",
   "meta": {
-    "title": "Ollama vs Llama (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Ollama y Llama en 2026: ejecución local, privacidad, rendimiento, requisitos y ecosistema para ayudarte a elegir la opción adecuada."
+    "title": "Ollama vs Llama: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Ollama y Llama: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Ollama"
@@ -94,5 +94,49 @@
       "q": "¿Puedo combinar Ollama y Llama en un mismo proyecto?",
       "a": "Sí, es una combinación habitual: Ollama para desarrollo local y Llama como modelo base en el servicio final o en procesos de ajuste. Esta separación permite prototipar rápido y mantener control sobre el despliegue. Solo debes revisar licencias y coherencia entre versiones del modelo."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Ollama y Llama cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Ollama encaja mejor cuando tu proyecto prioriza facilidad de instalación y puesta en marcha: Ollama se instala con un único ejecutable o paquete y permite lanzar un modelo con un comando como…. Llama es preferible cuando tu proyecto prioriza personalización y ajuste fino: Llama se puede ajustar con técnicas como LoRA o fine-tuning completo usando marcos externos,….",
+  "tradeoffs": [
+    {
+      "category": "Naturaleza de la herramienta y propósito",
+      "toolA": "No es un modelo en sí, sino una capa de orquestación que simplifica el uso de pesos como Llama, Mistral o Gemma.",
+      "toolB": "Se usa como modelo base para inferencia, ajuste fino o investigación, y requiere herramientas adicionales para ejecutarlo cómodamente."
+    },
+    {
+      "category": "Facilidad de instalación y puesta en marcha",
+      "toolA": "La experiencia está pensada para reducir la fricción inicial, aunque el comportamiento exacto depende de la versión y del sistema operativo.",
+      "toolB": "Es más flexible, pero requiere más conocimientos técnicos y pasos manuales antes de obtener respuestas."
+    },
+    {
+      "category": "Privacidad y ejecución local",
+      "toolA": "La privacidad efectiva depende de la configuración, del modelo elegido y de si se habilitan servicios externos.",
+      "toolB": "No obstante, la privacidad real depende del runtime, del despliegue y de las prácticas de cada organización."
+    },
+    {
+      "category": "Requisitos de hardware y rendimiento",
+      "toolA": "El rendimiento varía mucho según el tamaño del modelo, la cuantización, la memoria y la carga de trabajo, por lo que conviene medirlo en cada entorno.",
+      "toolB": "No hay cifras universales: los resultados cambian con la cuantización, el lote y la optimización del motor de inferencia."
+    },
+    {
+      "category": "Personalización y ajuste fino",
+      "toolA": "No está pensado como plataforma principal de entrenamiento, sino como herramienta de ejecución y experimentación local.",
+      "toolB": "Ofrece más control sobre el modelo, a cambio de mayor complejidad técnica."
+    },
+    {
+      "category": "Ecosistema, API e integraciones",
+      "toolA": "Su ecosistema crece con rapidez, aunque la compatibilidad exacta puede variar entre versiones y clientes.",
+      "toolB": "Esa amplitud facilita integrarlo en productos, pero exige evaluar cada opción por separado."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Ollama y Llama responden a una necesidad similar, pero difieren en naturaleza de la herramienta y propósito. Ollama: Ollama es una herramienta de ejecución local de modelos de lenguaje de código abierto: descarga, gestiona y sirve… Llama: Llama designa una familia de modelos de lenguaje de pesos abiertos publicados por Meta, disponibles en varios tamaños… El criterio de facilidad de instalación y puesta en marcha añade otra diferencia práctica: Ollama se instala con un único ejecutable o paquete y permite lanzar un modelo con un comando como «ollama run». La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza facilidad de instalación y puesta en marcha: Ollama se instala con un único ejecutable o paquete y permite lanzar un modelo con un comando como…",
+    "toolB": "tu proyecto prioriza personalización y ajuste fino: Llama se puede ajustar con técnicas como LoRA o fine-tuning completo usando marcos externos,…"
+  }
 }

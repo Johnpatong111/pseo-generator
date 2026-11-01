@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-hono",
   "meta": {
-    "title": "NestJS vs Hono (2026): quelle solution choisir ?",
-    "description": "Comparatif NestJS vs Hono en 2026 : architecture, performance, typage, écosystème, déploiement edge et cas d'usage. Conseils concrets pour choisir votre framework Node.js."
+    "title": "NestJS vs Hono: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez NestJS et Hono : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "NestJS"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { Module, Controller, Get } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\n\n@Controller()\nclass AppController {\n  @Get()\n  getHello(): string {\n    return 'Hello, World!';\n  }\n}\n\n@Module({ controllers: [AppController] })\nclass AppModule {}\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\n\nbootstrap();",
-    "tech2Snippet": "import { Hono } from 'hono';\n\nconst app = new Hono();\n\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on combiner Hono et NestJS dans une même architecture ?",
       "a": "Techniquement, on peut envisager des architectures mixtes où Hono sert de couche HTTP légère sur le edge et où NestJS gère des services métier centralisés. Cette approche ajoute néanmoins de la complexité opérationnelle et nécessite une stratégie claire de communication entre les composants. Elle se justifie surtout si les contraintes de déploiement l'exigent réellement ; sinon, un choix unique et cohérent simplifie la maintenance et l'observabilité."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre NestJS et Hono modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "NestJS convient mieux lorsque votre projet privilégie architecture et philosophie de conception : NestJS impose une architecture modulaire inspirée d'Angular : modules, contrôleurs, services,…. Hono est préférable lorsque votre projet privilégie performance et empreinte d'exécution : Hono est conçu pour être très léger et tire parti des API Web standard (Request/Response), ce qui….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et philosophie de conception",
+      "toolA": "Elle suppose toutefois d'accepter les conventions du framework et un certain niveau d'abstraction.",
+      "toolB": "Sa philosophie est celle d'un framework fin et portable."
+    },
+    {
+      "category": "Performance et empreinte d'exécution",
+      "toolA": "Les performances réelles dépendent surtout du code applicatif et de la base de données.",
+      "toolB": "Aucun benchmark universel ne peut résumer la performance sans contexte."
+    },
+    {
+      "category": "Typage TypeScript et expérience développeur",
+      "toolA": "NestJS est écrit en TypeScript et exploite fortement les décorateurs, avec un support de premier ordre et une documentation abondante. Le typage est solide, mais certains mécanismes (métadonnées, DI) nécessitent une configuration TypeScript adaptée. L'autocomplétion et les outils sont matures.",
+      "toolB": "L'expérience est plus directe, avec moins de cérémonie."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "Cette richesse accélère certains projets mais peut alourdir les dépendances.",
+      "toolB": "L'offre est plus ciblée et moins couvrante que celle de NestJS, ce qui peut demander des intégrations manuelles."
+    },
+    {
+      "category": "Compatibilité multi-runtimes et déploiement",
+      "toolA": "NestJS cible principalement Node.js, avec un support expérimental ou via adaptateurs pour d'autres plateformes. Le déploiement classique se fait sur des serveurs Node ou dans des conteneurs, et l'usage en environnement edge demande des adaptations. La maturité sur Node.js est excellente.",
+      "toolB": "Le comportement peut toutefois varier selon les capacités de la plateforme."
+    },
+    {
+      "category": "Courbe d'apprentissage et productivité",
+      "toolA": "Les profils habitués à Angular s'y adaptent plus vite.",
+      "toolB": "La liberté laissée peut toutefois conduire à des choix d'organisation divergents si l'équipe n'établit pas de conventions."
+    }
+  ],
+  "introduction": "NestJS et Hono répondent à un besoin proche, mais diffèrent sur architecture et philosophie de conception. NestJS : NestJS impose une architecture modulaire inspirée d'Angular : modules, contrôleurs, services, injection de dépendances… Hono : Hono adopte une approche minimaliste centrée sur un routeur et des middlewares composables, avec une API très proche… Le critère « Performance et empreinte d'exécution » met en évidence une autre différence pratique : NestJS s'appuie par défaut sur Express, avec la possibilité d'utiliser le plateforme Fastify, ce qui améliore… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie architecture et philosophie de conception : NestJS impose une architecture modulaire inspirée d'Angular : modules, contrôleurs, services,…",
+    "toolB": "votre projet privilégie performance et empreinte d'exécution : Hono est conçu pour être très léger et tire parti des API Web standard (Request/Response), ce qui…"
+  }
 }

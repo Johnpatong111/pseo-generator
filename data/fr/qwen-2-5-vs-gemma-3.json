@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-gemma-3",
   "meta": {
-    "title": "Qwen 2.5 vs Gemma 3 (2026): quelle solution choisir ?",
-    "description": "Comparatif Qwen 2.5 vs Gemma 3 : contexte, benchmarks, tarifs API, latence, accès et cas d'usage. Conseils pratiques pour choisir en 2026 selon votre projet."
+    "title": "Qwen 2.5 vs Gemma 3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qwen 2.5 et Gemma 3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\n\ninputs = tokenizer(\"Bonjour, comment allez-vous ?\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"google/gemma-3-7b-it\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\n\ninputs = tokenizer(\"Bonjour, comment allez-vous ?\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "Les benchmarks publiés sont-ils fiables pour comparer ?",
       "a": "Les benchmarks comme MMLU et HumanEval donnent une indication, mais ils ne reflètent pas toujours les performances réelles sur des tâches spécifiques. Les scores dépendent de la version, des prompts et des conditions d'évaluation. Il est conseillé de réaliser vos propres tests sur un échantillon représentatif de vos données."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qwen 2.5 et Gemma 3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qwen 2.5 convient mieux lorsque votre projet privilégie fenêtre de contexte : Qwen 2.5 propose, selon les variantes, des fenêtres de contexte allant jusqu'à 128 000 tokens pour…. Gemma 3 est préférable lorsque votre projet privilégie écosystème et outils : Gemma 3 s'appuie sur l'écosystème Google (Vertex AI, TensorFlow, JAX) et sur des intégrations avec….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte",
+      "toolA": "Les versions plus petites peuvent avoir des limites différentes, à vérifier dans la documentation officielle.",
+      "toolB": "Il est recommandé de consulter la fiche technique officielle pour connaître la limite précise de chaque variante."
+    },
+    {
+      "category": "Performances aux benchmarks (MMLU, HumanEval)",
+      "toolA": "Ces scores dépendent de la version et des conditions d'évaluation.",
+      "toolB": "Les comparaisons directes doivent tenir compte des versions exactes et des méthodologies d'évaluation."
+    },
+    {
+      "category": "Tarification API (par million de tokens entrée/sortie)",
+      "toolA": "Les prix ne sont pas universels et doivent être vérifiés auprès de chaque plateforme.",
+      "toolB": "Les prix exacts par million de tokens dépendent du service et de la région, et sont susceptibles d'évoluer."
+    },
+    {
+      "category": "Latence et débit",
+      "toolA": "Les modèles plus petits offrent généralement des réponses plus rapides, tandis que les grands modèles peuvent être plus lents mais plus performants.",
+      "toolB": "L'infrastructure utilisée (Google Cloud ou auto-hébergement) influence fortement les temps de réponse."
+    },
+    {
+      "category": "Accès et disponibilité (open/closed)",
+      "toolA": "Il est également disponible via des API commerciales.",
+      "toolB": "Gemma 3 est proposé sous licence open-weight avec des conditions d'utilisation spécifiques, et peut être auto-hébergé ou utilisé via des services cloud. Google propose également des API managées."
+    },
+    {
+      "category": "Cas d'usage pratiques",
+      "toolA": "Il est adapté aux déploiements personnalisés et aux recherches.",
+      "toolB": "Il convient aux projets cherchant une solution légère et efficace."
+    }
+  ],
+  "introduction": "Qwen 2.5 et Gemma 3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte. Qwen 2.5 : Qwen 2.5 propose, selon les variantes, des fenêtres de contexte allant jusqu'à 128 000 tokens pour les modèles les… Gemma 3 : Gemma 3, dans ses versions récentes, offre également des fenêtres de contexte étendues, mais les valeurs exactes… Le critère « Performances aux benchmarks (MMLU, HumanEval) » met en évidence une autre différence pratique : Qwen 2.5 a publié des résultats sur des benchmarks comme MMLU et HumanEval pour plusieurs tailles de modèles, montrant… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : Qwen 2.5 propose, selon les variantes, des fenêtres de contexte allant jusqu'à 128 000 tokens pour…",
+    "toolB": "votre projet privilégie écosystème et outils : Gemma 3 s'appuie sur l'écosystème Google (Vertex AI, TensorFlow, JAX) et sur des intégrations avec…"
+  }
 }

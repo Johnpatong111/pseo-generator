@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra (2026): welche Lösung passt besser?",
-    "description": "PostgreSQL und Apache Cassandra im Vergleich 2026: Datenmodell, Konsistenz, Skalierung, Betrieb und Eignung – mit klarer Empfehlung für Ihr Projekt."
+    "title": "PostgreSQL vs Apache Cassandra: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche PostgreSQL und Apache Cassandra: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "-- PostgreSQL: minimale Tabelle und Abfrage\nCREATE TABLE greeting (\n  id   SERIAL PRIMARY KEY,\n  text TEXT NOT NULL\n);\n\nINSERT INTO greeting (text) VALUES ('Hallo, Welt!');\n\nSELECT text FROM greeting;",
-    "tech2Snippet": "-- Apache Cassandra: Keyspace, Tabelle und Abfrage (CQL)\nCREATE KEYSPACE IF NOT EXISTS demo\n  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};\n\nUSE demo;\n\nCREATE TABLE IF NOT EXISTS greeting (\n  id   int PRIMARY KEY,\n  text text\n);\n\nINSERT INTO greeting (id, text) VALUES (1, 'Hallo, Welt!');\n\nSELECT text FROM greeting WHERE id = 1;"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich beide Datenbanken sinnvoll kombiniert einsetzen?",
       "a": "Eine Kombination ist in der Praxis möglich: PostgreSQL als führendes System für Transaktionen und Cassandra für hohe Schreiblasten oder verteilte Ereignisdaten. Dabei entsteht jedoch zusätzliche Komplexität bei Konsistenz, Datenabgleich und Betrieb, die sorgfältig geplant werden muss. Ob sich der Aufwand lohnt, hängt davon ab, ob ein einzelnes System die Anforderungen nicht mehr zuverlässig erfüllen kann."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen PostgreSQL und Apache Cassandra verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "PostgreSQL passt besser, wenn dein Projekt priorisiert Datenmodell und Abfragesprache: Wie werden Daten strukturiert und abgefragt: PostgreSQL ist eine relationale Datenbank mit Tabellen, Fremdschlüsseln und vollem SQL. Apache Cassandra ist geeigneter, wenn dein Projekt priorisiert Horizontale Skalierung und Schreibdurchsatz: Wie wächst das System: Apache Cassandra wurde für horizontale Skalierung konzipiert und verteilt Daten per konsistentem….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Abfragesprache: Wie werden Daten strukturiert und abgefragt",
+      "toolA": "Das erlaubt flexible Abfragen ohne vorab festgelegte Zugriffspfade, wobei die konkrete Performance von Indizes, Statistiken und Version abhängt.",
+      "toolB": "Das Datenmodell muss anhand der Zugriffsmuster entworfen werden, was bei bekanntem Zugriffsprofil effizient ist, aber spätere Änderungen erschwert."
+    },
+    {
+      "category": "Transaktionen und Konsistenz: Welche Garantien sind möglich",
+      "toolA": "Bei verteilten Setups können Latenz und Konfliktauflösung je nach Konfiguration und Version variieren.",
+      "toolB": "Höhere Konsistenz erhöht typischerweise Latenz und reduziert Verfügbarkeit, abhängig von Replikation und Cluster-Topologie."
+    },
+    {
+      "category": "Horizontale Skalierung und Schreibdurchsatz: Wie wächst das System",
+      "toolA": "Die erreichbaren Werte hängen stark von Hardware, Version und Arbeitslast ab.",
+      "toolB": "Der tatsächliche Durchsatz hängt von Replikationsfaktor, Konsistenzgrad, Hardware und Datenmodell ab."
+    },
+    {
+      "category": "Betrieb, Wartung und Ökosystem: Wie aufwendig ist der laufende Betrieb",
+      "toolA": "Der Aufwand für Tuning, Vacuum und Verbindungsmanagement wächst mit Last und Datenmenge.",
+      "toolB": "Der Betriebsaufwand ist daher tendenziell höher, abhängig von Team-Erfahrung und Cluster-Größe."
+    },
+    {
+      "category": "Verfügbarkeit und Fehlertoleranz: Wie verhält sich das System bei Ausfällen",
+      "toolA": "Die konkreten Garantien hängen von der gewählten Topologie und Konfiguration ab.",
+      "toolB": "Die tatsächliche Ausfallsicherheit hängt von Replikationsfaktor, Reparaturzustand und Netzwerk-Topologie ab."
+    },
+    {
+      "category": "Analyse und Ad-hoc-Abfragen: Wie gut eignet sich das System für Auswertungen",
+      "toolA": "Für reine OLAP-Lasten ist spezialisierte Software oft geeigneter, aber viele mittlere Analysefälle lassen sich direkt abdecken.",
+      "toolB": "Für Analysen wird üblicherweise eine separate Auswertungsschicht oder ein Data Warehouse vorgeschaltet."
+    }
+  ],
+  "introduction": "PostgreSQL und Apache Cassandra lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und abfragesprache: wie werden daten strukturiert und abgefragt. PostgreSQL: PostgreSQL ist eine relationale Datenbank mit Tabellen, Fremdschlüsseln und vollem SQL. Apache Cassandra: Apache Cassandra ist eine verteilte Wide-Column-Datenbank mit partitionierten Zeilen und Clustering-Spalten. Das Kriterium transaktionen und konsistenz: welche garantien sind möglich zeigt einen weiteren praktischen Unterschied: PostgreSQL bietet ACID-Transaktionen mit voller Konsistenz, MVCC und mehrstufiger Isolation bis zur Serialisierbarkeit. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Abfragesprache: Wie werden Daten strukturiert und abgefragt: PostgreSQL ist eine relationale Datenbank mit Tabellen, Fremdschlüsseln und vollem SQL.",
+    "toolB": "dein Projekt priorisiert Horizontale Skalierung und Schreibdurchsatz: Wie wächst das System: Apache Cassandra wurde für horizontale Skalierung konzipiert und verteilt Daten per konsistentem…"
+  }
 }

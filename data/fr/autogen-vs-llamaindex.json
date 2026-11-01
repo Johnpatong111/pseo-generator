@@ -1,8 +1,8 @@
 {
   "slug": "autogen-vs-llamaindex",
   "meta": {
-    "title": "AutoGen vs LlamaIndex (2026): quelle solution choisir ?",
-    "description": "Comparez AutoGen et LlamaIndex en 2026 : orchestration multi-agents, RAG, écosystème, sécurité, courbe d'apprentissage. Conseils concrets pour choisir selon votre projet."
+    "title": "AutoGen vs LlamaIndex: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez AutoGen et LlamaIndex : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "AutoGen"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from autogen import AssistantAgent, UserProxyAgent\n\nassistant = AssistantAgent(\n    name=\"assistant\",\n    llm_config={\"config_list\": [{\"model\": \"gpt-4o-mini\", \"api_key\": \"VOTRE_CLE\"}]},\n)\nuser = UserProxyAgent(\n    name=\"user\",\n    human_input_mode=\"NEVER\",\n    code_execution_config={\"use_docker\": False},\n)\nuser.initiate_chat(assistant, message=\"Bonjour, pouvez-vous me dire bonjour en une phrase ?\")",
-    "tech2Snippet": "from llama_index.core import VectorStoreIndex, Document\n\nindex = VectorStoreIndex.from_documents(\n    [Document(text=\"Bonjour, ceci est un exemple minimal pour LlamaIndex.\")]\n)\nquery_engine = index.as_query_engine()\nresponse = query_engine.query(\"Que contient le document ?\")\nprint(response)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Lequel choisir pour un prototype rapide ?",
       "a": "Pour un prototype de RAG ou de recherche documentaire, LlamaIndex permet d'obtenir un résultat fonctionnel avec peu de code. Pour un prototype d'orchestration multi-agents, AutoGen est plus direct car ses abstractions sont centrées sur les conversations entre agents. Le choix dépend de la nature du prototype et des compétences de l'équipe."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre AutoGen et LlamaIndex modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "AutoGen convient mieux lorsque votre projet privilégie modèle d'orchestration et agents : AutoGen propose une abstraction d'agents avec des conversations multi-tours, des agents assistés…. LlamaIndex est préférable lorsque votre projet privilégie objectif principal et cas d'usage : LlamaIndex est un framework de données pour applications LLM : il se concentre sur l'ingestion,….",
+  "tradeoffs": [
+    {
+      "category": "Objectif principal et cas d'usage",
+      "toolA": "Ses résultats dépendent de la version et de la configuration des agents.",
+      "toolB": "Son comportement varie selon les connecteurs et les index choisis."
+    },
+    {
+      "category": "Modèle d'orchestration et agents",
+      "toolA": "La flexibilité a un coût : il faut souvent écrire du code de coordination et gérer les erreurs de conversation.",
+      "toolB": "Selon la version, les fonctionnalités d'agents peuvent évoluer et nécessitent de vérifier la documentation."
+    },
+    {
+      "category": "RAG et accès aux données",
+      "toolA": "La qualité dépend fortement des intégrations choisies et de la configuration.",
+      "toolB": "Les performances et la pertinence dépendent des paramètres d'indexation et du modèle utilisé."
+    },
+    {
+      "category": "Courbe d'apprentissage et expérience développeur",
+      "toolA": "L'expérience dépend aussi de votre aisance avec les architectures multi-agents.",
+      "toolB": "La courbe dépend du cas d'usage et de la version."
+    },
+    {
+      "category": "Écosystème, intégrations et compatibilité",
+      "toolA": "L'écosystème est dynamique mais plus restreint que celui de LlamaIndex sur les connecteurs de données.",
+      "toolB": "Vérifiez la compatibilité et la maintenance des connecteurs dont vous dépendez."
+    },
+    {
+      "category": "Sécurité et gestion des risques",
+      "toolA": "Les garanties ne sont pas automatiques et doivent être évaluées selon votre déploiement.",
+      "toolB": "Les bonnes pratiques dépendent de l'offre et de l'hébergement choisis."
+    }
+  ],
+  "introduction": "AutoGen et LlamaIndex répondent à un besoin proche, mais diffèrent sur objectif principal et cas d'usage. AutoGen : AutoGen est un framework d'orchestration multi-agents : il permet de définir des agents conversationnels (assistants,… LlamaIndex : LlamaIndex est un framework de données pour applications LLM : il se concentre sur l'ingestion, l'indexation et la… Le critère « Modèle d'orchestration et agents » met en évidence une autre différence pratique : AutoGen propose une abstraction d'agents avec des conversations multi-tours, des agents assistés par outils et des… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle d'orchestration et agents : AutoGen propose une abstraction d'agents avec des conversations multi-tours, des agents assistés…",
+    "toolB": "votre projet privilégie objectif principal et cas d'usage : LlamaIndex est un framework de données pour applications LLM : il se concentre sur l'ingestion,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "claude-fable-5-1-vs-claude-opus-5-5",
   "meta": {
-    "title": "Claude Fable 5.1 vs Claude Opus 5.5 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude Fable 5.1 i Claude Opus 5.5 w 2026 r.: kontekst, ceny API, opóźnienia, dostępność i zastosowania. Sprawdź, który model wybrać."
+    "title": "Claude Fable 5.1 vs Claude Opus 5.5: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude Fable 5.1 i Claude Opus 5.5: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from anthropic import Anthropic\n\nclient = Anthropic()\nmessage = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\nprint(message.content[0].text)",
-    "tech2Snippet": "from anthropic import Anthropic\n\nclient = Anthropic()\nmessage = client.messages.create(\n    model=\"claude-opus-5-5\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\nprint(message.content[0].text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Co się stanie, jeśli ceny lub limity zmienią się po publikacji porównania?",
       "a": "Ceny, limity kontekstu i dostępność funkcji są wrażliwe na wersję oraz datę, dlatego podane wartości należy traktować jako aktualne dokumentacyjnie, a nie stałe. Przed wdrożeniem trzeba zweryfikować parametry w oficjalnej dokumentacji modeli i cenniku Anthropic. Warto też zapisać przyjęte założenia w dokumentacji projektu, aby ułatwić późniejszą aktualizację wyceny."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude Fable 5.1 a Claude Opus 5.5 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude Fable 5.1 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i maksymalna długość odpowiedzi”: Claude Fable 5.1 ma udokumentowane okno kontekstu 1 mln tokenów oraz limit odpowiedzi do 128 tys. Claude Opus 5.5 sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów (wejście, wyjście, odczyt z pamięci podręcznej)”: Dla Claude Opus 5.5 przyjęto ceny 4 USD za 1 mln tokenów wejściowych i 20 USD za 1 mln tokenów….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i maksymalna długość odpowiedzi",
+      "toolA": "Należy pamiętać, że faktyczne zachowanie przy skrajnych rozmiarach wejścia zależy od wersji modelu, konfiguracji i obciążenia usługi.",
+      "toolB": "Przy zadaniach wymagających wklejenia bardzo dużej ilości materiału trzeba sprawdzić limit i ewentualnie zastosować dzielenie lub wyszukiwanie."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Bez oficjalnych danych nie można rzetelnie ogłosić przewagi liczbowej.",
+      "toolB": "Rekomendowane jest samodzielne sprawdzenie aktualnych wyników w dokumentacji Anthropic oraz we własnej ewaluacji na reprezentatywnych zadaniach."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów (wejście, wyjście, odczyt z pamięci podręcznej)",
+      "toolA": "Ceny są aktualne na moment opracowania i mogą się zmienić, dlatego przed budżetowaniem trzeba je zweryfikować na stronie cennika Anthropic.",
+      "toolB": "Wartości należy traktować jako aktualne dokumentacyjnie, ale wrażliwe na zmiany cennika i warunki planu."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "Przed wdrożeniem produkcyjnym warto przeprowadzić własny test latencji na reprezentatywnych promptach.",
+      "toolB": "Zaleca się porównanie obu modeli w docelowym środowisku."
+    },
+    {
+      "category": "Dostęp do modelu i tryb udostępniania (zamknięty/interfejs API)",
+      "toolA": "Nie należy zakładać, że parametry znane z jednej wersji obowiązują w kolejnych.",
+      "toolB": "Oba modele nie są więc rozwiązaniami open source i nie można ich lokalnie hostować na własnych warunkach."
+    },
+    {
+      "category": "Zastosowania praktyczne i dobór do zadania",
+      "toolA": "Warto wykorzystać pamięć podręczną promptów, by obniżyć koszt powtarzalnego wejścia.",
+      "toolB": "Przy zadaniach wymagających ekstremalnie dużego kontekstu trzeba rozważyć Fable 5.1 lub techniki dzielenia materiału."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 i Claude Opus 5.5 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i maksymalna długość odpowiedzi. Claude Fable 5.1: Claude Fable 5.1 ma udokumentowane okno kontekstu 1 mln tokenów oraz limit odpowiedzi do 128 tys. Claude Opus 5.5: Dla Claude Opus 5.5 nie podano w tej analizie zweryfikowanego limitu kontekstu, więc wartość trzeba potwierdzić w… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Nie podaję liczbowych wyników Claude Fable 5.1, ponieważ dla tej wersji nie mam weryfikowalnych, porównywalnych… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i maksymalna długość odpowiedzi”: Claude Fable 5.1 ma udokumentowane okno kontekstu 1 mln tokenów oraz limit odpowiedzi do 128 tys.",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów (wejście, wyjście, odczyt z pamięci podręcznej)”: Dla Claude Opus 5.5 przyjęto ceny 4 USD za 1 mln tokenów wejściowych i 20 USD za 1 mln tokenów…"
+  }
 }

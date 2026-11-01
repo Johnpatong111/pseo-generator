@@ -1,8 +1,8 @@
 {
   "slug": "deno-vs-hono",
   "meta": {
-    "title": "Deno vs Hono (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Deno i Hono w 2026 roku: środowisko uruchomieniowe kontra lekki framework HTTP. Sprawdź wydajność, ekosystem, wdrożenia i wybierz najlepiej."
+    "title": "Deno vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Deno i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Deno"
@@ -94,5 +94,49 @@
       "q": "Czy Deno i Hono są darmowe?",
       "a": "Deno i Hono są projektami open source i można ich używać bez opłat za samo oprogramowanie, zgodnie z licencjami tych projektów. Koszty mogą pojawić się po stronie hostingu, usług chmurowych lub wsparcia komercyjnego, a ich wysokość zależy od dostawcy i planu. Przed wdrożeniem warto zweryfikować aktualne warunki licencji oraz cennik wybranej platformy."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Deno a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Deno będzie lepszy, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno domyślnie uruchamia kod bez dostępu do sieci, systemu plików i zmiennych środowiskowych, a…. Hono sprawdzi się, gdy projekt stawia na kryterium „Wdrażanie i hosting”: Hono jest projektowany jako przenośny framework i działa na wielu platformach edge oraz….",
+  "tradeoffs": [
+    {
+      "category": "Czym jest narzędzie i jaka jest jego rola w stosie",
+      "toolA": "Deno nie jest frameworkiem HTTP — serwer tworzy się na bazie standardowego API, choć dostępne są też rozwiązania zewnętrzne.",
+      "toolB": "Hono sam w sobie nie jest runtime'em — wymaga środowiska uruchomieniowego, w którym zostanie osadzony."
+    },
+    {
+      "category": "Wydajność i narzut w obsłudze żądań",
+      "toolA": "Nie ma jednego, wiarygodnego benchmarku przekładającego się na każdy scenariusz — samodzielne pomiary na własnym profilu ruchu są niezbędne.",
+      "toolB": "Porównania wydajności należy traktować jako zależne od konfiguracji i obciążenia, a nie uniwersalne."
+    },
+    {
+      "category": "Bezpieczeństwo i model uprawnień",
+      "toolA": "Należy pamiętać, że bezpieczeństwo zależy też od poprawności konfiguracji, wersji i stosowanych zależności.",
+      "toolB": "Ostateczny poziom ochrony zależy od konfiguracji hostingu, wersji i sposobu wdrożenia."
+    },
+    {
+      "category": "Ekosystem, biblioteki i kompatybilność",
+      "toolA": "Przed wyborem warto sprawdzić konkretne zależności w docelowej wersji Deno.",
+      "toolB": "Kompatybilność zależy od środowiska hostującego — niektóre funkcje wymagają konkretnego runtime'u lub adaptera."
+    },
+    {
+      "category": "Doświadczenie deweloperskie i konfiguracja",
+      "toolA": "Doświadczenie zależy też od wersji i wybranego edytora.",
+      "toolB": "Dla osób znających Express lub Fetch API praca z Hono jest zwykle intuicyjna."
+    },
+    {
+      "category": "Wdrażanie i hosting",
+      "toolA": "Dostępność konkretnych funkcji hostingowych należy sprawdzić u wybranego dostawcy.",
+      "toolB": "Hono jest projektowany jako przenośny framework i działa na wielu platformach edge oraz serverless, co ułatwia wdrażanie w rozproszonych środowiskach. Wybór hostingu wpływa na dostępne funkcje, limity i koszty, dlatego warto zweryfikować wsparcie dla wybranego runtime'u i adaptera. Hono nie narzuca jednego modelu wdrożenia."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Deno i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze czym jest narzędzie i jaka jest jego rola w stosie. Deno: Deno to środowisko uruchomieniowe dla JavaScriptu i TypeScriptu oparte na silniku V8 oraz Rust, tworzone jako… Hono: Hono to lekki, wieloplatformowy framework HTTP dla JavaScriptu i TypeScriptu, wzorowany na expressowym modelu… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut w obsłudze żądań”: Deno opiera się na silniku V8 i charakteryzuje się niskim czasem startu oraz wydajnym wykonywaniem kodu, choć… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno domyślnie uruchamia kod bez dostępu do sieci, systemu plików i zmiennych środowiskowych, a…",
+    "toolB": "projekt stawia na kryterium „Wdrażanie i hosting”: Hono jest projektowany jako przenośny framework i działa na wielu platformach edge oraz…"
+  }
 }

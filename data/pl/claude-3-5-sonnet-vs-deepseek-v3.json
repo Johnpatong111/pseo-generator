@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-deepseek-v3",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs DeepSeek V3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude 3.5 Sonnet i DeepSeek V3 pod kątem kontekstu, wydajności, cen API, opóźnień i zastosowań. Sprawdź, który model lepiej pasuje do Twoich potrzeb w 2026 roku."
+    "title": "Claude 3.5 Sonnet vs DeepSeek V3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.5 Sonnet i DeepSeek V3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TWOJ_KLUCZ\")\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20241022\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"TWOJ_KLUCZ\", base_url=\"https://api.deepseek.com\")\nresponse = client.chat.completions.create(\n    model=\"deepseek-chat\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Który model wybrać dla małego startupu o ograniczonym budżecie?",
       "a": "Dla małego startupu z ograniczonym budżetem DeepSeek V3 może być atrakcyjniejszą opcją ze względu na niższe ceny API i możliwość wdrożenia open source, co pozwala uniknąć wysokich opłat licencyjnych. Jednak należy wziąć pod uwagę koszty infrastruktury i ewentualne nakłady na utrzymanie. Claude 3.5 Sonnet oferuje wyższą jakość i wsparcie, ale wiąże się z wyższymi kosztami. Decyzja powinna zależeć od priorytetów: jeśli budżet jest kluczowy, DeepSeek V3 będzie lepszy; jeśli liczy się niezawodność i gotowe rozwiązania, warto rozważyć Claude 3.5 Sonnet."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.5 Sonnet a DeepSeek V3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.5 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstowe i obsługa długich dokumentów”: Claude 3.5 Sonnet oferuje okno kontekstowe o rozmiarze 200 000 tokenów, co pozwala analizować…. DeepSeek V3 sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek V3 jest dostępny w API DeepSeek z konkurencyjnymi cenami za 1 mln tokenów, często….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstowe i obsługa długich dokumentów",
+      "toolA": "Należy pamiętać, że rzeczywista wydajność może się różnić w zależności od wersji modelu i obciążenia, a szczegóły należy potwierdzić w oficjalnej dokumentacji Anthropic.",
+      "toolB": "Parametry te mogą się zmieniać wraz z aktualizacjami modelu, więc warto zweryfikować je u dostawcy."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval) – dostępne i porównywalne wyniki",
+      "toolA": "Należy jednak pamiętać, że wyniki benchmarków zależą od wersji modelu i metodyki testu, dlatego zawsze warto sprawdzić aktualne dane na oficjalnej stronie.",
+      "toolB": "Zaleca się weryfikację najnowszych publikacji DeepSeek."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Zazwyczaj jest to opcja droższa w porównaniu do modeli open source, ale oferuje wyższą jakość i wsparcie.",
+      "toolB": "Ceny API również mogą się zmieniać, więc warto śledzić oficjalny cennik DeepSeek."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "Anthropic nie publikuje stałych wartości latencji, więc należy je traktować jako zmienne.",
+      "toolB": "DeepSeek nie udostępnia szczegółowych danych o latencji, więc zaleca się przeprowadzenie własnych testów w docelowym środowisku."
+    },
+    {
+      "category": "Dostępność modelu i model open source vs zamknięty",
+      "toolA": "Zapewnia to spójność działania i wsparcie, ale ogranicza możliwości dostosowania i niezależność od dostawcy.",
+      "toolB": "Model jest również dostępny via API DeepSeek."
+    },
+    {
+      "category": "Zastosowania praktyczne i ekosystem",
+      "toolA": "Anthropic oferuje również narzędzia do bezpiecznego wdrażania.",
+      "toolB": "Warto rozważyć dostępność bibliotek i wsparcie społeczności dla konkretnego stosu technologicznego."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet i DeepSeek V3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstowe i obsługa długich dokumentów. Claude 3.5 Sonnet: Claude 3.5 Sonnet oferuje okno kontekstowe o rozmiarze 200 000 tokenów, co pozwala analizować obszerne dokumenty,… DeepSeek V3: DeepSeek V3 ma okno kontekstowe o rozmiarze 128 000 tokenów, co również umożliwia przetwarzanie długich tekstów, ale w… Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval) – dostępne i porównywalne wyniki”: Claude 3.5 Sonnet osiąga wysokie wyniki w benchmarkach takich jak MMLU (wiedza ogólna) i HumanEval (programowanie), co… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstowe i obsługa długich dokumentów”: Claude 3.5 Sonnet oferuje okno kontekstowe o rozmiarze 200 000 tokenów, co pozwala analizować…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek V3 jest dostępny w API DeepSeek z konkurencyjnymi cenami za 1 mln tokenów, często…"
+  }
 }

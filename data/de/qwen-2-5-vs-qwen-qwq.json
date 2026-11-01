@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen-qwq",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen QwQ (2026): welche Lösung passt besser?",
-    "description": "Qwen 2.5 und Qwen QwQ im Vergleich: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Einsatzszenarien. So wählen Sie 2026 das passende Modell."
+    "title": "Qwen 2.5 vs Qwen QwQ: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Qwen 2.5 und Qwen QwQ: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Sag Hallo auf Deutsch.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=100)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/QwQ-32B-Preview\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Berechne 17 * 23 und erkläre den Rechenweg.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=512)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte ich den Ressourcenbedarf für den Selbstbetrieb einschätzen?",
       "a": "Der Ressourcenbedarf hängt von Modellgröße, Quantisierung, Kontextlänge und Batch-Größe ab und kann nicht pauschal beziffert werden. Qwen 2.5 bietet kleinere Varianten, die auch auf weniger leistungsfähiger Hardware laufen können, während größere Modelle und Qwen QwQ mehr GPU-Speicher und Rechenzeit benötigen. Für den Selbstbetrieb sollten Sie daher zunächst die offiziellen Modellkarten und Hardware-Empfehlungen prüfen und eine Kapazitätsplanung anhand Ihrer erwarteten Anfragelast durchführen. Ein schrittweiser Pilotbetrieb hilft, den tatsächlichen Bedarf zu ermitteln."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Qwen 2.5 und Qwen QwQ verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Qwen 2.5 passt besser, wenn dein Projekt priorisiert API-Preise pro 1 Million Eingabe- und Ausgabetoken: Kostenstruktur und: Qwen 2.5 ist in verschiedenen Größen und über mehrere Anbieter verfügbar, sodass die Preise pro 1…. Qwen QwQ ist geeigneter, wenn dein Projekt priorisiert Praktische Einsatzszenarien: Eignung für Allzweck-Aufgaben, Programmierung,: Qwen QwQ ist besonders für Aufgaben geeignet, die eine strukturierte, mehrstufige Denkweise….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster: maximale Eingabelänge und praktische Nutzbarkeit für lange",
+      "toolA": "Eine belastbare Aussage setzt einen Abgleich mit der aktuellen offiziellen Modellkarte voraus.",
+      "toolB": "Auch hier ist die aktuelle offizielle Dokumentation maßgeblich."
+    },
+    {
+      "category": "Benchmark-Leistung: Vergleich veröffentlichter Ergebnisse für MMLU und",
+      "toolA": "Eine pauschale Aussage über alle Qwen-2.5-Varianten ist daher nicht seriös.",
+      "toolB": "Konkrete Zahlen sind in der offiziellen Modellkarte zu prüfen."
+    },
+    {
+      "category": "API-Preise pro 1 Million Eingabe- und Ausgabetoken: Kostenstruktur und",
+      "toolA": "Eine konkrete Preisangabe ohne Prüfung der aktuellen offiziellen Preisliste wäre nicht belastbar.",
+      "toolB": "Die aktuellen Preise sind der offiziellen Preisliste des jeweiligen Anbieters zu entnehmen."
+    },
+    {
+      "category": "Latenz: Antwortzeit und Durchsatz",
+      "toolA": "Eine pauschale Latenzangabe ist ohne konkrete Messung nicht möglich.",
+      "toolB": "Die tatsächliche Latenz hängt vom Anbieter, der Auslastung und der Konfiguration ab."
+    },
+    {
+      "category": "Modellzugang und Offenheit: Verfügbarkeit als offene Gewichte, über Cloud-APIs",
+      "toolA": "Insgesamt bietet die Familie breite Zugangsoptionen.",
+      "toolB": "Für hoheitliche oder datenschutzsensible Szenarien kann Selbsthosting interessant sein."
+    },
+    {
+      "category": "Praktische Einsatzszenarien: Eignung für Allzweck-Aufgaben, Programmierung,",
+      "toolA": "Für Aufgaben ohne tiefes mehrstufiges Schlussfolgern ist es oft die effizientere Wahl.",
+      "toolB": "Die Stärke liegt in der Tiefe, nicht in der Breite der Standardanwendungen."
+    }
+  ],
+  "introduction": "Qwen 2.5 und Qwen QwQ lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster: maximale eingabelänge und praktische nutzbarkeit für lange. Qwen 2.5: Qwen 2.5 wird in mehreren Varianten mit unterschiedlichen Kontextfenstern angeboten; die genauen Werte hängen von der… Qwen QwQ: Qwen QwQ ist als Reasoning-Modell konzipiert und kann ebenfalls längere Eingaben verarbeiten, wobei das effektive… Das Kriterium benchmark-leistung: vergleich veröffentlichter ergebnisse für mmlu und zeigt einen weiteren praktischen Unterschied: Für Qwen 2.5 liegen je nach Modellgröße veröffentlichte Ergebnisse für Allgemeinwissen (MMLU) und Programmierung… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert API-Preise pro 1 Million Eingabe- und Ausgabetoken: Kostenstruktur und: Qwen 2.5 ist in verschiedenen Größen und über mehrere Anbieter verfügbar, sodass die Preise pro 1…",
+    "toolB": "dein Projekt priorisiert Praktische Einsatzszenarien: Eignung für Allzweck-Aufgaben, Programmierung,: Qwen QwQ ist besonders für Aufgaben geeignet, die eine strukturierte, mehrstufige Denkweise…"
+  }
 }

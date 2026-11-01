@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-deepseek-v3",
   "meta": {
-    "title": "DeepSeek R1 vs DeepSeek V3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie DeepSeek R1 i V3 pod kątem okna kontekstu, wydajności, cen API, opóźnień i dostępności. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "DeepSeek R1 vs DeepSeek V3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj DeepSeek R1 i DeepSeek V3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import requests\n\nurl = \"https://api.deepseek.com/v1/chat/completions\"\nheaders = {\"Authorization\": \"Bearer YOUR_API_KEY\", \"Content-Type\": \"application/json\"}\ndata = {\n    \"model\": \"deepseek-reasoner\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n}\nresponse = requests.post(url, headers=headers, json=data)\nprint(response.json()[\"choices\"][0][\"message\"][\"content\"])",
-    "tech2Snippet": "import requests\n\nurl = \"https://api.deepseek.com/v1/chat/completions\"\nheaders = {\"Authorization\": \"Bearer YOUR_API_KEY\", \"Content-Type\": \"application/json\"}\ndata = {\n    \"model\": \"deepseek-chat\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n}\nresponse = requests.post(url, headers=headers, json=data)\nprint(response.json()[\"choices\"][0][\"message\"][\"content\"])"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Czy benchmarks MMLU i HumanEval są wystarczające do porównania tych modeli?",
       "a": "Benchmarki takie jak MMLU i HumanEval dostarczają użytecznych, ale ograniczonych informacji, ponieważ wyniki zależą od wersji modelu, metodyki i konfiguracji. Nie należy traktować ich jako jedynego kryterium wyboru. Zaleca się uzupełnienie ich własnymi testami na zadaniach zbliżonych do rzeczywistych zastosowań."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między DeepSeek R1 a DeepSeek V3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "DeepSeek R1 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: DeepSeek R1 jest dostępny w wersjach o określonym oknie kontekstu, które mogą się różnić w…. DeepSeek V3 sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek V3 jest często pozycjonowany jako tańsza alternatywa do zadań ogólnych, ale dokładne ceny….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce duże okno kontekstu pozwala analizować długie dokumenty i rozmowy, ale rzeczywista jakość odpowiedzi przy skrajnym wypełnieniu kontekstu może się różnić i wymaga testów.",
+      "toolB": "Podobnie jak w przypadku R1, należy sprawdzić aktualne limity w dokumentacji API."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "W zadaniach wymagających wieloetapowego wnioskowania R1 może wypadać korzystniej, co jest zgodne z jego przeznaczeniem.",
+      "toolB": "W wielu typowych zadaniach V3 osiąga dobre rezultaty przy niższym narzucie obliczeniowym, ale nie można tego traktować jako gwarancji bez aktualnych danych."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Przy szacowaniu kosztów warto uwzględnić, że rzeczywiste zużycie tokenów wyjściowych może być większe niż widoczna odpowiedź.",
+      "toolB": "W przypadku dużego wolumenu nawet niewielka różnica w cenie za token może mieć znaczenie."
+    },
+    {
+      "category": "Opóźnienie (latencja)",
+      "toolA": "W zastosowaniach interaktywnych może wymagać dłuższego oczekiwania lub strumieniowania odpowiedzi.",
+      "toolB": "W wielu przypadkach V3 może zapewnić lepszą responsywność, szczególnie przy krótkich promptach."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość (open/closed)",
+      "toolA": "Otwarte wagi umożliwiają samodzielne hostowanie, ale wymagają odpowiednich zasobów obliczeniowych.",
+      "toolB": "Należy zweryfikować aktualne warunki licencji i dostępność w preferowanym regionie."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Warto go rozważyć tam, gdzie jakość odpowiedzi jest ważniejsza niż szybkość.",
+      "toolB": "Nie sprawdzi się jednak tak dobrze w zadaniach wymagających głębokiego, wieloetapowego rozumowania."
+    }
+  ],
+  "introduction": "DeepSeek R1 i DeepSeek V3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. DeepSeek R1: DeepSeek R1 jest dostępny w wersjach o określonym oknie kontekstu, które mogą się różnić w zależności od kanału… DeepSeek V3: DeepSeek V3 również oferuje okno kontekstu, którego dokładny rozmiar zależy od wersji i dostawcy. Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: DeepSeek R1 jest modelem rozumującym, a publicznie udostępniane wyniki benchmarków mogą obejmować MMLU i HumanEval,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: DeepSeek R1 jest dostępny w wersjach o określonym oknie kontekstu, które mogą się różnić w…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek V3 jest często pozycjonowany jako tańsza alternatywa do zadań ogólnych, ale dokładne ceny…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB (2026) : quelle solution choisir ?",
-    "description": "Comparez PostgreSQL et DuckDB en 2026 : OLTP vs OLAP, architecture, performances, écosystème et cas d'usage. Choisissez la base adaptée à votre projet."
+    "title": "PostgreSQL vs DuckDB: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez PostgreSQL et DuckDB : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import psycopg\n\nconn = psycopg.connect(\"dbname=postgres user=postgres password=postgres host=localhost\")\ncur = conn.cursor()\ncur.execute(\"SELECT 'Hello, World!' AS message;\")\nprint(cur.fetchone()[0])\ncur.close()\nconn.close()",
-    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect()\nresult = con.execute(\"SELECT 'Hello, World!' AS message;\").fetchone()\nprint(result[0])\ncon.close()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre PostgreSQL et DuckDB pour un projet de 2026 ?",
       "a": "La décision dépend du type de charge : privilégiez PostgreSQL pour les applications transactionnelles multi-utilisateurs, les besoins relationnels avancés et les architectures de production centralisées. Choisissez DuckDB pour l'analyse locale, l'exploration de fichiers, les notebooks et les pipelines analytiques légers. Une approche hybride est souvent pertinente, avec PostgreSQL comme source de vérité et DuckDB comme moteur d'analyse complémentaire."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre PostgreSQL et DuckDB modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "PostgreSQL convient mieux lorsque votre projet privilégie gestion de la concurrence et intégrité transactionnelle : PostgreSQL offre des transactions ACID complètes, un contrôle de concurrence multi-versions et des…. DuckDB est préférable lorsque votre projet privilégie type de charge de travail : oltp vs olap : DuckDB est conçu pour l'analytique (OLAP) : il utilise un stockage colonnaire, un moteur….",
+  "tradeoffs": [
+    {
+      "category": "Modèle d'architecture et mode de déploiement",
+      "toolA": "Son administration requiert des compétences et une configuration dédiées.",
+      "toolB": "Il ne vise pas le partage concurrent à grande échelle entre de nombreux utilisateurs distants."
+    },
+    {
+      "category": "Type de charge de travail : OLTP vs OLAP",
+      "toolA": "Ses performances analytiques restent correctes mais ne sont pas son point fort face à des moteurs colonnaires spécialisés.",
+      "toolB": "En revanche, il n'est pas conçu pour des écritures transactionnelles concurrentes ni pour un service multi-utilisateurs intensif."
+    },
+    {
+      "category": "Performance et comportement selon la charge",
+      "toolA": "Il ne faut pas généraliser de chiffres sans contexte de version et de matériel.",
+      "toolB": "Il n'est pas conçu pour des milliers d'écritures concurrentes, ce qui limite son usage comme base de production transactionnelle."
+    },
+    {
+      "category": "Gestion de la concurrence et intégrité transactionnelle",
+      "toolA": "Ces garanties sont essentielles pour les systèmes où plusieurs clients écrivent simultanément.",
+      "toolB": "Pour des lectures analytiques parallèles, il peut être utilisé avec précaution, mais ce n'est pas son cas d'usage principal."
+    },
+    {
+      "category": "Écosystème, compatibilité et intégration",
+      "toolA": "Cette maturité facilite l'intégration dans des systèmes existants et la maintenance à long terme.",
+      "toolB": "Son écosystème est plus jeune et plus restreint que celui de PostgreSQL, même s'il progresse rapidement."
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "Ces fonctionnalités sont éprouvées pour des déploiements multi-utilisateurs exposés.",
+      "toolB": "Il est donc plutôt adapté à des contextes où l'accès est déjà maîtrisé par l'application hôte."
+    }
+  ],
+  "introduction": "PostgreSQL et DuckDB répondent à un besoin proche, mais diffèrent sur modèle d'architecture et mode de déploiement. PostgreSQL : PostgreSQL est un serveur de base de données relationnelle client-serveur, conçu pour être déployé comme un service… DuckDB : DuckDB est un moteur de base de données analytique embarqué, qui s'exécute dans le processus de l'application ou du… Le critère « Type de charge de travail : OLTP vs OLAP » met en évidence une autre différence pratique : PostgreSQL est optimisé pour les charges transactionnelles (OLTP) : insertions, mises à jour et lectures ciblées… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie gestion de la concurrence et intégrité transactionnelle : PostgreSQL offre des transactions ACID complètes, un contrôle de concurrence multi-versions et des…",
+    "toolB": "votre projet privilégie type de charge de travail : oltp vs olap : DuckDB est conçu pour l'analytique (OLAP) : il utilise un stockage colonnaire, un moteur…"
+  }
 }

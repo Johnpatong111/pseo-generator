@@ -1,8 +1,8 @@
 {
   "slug": "nuxt-vs-remix",
   "meta": {
-    "title": "Nuxt vs Remix (2026): quelle solution choisir ?",
-    "description": "Comparaison Nuxt vs Remix en 2026 : rendu, routage, données, écosystème et déploiement. Critères détaillés, exemples de code et recommandations pour choisir."
+    "title": "Nuxt vs Remix: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Nuxt et Remix : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Nuxt"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// nuxt.config.ts\nexport default defineNuxtConfig({})\n\n// app.vue\n<template>\n  <h1>Hello, World!</h1>\n</template>",
-    "tech2Snippet": "// app/routes/_index.tsx\nexport default function Index() {\n  return <h1>Hello, World!</h1>;\n}\n\n// app/root.tsx\nimport { Links, Meta, Outlet, Scripts, ScrollRestoration } from \"@remix-run/react\";\n\nexport function Layout({ children }: { children: React.ReactNode }) {\n  return (\n    <html lang=\"fr\">\n      <head><Meta /><Links /></head>\n      <body>{children}<ScrollRestoration /><Scripts /></body>\n    </html>\n  );\n}\n\nexport default function App() { return <Outlet />; }"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il migrer de l'un à l'autre en 2026 ?",
       "a": "Une migration doit être justifiée par un besoin concret : compétences de l'équipe, écosystème, modèle de données ou contraintes d'hébergement. Nuxt et Remix sont tous deux matures, mais leurs paradigmes diffèrent suffisamment pour qu'une réécriture représente un coût réel. Comparez d'abord un prototype limité sur vos cas d'usage avant toute décision."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Nuxt et Remix modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Nuxt convient mieux lorsque votre projet privilégie écosystème et modules : la richesse des intégrations prêtes à l'emploi : Nuxt dispose d'un système de modules couvrant notamment le SEO, les images, le contenu et…. Remix est préférable lorsque votre projet privilégie routage et structure des pages : le routage par fichiers est central dans les : Remix utilise un routage imbriqué où chaque segment peut exporter un loader, une action et un….",
+  "tradeoffs": [
+    {
+      "category": "Framework hôte et langage : Nuxt s'appuie sur Vue et Remix historiquement sur",
+      "toolA": "Les développeurs déjà familiers avec Vue retrouvent leurs réflexes, tandis que les équipes React devront investir dans une nouvelle syntaxe.",
+      "toolB": "Il s'intègre naturellement aux équipes React et à l'écosystème npm associé, mais impose une compréhension du rendu serveur et des mutations."
+    },
+    {
+      "category": "Routage et structure des pages : le routage par fichiers est central dans les",
+      "toolA": "Le modèle est très prévisible pour les sites de contenu et les applications classiques.",
+      "toolB": "Cette imbrication facilite le chargement parallèle des données et la gestion des erreurs par segment, mais demande une bonne maîtrise de la hiérarchie des routes."
+    },
+    {
+      "category": "Gestion des données et mutations : la manière de charger les données côté",
+      "toolA": "Les mutations passent souvent par des appels explicites, ce qui reste flexible mais demande de structurer soi-même la validation et la gestion d'état.",
+      "toolB": "Ce modèle réduit la duplication entre client et serveur, au prix d'une courbe d'apprentissage sur les conventions de Remix."
+    },
+    {
+      "category": "Rendu et performance perçue : les deux frameworks savent faire du rendu",
+      "toolA": "Ces options conviennent aux sites de contenu comme aux applications hybrides.",
+      "toolB": "Les gains dépendent de la latence serveur et du découpage des routes, et ne peuvent pas être généralisés sans mesure sur votre projet."
+    },
+    {
+      "category": "Écosystème et modules : la richesse des intégrations prêtes à l'emploi",
+      "toolA": "La disponibilité et la maintenance de chaque module doivent toutefois être vérifiées avant adoption.",
+      "toolB": "L'intégration de bibliothèques tierces est généralement possible, avec parfois des adaptations à prévoir."
+    },
+    {
+      "category": "Déploiement et hébergement : le choix de la cible de déploiement influence la",
+      "toolA": "La portabilité est bonne, mais certaines fonctionnalités serveur nécessitent un environnement compatible.",
+      "toolB": "Le déploiement est généralement fluide sur les plateformes prises en charge, à condition de vérifier la compatibilité de la version utilisée."
+    }
+  ],
+  "introduction": "Nuxt et Remix répondent à un besoin proche, mais diffèrent sur framework hôte et langage : nuxt s'appuie sur vue et remix historiquement sur. Nuxt : Nuxt est le framework méta de Vue : il propose une structure de projet conventionnelle, la composition API et un… Remix : Remix est un framework full-stack construit autour de React, avec une approche centrée sur les Web Standards et les… Le critère « Routage et structure des pages : le routage par fichiers est central dans les » met en évidence une autre différence pratique : Nuxt génère les routes à partir du dossier pages, avec des layouts, des middlewares et des routes dynamiques déclarées… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et modules : la richesse des intégrations prêtes à l'emploi : Nuxt dispose d'un système de modules couvrant notamment le SEO, les images, le contenu et…",
+    "toolB": "votre projet privilégie routage et structure des pages : le routage par fichiers est central dans les : Remix utilise un routage imbriqué où chaque segment peut exporter un loader, une action et un…"
+  }
 }

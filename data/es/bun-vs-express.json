@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Bun y Express en 2026: rendimiento, ecosistema, compatibilidad, seguridad y facilidad de uso para elegir el runtime y framework adecuados."
+    "title": "Bun vs Express: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Bun y Express: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "¿Merece la pena migrar de Express a Bun?",
       "a": "Depende del contexto: si buscas reducir herramientas, mejorar el rendimiento o simplificar la configuración, Bun puede aportar ventajas. Si tu aplicación depende de middleware maduro, módulos nativos o de un comportamiento muy predecible en producción, puede ser mejor mantener Express sobre Node.js o probar Bun primero en un servicio secundario. Una migración gradual reduce riesgos."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Bun y Express cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele…. Express es preferible cuando tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento y modelo de ejecución",
+      "toolA": "Su rendimiento real depende de la versión, del tipo de carga y del código, por lo que conviene medirlo en tu propio escenario en lugar de asumir cifras genéricas.",
+      "toolB": "Con Node.js moderno el rendimiento es adecuado para la mayoría de APIs y aplicaciones web, aunque no está optimizado específicamente para escenarios de máximo throughput."
+    },
+    {
+      "category": "Madurez y ecosistema",
+      "toolA": "La velocidad de evolución implica que ciertos comportamientos cambien entre versiones.",
+      "toolB": "Es habitual encontrar soluciones probadas para autenticación, registro, CORS o limitación de peticiones, aunque parte de ese ecosistema está en modo de mantenimiento."
+    },
+    {
+      "category": "Compatibilidad con Node.js y dependencias",
+      "toolA": "Aun así, no todos los módulos nativos o casos límite funcionan igual que en Node.js, y conviene verificar las dependencias críticas antes de migrar.",
+      "toolB": "Esto reduce sorpresas en proyectos con dependencias nativas o con requisitos específicos de versiones de Node."
+    },
+    {
+      "category": "Facilidad de configuración y experiencia de desarrollo",
+      "toolA": "Su enfoque todo en uno acelera el inicio de proyectos pequeños y prototipos, aunque requiere aprender sus particularidades.",
+      "toolB": "Su simplicidad facilita el onboarding, pero normalmente necesita complementos externos para tareas como pruebas, bundling o recarga en caliente."
+    },
+    {
+      "category": "Seguridad y mantenimiento",
+      "toolA": "Es recomendable fijar versiones y revisar las notas de cada release antes de actualizar en producción.",
+      "toolB": "No obstante, su modelo minimalista exige que el equipo configure correctamente middleware de seguridad como helmet o rate limiting, y que mantenga las dependencias actualizadas."
+    },
+    {
+      "category": "Curva de aprendizaje y documentación",
+      "toolA": "Su curva de aprendizaje es moderada para quien ya conoce JavaScript, aunque algunos conceptos propios requieren tiempo.",
+      "toolB": "Su API es pequeña y estable, lo que reduce la carga cognitiva al empezar."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Bun y Express responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Bun: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele ofrecer cifras de… Express: Express es un framework minimalista que se ejecuta sobre Node.js y delega el rendimiento en el runtime subyacente. El criterio de madurez y ecosistema añade otra diferencia práctica: Bun ha ganado adopción con rapidez y mantiene compatibilidad con una parte importante de paquetes de npm, pero su… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele…",
+    "toolB": "tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y…"
+  }
 }

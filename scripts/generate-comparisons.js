@@ -3,6 +3,7 @@ const path = require("node:path");
 const { loadEnvConfig } = require("@next/env");
 const OpenAI = require("openai");
 const { categories, comparisonSlugs } = require("./topics");
+const { createCodeExamples, scenarios } = require("../lib/snippet-catalog.cjs");
 
 const projectRoot = path.resolve(__dirname, "..");
 loadEnvConfig(projectRoot);
@@ -418,25 +419,113 @@ function getApiClient() {
 }
 
 function getComparisonTitle(slug, toolA, toolB, locale) {
-  const topicCategory = Object.entries(categories).find(([, slugs]) =>
+  const categoryId = getCategoryId(slug);
+  const topic = titleFocus[locale][categoryId];
+  if (locale === "en") {
+    return `${toolA} vs ${toolB}: Which one to choose in ${currentYear}? (${topic} & code compared)`;
+  }
+
+  const localizedQuestion = {
+    pl: `co wybrać w ${currentYear}`,
+    es: `cuál elegir en ${currentYear}`,
+    de: `welches ${currentYear} wählen`,
+    fr: `lequel choisir en ${currentYear}`,
+  }[locale];
+  return `${toolA} vs ${toolB}: ${localizedQuestion} — ${topic}`;
+}
+
+function getCategoryId(slug) {
+  const categoryName = Object.entries(categories).find(([, slugs]) =>
     slugs.includes(slug),
   )?.[0];
-  const categoryId =
-    topicCategory?.includes("AI")
-      ? "ai-models"
-      : topicCategory === "Frontend & Meta-frameworks"
-        ? "frontend"
-        : topicCategory === "Backend & Runtimes"
-          ? "backend"
-          : topicCategory === "Databases & ORM"
-            ? "databases"
-            : topicCategory === "DevOps & Cloud"
-              ? "devops"
-              : topicCategory === "CSS & UI"
-                ? "css"
-                : "general";
+  if (!categoryName) {
+    const databaseTools = new Set([
+      "appwrite", "cassandra", "cockroachdb", "duckdb", "firebase",
+      "firestore", "memcached", "mongodb", "mongoose", "mysql",
+      "postgresql", "prisma", "redis", "scylladb", "sqlite",
+      "supabase", "typeorm",
+    ]);
+    if (slug.split("-").some((technology) => databaseTools.has(technology))) {
+      return "databases";
+    }
+  }
+  return categoryName?.includes("AI")
+    ? "ai-models"
+    : categoryName === "Frontend & Meta-frameworks"
+      ? "frontend"
+      : categoryName === "Backend & Runtimes"
+        ? "backend"
+        : categoryName === "Databases & ORMs"
+          ? "databases"
+          : categoryName === "DevOps & Cloud"
+            ? "devops"
+            : categoryName === "CSS & UI"
+              ? "css"
+              : "general";
+}
 
-  return `${toolA} vs ${toolB}: ${titleFocus[locale][categoryId]}`;
+function getMetaDescription(slug, toolA, toolB, locale) {
+  const categoryId = getCategoryId(slug);
+  const focus = {
+    pl: {
+      frontend: "rendering, routingu i ładowania danych",
+      backend: "projektowania API, runtime i obsługi żądań",
+      databases: "modelowania danych, zapytań i indeksowania",
+      "ai-models": "okna kontekstu, API modeli i integracji",
+      devops: "wdrażania, skalowania i infrastruktury",
+      css: "API komponentów, izolacji stylów i utrzymania",
+      general: "architektury, integracji i obsługi danych",
+    },
+    en: {
+      frontend: "rendering, routing, and data loading",
+      backend: "API design, runtime behavior, and request handling",
+      databases: "data modeling, query patterns, and indexing",
+      "ai-models": "context windows, model APIs, and integration",
+      devops: "deployment, scaling, and infrastructure",
+      css: "component APIs, style isolation, and maintenance",
+      general: "architecture, integration, and data handling",
+    },
+    es: {
+      frontend: "renderizado, enrutamiento y carga de datos",
+      backend: "diseño de API, runtime y gestión de solicitudes",
+      databases: "modelado de datos, consultas e indexación",
+      "ai-models": "ventanas de contexto, API de modelos e integración",
+      devops: "despliegue, escalabilidad e infraestructura",
+      css: "API de componentes, aislamiento de estilos y mantenimiento",
+      general: "arquitectura, integración y gestión de datos",
+    },
+    de: {
+      frontend: "Rendering, Routing und Datenladen",
+      backend: "API-Design, Laufzeitverhalten und Anfrageverarbeitung",
+      databases: "Datenmodellierung, Abfragen und Indizierung",
+      "ai-models": "Kontextfenster, Modell-APIs und Integration",
+      devops: "Bereitstellung, Skalierung und Infrastruktur",
+      css: "Komponenten-APIs, Style-Isolation und Wartung",
+      general: "Architektur, Integration und Datenverarbeitung",
+    },
+    fr: {
+      frontend: "rendu, routage et chargement des données",
+      backend: "conception d’API, environnement d’exécution et requêtes",
+      databases: "modélisation des données, requêtes et indexation",
+      "ai-models": "fenêtres de contexte, API des modèles et intégration",
+      devops: "déploiement, mise à l’échelle et infrastructure",
+      css: "API des composants, isolation des styles et maintenance",
+      general: "architecture, intégration et gestion des données",
+    },
+  }[locale][categoryId];
+  const templates = {
+    pl: `Porównaj ${toolA} i ${toolB}: oceń kompromisy architektoniczne w obszarze ${focus} i zobacz przykłady TypeScript, aby dobrać stack do projektu.`,
+    en: `Compare ${toolA} and ${toolB} architectural trade-offs, ${focus}, and review side-by-side TypeScript to choose the right stack.`,
+    es: `Compara ${toolA} y ${toolB}: evalúa sus compromisos arquitectónicos en ${focus} y revisa ejemplos TypeScript para elegir el stack adecuado.`,
+    de: `Vergleiche ${toolA} und ${toolB}: Bewerte Architekturkompromisse bei ${focus} und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen.`,
+    fr: `Comparez ${toolA} et ${toolB} : évaluez les compromis architecturaux liés à ${focus} et consultez des exemples TypeScript pour choisir le bon stack.`,
+  };
+  const description = templates[locale];
+  if (description.length <= 200) {
+    return description;
+  }
+  const shortened = description.slice(0, 199);
+  return `${shortened.slice(0, shortened.lastIndexOf(" "))}…`;
 }
 
 function buildPrompt(slug, toolA, toolB, locale) {
@@ -460,6 +549,7 @@ This comparison includes DataStax Astra DB. Explain it as a managed database bui
    : "";
 
  return `Write an accurate, useful, SEO-optimized comparison of ${toolA} vs ${toolB} for ${currentYear}.
+All claims must be factual, current, qualified where version-dependent, and never invented. Do not claim original testing or measured benchmarks unless supplied with a cited, reproducible source.
 
 Return only valid JSON, without Markdown, using exactly this schema:
 {
@@ -472,6 +562,11 @@ Return only valid JSON, without Markdown, using exactly this schema:
  "toolB": { "name": "${toolB}" },
  "verdict": "${language.verdict}",
  "introduction": "...",
+ "heroSubtitle": "...",
+ "quickVerdict": "...",
+ "tradeoffs": [
+   { "category": "...", "toolA": "...", "toolB": "..." }
+ ],
  "decisionFramework": {
    "toolA": "...",
    "toolB": "..."
@@ -484,10 +579,6 @@ Return only valid JSON, without Markdown, using exactly this schema:
      "winner": "toolA"
    }
  ],
- "codeExamples": {
-   "tech1Snippet": "...",
-   "tech2Snippet": "..."
- },
  "faq": [
    { "q": "${language.questionExample}", "a": "${language.answerExample}" }
  ]
@@ -504,7 +595,7 @@ ${aiModelRequirements}
 ${fableRequirements}
 ${astraDbRequirements}
 
-Add a "codeExamples" object with "tech1Snippet" and "tech2Snippet". Each value must be a concise, runnable or clearly illustrative "Hello, World!" or minimal setup example for its respective technology. Use correct syntax and idiomatic current APIs, include only the smallest required imports and setup, and do not invent benchmark results or imply the snippets measure performance. Return plain source code strings without Markdown fences.`;
+Write heroSubtitle as one precise sentence describing the architectural problem, quickVerdict as a distinct actionable choice rule for each tool, and 4–6 tradeoffs grounded in the comparison. Do not copy the same sentence between these fields or the introduction. Source-code examples are supplied from a reviewed, category-specific TypeScript catalog after content validation; do not generate code, greetings, or translated UI copy.`;
 }
 
 function applyVerifiedFacts(slug, comparison, locale) {
@@ -577,9 +668,12 @@ function validateComparison(value, slug, toolA, toolB, locale) {
     throw new Error(`The API response must compare "${toolA}" against "${toolB}".`);
   }
 
-  requireString(value.meta.title, "meta.title");
   const title = getComparisonTitle(slug, toolA, toolB, locale);
-  const description = requireString(value.meta.description, "meta.description");
+  if (requireString(value.meta.title, "meta.title") !== title) {
+    throw new Error("The generated title must use the requested localized title template.");
+  }
+  requireString(value.meta.description, "meta.description");
+  const description = getMetaDescription(slug, toolA, toolB, locale);
   if (description.length < 100 || description.length > 200) {
     throw new Error(
       `The meta description must be 100–200 characters (received ${description.length}).`,
@@ -594,6 +688,23 @@ function validateComparison(value, slug, toolA, toolB, locale) {
   const introduction = requireString(value.introduction, "introduction");
   if (introduction.length < 180 || introduction.length > 800) {
     throw new Error("The introduction must be between 180 and 800 characters.");
+  }
+
+  const heroSubtitle = requireString(value.heroSubtitle, "heroSubtitle");
+  if (heroSubtitle.length < 60 || heroSubtitle.length > 300) {
+    throw new Error("The hero subtitle must be between 60 and 300 characters.");
+  }
+  const quickVerdict = requireString(value.quickVerdict, "quickVerdict");
+  if (quickVerdict.length < 80 || quickVerdict.length > 500) {
+    throw new Error("The quick verdict must be between 80 and 500 characters.");
+  }
+  const normalizeCopy = (text) => text.replace(/\s+/gu, " ").trim().toLowerCase();
+  if (
+    normalizeCopy(heroSubtitle) === normalizeCopy(introduction) ||
+    normalizeCopy(quickVerdict) === normalizeCopy(verdict) ||
+    normalizeCopy(heroSubtitle) === normalizeCopy(quickVerdict)
+  ) {
+    throw new Error("Hero subtitle, introduction, and quick verdict must be distinct.");
   }
 
   if (
@@ -657,6 +768,28 @@ function validateComparison(value, slug, toolA, toolB, locale) {
     };
   });
 
+  if (!Array.isArray(value.tradeoffs) || value.tradeoffs.length < 4 || value.tradeoffs.length > 8) {
+    throw new Error("The generated comparison must contain 4–8 tradeoffs.");
+  }
+  const seenTradeoffs = new Set();
+  const tradeoffs = value.tradeoffs.map((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error(`Invalid trade-off at index ${index}.`);
+    }
+
+    const category = requireString(item.category, `tradeoffs[${index}].category`);
+    if (seenTradeoffs.has(category.toLowerCase())) {
+      throw new Error(`Duplicate trade-off category "${category}".`);
+    }
+    seenTradeoffs.add(category.toLowerCase());
+    const toolADescription = requireString(item.toolA, `tradeoffs[${index}].toolA`);
+    const toolBDescription = requireString(item.toolB, `tradeoffs[${index}].toolB`);
+    if (toolADescription.length < 45 || toolBDescription.length < 45) {
+      throw new Error(`Trade-off ${index + 1} must explain both tools.`);
+    }
+    return { category, toolA: toolADescription, toolB: toolBDescription };
+  });
+
   if (!Array.isArray(value.faq) || value.faq.length < 5 || value.faq.length > 8) {
     throw new Error("The generated comparison must contain 5–8 FAQ entries.");
   }
@@ -684,30 +817,11 @@ function validateComparison(value, slug, toolA, toolB, locale) {
     };
   });
 
-  if (
-    !value.codeExamples ||
-    typeof value.codeExamples !== "object" ||
-    Array.isArray(value.codeExamples)
-  ) {
-    throw new Error("The generated comparison must contain codeExamples.");
-  }
-
+  const categoryId = getCategoryId(slug);
   const codeExamples = {
-    tech1Snippet: requireString(
-      value.codeExamples.tech1Snippet,
-      "codeExamples.tech1Snippet",
-    ),
-    tech2Snippet: requireString(
-      value.codeExamples.tech2Snippet,
-      "codeExamples.tech2Snippet",
-    ),
+    scenario: scenarios[locale],
+    ...createCodeExamples(slug, categoryId),
   };
-
-  for (const [field, snippet] of Object.entries(codeExamples)) {
-    if (snippet.length > 4000) {
-      throw new Error(`Generated ${field} must not exceed 4000 characters.`);
-    }
-  }
 
   return {
     slug,
@@ -716,8 +830,11 @@ function validateComparison(value, slug, toolA, toolB, locale) {
     toolB: { name: toolB },
     verdict,
     introduction,
+    heroSubtitle,
+    quickVerdict,
     decisionFramework,
     comparison,
+    tradeoffs,
     codeExamples,
     faq,
   };
@@ -741,13 +858,6 @@ async function generateComparison(
     filePath,
     path.join(localeDirectory, `${reversedSlug}.json`),
   ];
-
-  if (locale === "pl") {
-    existingPaths.push(
-      path.join(dataDirectory, `${slug}.json`),
-      path.join(dataDirectory, `${reversedSlug}.json`),
-    );
-  }
 
   if (!force && existingPaths.some((existingPath) => existsSync(existingPath))) {
     console.log(
@@ -965,6 +1075,9 @@ if (require.main === module) {
 
 module.exports = {
   applyVerifiedFacts,
+  getCategoryId,
+  getComparisonTitle,
+  getMetaDescription,
   generateUserComparison,
   InvalidComparisonInputError,
   main,

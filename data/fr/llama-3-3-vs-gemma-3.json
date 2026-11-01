@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-gemma-3",
   "meta": {
-    "title": "Llama 3.3 vs Gemma 3 (2026): quelle solution choisir ?",
-    "description": "Llama 3.3 face à Gemma 3 : contexte, accès, licence, performances publiées, tarifs API, latence et cas d'usage. Un comparatif prudent pour choisir selon votre projet en 2026."
+    "title": "Llama 3.3 vs Gemma 3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Llama 3.3 et Gemma 3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal avec l'API compatible OpenAI d'un fournisseur hébergeant Llama 3.3\n# Remplacez la base_url et la clé par celles de votre fournisseur.\nfrom openai import OpenAI\n\nclient = OpenAI(\n    base_url=\"https://votre-fournisseur.example/v1\",\n    api_key=\"VOTRE_CLE_API\",\n)\n\nreponse = client.chat.completions.create(\n    model=\"llama-3.3-70b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, présentez-vous en une phrase.\"}],\n)\n\nprint(reponse.choices[0].message.content)",
-    "tech2Snippet": "# Exemple minimal avec transformers pour Gemma 3 (variante à adapter selon le modèle)\n# Nécessite un jeton Hugging Face et l'accès au dépôt du modèle.\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\nnom_modele = \"google/gemma-3-2b-it\"  # vérifiez le nom exact de la variante\n\ntokenizer = AutoTokenizer.from_pretrained(nom_modele)\nmodel = AutoModelForCausalLM.from_pretrained(nom_modele, device_map=\"auto\")\n\nentree = tokenizer(\"Bonjour, présentez-vous en une phrase.\", return_tensors=\"pt\")\nsortie = model.generate(**entree, max_new_tokens=50)\n\nprint(tokenizer.decode(sortie[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Comment vérifier les performances et tarifs avant de choisir ?",
       "a": "Le plus fiable est de consulter les model cards officielles de Meta et Google, les pages tarifaires des fournisseurs d'API et les licences en vigueur à la date de votre décision. Complétez par une évaluation interne sur un jeu de prompts représentatifs, en mesurant la qualité, la latence et les coûts réels. Ne vous fiez pas uniquement à des scores de benchmarks publics, qui ne reflètent pas votre contexte métier."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Llama 3.3 et Gemma 3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Llama 3.3 convient mieux lorsque votre projet privilégie fenêtre de contexte et gestion des longues entrées : Llama 3.3, dans sa configuration publiée par Meta (variante 70B Instruct), est documenté avec une…. Gemma 3 est préférable lorsque votre projet privilégie tarification api par million de tokens (entrée/sortie) : Gemma 3, sous licence ouverte, peut être exécuté localement sans coût de licence, mais les….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et gestion des longues entrées",
+      "toolA": "Une dégradation progressive de la qualité sur les contextes extrêmes reste possible et doit être testée sur vos données.",
+      "toolB": "Il convient de vérifier la limite officielle de la variante choisie avant de concevoir un pipeline sur de longues entrées."
+    },
+    {
+      "category": "Performances aux benchmarks publiés (MMLU, HumanEval)",
+      "toolA": "Une évaluation interne sur vos tâches reste indispensable.",
+      "toolB": "Il est prudent de traiter ces chiffres comme indicatifs et de vérifier les publications officielles."
+    },
+    {
+      "category": "Tarification API par million de tokens (entrée/sortie)",
+      "toolA": "Il faut consulter la page tarifaire du fournisseur retenu et considérer le coût total, incluant GPU si vous hébergez vous-même.",
+      "toolB": "Vérifiez les tarifs actuels et les éventuelles limites de débit avant de budgéter."
+    },
+    {
+      "category": "Latence et efficacité d'inférence",
+      "toolA": "Les API managées peuvent masquer cette complexité mais introduisent une latence réseau variable.",
+      "toolB": "Aucune valeur de latence universelle ne peut être garantie."
+    },
+    {
+      "category": "Accès, licence et hébergement (ouvert vs managé)",
+      "toolA": "Cette diversité d'accès est un atout, mais la conformité à la licence reste à vérifier pour votre organisation.",
+      "toolB": "Là encore, la lecture de la licence et des conditions d'utilisation est nécessaire avant un usage en production."
+    },
+    {
+      "category": "Cas d'usage pratiques et écosystème",
+      "toolA": "En contrepartie, la variante 70B demande des ressources importantes si vous l'hébergez vous-même.",
+      "toolB": "Pour des tâches de raisonnement très complexes ou des contextes extrêmes, les variantes compactes peuvent toutefois montrer leurs limites."
+    }
+  ],
+  "introduction": "Llama 3.3 et Gemma 3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et gestion des longues entrées. Llama 3.3 : Llama 3.3, dans sa configuration publiée par Meta (variante 70B Instruct), est documenté avec une fenêtre de contexte… Gemma 3 : Gemma 3 est proposé en plusieurs tailles, avec des fenêtres de contexte plus modestes que celles des grands modèles… Le critère « Performances aux benchmarks publiés (MMLU, HumanEval) » met en évidence une autre différence pratique : Meta publie pour Llama 3.3 des résultats sur des benchmarks de connaissances générales et de génération de code, mais… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte et gestion des longues entrées : Llama 3.3, dans sa configuration publiée par Meta (variante 70B Instruct), est documenté avec une…",
+    "toolB": "votre projet privilégie tarification api par million de tokens (entrée/sortie) : Gemma 3, sous licence ouverte, peut être exécuté localement sans coût de licence, mais les…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "cassandra-vs-scylladb",
   "meta": {
-    "title": "Apache Cassandra vs ScyllaDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Apache Cassandra i ScyllaDB w 2026 roku: wydajność, architektura, koszty operacyjne, ekosystem i zgodność. Sprawdź, które rozwiązanie wybrać."
+    "title": "Apache Cassandra vs ScyllaDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj Apache Cassandra i ScyllaDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Apache Cassandra"
@@ -94,5 +94,49 @@
       "q": "Które rozwiązanie wybrać dla małego zespołu?",
       "a": "Dla małego zespołu często korzystniejsza bywa opcja zarządzana lub rozwiązanie o prostszym utrzymaniu, aby ograniczyć nakład operacyjny. Cassandra ma większą bazę wiedzy i więcej dostępnych specjalistów, co ułatwia rozwiązywanie problemów. ScyllaDB może zmniejszyć zapotrzebowanie na zasoby, ale wymaga weryfikacji zgodności i kosztów wsparcia."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Apache Cassandra a ScyllaDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Apache Cassandra będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość i ekosystem”: Apache Cassandra ma długą historię, szeroką bazę artykułów, sterowników i integracji oraz dużą…. ScyllaDB sprawdzi się, gdy projekt stawia na kryterium „Wydajność i skalowanie”: ScyllaDB projektowano pod kątem wysokiej przepustowości i niskich opóźnień na rdzeń, z….",
+  "tradeoffs": [
+    {
+      "category": "Architektura i model danych",
+      "toolA": "Szczegóły zachowania zależą od wersji, schematu i konfiguracji klastra.",
+      "toolB": "Zgodność funkcji z Cassandrą należy sprawdzić dla używanej wersji."
+    },
+    {
+      "category": "Wydajność i skalowanie",
+      "toolA": "Nie ma jednego uniwersalnego wyniku wydajności — wszystko zależy od profilu zapytań i konfiguracji.",
+      "toolB": "Rzeczywiste korzyści zależą od obciążenia i konfiguracji."
+    },
+    {
+      "category": "Dojrzałość i ekosystem",
+      "toolA": "Wersje 4.x i 5.x są aktywnie rozwijane w ramach Apache Software Foundation.",
+      "toolB": "Dostępność funkcji i integracji może różnić się między wersjami."
+    },
+    {
+      "category": "Koszty operacyjne i zasoby",
+      "toolA": "Rzeczywiste koszty zależą od skali, planu i kompetencji zespołu.",
+      "toolB": "Oszczędności nie są gwarantowane i zależą od obciążenia oraz modelu rozliczeń."
+    },
+    {
+      "category": "Zgodność i migracja",
+      "toolA": "Aktualizacje między wersjami wymagają sprawdzenia kompatybilności i planu wdrożenia.",
+      "toolB": "ScyllaDB udostępnia protokół zgodny z Cassandrą i wspiera CQL, co ułatwia część migracji, ale nie wszystkie funkcje i zachowania są identyczne. Przed migracją trzeba zweryfikować zgodność używanych funkcji, sterowników i narzędzi dla konkretnej wersji. To kluczowy krok ograniczający ryzyko."
+    },
+    {
+      "category": "Bezpieczeństwo i zgodność",
+      "toolA": "Nie ma jednego uniwersalnego poziomu bezpieczeństwa — wszystko zależy od konfiguracji.",
+      "toolB": "Bezpieczeństwo zależy od konfiguracji i procesów operacyjnych."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Apache Cassandra i ScyllaDB odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i model danych. Apache Cassandra: Apache Cassandra opiera się na rozproszonym pierścieniu z replikacją i modelem szerokich kolumn, gdzie dane są… ScyllaDB: ScyllaDB zachowuje model szerokich kolumn i protokół Cassandry, ale implementuje silnik od podstaw z myślą o… Kolejną istotną różnicę pokazuje kryterium „Wydajność i skalowanie”: Cassandra skaluje się liniowo wraz z węzłami w dobrze zaprojektowanym klastrze, a wydajność zależy od kompaktowania,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość i ekosystem”: Apache Cassandra ma długą historię, szeroką bazę artykułów, sterowników i integracji oraz dużą…",
+    "toolB": "projekt stawia na kryterium „Wydajność i skalowanie”: ScyllaDB projektowano pod kątem wysokiej przepustowości i niskich opóźnień na rdzeń, z…"
+  }
 }

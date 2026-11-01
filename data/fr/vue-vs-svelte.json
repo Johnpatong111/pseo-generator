@@ -1,8 +1,8 @@
 {
   "slug": "vue-vs-svelte",
   "meta": {
-    "title": "Vue vs Svelte (2026): quelle solution choisir ?",
-    "description": "Comparaison détaillée de Vue et Svelte en 2026 : réactivité, écosystème, courbe d'apprentissage, TypeScript, performances et outillage, pour choisir le bon framework front-end."
+    "title": "Vue vs Svelte: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Vue et Svelte : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Vue"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createApp, ref } from 'vue'\n\nconst App = {\n  setup() {\n    const message = ref('Hello, World!')\n    return { message }\n  },\n  template: '<h1>{{ message }}</h1>'\n}\n\ncreateApp(App).mount('#app')",
-    "tech2Snippet": "<script>\n  let message = $state('Hello, World!')\n</script>\n\n<h1>{message}</h1>"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre Vue et Svelte lors d'un choix d'architecture front-end ?",
       "a": "Il est utile d'évaluer la disponibilité des compétences, la richesse des bibliothèques nécessaires et la pérennité souhaitée de l'API du framework. Un prototype de quelques écrans, avec les contraintes réelles du projet, aide à comparer la lisibilité et l'outillage. La décision doit être documentée et réexaminée si les besoins évoluent."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Vue et Svelte modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Vue convient mieux lorsque votre projet privilégie écosystème et bibliothèques : Vue dispose d'un écosystème mature avec Vue Router, Pinia, Vite, Nuxt et une vaste collection de…. Svelte est préférable lorsque votre projet privilégie modèle de réactivité : Svelte compile les composants en JavaScript impératif et transforme les affectations en mises à….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de réactivité",
+      "toolA": "Ce modèle reste très prévisible dans des applications de grande taille, à condition de comprendre les règles de réactivité comme ref, reactive et computed.",
+      "toolB": "Le résultat est un code souvent plus concis, mais qui dépend fortement du compilateur et de la version utilisée."
+    },
+    {
+      "category": "Courbe d'apprentissage et lisibilité",
+      "toolA": "La documentation officielle est abondante et traduite dans de nombreuses langues.",
+      "toolB": "La documentation est claire et bien structurée, sans être aussi foisonnante que celle de Vue."
+    },
+    {
+      "category": "Écosystème et bibliothèques",
+      "toolA": "Cette richesse facilite la résolution de problèmes courants et la maintenance à long terme.",
+      "toolB": "Le choix de bibliothèques doit donc être vérifié au cas par cas selon les besoins."
+    },
+    {
+      "category": "Support de TypeScript",
+      "toolA": "La configuration dépend toutefois de l'outillage choisi et demande un peu de rigueur.",
+      "toolB": "Le typage des composants est fonctionnel, avec des limites selon la version et l'outillage."
+    },
+    {
+      "category": "Performances et poids à l'exécution",
+      "toolA": "Les résultats varient selon la configuration de build et la complexité de l'interface.",
+      "toolB": "Les gains réels dépendent fortement du projet, de la version et de la stratégie de rendu."
+    },
+    {
+      "category": "Outillage et méta-frameworks",
+      "toolA": "L'ensemble est éprouvé pour des sites et applications de tailles variées.",
+      "toolB": "L'outillage est solide, avec des DevTools Svelte utiles mais parfois moins étendus que ceux de Vue."
+    }
+  ],
+  "introduction": "Vue et Svelte répondent à un besoin proche, mais diffèrent sur modèle de réactivité. Vue : Vue s'appuie sur un système de réactivité fin fondé sur des proxys avec l'API Composition ou l'API Options. Svelte : Svelte compile les composants en JavaScript impératif et transforme les affectations en mises à jour ciblées du DOM. Le critère « Courbe d'apprentissage et lisibilité » met en évidence une autre différence pratique : Vue propose une syntaxe de template familière proche du HTML, avec des directives comme v-if et v-for faciles à… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et bibliothèques : Vue dispose d'un écosystème mature avec Vue Router, Pinia, Vite, Nuxt et une vaste collection de…",
+    "toolB": "votre projet privilégie modèle de réactivité : Svelte compile les composants en JavaScript impératif et transforme les affectations en mises à…"
+  }
 }

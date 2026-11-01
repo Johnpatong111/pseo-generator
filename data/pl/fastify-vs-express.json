@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-express",
   "meta": {
-    "title": "Fastify vs Express (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Fastify i Express w 2026 roku: wydajność, wtyczki, walidacja, TypeScript, ekosystem i wsparcie. Sprawdź, który framework lepiej pasuje do Twojego projektu."
+    "title": "Fastify vs Express: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Fastify i Express: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Fastify"
@@ -94,5 +94,49 @@
       "q": "Jak oba frameworki podchodzą do bezpieczeństwa?",
       "a": "Żaden framework nie zapewnia bezpieczeństwa automatycznie, kluczowe są aktualizacje zależności, poprawna konfiguracja nagłówków, uwierzytelniania i limitów żądań. Fastify pomaga poprzez walidację schematów i kontrolę serializacji, a Express wymaga świadomego doboru middleware'ów i bibliotek. W obu przypadkach warto śledzić komunikaty o podatnościach i stosować aktualne, wspierane wersje."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Fastify a Express zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przepustowość (HTTP, routing)”: Fastify powstał z myślą o minimalizacji narzutu: stosuje wydajny router oraz zoptymalizowane…. Express sprawdzi się, gdy projekt stawia na kryterium „Ekosystem, biblioteki i dostępność materiałów”: Express ma największy i najstarszy ekosystem wśród frameworków Node.js: ogromną liczbę bibliotek,….",
+  "tradeoffs": [
+    {
+      "category": "Wydajność i przepustowość (HTTP, routing)",
+      "toolA": "Nie należy traktować tych wyników jako gwarancji dla konkretnej aplikacji, kluczowe jest własne testowanie.",
+      "toolB": "W praktyce wąskim gardłem często okazuje się baza danych, warstwa sieciowa lub zewnętrzne API, a nie sam framework."
+    },
+    {
+      "category": "System wtyczek i architektura aplikacji",
+      "toolA": "Wiąże się to jednak z koniecznością zrozumienia modelu enkapsulacji, zanim zacznie się go efektywnie wykorzystywać.",
+      "toolB": "Taki model jest łatwy do opanowania i wystarczający w wielu aplikacjach, ale w dużych projektach wymaga dyscypliny, by uniknąć przypadkowych zależności i konfliktów między middleware'ami."
+    },
+    {
+      "category": "Walidacja danych wejściowych i schematy",
+      "toolA": "Dostępne są też integracje z innymi bibliotekami walidacyjnymi, zależnie od wersji i konfiguracji.",
+      "toolB": "Daje to dużą elastyczność i pozwala wybrać narzędzie według preferencji zespołu, ale zwiększa liczbę decyzji projektowych i miejsc, w których trzeba zadbać o spójność."
+    },
+    {
+      "category": "Wsparcie dla TypeScript i typowanie",
+      "toolA": "Typowanie nie zastępuje walidacji w czasie działania, obie warstwy warto łączyć.",
+      "toolB": "W projektach TypeScript sprawdza się poprawnie, jednak przy rozbudowanych middleware'ach i rozszerzaniu obiektu żądania może wymagać dodatkowej pracy."
+    },
+    {
+      "category": "Ekosystem, biblioteki i dostępność materiałów",
+      "toolA": "Przed wyborem warto sprawdzić dostępność wtyczek dla kluczowych elementów projektu.",
+      "toolB": "Wadą bywa zróżnicowana jakość i aktualność części pakietów oraz przykładów."
+    },
+    {
+      "category": "Krzywa wejścia i prostota",
+      "toolA": "Prostota Express bywa jednak odczuwalnie większa przy bardzo małych projektach.",
+      "toolB": "W miarę rozwoju projektu trzeba jednak samodzielnie narzucić strukturę, której framework nie wymusza."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Fastify i Express odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i przepustowość (http, routing). Fastify: Fastify powstał z myślą o minimalizacji narzutu: stosuje wydajny router oraz zoptymalizowane mechanizmy serializacji… Express: Express jest dojrzałym, sprawdzonym frameworkiem o prostszej architekturze, który w typowych zastosowaniach radzi… Kolejną istotną różnicę pokazuje kryterium „System wtyczek i architektura aplikacji”: Fastify opiera się na systemie wtyczek z enkapsulacją kontekstu, co sprzyja modularności i izolacji zależności między… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i przepustowość (HTTP, routing)”: Fastify powstał z myślą o minimalizacji narzutu: stosuje wydajny router oraz zoptymalizowane…",
+    "toolB": "projekt stawia na kryterium „Ekosystem, biblioteki i dostępność materiałów”: Express ma największy i najstarszy ekosystem wśród frameworków Node.js: ogromną liczbę bibliotek,…"
+  }
 }

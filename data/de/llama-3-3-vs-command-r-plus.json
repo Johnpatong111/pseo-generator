@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-command-r-plus",
   "meta": {
-    "title": "Llama 3.3 vs Command R+ (2026): welche Lösung passt besser?",
-    "description": "Vergleich von Llama 3.3 und Command R+ 2026: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Use Cases. Neutral, mit klarer Empfehlung."
+    "title": "Llama 3.3 vs Command R+: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Llama 3.3 und Command R+: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "import cohere\n\nco = cohere.Client(api_key=\"YOUR_API_KEY\")\nresponse = co.chat(\n    model=\"command-r-plus\",\n    message=\"Hello, World!\"\n)\nprint(response.text)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Modell ist langfristig flexibler und weniger an einen Anbieter gebunden?",
       "a": "Llama 3.3 bietet durch offene Gewichte und viele Hosting-Optionen eine höhere Portabilität und reduziert das Risiko eines Anbieter-Lock-ins. Command R+ ist an das Cohere-Ökosystem gebunden, bietet dafür konsistente APIs und Support aus einer Hand. Die langfristige Flexibilität hängt davon ab, ob Sie Betriebsaufwand gegen Anbieterbindung tauschen möchten."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Llama 3.3 und Command R+ verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Llama 3.3 passt besser, wenn dein Projekt priorisiert Benchmark-Leistung: veröffentlichte Ergebnisse zu MMLU und HumanEval, sofern: Meta veröffentlicht für Llama 3.3 70B Instruct unter anderem MMLU- und HumanEval-Werte, die je…. Command R+ ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: Command R+ wird von Cohere mit eigenen API-Preisen pro 1 Million Token angeboten, die sich nach….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster: maximal verarbeitbare Tokenmenge pro Anfrage",
+      "toolA": "Für die meisten Chat-, Analyse- und Code-Aufgaben reicht dieser Umfang aus, sofern die Anfrage innerhalb des Fensters bleibt und der Anbieter die volle Länge unterstützt.",
+      "toolB": "Auch hier gilt: Die tatsächlich nutzbare Länge hängt vom Tarif, der API-Version und der Konfiguration ab und sollte in der offiziellen Dokumentation verifiziert werden."
+    },
+    {
+      "category": "Benchmark-Leistung: veröffentlichte Ergebnisse zu MMLU und HumanEval, sofern",
+      "toolA": "Die Werte sind öffentlich dokumentiert, aber nicht immer direkt mit anderen Modellen vergleichbar, weil Testbedingungen und Versionen abweichen.",
+      "toolB": "Ein direkter numerischer Vergleich ist daher nur eingeschränkt belastbar, und für die eigene Entscheidung sollten Sie die aktuellen Modellkarten und Evaluierungsberichte der Anbieter heranziehen."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token",
+      "toolA": "Für eine belastbare Kalkulation müssen Sie den konkreten Anbieter, die Region und das Abrechnungsmodell prüfen, da sich Preise und Tarife ändern können.",
+      "toolB": "Auch hier gilt: Die aktuellen Preise sind versions- und zeitabhängig und sollten direkt in der offiziellen Preisliste von Cohere verifiziert werden, bevor Sie budgetieren."
+    },
+    {
+      "category": "Latenz und Durchsatz: Antwortzeit und Skalierbarkeit unter Last",
+      "toolA": "Für latenzkritische Anwendungen empfiehlt sich ein Anbieter mit dedizierten Instanzen und klaren Service-Level-Angaben, die Sie individuell prüfen sollten.",
+      "toolB": "Cohere macht keine allgemeingültigen Latenzgarantien für alle Kunden; für genaue Werte sind eigene Messungen oder die vereinbarten SLAs im Enterprise-Tarif maßgeblich."
+    },
+    {
+      "category": "Modellzugang und Offenheit: offene Gewichte versus geschlossener API-Dienst",
+      "toolA": "Diese Offenheit erfordert jedoch eigene Infrastruktur, Betriebsexpertise und Lizenzprüfung, insbesondere für kommerzielle Nutzung.",
+      "toolB": "Das vereinfacht den Betrieb, schränkt aber Anpassungen und Portabilität ein, und die Nutzung unterliegt den jeweiligen Vertragsbedingungen."
+    },
+    {
+      "category": "Praktische Einsatzszenarien: typische Aufgaben und Integrationsprofile",
+      "toolA": "Durch die breite Verfügbarkeit lässt es sich in eigene Pipelines integrieren, erfordert aber mehr Eigenverantwortung für Betrieb und Sicherheit.",
+      "toolB": "Für Teams, die eine verwaltete Lösung mit klaren APIs und weniger Betriebsaufwand suchen, ist es oft die pragmatischere Wahl, sofern die geschlossene Plattform akzeptabel ist."
+    }
+  ],
+  "introduction": "Llama 3.3 und Command R+ lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster: maximal verarbeitbare tokenmenge pro anfrage. Llama 3.3: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Token beschrieben; dies ist versionsabhängig und kann je… Command R+: Command R+ ist auf lange Kontexte ausgelegt; Cohere gibt für die aktuelle Version ein Kontextfenster von 128.000 Token… Das Kriterium benchmark-leistung: veröffentlichte ergebnisse zu mmlu und humaneval, sofern zeigt einen weiteren praktischen Unterschied: Meta veröffentlicht für Llama 3.3 70B Instruct unter anderem MMLU- und HumanEval-Werte, die je nach Evaluierungs-Setup… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Benchmark-Leistung: veröffentlichte Ergebnisse zu MMLU und HumanEval, sofern: Meta veröffentlicht für Llama 3.3 70B Instruct unter anderem MMLU- und HumanEval-Werte, die je…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: Command R+ wird von Cohere mit eigenen API-Preisen pro 1 Million Token angeboten, die sich nach…"
+  }
 }

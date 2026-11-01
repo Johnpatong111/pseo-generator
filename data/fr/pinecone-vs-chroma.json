@@ -1,8 +1,8 @@
 {
   "slug": "pinecone-vs-chroma",
   "meta": {
-    "title": "Pinecone vs Chroma (2026): quelle solution choisir ?",
-    "description": "Comparez Pinecone et Chroma en 2026 : architecture, déploiement, scalabilité, coûts, sécurité et écosystème. Découvrez quelle base vectorielle convient à votre projet."
+    "title": "Pinecone vs Chroma: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Pinecone et Chroma : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Pinecone"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from pinecone import Pinecone\n\npc = Pinecone(api_key=\"VOTRE_CLE_API\")\nindex = pc.Index(\"mon-index\")\nindex.upsert(vectors=[(\"id1\", [0.1, 0.2, 0.3], {\"texte\": \"Bonjour le monde\"})])\nresultats = index.query(vector=[0.1, 0.2, 0.3], top_k=1, include_metadata=True)\nprint(resultats)",
-    "tech2Snippet": "import chromadb\n\nclient = chromadb.Client()\ncollection = client.create_collection(name=\"mon-collection\")\ncollection.add(ids=[\"id1\"], embeddings=[[0.1, 0.2, 0.3]], metadatas=[{\"texte\": \"Bonjour le monde\"}])\nresultats = collection.query(query_embeddings=[[0.1, 0.2, 0.3]], n_results=1)\nprint(resultats)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Pinecone et Chroma sont-ils compatibles avec les frameworks de LLM ?",
       "a": "Les deux outils disposent d’intégrations avec des frameworks courants de RAG et de LLM, mais le niveau de support varie selon les bibliothèques et les versions. Pinecone met en avant un écosystème managé avec des connecteurs documentés, tandis que Chroma bénéficie de sa popularité dans l’écosystème Python open source. Il est conseillé de vérifier la maintenance et la compatibilité de l’intégration spécifique que vous envisagez."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Pinecone et Chroma modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Pinecone convient mieux lorsque votre projet privilégie architecture et modèle de déploiement : Pinecone est proposé comme un service entièrement managé, avec une architecture distribuée pensée…. Chroma est préférable lorsque votre projet privilégie facilité de mise en route et expérience développeur : Chroma s’installe facilement via pip ou Docker et expose une API Python concise, ce qui permet de….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle de déploiement",
+      "toolA": "Le service reste toutefois lié à la plateforme cloud de l’éditeur, ce qui limite le contrôle direct sur l’infrastructure sous-jacente.",
+      "toolB": "Son architecture légère facilite l’intégration dans des applications existantes, mais l’exploitation à grande échelle demande généralement plus d’expertise interne."
+    },
+    {
+      "category": "Facilité de mise en route et expérience développeur",
+      "toolA": "Les exemples de code sont simples et l’API est relativement stable, ce qui réduit la friction pour les équipes habituées aux services managés.",
+      "toolB": "En revanche, la configuration d’un déploiement distribué ou managé peut demander plus d’étapes que sur un service clé en main."
+    },
+    {
+      "category": "Scalabilité et performance sous charge",
+      "toolA": "L’éditeur communique sur une scalabilité horizontale, mais les résultats concrets varient selon le plan et l’usage réel.",
+      "toolB": "La performance reste donc très dépendante de l’environnement d’exécution et de l’expertise de l’équipe."
+    },
+    {
+      "category": "Coût et modèle économique",
+      "toolA": "Ce modèle peut simplifier la prévision budgétaire pour une équipe qui ne veut pas gérer de serveurs, mais il faut vérifier la grille tarifaire en vigueur avant de s’engager.",
+      "toolB": "Le coût total dépend donc fortement de la charge et de la capacité de l’équipe à gérer la plateforme."
+    },
+    {
+      "category": "Fonctionnalités de recherche et de filtrage",
+      "toolA": "Les capacités exactes doivent être vérifiées dans la documentation de la version utilisée.",
+      "toolB": "Certaines fonctionnalités avancées peuvent varier selon la version et le mode de déploiement."
+    },
+    {
+      "category": "Sécurité, conformité et contrôle des données",
+      "toolA": "Le contrôle direct sur l’infrastructure est plus limité que dans une solution auto-hébergée.",
+      "toolB": "Les offres managées de Chroma reprennent une partie de ces responsabilités, avec des garanties qui dépendent du fournisseur choisi."
+    }
+  ],
+  "introduction": "Pinecone et Chroma répondent à un besoin proche, mais diffèrent sur architecture et modèle de déploiement. Pinecone : Pinecone est proposé comme un service entièrement managé, avec une architecture distribuée pensée pour absorber des… Chroma : Chroma est une base vectorielle open source qui peut être exécutée localement, dans un conteneur ou sur une… Le critère « Facilité de mise en route et expérience développeur » met en évidence une autre différence pratique : Pinecone fournit des SDK dans plusieurs langages courants et une console web pour créer et gérer des index. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie architecture et modèle de déploiement : Pinecone est proposé comme un service entièrement managé, avec une architecture distribuée pensée…",
+    "toolB": "votre projet privilégie facilité de mise en route et expérience développeur : Chroma s’installe facilement via pip ou Docker et expose une API Python concise, ce qui permet de…"
+  }
 }

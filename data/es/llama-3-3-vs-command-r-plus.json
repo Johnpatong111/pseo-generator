@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-command-r-plus",
   "meta": {
-    "title": "Llama 3.3 vs Command R+ (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Llama 3.3 y Command R+ en 2026: contexto, rendimiento, precios, latencia, acceso y casos de uso para elegir el modelo adecuado."
+    "title": "Llama 3.3 vs Command R+: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Llama 3.3 y Command R+: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "import cohere\n\nco = cohere.Client(api_key=\"TU_API_KEY\")\nresponse = co.generate(\n    model=\"command-r-plus\",\n    prompt=\"Hello, world!\",\n    max_tokens=20\n)\nprint(response.generations[0].text)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "¿Qué modelo recomiendas para una startup con recursos limitados?",
       "a": "Para una startup con recursos limitados, Command R+ puede ser más sencillo de adoptar al ser un servicio gestionado con pago por uso, evitando inversiones iniciales en infraestructura. Llama 3.3, aunque puede resultar más económico a largo plazo si se autoaloja, requiere conocimientos técnicos y costes de hardware. Considera el coste total de propiedad y tu capacidad de mantener la infraestructura antes de elegir."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Llama 3.3 y Command R+ cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Llama 3.3 encaja mejor cuando tu proyecto prioriza rendimiento en benchmarks (mmlu, humaneval): Meta publicó resultados para Llama 3.3 70B en los que reporta una puntuación de 86.0 en MMLU y…. Command R+ es preferible cuando tu proyecto prioriza rendimiento en benchmarks (mmlu, humaneval): Cohere no ha publicado puntuaciones de MMLU o HumanEval para Command R+ en su documentación oficial.",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y manejo de documentos largos",
+      "toolA": "Es importante verificar la longitud máxima admitida en la versión específica que se utilice, ya que podría actualizarse.",
+      "toolB": "Al igual que con Llama 3.3, conviene confirmar el límite exacto en la documentación oficial vigente, ya que puede cambiar con nuevas versiones."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU, HumanEval)",
+      "toolA": "Son cifras publicadas por el desarrollador, no verificadas de forma independiente en este análisis.",
+      "toolB": "Cualquier afirmación sobre su rendimiento en estos benchmarks requeriría verificación con la documentación actual del proveedor o mediante pruebas propias."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "No existe un precio único de API; se debe consultar la tarifa vigente de cada proveedor.",
+      "toolB": "No se dispone de un precio fijo y universal para este análisis."
+    },
+    {
+      "category": "Latencia y rendimiento en producción",
+      "toolA": "No hay una cifra única de latencia publicada por Meta, por lo que se recomienda medir en el entorno de producción específico.",
+      "toolB": "Se aconseja consultar con Cohere o realizar benchmarks propios para obtener datos representativos."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto vs",
+      "toolA": "Su disponibilidad es amplia a través de múltiples proveedores y comunidades.",
+      "toolB": "Esto limita la personalización profunda, pero simplifica la integración y el mantenimiento al ser un servicio gestionado."
+    },
+    {
+      "category": "Casos de uso prácticos y ecosistema",
+      "toolA": "El ecosistema incluye herramientas como Hugging Face, vLLM y Ollama, que facilitan la experimentación y el despliegue.",
+      "toolB": "Es adecuado para aplicaciones que priorizan la precisión en respuestas basadas en fuentes y la facilidad de uso mediante API."
+    }
+  ],
+  "introduction": "Llama 3.3 y Command R+ responden a una necesidad similar, pero difieren en ventana de contexto y manejo de documentos largos. Llama 3.3: Llama 3.3, en sus versiones publicadas hasta 2024, se distribuye con una ventana de contexto de 128 000 tokens, según… Command R+: Command R+ ofrece una ventana de contexto de 128 000 tokens, de acuerdo con la documentación de Cohere. El criterio de rendimiento en benchmarks (mmlu, humaneval) añade otra diferencia práctica: Meta publicó resultados para Llama 3.3 70B en los que reporta una puntuación de 86.0 en MMLU y 88.4 en HumanEval,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento en benchmarks (mmlu, humaneval): Meta publicó resultados para Llama 3.3 70B en los que reporta una puntuación de 86.0 en MMLU y…",
+    "toolB": "tu proyecto prioriza rendimiento en benchmarks (mmlu, humaneval): Cohere no ha publicado puntuaciones de MMLU o HumanEval para Command R+ en su documentación oficial."
+  }
 }

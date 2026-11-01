@@ -3,11 +3,11 @@ import { CATEGORY_IDS, categoryCopy } from "../lib/taxonomy";
 import { BRAND_NAME, BRAND_TAGLINE, type Locale } from "../lib/locales";
 
 const footerText = {
-  pl: { label: "Kategorie", matrix: "Macierz porównań", copyright: "Przykłady kodu i wiedza architektoniczna dla programistów." },
-  en: { label: "Explore categories", matrix: "Compare matrix", copyright: "Code examples and architecture insight for developers." },
-  es: { label: "Explorar categorías", matrix: "Matriz comparativa", copyright: "Código y arquitectura para desarrolladores." },
-  de: { label: "Kategorien entdecken", matrix: "Vergleichsmatrix", copyright: "Codebeispiele und Architekturwissen für Entwickler." },
-  fr: { label: "Explorer les catégories", matrix: "Matrice comparative", copyright: "Exemples de code et connaissances en architecture pour les développeurs." },
+  pl: { label: "Kategorie", information: "Informacje", matrix: "Macierz porównań", methodology: "Metodyka", privacy: "Prywatność", disclaimer: "Zastrzeżenia", copyright: "Przykłady kodu i wiedza architektoniczna dla programistów." },
+  en: { label: "Explore categories", information: "Information", matrix: "Compare matrix", methodology: "Methodology", privacy: "Privacy", disclaimer: "Disclaimer", copyright: "Code examples and architecture insight for developers." },
+  es: { label: "Explorar categorías", information: "Información", matrix: "Matriz comparativa", methodology: "Metodología", privacy: "Privacidad", disclaimer: "Aviso legal", copyright: "Código y arquitectura para desarrolladores." },
+  de: { label: "Kategorien entdecken", information: "Informationen", matrix: "Vergleichsmatrix", methodology: "Methodik", privacy: "Datenschutz", disclaimer: "Haftungsausschluss", copyright: "Codebeispiele und Architekturwissen für Entwickler." },
+  fr: { label: "Explorer les catégories", information: "Informations", matrix: "Matrice comparative", methodology: "Méthodologie", privacy: "Confidentialité", disclaimer: "Avertissement", copyright: "Exemples de code et connaissances en architecture pour les développeurs." },
 } as const;
 
 export default function Footer({ locale }: { locale: Locale }) {
@@ -37,6 +37,21 @@ export default function Footer({ locale }: { locale: Locale }) {
               className="text-sm text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
             >
               {categoryCopy[locale][category].name}
+            </Link>
+          ))}
+        </nav>
+        <nav aria-label={footerText[locale].information} className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+          {([
+            ["methodology", footerText[locale].methodology],
+            ["privacy", footerText[locale].privacy],
+            ["disclaimer", footerText[locale].disclaimer],
+          ] as const).map(([path, label]) => (
+            <Link
+              key={path}
+              href={`/${locale}/${path}`}
+              className="text-sm text-slate-600 underline-offset-4 hover:text-indigo-700 hover:underline dark:text-slate-300 dark:hover:text-indigo-300"
+            >
+              {label}
             </Link>
           ))}
         </nav>

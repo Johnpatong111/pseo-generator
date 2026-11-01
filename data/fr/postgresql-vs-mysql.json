@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-mysql",
   "meta": {
-    "title": "PostgreSQL vs MySQL (2026): quelle solution choisir ?",
-    "description": "Comparatif PostgreSQL vs MySQL en 2026 : fonctionnalités, SQL, JSON, réplication, sécurité et écosystème. Découvrez quelle base de données relationnelle choisir pour votre projet."
+    "title": "PostgreSQL vs MySQL: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez PostgreSQL et MySQL : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "-- Exemple minimal PostgreSQL : création d'une table et insertion\nCREATE TABLE messages (\n  id SERIAL PRIMARY KEY,\n  contenu TEXT NOT NULL\n);\n\nINSERT INTO messages (contenu) VALUES ('Hello, World!');\n\nSELECT id, contenu FROM messages;",
-    "tech2Snippet": "-- Exemple minimal MySQL : création d'une table et insertion\nCREATE TABLE messages (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  contenu TEXT NOT NULL\n);\n\nINSERT INTO messages (contenu) VALUES ('Hello, World!');\n\nSELECT id, contenu FROM messages;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il privilégier l'offre managée plutôt que le moteur lui-même ?",
       "a": "Oui, à bien des égards : la qualité de l'offre managée, les sauvegardes, la haute disponibilité, la sécurité et le support pèsent souvent plus lourd que des différences fines entre les moteurs. PostgreSQL et MySQL sont tous deux proposés par de nombreux fournisseurs, avec des fonctionnalités, limites et tarifs variables qu'il faut vérifier. Comparez les services sur votre charge réelle et sur les engagements de disponibilité proposés, plutôt que sur des promesses générales."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre PostgreSQL et MySQL modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "PostgreSQL convient mieux lorsque votre projet privilégie conformité sql et richesse du langage : PostgreSQL met l'accent sur la conformité au standard SQL et propose de nombreuses fonctionnalités…. MySQL est préférable lorsque votre projet privilégie écosystème, outils et compatibilité applicative : MySQL est très largement pris en charge par les frameworks, les hébergeurs et les offres managées,….",
+  "tradeoffs": [
+    {
+      "category": "Conformité SQL et richesse du langage",
+      "toolA": "Son comportement est globalement rigoureux, ce qui aide à détecter tôt certaines erreurs de conception.",
+      "toolB": "Il reste cependant marqué par des spécificités historiques et des différences de comportement selon le moteur de stockage et le mode SQL configuré."
+    },
+    {
+      "category": "Types de données et extensibilité",
+      "toolA": "Cette richesse permet de modéliser des besoins métier variés directement en base, avec une certaine complexité d'apprentissage.",
+      "toolB": "L'extensibilité y est plus limitée, ce qui simplifie parfois la prise en main mais contraint davantage les modélisations non standard."
+    },
+    {
+      "category": "Traitement du JSON et des données semi-structurées",
+      "toolA": "Il permet de combiner efficacement données relationnelles et documents semi-structurés dans une même base.",
+      "toolB": "Cela répond à de nombreux usages, mais l'outillage et les possibilités d'indexation restent généralement moins étendus que JSONB."
+    },
+    {
+      "category": "Performances et comportement sous charge",
+      "toolA": "Son architecture MVCC et son autovacuum demandent un suivi opérationnel adapté.",
+      "toolB": "Les performances réelles varient selon la version, la configuration, les index et le profil de charge, et aucun avantage universel ne peut être affirmé sans mesure sur votre cas."
+    },
+    {
+      "category": "Réplication, haute disponibilité et scalabilité",
+      "toolA": "La mise en place d'une haute disponibilité robuste demande généralement de choisir et de maîtriser une architecture dédiée.",
+      "toolB": "Le comportement et les garanties varient selon le mode de réplication, la version et l'offre choisie."
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "La sécurité effective dépend toutefois de la configuration, des extensions et des bonnes pratiques d'exploitation.",
+      "toolB": "La sécurité dépend également de la configuration, du moteur de stockage, du réseau et des politiques d'exploitation mises en place."
+    }
+  ],
+  "introduction": "PostgreSQL et MySQL répondent à un besoin proche, mais diffèrent sur conformité sql et richesse du langage. PostgreSQL : PostgreSQL met l'accent sur la conformité au standard SQL et propose de nombreuses fonctionnalités avancées : CTE,… MySQL : MySQL couvre l'essentiel du SQL moderne, y compris les CTE et les fonctions fenêtre depuis les versions 8.0 et… Le critère « Types de données et extensibilité » met en évidence une autre différence pratique : PostgreSQL propose nativement des types riches comme JSONB, tableaux, intervalles, plages, types géométriques et types… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie conformité sql et richesse du langage : PostgreSQL met l'accent sur la conformité au standard SQL et propose de nombreuses fonctionnalités…",
+    "toolB": "votre projet privilégie écosystème, outils et compatibilité applicative : MySQL est très largement pris en charge par les frameworks, les hébergeurs et les offres managées,…"
+  }
 }

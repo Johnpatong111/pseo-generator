@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-openai",
   "meta": {
-    "title": "LangChain vs OpenAI (2026) : quelle solution choisir ?",
-    "description": "LangChain et OpenAI ne jouent pas le même rôle : framework d'orchestration contre fournisseur de modèles. Critères, exemples de code et conseils pour bien choisir en 2026."
+    "title": "LangChain vs OpenAI: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez LangChain et OpenAI : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_openai import ChatOpenAI\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\n\nprompt = ChatPromptTemplate.from_messages([(\"human\", \"Dis bonjour en français en une phrase.\")])\nchain = prompt | ChatOpenAI(model=\"gpt-4o-mini\") | StrOutputParser()\nprint(chain.invoke({}))",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI()  # lit la variable d'environnement OPENAI_API_KEY\nresponse = client.chat.completions.create(\n    model=\"gpt-4o-mini\",\n    messages=[{\"role\": \"user\", \"content\": \"Dis bonjour en français en une phrase.\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles compétences sont nécessaires pour chacun ?",
       "a": "Avec OpenAI, il faut surtout maîtriser les appels HTTP ou le SDK, la gestion des prompts et des erreurs, ainsi que la sécurité des clés. LangChain ajoute la compréhension de concepts d'orchestration comme les runnables, les agents et les récupérateurs, ce qui demande un investissement initial plus important. Les deux approches exigent des compétences en évaluation et en observabilité pour passer en production."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre LangChain et OpenAI modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "LangChain convient mieux lorsque votre projet privilégie portabilité et indépendance vis-à-vis du fournisseur : LangChain propose des interfaces d'intégration vers de nombreux fournisseurs de modèles et de…. OpenAI est préférable lorsque votre projet privilégie nature de l'outil et rôle dans une architecture : OpenAI est un fournisseur de modèles et d'API (familles GPT, embeddings, génération d'images,….",
+  "tradeoffs": [
+    {
+      "category": "Nature de l'outil et rôle dans une architecture",
+      "toolA": "Son abstraction vise à réduire le code d'assemblage d'applications LLM complexes.",
+      "toolB": "Vous écrivez votre propre logique applicative ou utilisez une bibliothèque tierce."
+    },
+    {
+      "category": "Courbe d'apprentissage et simplicité de démarrage",
+      "toolA": "Pour un prototype très simple, l'abstraction peut sembler superflue.",
+      "toolB": "En revanche, à mesure que la logique applicative se complexifie, vous devez gérer vous-même l'orchestration, la mémoire, la récupération et les erreurs."
+    },
+    {
+      "category": "Portabilité et indépendance vis-à-vis du fournisseur",
+      "toolA": "La portabilité réelle dépend toutefois des fonctionnalités spécifiques utilisées et de la qualité des intégrations maintenues.",
+      "toolB": "Pour un projet durable, il est prudent d'isoler les appels au fournisseur derrière une couche interne."
+    },
+    {
+      "category": "Fonctionnalités d'orchestration : agents, outils et RAG",
+      "toolA": "La qualité et la maintenance de chaque intégration varient selon les versions et les mainteneurs.",
+      "toolB": "Les abstractions d'orchestration doivent être écrites ou fournies par une bibliothèque tierce."
+    },
+    {
+      "category": "Écosystème, intégrations et communauté",
+      "toolA": "Sa contrepartie est une surface d'API étendue et une documentation parfois inégale selon les intégrations, avec un rythme de changement élevé.",
+      "toolB": "En revanche, l'écosystème est centré sur ses propres modèles et moins neutre vis-à-vis des concurrents."
+    },
+    {
+      "category": "Confidentialité, sécurité et conformité",
+      "toolA": "Il convient de vérifier la politique de chaque intégration utilisée.",
+      "toolB": "La sécurité des appels relève aussi de votre code, de la gestion des clés et des contrôles d'accès."
+    }
+  ],
+  "introduction": "LangChain et OpenAI répondent à un besoin proche, mais diffèrent sur nature de l'outil et rôle dans une architecture. LangChain : LangChain est une bibliothèque et un cadre d'orchestration qui permet d'enchaîner des appels à des modèles, des… OpenAI : OpenAI est un fournisseur de modèles et d'API (familles GPT, embeddings, génération d'images, audio, etc.) accessibles… Le critère « Courbe d'apprentissage et simplicité de démarrage » met en évidence une autre différence pratique : Démarrer avec LangChain demande de comprendre ses abstractions (chaînes, runnables, agents, mémoires, récupérateurs),… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie portabilité et indépendance vis-à-vis du fournisseur : LangChain propose des interfaces d'intégration vers de nombreux fournisseurs de modèles et de…",
+    "toolB": "votre projet privilégie nature de l'outil et rôle dans une architecture : OpenAI est un fournisseur de modèles et d'API (familles GPT, embeddings, génération d'images,…"
+  }
 }

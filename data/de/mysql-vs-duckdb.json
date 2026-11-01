@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB (2026): welche Lösung passt besser?",
-    "description": "MySQL vs DuckDB im Vergleich 2026: Transaktionen, Analytics, Betrieb, Ökosystem und Einsatzszenarien praxisnah erklärt – inklusive klarer Empfehlung für Ihr Projekt."
+    "title": "MySQL vs DuckDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche MySQL und DuckDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "MySQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "-- MySQL: Client starten und minimales Hello-World-Beispiel\nCREATE DATABASE IF NOT EXISTS hello;\nUSE hello;\n\nCREATE TABLE IF NOT EXISTS greets (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  message VARCHAR(100) NOT NULL\n);\n\nINSERT INTO greets (message) VALUES ('Hallo, Welt!');\nSELECT id, message FROM greets;",
-    "tech2Snippet": "# DuckDB: minimales Hello-World-Beispiel in Python\nimport duckdb\n\ncon = duckdb.connect()\ncon.execute(\"CREATE TABLE greets (id INTEGER, message VARCHAR)\")\ncon.execute(\"INSERT INTO greets VALUES (1, 'Hallo, Welt!')\")\nprint(con.execute(\"SELECT id, message FROM greets\").fetchall())"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie steht es um Reifegrad und Produktionserfahrung der beiden Systeme?",
       "a": "MySQL ist seit vielen Jahren in zahlreichen Produktivumgebungen etabliert und entsprechend gut dokumentiert. DuckDB ist jünger, entwickelt sich sehr aktiv und gewinnt im Analyseumfeld schnell an Bedeutung, hat aber weniger lange Tradition im breiten operativen Produktivbetrieb. Der Reifegrad sollte daher immer im Kontext Ihres konkreten Einsatzzwecks und Ihrer Anforderungen bewertet werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen MySQL und DuckDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "MySQL passt besser, wenn dein Projekt priorisiert Transactionale Arbeitslasten (OLTP): MySQL ist für viele gleichzeitige, kurze Transaktionen mit Zeilen- und Tabellensperren sowie…. DuckDB ist geeigneter, wenn dein Projekt priorisiert Analytische Abfragen (OLAP): DuckDB ist spaltenorientiert und auf vektorisierte Ausführung ausgelegt, was große Scans,….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "Der Betrieb erfordert Konfiguration, Benutzerverwaltung und in der Regel Monitoring, dafür ist das Modell für zentrale Mehrbenutzeranwendungen erprobt.",
+      "toolB": "Sie arbeitet typischerweise mit einer einzelnen Datenbankdatei, was den Einstieg erleichtert, aber nicht dem klassischen Mehrbenutzer-Servermodell entspricht."
+    },
+    {
+      "category": "Transactionale Arbeitslasten (OLTP)",
+      "toolA": "INSERT-, UPDATE- und DELETE-lastige Anwendungen mit hoher Parallelität gehören zu den typischen Einsatzfeldern.",
+      "toolB": "Für operative Anwendungen mit vielen gleichzeitigen Einzeltransaktionen ist es daher ungeeignet."
+    },
+    {
+      "category": "Analytische Abfragen (OLAP)",
+      "toolA": "Bei großen Scans und komplexen Aggregationen über viele Spalten stößt es im Vergleich zu spezialisierten Spaltensystemen häufig früher an Grenzen.",
+      "toolB": "Komplexe analytische Abfragen auf Dateien wie Parquet oder CSV gehören zu den Kernanwendungsfällen."
+    },
+    {
+      "category": "Ökosystem, Treiber und Integration",
+      "toolA": "Die Verbreitung erleichtert die Einbindung in bestehende Unternehmensumgebungen.",
+      "toolB": "Das Ökosystem wächst schnell, ist aber im Unternehmensumfeld weniger verbreitet als das von MySQL."
+    },
+    {
+      "category": "Mehrbenutzerbetrieb und Rechteverwaltung",
+      "toolA": "Dadurch lassen sich mehrere Personen und Anwendungen mit differenzierten Berechtigungen kontrolliert auf dieselbe Datenbank zugreifen.",
+      "toolB": "Rechteverwaltung und Mandantenfähigkeit auf Serverebene sind daher deutlich eingeschränkter."
+    },
+    {
+      "category": "Analyse von Dateien und Austauschformaten",
+      "toolA": "Analysen direkt auf externen Dateien sind nicht Teil des Kernmodells.",
+      "toolB": "Das macht es für Ad-hoc-Auswertungen und Austauschformate in Datenpipelines besonders praktisch."
+    }
+  ],
+  "introduction": "MySQL und DuckDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell. MySQL: MySQL läuft klassisch als Client-Server-Datenbanksystem mit dauerhaft laufendem Serverprozess, der Verbindungen von… DuckDB: DuckDB ist eine prozessinterne, spaltenorientierte Datenbank, die ohne separaten Server direkt in eine Anwendung oder… Das Kriterium transactionale arbeitslasten (oltp) zeigt einen weiteren praktischen Unterschied: MySQL ist für viele gleichzeitige, kurze Transaktionen mit Zeilen- und Tabellensperren sowie Transaktionsisolation… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Transactionale Arbeitslasten (OLTP): MySQL ist für viele gleichzeitige, kurze Transaktionen mit Zeilen- und Tabellensperren sowie…",
+    "toolB": "dein Projekt priorisiert Analytische Abfragen (OLAP): DuckDB ist spaltenorientiert und auf vektorisierte Ausführung ausgelegt, was große Scans,…"
+  }
 }

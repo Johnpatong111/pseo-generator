@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-aws",
   "meta": {
-    "title": "Cloudflare vs AWS (2026) : quelle solution choisir ?",
-    "description": "Comparatif Cloudflare vs AWS en 2026 : edge computing, stockage, bases de données, sécurité, tarifs et écosystème. Découvrez quelle plateforme convient à votre projet."
+    "title": "Cloudflare vs AWS: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Cloudflare et AWS : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { Hono } from 'hono';\n\nconst app = new Hono();\n\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;",
-    "tech2Snippet": "export const handler = async (event) => {\n  return {\n    statusCode: 200,\n    body: JSON.stringify('Hello, World!'),\n  };\n};"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quels critères suivre pour choisir entre Cloudflare et AWS en 2026 ?",
       "a": "Commencez par cartographier vos besoins : type de calcul, bases de données, stockage, conformité, latence attendue et compétences internes. Ajoutez une estimation de coût réaliste basée sur les tarifs officiels, puis testez un périmètre réduit pour valider les performances et l'ergonomie. Cloudflare est souvent un bon choix pour une façade mondiale et des API edge, tandis qu'AWS convient davantage aux architectures complètes et aux besoins avancés en données. La décision gagne à être documentée et réévaluée à mesure que les offres évoluent."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Cloudflare et AWS modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Cloudflare convient mieux lorsque votre projet privilégie tarification et prévisibilité des coûts : La facturation Cloudflare est généralement plus lisible, avec des offres forfaitaires pour le plan…. AWS est préférable lorsque votre projet privilégie portée de la plateforme et écosystème : AWS propose un catalogue très large couvrant le calcul, le stockage, les bases de données….",
+  "tradeoffs": [
+    {
+      "category": "Portée de la plateforme et écosystème",
+      "toolA": "La plateforme reste volontairement ciblée sur des primitives serverless et réseau, avec un catalogue plus restreint que celui d'un hyperscaler.",
+      "toolB": "Cette richesse offre une grande flexibilité mais implique davantage de services à maîtriser et de choix d'architecture."
+    },
+    {
+      "category": "Modèle de calcul et déploiement",
+      "toolA": "Le modèle est orienté edge et requiert parfois des adaptations pour des traitements longs ou des dépendances système.",
+      "toolB": "Cette variété permet d'ajuster finement le modèle d'exécution au profil de charge, au prix d'une configuration plus poussée."
+    },
+    {
+      "category": "Stockage objet et bases de données",
+      "toolA": "D1 est une base SQL légère sur le edge, et Hyperdrive accélère l'accès à des bases externes comme PostgreSQL.",
+      "toolB": "RDS, Aurora, DynamoDB et d'autres bases couvrent des besoins variés, allant du transactionnel à grande échelle au NoSQL distribué."
+    },
+    {
+      "category": "Sécurité et protection réseau",
+      "toolA": "La protection DDoS est incluse dans les offres de base, mais certaines fonctions avancées dépendent du plan souscrit.",
+      "toolB": "Cette boîte à outils est puissante mais demande une expertise pour être correctement configurée et maintenue."
+    },
+    {
+      "category": "Tarification et prévisibilité des coûts",
+      "toolA": "L'absence de frais de sortie sur R2 simplifie certaines prévisions, sans supprimer toute variabilité liée à l'usage.",
+      "toolB": "Des outils comme Cost Explorer et les budgets aident à maîtriser la dépense, mais une surveillance active reste nécessaire."
+    },
+    {
+      "category": "Expérience développeur et outillage",
+      "toolA": "L'écosystème est plus jeune et le nombre de bibliothèques ou de partenaires est plus limité que chez AWS.",
+      "toolB": "La contrepartie est une surface d'apprentissage plus large et des configurations parfois verbeuses pour des cas simples."
+    }
+  ],
+  "introduction": "Cloudflare et AWS répondent à un besoin proche, mais diffèrent sur portée de la plateforme et écosystème. Cloudflare : Cloudflare s'est étendu au-delà du CDN et de la protection réseau vers le compute (Workers), le stockage objet (R2),… AWS : AWS propose un catalogue très large couvrant le calcul, le stockage, les bases de données managées, la data, le… Le critère « Modèle de calcul et déploiement » met en évidence une autre différence pratique : Workers exécute du JavaScript, TypeScript ou WebAssembly dans un environnement isolé basé sur V8, avec un démarrage… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie tarification et prévisibilité des coûts : La facturation Cloudflare est généralement plus lisible, avec des offres forfaitaires pour le plan…",
+    "toolB": "votre projet privilégie portée de la plateforme et écosystème : AWS propose un catalogue très large couvrant le calcul, le stockage, les bases de données…"
+  }
 }

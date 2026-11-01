@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra (2026): które rozwiązanie wybrać?",
-    "description": "Porównujemy PostgreSQL i Apache Cassandra w 2026 roku. Sprawdź różnice w modelu danych, skalowaniu, spójności i zastosowaniach, aby wybrać bazę dla swojego projektu."
+    "title": "PostgreSQL vs Apache Cassandra: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj PostgreSQL i Apache Cassandra: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -94,5 +94,49 @@
       "q": "Która baza lepiej sprawdzi się w chmurze?",
       "a": "Oba rozwiązania są dostępne jako usługi zarządzane u wielu dostawców chmurowych, ale szczegóły oferty, wersje i ograniczenia zależą od dostawcy i planu. PostgreSQL ma szerszy ekosystem i więcej opcji zarządzanych, podczas gdy Cassandra jest często oferowana w modelu rozproszonym. Wybór warto poprzeć analizą SLA, kosztów i wsparcia."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między PostgreSQL a Apache Cassandra zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi,…. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i język zapytań",
+      "toolA": "Język zapytań jest deklaratywny i dobrze znany zespołom bazodanowym.",
+      "toolB": "Nie obsługuje transakcji ACID w rozumieniu relacyjnym."
+    },
+    {
+      "category": "Skalowanie i wydajność przy dużym obciążeniu",
+      "toolA": "Wydajność zależy od konfiguracji, sprzętu i charakteru zapytań.",
+      "toolB": "Konkretne wyniki zależą od wersji, konfiguracji i obciążenia."
+    },
+    {
+      "category": "Spójność i transakcje",
+      "toolA": "W wersjach klastrowych można uzyskać replikację synchroniczną, ale wiąże się to z kompromisem wydajności.",
+      "toolB": "Nie zapewnia wielowierszowych transakcji ACID w pełnym zakresie."
+    },
+    {
+      "category": "Dostępność i odporność na awarie",
+      "toolA": "Dostępność zależy od wdrożonej architektury i nie jest wbudowana w takim stopniu jak w Cassandra.",
+      "toolB": "Konkretny poziom dostępności zależy od liczby replik i konfiguracji klastra."
+    },
+    {
+      "category": "Elastyczność zapytań i analityka",
+      "toolA": "Elastyczność zapytań ad hoc jest dużą zaletą w aplikacjach biznesowych.",
+      "toolB": "Do analityki często stosuje się dodatkowe warstwy, takie jak Spark."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i wsparcie",
+      "toolA": "Wersje są regularnie wydawane z długoterminowym wsparciem, choć konkretne funkcje zależą od wersji.",
+      "toolB": "Wsparcie chmurowe jest dostępne, ale zależy od dostawcy i planu."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i język zapytań. PostgreSQL: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i… Apache Cassandra: Apache Cassandra to rozproszona baza szerokokolumnowa (ang. Kolejną istotną różnicę pokazuje kryterium „Skalowanie i wydajność przy dużym obciążeniu”: PostgreSQL skaluje się w górę (scale-up) oraz przez replikację odczytu i partycjonowanie, a w nowszych wersjach także… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi,…",
+    "toolB": "projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do…"
+  }
 }

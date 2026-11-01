@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie MySQL i MongoDB w 2026 roku: model danych, spójność, skalowanie, wydajność, ekosystem i bezpieczeństwo. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "MySQL vs MongoDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj MySQL i MongoDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "Które rozwiązanie ma lepsze wsparcie i ekosystem w 2026 roku?",
       "a": "MySQL ma bardzo szeroki ekosystem narzędzi, sterowników, ORM-ów i specjalistów SQL, co ułatwia rekrutację i utrzymanie. MongoDB również oferuje bogaty zestaw sterowników, narzędzi i usług zarządzanych, ale część funkcji zależy od planu i wersji. Wybór warto oprzeć na dostępności wsparcia komercyjnego oraz kompetencji zespołu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między MySQL a MongoDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC,…. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i schemat",
+      "toolA": "Zmiany schematu zwykle wymagają migracji, co bywa kosztowne przy bardzo dynamicznych wymaganiach.",
+      "toolB": "Brak sztywnego schematu zwiększa elastyczność, ale przenosi część odpowiedzialności za walidację i spójność na warstwę aplikacji lub na reguły walidacji kolekcji."
+    },
+    {
+      "category": "Spójność transakcyjna i właściwości ACID",
+      "toolA": "Zachowanie zależy od konfiguracji, poziomu izolacji i typu zapytań, więc warto je świadomie dostroić.",
+      "toolB": "Transakcje wielodokumentowe są funkcją dojrzałą, ale mogą wiązać się z dodatkowym narzutem wydajnościowym w porównaniu z prostymi operacjami na jednym dokumencie."
+    },
+    {
+      "category": "Skalowanie i rozproszenie",
+      "toolA": "Dla wielu aplikacji biznesowych ta ścieżka jest w pełni wystarczająca.",
+      "toolB": "Konfiguracja klastra shardowanego jest jednak złożona i wymaga przemyślanego doboru klucza shardingu, aby uniknąć nierównomiernego rozkładu obciążenia."
+    },
+    {
+      "category": "Język zapytań i modelowanie zapytań",
+      "toolA": "Krzywa nauki jest łagodna dla osób znających relacyjne bazy.",
+      "toolB": "Złączenia realizuje się przez operator $lookup lub modelowanie zagnieżdżone, co wymaga innego sposobu myślenia o projekcie danych."
+    },
+    {
+      "category": "Wydajność i przewidywalność",
+      "toolA": "Benchmarki nie są uniwersalne, więc porównania trzeba przeprowadzać na własnym zbiorze danych i profilu ruchu.",
+      "toolB": "Złożone zapytania analityczne i częste aktualizacje wielu dokumentów mogą wypadać gorzej niż w bazie relacyjnej, zależnie od indeksów i rozmiaru dokumentów."
+    },
+    {
+      "category": "Ekosystem, narzędzia i wsparcie",
+      "toolA": "MySQL ma bardzo bogaty ekosystem: klienty, ORM-y, narzędzia do migracji, monitoring i ogromną społeczność. Dostępne są komercyjne i otwarte warianty, a wiedza o SQL jest powszechna na rynku pracy. To ułatwia rekrutację i utrzymanie.",
+      "toolB": "Część zaawansowanych funkcji i usług zależy od planu oraz wersji, dlatego przed wyborem warto sprawdzić aktualną dokumentację i warunki licencji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i schemat. MySQL: MySQL to relacyjna baza danych oparta na tabelach, wierszach i kolumnach, z reguły ze zdefiniowanym schematem, choć… MongoDB: MongoDB przechowuje dane jako dokumenty w formacie podobnym do JSON (BSON), zwykle w kolekcjach o zróżnicowanej… Kolejną istotną różnicę pokazuje kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC, co jest dobrze… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC,…",
+    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie…"
+  }
 }

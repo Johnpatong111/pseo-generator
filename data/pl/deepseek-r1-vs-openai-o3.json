@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-openai-o3",
   "meta": {
-    "title": "DeepSeek R1 vs OpenAI o3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie DeepSeek R1 i OpenAI o3 w 2026 r.: dostępność, kontekst, wydajność, ceny API, opóźnienia i zastosowania. Sprawdź, który model wybrać."
+    "title": "DeepSeek R1 vs OpenAI o3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj DeepSeek R1 i OpenAI o3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from openai import OpenAI\nclient = OpenAI(base_url=\"https://api.deepseek.com\", api_key=\"<DEEPSEEK_API_KEY>\")\nresponse = client.chat.completions.create(model=\"deepseek-reasoner\", messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}])\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from openai import OpenAI\nclient = OpenAI(api_key=\"<OPENAI_API_KEY>\")\nresponse = client.chat.completions.create(model=\"o3\", messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}])\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jakie są ograniczenia OpenAI o3?",
       "a": "OpenAI o3 jest dostępny wyłącznie przez zarządzane API, więc nie można go wdrożyć lokalnie. Koszty i limity zależą od planu, a opóźnienia mogą się zmieniać. Przed wdrożeniem sprawdź aktualne warunki w oficjalnej dokumentacji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między DeepSeek R1 a OpenAI o3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "DeepSeek R1 będzie lepszy, gdy projekt stawia na kryterium „Dostępność modelu i otwartość”: DeepSeek R1 jest udostępniany jako model otwarty na warunkach licencji, co pozwala na wdrażanie…. OpenAI o3 sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i zgodność”: OpenAI o3 jest objęty zarządzanymi politykami bezpieczeństwa i zgodności OpenAI, których zakres….",
+  "tradeoffs": [
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Dostępność konkretnych wag i wersji zależy od repozytorium wydawcy i wymaga sprawdzenia w oficjalnej dokumentacji.",
+      "toolB": "Zakres dostępu, limity i funkcje zależą od planu oraz regionu, dlatego należy potwierdzić je w dokumentacji OpenAI."
+    },
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce oznacza to, że długość obsługiwanego wejścia może się różnić między wariantami i dostawcami hostującymi.",
+      "toolB": "OpenAI może zmieniać limity wraz z aktualizacjami, więc nie należy zakładać stałej wartości bez sprawdzenia."
+    },
+    {
+      "category": "Wydajność na benchmarkach (MMLU, HumanEval)",
+      "toolA": "Nie należy porównywać ich bezpośrednio z innymi modelami bez uwzględnienia metodyki i wersji.",
+      "toolB": "Rzetelne porównanie wymaga tych samych zadań i identycznej konfiguracji, dlatego należy sprawdzić najnowsze oficjalne dane."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Przed wdrożeniem należy sprawdzić aktualny cennik u wybranego dostawcy, ponieważ może się zmieniać.",
+      "toolB": "Nie należy zakładać stałej ceny bez potwierdzenia."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "Bez własnych pomiarów należy oceniać je jakościowo i weryfikować w środowisku docelowym.",
+      "toolB": "OpenAI nie gwarantuje stałych opóźnień, więc przed wdrożeniem produkcyjnym trzeba przeprowadzić testy w docelowym środowisku."
+    },
+    {
+      "category": "Bezpieczeństwo i zgodność",
+      "toolA": "Należy zweryfikować licencję i polityki dostawcy hostującego.",
+      "toolB": "szczegóły dotyczące przetwarzania danych i certyfikatów trzeba potwierdzić w oficjalnych dokumentach."
+    }
+  ],
+  "introduction": "DeepSeek R1 i OpenAI o3 odpowiadają na podobną potrzebę, ale różnią się w obszarze dostępność modelu i otwartość. DeepSeek R1: DeepSeek R1 jest udostępniany jako model otwarty na warunkach licencji, co pozwala na wdrażanie lokalne i w chmurze… OpenAI o3: OpenAI o3 jest dostępny wyłącznie przez zarządzane API i produkty OpenAI, bez publicznych wag modelu. Kolejną istotną różnicę pokazuje kryterium „Okno kontekstu”: DeepSeek R1 ma okno kontekstu zależne od wersji i konfiguracji wdrożenia; wartość należy zweryfikować w karcie modelu… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dostępność modelu i otwartość”: DeepSeek R1 jest udostępniany jako model otwarty na warunkach licencji, co pozwala na wdrażanie…",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i zgodność”: OpenAI o3 jest objęty zarządzanymi politykami bezpieczeństwa i zgodności OpenAI, których zakres…"
+  }
 }

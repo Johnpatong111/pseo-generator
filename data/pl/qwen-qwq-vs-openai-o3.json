@@ -1,8 +1,8 @@
 {
   "slug": "qwen-qwq-vs-openai-o3",
   "meta": {
-    "title": "Qwen QwQ vs OpenAI o3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Qwen QwQ i OpenAI o3: rozumowanie, okno kontekstu, wydajność, dostęp, koszty API i zastosowania. Sprawdź, który model wybrać w 2026 r."
+    "title": "Qwen QwQ vs OpenAI o3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Qwen QwQ i OpenAI o3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Qwen QwQ"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Minimalny przykład wywołania modelu Qwen QwQ przez OpenAI-compatible API (np. vLLM)\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"http://localhost:8000/v1\", api_key=\"EMPTY\")\nresponse = client.chat.completions.create(\n    model=\"Qwen/QwQ-32B\",\n    messages=[{\"role\": \"user\", \"content\": \"Napisz program Hello World w Pythonie.\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Minimalny przykład wywołania OpenAI o3 przez API Responses\nfrom openai import OpenAI\n\nclient = OpenAI()\nresponse = client.responses.create(\n    model=\"o3\",\n    input=\"Napisz program Hello World w Pythonie.\",\n)\nprint(response.output_text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest lepszy dla aplikacji produkcyjnej?",
       "a": "OpenAI o3 jest zwykle łatwiejszy we wdrożeniu produkcyjnym dzięki zarządzanemu API, wsparciu i integracji z ekosystemem OpenAI. Qwen QwQ może być lepszy, gdy wymagana jest kontrola nad danymi lub self-hosting, ale wiąże się z większym nakładem operacyjnym. Decyzję warto podjąć po testach obu modeli na własnych danych i przy uwzględnieniu aktualnych cen oraz limitów."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Qwen QwQ a OpenAI o3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Qwen QwQ będzie lepszy, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia i wyjścia”: Qwen QwQ jest dostępny w modelach otwartych, więc koszt zależy głównie od infrastruktury…. OpenAI o3 sprawdzi się, gdy projekt stawia na kryterium „Charakter modelu i sposób rozumowania”: OpenAI o3 to model rozumujący udostępniany przez API oraz w produktach OpenAI, zaprojektowany do….",
+  "tradeoffs": [
+    {
+      "category": "Charakter modelu i sposób rozumowania",
+      "toolA": "Model generuje łańcuch rozumowania, co zwiększa liczbę tokenów wyjściowych i wpływa na opóźnienie oraz koszt.",
+      "toolB": "Dostępność konkretnych trybów i parametrów zależy od wersji modelu oraz planu, więc trzeba ją sprawdzić w bieżącej dokumentacji OpenAI."
+    },
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Przed wdrożeniem należy zweryfikować maksymalny kontekst w karcie modelu i przetestować zachowanie przy długich wejściach.",
+      "toolB": "Aktualne limity należy sprawdzić na stronie modeli OpenAI, ponieważ są wrażliwe na datę."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Nie należy traktować pojedynczych liczb jako gwarancji jakości w praktyce.",
+      "toolB": "Bez tego należy traktować je jako wskazówkę, a nie miarę przewagi."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Przy rozumowaniu trzeba liczyć także tokeny rozumowania, które zwiększają koszt wyjścia.",
+      "toolB": "Aktualne ceny należy sprawdzić w cenniku OpenAI, ponieważ zmieniają się w czasie."
+    },
+    {
+      "category": "Opóźnienie i przepustowość",
+      "toolA": "Bez własnych pomiarów nie należy podawać konkretnych liczb opóźnienia.",
+      "toolB": "OpenAI nie gwarantuje stałych opóźnień, więc wymagania czasowe trzeba testować we własnym scenariuszu."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Licencja i warunki użycia zależą od konkretnej wersji modelu i muszą być sprawdzone przed wdrożeniem komercyjnym.",
+      "toolB": "Dostępność funkcji zależy od planu i wersji, więc trzeba ją potwierdzić w dokumentacji."
+    }
+  ],
+  "introduction": "Qwen QwQ i OpenAI o3 odpowiadają na podobną potrzebę, ale różnią się w obszarze charakter modelu i sposób rozumowania. Qwen QwQ: Qwen QwQ to model rozumujący z rodziny Qwen, projektowany do wieloetapowego wnioskowania, rozwiązywania zadań… OpenAI o3: OpenAI o3 to model rozumujący udostępniany przez API oraz w produktach OpenAI, zaprojektowany do zadań wymagających… Kolejną istotną różnicę pokazuje kryterium „Okno kontekstu i obsługa długich dokumentów”: Okno kontekstu Qwen QwQ zależy od konkretnej wersji modelu i sposobu wdrożenia, w tym od konfiguracji serwera… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia i wyjścia”: Qwen QwQ jest dostępny w modelach otwartych, więc koszt zależy głównie od infrastruktury…",
+    "toolB": "projekt stawia na kryterium „Charakter modelu i sposób rozumowania”: OpenAI o3 to model rozumujący udostępniany przez API oraz w produktach OpenAI, zaprojektowany do…"
+  }
 }

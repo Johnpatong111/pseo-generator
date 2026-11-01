@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-deno",
   "meta": {
-    "title": "Node.js vs Deno (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Node.js i Deno w 2026 roku: wydajność, bezpieczeństwo, ekosystem, TypeScript, narzędzia i wsparcie. Sprawdź, które środowisko wybrać do swojego projektu."
+    "title": "Node.js vs Deno: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Node.js i Deno: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Node.js"
@@ -88,5 +88,49 @@
       "q": "Czy Deno sprawdzi się w dużym zespole i dojrzałym projekcie?",
       "a": "Deno może działać w większym zespole, zwłaszcza gdy ceni się jednolite narzędzia i domyślne uprawnienia, ale wymaga sprawdzenia kompatybilności bibliotek i ustalenia konwencji. W dojrzałych projektach opartych na Node.js migracja może być kosztowna i nie zawsze uzasadniona. Często rozsądnym rozwiązaniem jest pozostanie przy Node.js lub stopniowe wprowadzanie Deno w nowych, wydzielonych usługach."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Node.js a Deno zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Node.js będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i dostępność bibliotek”: Node.js ma największy ekosystem pakietów w rejestrze npm, obejmujący zarówno biblioteki dojrzałe,…. Deno sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno projektowano z myślą o bezpieczeństwie domyślnym: dostęp do sieci, systemu plików i….",
+  "tradeoffs": [
+    {
+      "category": "Dojrzałość ekosystemu i dostępność bibliotek",
+      "toolA": "Dostępność i jakość pakietów zależą jednak od konkretnej biblioteki i jej utrzymania.",
+      "toolB": "W praktyce przed wdrożeniem warto zweryfikować kompatybilność kluczowych zależności."
+    },
+    {
+      "category": "Bezpieczeństwo i model uprawnień",
+      "toolA": "Bezpieczeństwo aplikacji w dużej mierze zależy od praktyk deweloperskich i kontroli zależności.",
+      "toolB": "Nie zwalnia to z dbałości o zależności, ale ogranicza skutki błędów w kodzie i modułach."
+    },
+    {
+      "category": "Wsparcie dla TypeScript",
+      "toolA": "W praktyce konfiguracja TypeScriptu w Node.js wymaga dodatkowych kroków i narzędzi.",
+      "toolB": "To wygodne w nowych projektach, choć nie eliminuje potrzeby konfiguracji w bardziej złożonych repozytoriach."
+    },
+    {
+      "category": "Zarządzanie zależnościami i narzędzia wbudowane",
+      "toolA": "Zachowanie narzędzi zależy od wersji i wybranego stosu.",
+      "toolB": "Dostępność funkcji i ich zachowanie zależą od wersji Deno."
+    },
+    {
+      "category": "Wydajność i obsługa współbieżności",
+      "toolA": "Nie ma uniwersalnej przewagi wydajnościowej bez odniesienia do konkretnego scenariusza.",
+      "toolB": "Bez własnych, powtarzalnych testów w docelowym środowisku nie należy zakładać stałej przewagi którejkolwiek platformy."
+    },
+    {
+      "category": "Wsparcie firmowe, hosting i narzędzia chmurowe",
+      "toolA": "Dojrzałość ekosystemu przekłada się na więcej gotowych integracji.",
+      "toolB": "Przed wyborem warto zweryfikować zgodność z docelowym hostingiem i wymaganiami operacyjnymi."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Node.js i Deno odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i dostępność bibliotek. Node.js: Node.js ma największy ekosystem pakietów w rejestrze npm, obejmujący zarówno biblioteki dojrzałe, jak i te o wąskiej… Deno: Deno udostępnia mechanizm importu z npm oraz własny rejestr modułów, co pozwala korzystać z wielu popularnych… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo i model uprawnień”: Node.js domyślnie uruchamia kod z pełnymi uprawnieniami procesu, więc izolację uzyskuje się przez konfigurację… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i dostępność bibliotek”: Node.js ma największy ekosystem pakietów w rejestrze npm, obejmujący zarówno biblioteki dojrzałe,…",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno projektowano z myślą o bezpieczeństwie domyślnym: dostęp do sieci, systemu plików i…"
+  }
 }

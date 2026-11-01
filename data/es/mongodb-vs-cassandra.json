@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-cassandra",
   "meta": {
-    "title": "MongoDB vs Apache Cassandra (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MongoDB y Apache Cassandra en 2026: modelo de datos, escalado, consistencia, consultas, operación y ecosistema para elegir la base de datos adecuada."
+    "title": "MongoDB vs Apache Cassandra: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MongoDB y Apache Cassandra: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MongoDB"
@@ -88,5 +88,49 @@
       "q": "¿Se pueden usar ambas bases de datos en la misma arquitectura?",
       "a": "Sí, es posible combinarlas: MongoDB para datos operativos con consultas variadas y Cassandra para eventos o telemetría de alto volumen. Esta arquitectura añade complejidad de operación, sincronización y consistencia entre sistemas. Solo tiene sentido si cada base de datos resuelve un patrón de acceso claramente distinto y el equipo puede asumir ese coste."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MongoDB y Apache Cassandra cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MongoDB encaja mejor cuando tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB es una base de datos orientada a documentos que almacena registros BSON en colecciones,…. Apache Cassandra es preferible cuando tu proyecto prioriza escalado y arquitectura distribuida: Cassandra se diseñó para escalado lineal y sin nodo maestro: cada nodo es igual y los datos se….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y flexibilidad del esquema",
+      "toolA": "Permite documentos anidados, arrays y estructuras que evolucionan sin migraciones rígidas, lo que facilita prototipos y aplicaciones con entidades heterogéneas.",
+      "toolB": "El esquema es más rígido y conviene diseñarlo a partir de las consultas previstas, ya que modelar por consulta suele implicar tablas específicas y cierta desnormalización."
+    },
+    {
+      "category": "Escalado y arquitectura distribuida",
+      "toolA": "El escalado horizontal requiere planificación y, en despliegues autogestionados, más operación que en el servicio gestionado Atlas.",
+      "toolB": "Añadir nodos suele ser relativamente sencillo y tolera fallos de nodos y centros de datos, aunque el rendimiento real depende de un modelado y ajuste cuidadosos."
+    },
+    {
+      "category": "Consistencia y tolerancia a fallos",
+      "toolA": "Los conjuntos de réplica permiten elecciones automáticas de primario y recuperación ante fallos, con matices según la configuración de mayoría y el número de miembros.",
+      "toolB": "Está pensada para disponibilidad continua y escrituras siempre activas, aunque la consistencia fuerte exige quórums y puede afectar a la latencia y a la disponibilidad durante particiones."
+    },
+    {
+      "category": "Lenguaje de consultas y capacidades analíticas",
+      "toolA": "También admite índices secundarios, índices de texto, búsqueda geoespacial y, en versiones recientes, búsqueda vectorial en Atlas, lo que amplía casos de uso.",
+      "toolB": "Los filtros fuera de la clave suelen requerir índices especiales o tablas adicionales, y las agregaciones y uniones son limitadas, por lo que no es una base de datos pensada para analítica ad hoc compleja."
+    },
+    {
+      "category": "Rendimiento y patrón de carga",
+      "toolA": "Las escrituras pueden escalar con sharding, pero el rendimiento depende del tamaño del conjunto de trabajo, la memoria disponible, la configuración de write concern y la calidad de los índices.",
+      "toolB": "Su rendimiento depende de una buena distribución de particiones, del tamaño de las mismas y de evitar consultas que obliguen a recorrer muchos nodos."
+    },
+    {
+      "category": "Operación, despliegue y ecosistema",
+      "toolA": "Su ecosistema incluye controladores oficiales para muchos lenguajes y una comunidad amplia, aunque las funciones avanzadas pueden variar entre ediciones y versiones.",
+      "toolB": "El ecosistema es maduro en entornos de gran escala, pero las herramientas y la disponibilidad de servicios gestionados varían según el proveedor y la región."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MongoDB y Apache Cassandra responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad del esquema. MongoDB: MongoDB es una base de datos orientada a documentos que almacena registros BSON en colecciones, con esquemas flexibles… Apache Cassandra: Apache Cassandra es una base de datos distribuida de tipo wide-column que organiza los datos en tablas con particiones… El criterio de escalado y arquitectura distribuida añade otra diferencia práctica: MongoDB soporta replicación con conjuntos de réplicas y sharding horizontal para distribuir datos entre fragmentos,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB es una base de datos orientada a documentos que almacena registros BSON en colecciones,…",
+    "toolB": "tu proyecto prioriza escalado y arquitectura distribuida: Cassandra se diseñó para escalado lineal y sin nodo maestro: cada nodo es igual y los datos se…"
+  }
 }

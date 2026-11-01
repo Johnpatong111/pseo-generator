@@ -1,8 +1,8 @@
 {
   "slug": "crewai-vs-llamaindex",
   "meta": {
-    "title": "CrewAI vs LlamaIndex (2026): welche Lösung passt besser?",
-    "description": "CrewAI und LlamaIndex im Vergleich 2026: Agenten-Orchestrierung, RAG, Wissensdaten, Reifegrad, Ökosystem und Codebeispiele für die richtige Wahl."
+    "title": "CrewAI vs LlamaIndex: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche CrewAI und LlamaIndex: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "CrewAI"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from crewai import Agent, Task, Crew\n\nresearcher = Agent(\n    role=\"Rechercheur\",\n    goal=\"Ein kurzes Thema verständlich zusammenfassen\",\n    backstory=\"Du arbeitest präzise und strukturiert.\",\n    verbose=False,\n)\n\ntask = Task(\n    description=\"Erkläre in einem Satz, was ein KI-Agent ist.\",\n    expected_output=\"Ein einzelner verständlicher Satz.\",\n    agent=researcher,\n)\n\ncrew = Crew(agents=[researcher], tasks=[task])\nresult = crew.kickoff()\nprint(result)",
-    "tech2Snippet": "from llama_index.core import Document, VectorStoreIndex\n\nindex = VectorStoreIndex.from_documents(\n    [Document(text=\"LlamaIndex verbindet Sprachmodelle mit eigenen Daten.\")]\n)\n\nquery_engine = index.as_query_engine()\nresponse = query_engine.query(\"Womit verbindet LlamaIndex Sprachmodelle?\")\nprint(response)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es eine pauschale Empfehlung für 2026?",
       "a": "Eine pauschale Empfehlung ist nicht seriös, weil beide Frameworks unterschiedliche Schwerpunkte haben und sich stetig weiterentwickeln. Wählen Sie CrewAI für rollenbasierte Multi-Agenten-Orchestrierung und LlamaIndex für datengetriebene RAG- und Wissensanwendungen, oder kombinieren Sie beide. Prüfen Sie Funktionen und Grenzen stets anhand der konkreten Version und Ihres Anwendungsfalls."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen CrewAI und LlamaIndex verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "CrewAI passt besser, wenn dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt…. LlamaIndex ist geeigneter, wenn dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser,….",
+  "tradeoffs": [
+    {
+      "category": "Kernphilosophie und Abstraktionsmodell",
+      "toolA": "Die Abstraktionen sind stark auf Zusammenarbeit und Delegation ausgerichtet, was mehragentige Workflows konzeptionell gut abbildet.",
+      "toolB": "Der Fokus liegt auf Wissens- und Retrieval-Pipelines statt auf einem Team-Metaphernmodell."
+    },
+    {
+      "category": "Retrieval-Augmented Generation (RAG) und Datenkonnektoren",
+      "toolA": "Für anspruchsvolle Indexierungs- und Retrieval-Strategien ist zusätzlicher Aufbau oder die Kombination mit spezialisierten Bibliotheken sinnvoll.",
+      "toolB": "Die Datenkonnektoren und Abstraktionen sind tief im Framework verankert, was klassische Wissensdatenbank-Assistenten erleichtert."
+    },
+    {
+      "category": "Multi-Agenten-Orchestrierung und Delegation",
+      "toolA": "Delegation und sequenzielle oder hierarchische Abläufe gehören zum Kernkonzept und sind vergleichsweise direkt ausdrückbar.",
+      "toolB": "Multi-Agenten-Orchestrierung ist möglich, erfordert aber mehr eigene Strukturierung als bei einem primär agentenzentrierten Framework."
+    },
+    {
+      "category": "Workflows, Kontrolle und Determinismus",
+      "toolA": "Der Grad an deterministischer Kontrolle hängt von Modell, Prompting und Prozessart ab; stark autonome Agenten können variable Ergebnisse erzeugen.",
+      "toolB": "Gerade bei datengetriebenen Abläufen lässt sich das Verhalten strukturierter festlegen, sofern die Workflows entsprechend konfiguriert werden."
+    },
+    {
+      "category": "Ökosystem, Integrationen und Erweiterbarkeit",
+      "toolA": "Die Erweiterbarkeit ist an den Agenten- und Werkzeugbegriff gebunden, was Integrationen oft natürlich einordnet.",
+      "toolB": "Die Erweiterbarkeit orientiert sich an Daten- und Indexabstraktionen, was bei wissensintensiven Anwendungen von Vorteil ist."
+    },
+    {
+      "category": "Produktionsreife, Observability und Sicherheit",
+      "toolA": "Sicherheitsanforderungen wie Zugriffskontrolle und Datenisolation müssen in der eigenen Architektur ergänzt werden.",
+      "toolB": "Sicherheit und Mandantentrennung sind ebenfalls Anwendungsaufgaben und nicht allein durch das Framework garantiert."
+    }
+  ],
+  "introduction": "CrewAI und LlamaIndex lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernphilosophie und abstraktionsmodell. CrewAI: CrewAI modelliert ein System als Team aus Agenten mit Rolle, Ziel und Hintergrund sowie Aufgaben, die ein Prozess… LlamaIndex: LlamaIndex modelliert ein System rund um Daten: Dokumente werden geladen, transformiert, indexiert und über… Das Kriterium retrieval-augmented generation (rag) und datenkonnektoren zeigt einen weiteren praktischen Unterschied: CrewAI bietet Werkzeuge und Integrationen, mit denen Agenten auf externe Daten zugreifen können, doch RAG ist nicht… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt…",
+    "toolB": "dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser,…"
+  }
 }

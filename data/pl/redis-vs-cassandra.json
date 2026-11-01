@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-cassandra",
   "meta": {
-    "title": "Redis vs Apache Cassandra (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Redis i Apache Cassandra w 2026 roku: model danych, skalowanie, spójność, wydajność, koszty i typowe scenariusze użycia. Praktyczna rekomendacja."
+    "title": "Redis vs Apache Cassandra: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj Redis i Apache Cassandra: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Redis"
@@ -94,5 +94,49 @@
       "q": "Czy wybór zależy od konkretnej wersji lub dostawcy usługi?",
       "a": "Tak, dostępność funkcji, mechanizmy trwałości i bezpieczeństwo mogą różnić się między wersjami oraz między samodzielnym wdrożeniem a usługą zarządzaną. Przed wdrożeniem warto sprawdzić dokumentację wybranej wersji i planu. Nie należy zakładać, że zachowanie znane z jednego środowiska będzie identyczne w innym."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Redis a Apache Cassandra zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Redis będzie lepszy, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: Redis przechowuje dane jako struktury w pamięci: ciągi znaków, listy, zbiory, mapy mieszające,…. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie poziome i rozproszenie”: Cassandra od początku projektowana jest jako rozproszona baza z replikacją i podziałem danych na….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i elastyczność schematu",
+      "toolA": "Dzięki temu można modelować liczniki, kolejki, sesje czy rankingi bez tworzenia sztywnego schematu, choć złożone relacje trzeba często obsługiwać po stronie aplikacji.",
+      "toolB": "Zmiany schematu są możliwe, ale wymagają ostrożności przy dużych zbiorach i nie zastąpią elastyczności struktur pamięciowych Redisa."
+    },
+    {
+      "category": "Skalowanie poziome i rozproszenie",
+      "toolA": "Przy bardzo dużych klastrach rośnie złożoność operacyjna i ryzyko błędów konfiguracji.",
+      "toolB": "W praktyce lepiej znosi bardzo duże klastry i rosnące wolumeny danych, natomiast Redis bywa wystarczający przy mniejszych zbiorach."
+    },
+    {
+      "category": "Opóźnienie i wydajność dostępu",
+      "toolA": "Trzeba jednak pamiętać, że wydajność zależy od konfiguracji trwałości, rozmiaru zbioru i obciążenia, a nie jest stała dla każdego wdrożenia.",
+      "toolB": "Realne wyniki silnie zależą od modelu danych, poziomu spójności i konfiguracji klastra."
+    },
+    {
+      "category": "Trwałość danych i odtwarzanie po awarii",
+      "toolA": "Dla danych krytycznych trzeba świadomie dobrać politykę trwałości i przetestować odtwarzanie.",
+      "toolB": "Dla danych krytycznych jest zwykle bezpieczniejszym wyborem, choć i tam trzeba monitorować stan replik i naprawy."
+    },
+    {
+      "category": "Spójność i model transakcyjny",
+      "toolA": "Aplikacja musi więc sama zadbać o spójność w scenariuszach wielokluczowych.",
+      "toolB": "Wybór zależy od tego, czy aplikacja potrzebuje ścisłej spójności, czy może zaakceptować spójność ostateczną."
+    },
+    {
+      "category": "Zapytania i wyszukiwanie danych",
+      "toolA": "Bardziej przypomina zestaw operacji na strukturach niż pełnoprawną bazę analityczną.",
+      "toolB": "Bywa wygodniejsza w odczytach po kluczu, natomiast Redis lepiej sprawdza się przy operacjach na strukturach i danych tymczasowych."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Redis i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu. Redis: Redis przechowuje dane jako struktury w pamięci: ciągi znaków, listy, zbiory, mapy mieszające, strumienie czy… Apache Cassandra: Cassandra opiera się na tabelach z kluczem partycjonowania i kolumnami klastrującymi, więc model danych trzeba… Kolejną istotną różnicę pokazuje kryterium „Skalowanie poziome i rozproszenie”: Redis skaluje się głównie przez klastrowanie i partycjonowanie danych, co pozwala rozłożyć obciążenie na wiele węzłów,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i elastyczność schematu”: Redis przechowuje dane jako struktury w pamięci: ciągi znaków, listy, zbiory, mapy mieszające,…",
+    "toolB": "projekt stawia na kryterium „Skalowanie poziome i rozproszenie”: Cassandra od początku projektowana jest jako rozproszona baza z replikacją i podziałem danych na…"
+  }
 }

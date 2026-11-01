@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-vercel",
   "meta": {
-    "title": "Cloudflare vs Vercel (2026): quelle solution choisir ?",
-    "description": "Comparatif Cloudflare vs Vercel en 2026 : edge Functions, Next.js, tarifs, bases de données, sécurité et cas d'usage, pour choisir la plateforme adaptée à votre projet."
+    "title": "Cloudflare vs Vercel: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Cloudflare et Vercel : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// wrangler.toml\n// name = \"hello-worker\"\n// main = \"src/index.js\"\n// compatibility_date = \"2026-01-01\"\n\nexport default {\n  async fetch(request, env, ctx) {\n    return new Response(\"Hello, World!\");\n  },\n};",
-    "tech2Snippet": "// app/api/hello/route.js (Next.js App Router)\nexport async function GET() {\n  return Response.json({ message: \"Hello, World!\" });\n}"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment débuter rapidement avec chaque plateforme ?",
       "a": "Pour Cloudflare, vous installez Wrangler, créez un Worker minimal et le déployez avec vos identifiants Cloudflare. Pour Vercel, vous poussez un dépôt Git et importez le projet dans le tableau de bord, ou utilisez la CLI Vercel pour un déploiement direct. Les deux parcours sont rapides, mais les limites du plan gratuit et les fonctionnalités disponibles diffèrent."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Cloudflare et Vercel modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Cloudflare convient mieux lorsque votre projet privilégie tarification et coût à l'échelle : Cloudflare propose un plan gratuit généreux pour Workers et Pages et des tarifs à l'usage souvent…. Vercel est préférable lorsque votre projet privilégie expérience développeur et intégration git : Vercel excelle sur l'expérience développeur : import d'un dépôt Git, déploiements automatiques,….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de déploiement et exécution",
+      "toolA": "La plateforme est agnostique au framework et accepte des projets statiques, des fonctions et des Workers autonomes.",
+      "toolB": "L'expérience est particulièrement intégrée pour Next.js, avec des optimisations natives, mais d'autres frameworks restent pris en charge via des adaptateurs."
+    },
+    {
+      "category": "Expérience développeur et intégration Git",
+      "toolA": "L'intégration Git existe via Workers Builds et Pages, mais l'écosystème est plus modulaire et parfois moins guidé que chez Vercel.",
+      "toolB": "La configuration reste simple pour les projets standards, même si les fonctionnalités avancées demandent de comprendre les limites du plan."
+    },
+    {
+      "category": "Écosystème Next.js et rendu",
+      "toolA": "L'approche est viable mais demande souvent plus d'ajustements que sur une plateforme conçue autour de Next.js.",
+      "toolB": "Les comportements exacts dépendent de la version de Next.js et du plan, mais la compatibilité est généralement la plus directe du marché."
+    },
+    {
+      "category": "Tarification et coût à l'échelle",
+      "toolA": "Le coût réel dépend toutefois des requêtes, du temps CPU, des bases D1 et des services complémentaires activés.",
+      "toolB": "À fort trafic ou pour des équipes nombreuses, la facture peut croître rapidement selon les fonctions utilisées et les limites du plan."
+    },
+    {
+      "category": "Bases de données et stockage",
+      "toolA": "Ces briques sont intégrées mais plus récentes et parfois moins riches que des bases managées matures.",
+      "toolB": "Cela offre une grande flexibilité mais ajoute des dépendances et des coûts séparés à surveiller."
+    },
+    {
+      "category": "Sécurité, réseau et conformité",
+      "toolA": "Les garanties de conformité et les certifications dépendent des produits et des offres souscrites, à vérifier au cas par cas.",
+      "toolB": "Les garanties précises et les régions de traitement doivent être confirmées dans la documentation contractuelle de l'offre choisie."
+    }
+  ],
+  "introduction": "Cloudflare et Vercel répondent à un besoin proche, mais diffèrent sur modèle de déploiement et exécution. Cloudflare : Cloudflare exécute du code sur son réseau edge via Workers, avec un modèle d'isolation léger et un démarrage à froid… Vercel : Vercel propose un déploiement continu orienté front, avec des fonctions serverless et edge fonctions dont les runtimes… Le critère « Expérience développeur et intégration Git » met en évidence une autre différence pratique : Cloudflare s'appuie sur Wrangler pour le développement local, le déploiement et la gestion des ressources, avec une… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie tarification et coût à l'échelle : Cloudflare propose un plan gratuit généreux pour Workers et Pages et des tarifs à l'usage souvent…",
+    "toolB": "votre projet privilégie expérience développeur et intégration git : Vercel excelle sur l'expérience développeur : import d'un dépôt Git, déploiements automatiques,…"
+  }
 }

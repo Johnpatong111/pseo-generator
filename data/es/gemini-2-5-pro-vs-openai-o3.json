@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-openai-o3",
   "meta": {
-    "title": "Gemini 2.5 Pro vs OpenAI o3 (2026): ¿Qué solución elegir?",
-    "description": "Comparativa actualizada de Gemini 2.5 Pro y OpenAI o3: ventana de contexto, rendimiento, precios, latencia, acceso y casos de uso para elegir en 2026."
+    "title": "Gemini 2.5 Pro vs OpenAI o3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Gemini 2.5 Pro y OpenAI o3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from google import genai\n\nclient = genai.Client(api_key=\"TU_API_KEY\")\nresponse = client.models.generate_content(\n    model=\"gemini-2.5-pro\",\n    contents=\"Hola, mundo\"\n)\nprint(response.text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"TU_API_KEY\")\nresponse = client.responses.create(\n    model=\"o3\",\n    input=\"Hola, mundo\"\n)\nprint(response.output_text)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -82,5 +83,44 @@
       "q": "¿Cómo afecta la versión del modelo a la comparación?",
       "a": "Las especificaciones, los precios y los resultados de benchmarks de Gemini 2.5 Pro y OpenAI o3 cambian con las actualizaciones de versión, por lo que cualquier comparación es sensible a la fecha. Es importante consultar la documentación oficial vigente y no asumir que los datos de una versión anterior se mantienen. Para decisiones críticas, conviene realizar una evaluación propia con la versión actual y en condiciones reales de uso."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Gemini 2.5 Pro y OpenAI o3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Gemini 2.5 Pro encaja mejor cuando tu proyecto prioriza ventana de contexto: capacidad para procesar grandes volúmenes de información: Gemini 2.5 Pro está diseñado con una ventana de contexto muy amplia, pensada para manejar…. OpenAI o3 es preferible cuando tu proyecto prioriza casos de uso prácticos: adecuación a escenarios reales como análisis de: OpenAI o3 está orientado a tareas de razonamiento complejo, como resolución de problemas….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto: capacidad para procesar grandes volúmenes de información",
+      "toolA": "La cifra exacta de tokens admisible depende de la versión publicada y del canal de acceso, por lo que debe verificarse en la documentación oficial de Google; en términos prácticos, suele ser una de las opciones más generosas para contextos largos.",
+      "toolB": "Para tareas que requieren ingerir corpus masivos en una sola pasada, puede requerir estrategias de troceado o recuperación."
+    },
+    {
+      "category": "Rendimiento en benchmarks: evaluación comparativa en pruebas publicadas como",
+      "toolA": "No debe asumirse un valor único ni extrapolarse a todas las tareas; es recomendable consultar los informes técnicos oficiales para obtener datos actualizados y comparables.",
+      "toolB": "La comparación numérica solo es válida cuando ambos modelos han sido evaluados con la misma metodología."
+    },
+    {
+      "category": "Precio de API por millón de tokens de entrada y salida: coste económico del",
+      "toolA": "No conviene fijar cifras sin verificar la página oficial de precios de Google Cloud/Vertex AI o Google AI Studio, ya que los importes cambian con las versiones y las promociones.",
+      "toolB": "La comparación de costes solo es significativa si se calcula sobre el volumen real de tokens de cada caso de uso."
+    },
+    {
+      "category": "Latencia: tiempo de respuesta percibido en llamadas a la API, relevante para",
+      "toolA": "Google ofrece distintas modalidades de acceso (API estándar, Vertex AI) que pueden influir en los tiempos de respuesta; se recomienda medir en el entorno concreto antes de decidir.",
+      "toolB": "Conviene realizar pruebas propias en el entorno objetivo y consultar la documentación de OpenAI sobre límites y buenas prácticas."
+    },
+    {
+      "category": "Acceso y disponibilidad: canales de uso, licencias y modelo abierto o cerrado,",
+      "toolA": "No se distribuye como modelo de pesos abiertos, por lo que el despliegue local no está disponible; el acceso está sujeto a los términos de servicio de Google.",
+      "toolB": "Para ambos casos, la disponibilidad geográfica y los requisitos de cumplimiento deben verificarse en la documentación oficial."
+    },
+    {
+      "category": "Casos de uso prácticos: adecuación a escenarios reales como análisis de",
+      "toolA": "La calidad final depende del ajuste de las indicaciones y del tipo de contenido.",
+      "toolB": "Para volúmenes muy grandes de contexto, puede ser necesario complementarlo con técnicas de recuperación."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro y OpenAI o3 responden a una necesidad similar, pero difieren en ventana de contexto: capacidad para procesar grandes volúmenes de información. Gemini 2.5 Pro: Gemini 2.5 Pro está diseñado con una ventana de contexto muy amplia, pensada para manejar documentos y repositorios de… OpenAI o3: OpenAI o3 también ofrece una ventana de contexto amplia, aunque históricamente el límite ha sido inferior al de las… El criterio de rendimiento en benchmarks: evaluación comparativa en pruebas publicadas como añade otra diferencia práctica: Google publica resultados de Gemini 2.5 Pro en benchmarks como MMLU y HumanEval, aunque las cifras dependen de la… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto: capacidad para procesar grandes volúmenes de información: Gemini 2.5 Pro está diseñado con una ventana de contexto muy amplia, pensada para manejar…",
+    "toolB": "tu proyecto prioriza casos de uso prácticos: adecuación a escenarios reales como análisis de: OpenAI o3 está orientado a tareas de razonamiento complejo, como resolución de problemas…"
+  }
 }

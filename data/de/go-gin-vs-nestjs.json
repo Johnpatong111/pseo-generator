@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-nestjs",
   "meta": {
-    "title": "Gin vs NestJS (2026): welche Lösung passt besser?",
-    "description": "Gin (Go) und NestJS (Node.js/TypeScript) im Vergleich 2026: Performance, Struktur, Typsicherheit, Ökosystem und Eignung für APIs, Microservices und Teams."
+    "title": "Gin vs NestJS: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Gin und NestJS: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Gin"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "package main\n\nimport (\n\t\"net/http\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\nfunc main() {\n\tr := gin.Default()\n\tr.GET(\"/\", func(c *gin.Context) {\n\t\tc.String(http.StatusOK, \"Hello, World!\")\n\t})\n\tr.Run(\":8080\")\n}",
-    "tech2Snippet": "import { Module, Controller, Get } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\n\n@Controller()\nclass AppController {\n  @Get()\n  getHello(): string {\n    return 'Hello, World!';\n  }\n}\n\n@Module({ controllers: [AppController] })\nclass AppModule {}\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\nbootstrap();"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Lohnt sich ein Wechsel von NestJS zu Gin oder umgekehrt?",
       "a": "Ein Wechsel lohnt sich vor allem, wenn sich die Anforderungen grundlegend ändern, etwa wenn Performance oder Ressourcenverbrauch wichtiger werden oder wenn ein größeres Team eine strengere Struktur benötigt. Ein Wechsel bedeutet immer auch eine neue Sprache, neue Werkzeuge und eine gewisse Einarbeitungszeit. Prüfe deshalb zuerst, ob sich die Ziele auch innerhalb des bestehenden Stacks erreichen lassen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Gin und NestJS verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Gin passt besser, wenn dein Projekt priorisiert Leistung und Ressourcenverbrauch: Gin profitiert von der kompilierten Natur und der effizienten Laufzeit von Go sowie einem…. NestJS ist geeigneter, wenn dein Projekt priorisiert Projektstruktur und Architekturvorgaben: NestJS liefert ein opinioniertes Architekturmodell mit Modulen, Controllern, Providern und….",
+  "tradeoffs": [
+    {
+      "category": "Programmiersprache und Typsystem",
+      "toolA": "Fehler treten häufig bereits beim Kompilieren zutage, was die Wartbarkeit in großen Codebasen begünstigt.",
+      "toolB": "Da die Typen zur Laufzeit entfernt werden, hängt die Typsicherheit stark von konsequenter Konfiguration und Disziplin im Team ab."
+    },
+    {
+      "category": "Leistung und Ressourcenverbrauch",
+      "toolA": "Konkrete Werte hängen jedoch stark von Arbeitslast, Konfiguration und eingesetzten Middlewares ab.",
+      "toolB": "CPU-intensive Aufgaben und hohe Parallelität können je nach Architektur mehr Ressourcen beanspruchen als eine kompilierte Go-Anwendung; belastbare Aussagen erfordern eigene Messungen."
+    },
+    {
+      "category": "Projektstruktur und Architekturvorgaben",
+      "toolA": "Das bedeutet maximale Flexibilität, verlangt aber eigene Konventionen für größere Projekte.",
+      "toolB": "Das erleichtert einheitliche Strukturen in großen Teams, kann aber für kleine Dienste als schwergewichtig empfunden werden."
+    },
+    {
+      "category": "Ökosystem und Bibliotheksauswahl",
+      "toolA": "Das reduziert Abhängigkeiten, erfordert jedoch mehr Eigenentscheidungen.",
+      "toolB": "Die Fülle an Optionen beschleunigt die Entwicklung, bringt aber auch Abhängigkeits- und Versionsmanagement mit sich."
+    },
+    {
+      "category": "Lernkurve und Einstieg",
+      "toolA": "Ohne Go-Erfahrung müssen zunächst Sprachkonzepte wie Interfaces und Fehlerbehandlung verinnerlicht werden.",
+      "toolB": "Wer aus Angular oder ähnlichen Frameworks kommt, erkennt viele Muster wieder und lernt schneller."
+    },
+    {
+      "category": "Testing und Wartbarkeit",
+      "toolA": "Durch die explizite Fehlerbehandlung bleibt der Kontrollfluss gut nachvollziehbar.",
+      "toolB": "Die starke Abhängigkeit von Decorators und Metadaten kann Tests jedoch komplexer machen, wenn die Architektur nicht sauber getrennt ist."
+    }
+  ],
+  "introduction": "Gin und NestJS lösen ein ähnliches Problem, unterscheiden sich jedoch bei programmiersprache und typsystem. Gin: Gin basiert auf Go, einer statisch typisierten, kompilierten Sprache mit schlankem Typsystem, Interfaces und… NestJS: NestJS nutzt TypeScript auf Node.js und bietet damit ein sehr ausdrucksstarkes strukturelles Typsystem mit Generics,… Das Kriterium leistung und ressourcenverbrauch zeigt einen weiteren praktischen Unterschied: Gin profitiert von der kompilierten Natur und der effizienten Laufzeit von Go sowie einem schlanken HTTP-Router, was… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Leistung und Ressourcenverbrauch: Gin profitiert von der kompilierten Natur und der effizienten Laufzeit von Go sowie einem…",
+    "toolB": "dein Projekt priorisiert Projektstruktur und Architekturvorgaben: NestJS liefert ein opinioniertes Architekturmodell mit Modulen, Controllern, Providern und…"
+  }
 }

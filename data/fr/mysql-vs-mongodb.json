@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB (2026): quelle solution choisir ?",
-    "description": "MySQL ou MongoDB en 2026 : comparatif des modèles de données, requêtes, transactions, scalabilité, écosystème et sécurité pour choisir la base adaptée à votre projet."
+    "title": "MySQL vs MongoDB: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez MySQL et MongoDB : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "MySQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "-- Exemple minimal MySQL : création, insertion et lecture\nCREATE TABLE salutation (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(100) NOT NULL);\nINSERT INTO salutation (message) VALUES ('Hello, World!');\nSELECT message FROM salutation;",
-    "tech2Snippet": "// Exemple minimal MongoDB avec le pilote Node.js officiel\nconst { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('salutations');\n  await collection.insertOne({ message: 'Hello, World!' });\n  console.log(await collection.findOne({}));\n  await client.close();\n}\n\nmain().catch(console.error);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il préférer une offre managée en 2026 ?",
       "a": "Pour les deux bases, une offre managée réduit la charge d'exploitation : sauvegardes, mises à jour, haute disponibilité et supervision sont souvent incluses selon le palier choisi. Les coûts et fonctionnalités varient fortement d'un fournisseur à l'autre et selon la région, donc comparez les grilles tarifaires à jour avant de vous engager. Une offre managée n'exonère pas d'une bonne modélisation ni d'un dimensionnement adapté à votre charge réelle."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre MySQL et MongoDB modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "MySQL convient mieux lorsque votre projet privilégie langage de requête et expressivité : MySQL s'appuie sur SQL, un langage déclaratif standardisé et très répandu, avec jointures,…. MongoDB est préférable lorsque votre projet privilégie scalabilité et distribution : MongoDB intègre un sharding natif avec clé de partitionnement et rééquilibrage automatique, ainsi….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et schéma",
+      "toolA": "Ce modèle impose une structure claire, facilite les contraintes d'intégrité et convient aux domaines fortement normalisés comme la facturation ou la gestion de stock.",
+      "toolB": "Cette souplesse accélère les itérations sur des données évolutives, mais reporte une partie de la validation sur l'application ou sur les validateurs de schéma optionnels, définis par collection et par version."
+    },
+    {
+      "category": "Langage de requête et expressivité",
+      "toolA": "La richesse du SQL facilite les analyses ad hoc et le reporting, au prix d'une courbe d'apprentissage pour les jointures complexes.",
+      "toolB": "L'approche est intuitive pour des documents imbriqués, mais les jointures multi-collections y sont généralement moins naturelles et moins performantes que les jointures relationnelles bien indexées, selon la modélisation retenue."
+    },
+    {
+      "category": "Transactions et intégrité des données",
+      "toolA": "Cette maturité rassure pour les opérations critiques où une écriture partielle serait inacceptable.",
+      "toolB": "Elles fonctionnent, mais leur coût et leurs limites (durée, taille, nombre d'opérations) invitent à privilégier une modélisation par documents pour réduire le besoin de transactions distribuées."
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "Cette architecture reste simple à exploiter pour des charges modérées à élevées correctement indexées.",
+      "toolB": "La distribution horizontale est donc plus directe, mais le choix de la clé de sharding conditionne fortement les performances et demande une réflexion en amont."
+    },
+    {
+      "category": "Performances selon la charge",
+      "toolA": "Les résultats dépendent fortement du schéma, des index, du moteur InnoDB et du dimensionnement du serveur, sans garantie universelle.",
+      "toolB": "En revanche, des agrégations complexes ou des documents mal modélisés peuvent dégrader les temps de réponse, et les performances varient selon la version et la configuration du cluster."
+    },
+    {
+      "category": "Écosystème, outils et hébergement",
+      "toolA": "Cette ubiquité facilite le recrutement et la maintenance à long terme.",
+      "toolB": "L'écosystème est solide mais plus resserré autour de l'éditeur, ce qui peut peser sur les coûts et la dépendance à un fournisseur, selon l'offre choisie."
+    }
+  ],
+  "introduction": "MySQL et MongoDB répondent à un besoin proche, mais diffèrent sur modèle de données et schéma. MySQL : MySQL est une base relationnelle : les données vivent dans des tables aux colonnes typées, reliées par des clés… MongoDB : MongoDB stocke des documents BSON dans des collections, avec un schéma flexible où chaque document peut différer, y… Le critère « Langage de requête et expressivité » met en évidence une autre différence pratique : MySQL s'appuie sur SQL, un langage déclaratif standardisé et très répandu, avec jointures, agrégations, sous-requêtes,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie langage de requête et expressivité : MySQL s'appuie sur SQL, un langage déclaratif standardisé et très répandu, avec jointures,…",
+    "toolB": "votre projet privilégie scalabilité et distribution : MongoDB intègre un sharding natif avec clé de partitionnement et rééquilibrage automatique, ainsi…"
+  }
 }

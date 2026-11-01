@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie MySQL i SQLite w 2026: wydajność, skalowalność, bezpieczeństwo i zastosowania. Sprawdź, która baza danych lepiej pasuje do Twojego projektu."
+    "title": "MySQL vs SQLite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj MySQL i SQLite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "Którą bazę wybrać do projektu, który ma szansę się rozrosnąć?",
       "a": "Jeśli projekt ma potencjał dużego wzrostu i wielu równoczesnych użytkowników, bezpieczniejszym wyborem jest MySQL, który oferuje lepsze mechanizmy skalowania i współbieżności. SQLite może sprawdzić się na początkowym etapie, ale jego migracja do MySQL może wymagać dodatkowej pracy. Warto już na starcie ocenić przewidywane obciążenie i wymagania."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między MySQL a SQLite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji…. SQLite sprawdzi się, gdy projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: SQLite nie wymaga instalacji ani konfiguracji – wystarczy dołączyć bibliotekę do aplikacji.",
+  "tradeoffs": [
+    {
+      "category": "Model architektury i sposób działania",
+      "toolA": "Wymaga jednak uruchomienia i utrzymania osobnego procesu serwera.",
+      "toolB": "Dostęp do bazy odbywa się bezpośrednio przez wywołania funkcji biblioteki."
+    },
+    {
+      "category": "Współbieżność i obsługa wielu użytkowników",
+      "toolA": "Jest to istotne w aplikacjach internetowych i systemach wieloużytkowych.",
+      "toolB": "Przy dużym obciążeniu zapisami może to być wąskie gardło."
+    },
+    {
+      "category": "Skalowalność i wydajność przy dużym obciążeniu",
+      "toolA": "W 2026 dostępne są wydania MySQL 8.x z ulepszeniami wydajności.",
+      "toolB": "Sprawdza się w aplikacjach o umiarkowanym obciążeniu."
+    },
+    {
+      "category": "Łatwość wdrożenia i utrzymania",
+      "toolA": "W środowisku lokalnym konieczna jest wiedza administracyjna.",
+      "toolB": "Nie ma potrzeby zarządzania serwerem ani użytkownikami, co czyni go idealnym dla prototypów i małych projektów."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Bezpieczeństwo zależy jednak od poprawnej konfiguracji i aktualizacji.",
+      "toolB": "W aplikacjach wbudowanych często wystarcza to ze względu na lokalny charakter danych."
+    },
+    {
+      "category": "Funkcje zaawansowane i rozszerzalność",
+      "toolA": "Jest rozwijany jako projekt open source z komercyjnym wsparciem.",
+      "toolB": "Rozszerzenia można dodawać poprzez wirtualne tabele i funkcje definiowane przez użytkownika."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób działania. MySQL: MySQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć lub gniazdo lokalne. SQLite: SQLite to wbudowana biblioteka, która przechowuje całą bazę w jednym pliku i działa w procesie aplikacji, bez… Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji transakcji. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji…",
+    "toolB": "projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: SQLite nie wymaga instalacji ani konfiguracji – wystarczy dołączyć bibliotekę do aplikacji."
+  }
 }

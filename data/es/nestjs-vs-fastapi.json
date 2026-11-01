@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-fastapi",
   "meta": {
-    "title": "NestJS vs FastAPI (2026): ¿Qué solución elegir?",
-    "description": "Comparamos NestJS y FastAPI en 2026: arquitectura, rendimiento, tipado, ecosistema, seguridad y curva de aprendizaje para elegir el framework backend adecuado."
+    "title": "NestJS vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara NestJS y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "NestJS"
@@ -94,5 +94,49 @@
       "q": "¿Qué opción ofrece mejor integración con bases de datos?",
       "a": "NestJS se integra con ORM y bibliotecas de Node.js como TypeORM, Prisma o MikroORM, y su estructura modular facilita organizar repositorios y servicios. FastAPI se apoya habitualmente en SQLAlchemy u otros ORM de Python, con un ecosistema maduro para datos y migraciones. La mejor opción depende del lenguaje, del ORM elegido y de las necesidades de transacciones y consultas del proyecto."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre NestJS y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "NestJS encaja mejor cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de…. FastAPI es preferible cuando tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los….",
+  "tradeoffs": [
+    {
+      "category": "Lenguaje y tipado",
+      "toolA": "Aunque permite JavaScript, el flujo habitual exige TypeScript y una configuración de compilación, lo que aporta seguridad en tiempo de desarrollo pero añade complejidad inicial.",
+      "toolB": "El tipado es opcional pero muy recomendable, y herramientas como mypy permiten comprobaciones estáticas; su integración con el ecosistema científico y de datos de Python es directa."
+    },
+    {
+      "category": "Arquitectura y estructura del proyecto",
+      "toolA": "Esta estructura facilita la escalabilidad y el trabajo en equipos grandes, aunque puede resultar pesada para proyectos pequeños o prototipos rápidos.",
+      "toolB": "Esa flexibilidad acelera el arranque y los servicios pequeños, pero exige disciplina para mantener una organización coherente en aplicaciones grandes."
+    },
+    {
+      "category": "Rendimiento y concurrencia",
+      "toolA": "Su modelo asíncrono basado en el bucle de eventos es adecuado para muchas operaciones de entrada y salida concurrentes.",
+      "toolB": "Su rendimiento es competitivo en cargas de entrada y salida, y para tareas intensivas de CPU conviene delegar en procesos o workers, ya que el modelo de Python impone sus propias limitaciones."
+    },
+    {
+      "category": "Documentación y validación de la API",
+      "toolA": "La validación se suele implementar con class-validator y class-transformer, lo que funciona bien pero implica varias dependencias y convenciones.",
+      "toolB": "La validación de entrada y la serialización de salida están integradas en el propio framework, lo que reduce el código repetitivo y mejora la consistencia de la API."
+    },
+    {
+      "category": "Ecosistema y compatibilidad",
+      "toolA": "Esa compatibilidad facilita integrar bibliotecas JavaScript existentes, aunque la calidad y el mantenimiento de los paquetes del ecosistema pueden variar.",
+      "toolB": "Su comunidad crece con rapidez y muchas bibliotecas populares ofrecen soporte ASGI, aunque la integración de algunas herramientas heredadas de WSGI puede requerir adaptaciones."
+    },
+    {
+      "category": "Curva de aprendizaje y experiencia del equipo",
+      "toolA": "Para equipos con experiencia en Angular o en patrones empresariales resulta predecible, pero para perfiles junior o proyectos pequeños puede suponer una carga inicial notable.",
+      "toolB": "Los conceptos avanzados, como dependencias, middlewares o gestión de transacciones, requieren estudio, pero el arranque es más rápido."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "NestJS y FastAPI responden a una necesidad similar, pero difieren en lenguaje y tipado. NestJS: NestJS se construye sobre TypeScript por defecto y aprovecha su sistema de tipos, decoradores y metadatos para definir… FastAPI: FastAPI está escrito en Python y se apoya en anotaciones de tipo estándar junto con Pydantic para validar y serializar… El criterio de arquitectura y estructura del proyecto añade otra diferencia práctica: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de dependencias, controladores y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de…",
+    "toolB": "tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los…"
+  }
 }

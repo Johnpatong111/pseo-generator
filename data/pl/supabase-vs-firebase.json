@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-firebase",
   "meta": {
-    "title": "Supabase vs Firebase (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Supabase i Firebase w 2026 r. pod kątem bazy danych, uwierzytelniania, funkcji serverless, cen i skalowania. Sprawdź, które narzędzie pasuje do Twojego projektu."
+    "title": "Supabase vs Firebase: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj Supabase i Firebase: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Supabase"
@@ -94,5 +94,49 @@
       "q": "Które rozwiązanie ma lepsze wsparcie i dokumentację?",
       "a": "Firebase ma dłuższą historię, rozbudowaną dokumentację i dużą społeczność, co często ułatwia rozwiązywanie problemów. Supabase rozwija się dynamicznie i ma solidną dokumentację oraz aktywną społeczność open source, ale jego ekosystem jest młodszy. Wsparcie techniczne w obu przypadkach zależy od wybranego planu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Supabase a Firebase zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL,…. Firebase sprawdzi się, gdy projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i baza danych",
+      "toolA": "Dostępność konkretnych rozszerzeń i funkcji zależy od planu oraz konfiguracji instancji.",
+      "toolB": "Wydajność i limity zależą od wybranego planu i sposobu modelowania danych."
+    },
+    {
+      "category": "Uwierzytelnianie i zarządzanie użytkownikami",
+      "toolA": "Konfiguracja i dostępność metod logowania zależą od ustawień projektu.",
+      "toolB": "Niektóre funkcje, jak logowanie przez telefon, mogą wiązać się z dodatkowymi kosztami lub wymagać konfiguracji."
+    },
+    {
+      "category": "Funkcje serverless i backend",
+      "toolA": "Dostępność i limity funkcji brzegowych zależą od planu.",
+      "toolB": "Konkretne możliwości zależą od wybranego planu i regionu."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Nieprawidłowe polityki mogą prowadzić do wycieku danych, dlatego kluczowe są testy i przeglądy.",
+      "toolB": "Bezpieczeństwo zależy od starannego projektowania reguł i regularnych audytów."
+    },
+    {
+      "category": "Skalowanie i wydajność",
+      "toolA": "Niektóre funkcje, jak automatyczne skalowanie, mogą być dostępne tylko w wyższych planach.",
+      "toolB": "Wydajność zależy od modelu danych i regionu, a niektóre ograniczenia są charakterystyczne dla platformy."
+    },
+    {
+      "category": "Ceny i przewidywalność kosztów",
+      "toolA": "Przenośność danych i brak blokady dostawcy ułatwiają migrację w przypadku zmiany planu.",
+      "toolB": "Konieczne jest monitorowanie zużycia i ustawianie budżetów."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\nconst db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);\nconst { data: products, error } = await db\n  .from(\"products\")\n  .select(\"id, name, price_cents\")\n  .eq(\"category_id\", categoryId)\n  .eq(\"active\", true)\n  .order(\"name\")\n  .limit(50);\n\nif (error) throw new Error(`Product query failed: ${error.message}`);",
+    "tech2Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\nconst productQuery = query(\n  collection(db, \"products\"),\n  where(\"categoryId\", \"==\", categoryId),\n  where(\"active\", \"==\", true),\n  orderBy(\"name\"),\n  limit(50),\n);\nconst snapshot = await getDocs(productQuery);\nconst products = snapshot.docs.map((document) => ({\n  id: document.id,\n  ...document.data(),\n}));"
+  },
+  "introduction": "Supabase i Firebase odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i baza danych. Supabase: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL, transakcji ACID, widoków,… Firebase: Firebase udostępnia bazę dokumentową Firestore oraz bazę czasu rzeczywistego, które dobrze sprawdzają się w modelach… Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Supabase Auth obsługuje logowanie hasłem, magią link, dostawców OAuth oraz uwierzytelnianie dwuskładnikowe, a wszystko… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL,…",
+    "toolB": "projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców…"
+  }
 }

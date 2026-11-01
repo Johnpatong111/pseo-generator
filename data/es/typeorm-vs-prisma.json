@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-prisma",
   "meta": {
-    "title": "TypeORM vs Prisma (2026): ¿Qué solución elegir?",
-    "description": "Comparamos TypeORM y Prisma en 2026: madurez, tipado, migraciones, rendimiento, ecosistema y curva de aprendizaje para elegir el ORM adecuado en tu próximo proyecto."
+    "title": "TypeORM vs Prisma: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara TypeORM y Prisma: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "TypeORM"
@@ -88,5 +88,49 @@
       "q": "¿Qué opción encaja mejor en un equipo con poca experiencia en ORMs?",
       "a": "Prisma suele resultar más accesible al principio porque centraliza el modelo en un esquema y el cliente generado guía las consultas con tipado. TypeORM requiere comprender antes conceptos como repositorios, decoradores y patrones de mapeo, lo que puede ralentizar la incorporación. En ambos casos, una guía interna y revisiones de código ayudan a evitar malas prácticas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre TypeORM y Prisma cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "TypeORM encaja mejor cuando tu proyecto prioriza flexibilidad y personalización: TypeORM ofrece múltiples estrategias de carga de relaciones, herencia de entidades, listeners y…. Prisma es preferible cuando tu proyecto prioriza madurez y ecosistema: Prisma es un proyecto más reciente pero con evolución muy activa y una comunidad creciente.",
+  "tradeoffs": [
+    {
+      "category": "Madurez y ecosistema",
+      "toolA": "Su desarrollo ha pasado por etapas de menor actividad, por lo que conviene revisar el estado de la rama y las versiones recientes antes de fijar dependencias en un proyecto crítico.",
+      "toolB": "La contrapartida es que su modelo basado en un esquema propio y un cliente generado difiere del ORM clásico, lo que puede requerir adaptar la arquitectura del equipo."
+    },
+    {
+      "category": "Sistema de tipos y experiencia de desarrollo",
+      "toolA": "El autocompletado funciona bien en las operaciones más comunes, pero los desajustes entre el esquema de la base de datos y las entidades pueden pasar desapercibidos hasta ejecutar la aplicación.",
+      "toolB": "En proyectos grandes, ese paso extra suele compensarse con menos fallos en producción."
+    },
+    {
+      "category": "Migraciones y gestión del esquema",
+      "toolA": "Este enfoque encaja bien en equipos que prefieren controlar el SQL resultante y revisarlo, aunque la detección de cambios puede requerir ajustes en esquemas complejos o con nombres personalizados.",
+      "toolB": "El historial de migraciones es legible y facilita la revisión en equipo, pero el proceso está más acoplado al esquema Prisma y las personalizaciones avanzadas pueden requerir editar manualmente los archivos SQL generados."
+    },
+    {
+      "category": "Rendimiento y control del SQL",
+      "toolA": "Esa flexibilidad exige más conocimiento del ORM y de la base de datos, y un uso descuidado de las relaciones puede provocar el problema de las consultas N+1 si no se configuran correctamente las cargas.",
+      "toolB": "Aun así, ciertas consultas muy específicas pueden requerir SQL crudo, y el rendimiento real depende del motor, del esquema y de la carga; conviene medirlo en cada proyecto en lugar de asumir cifras generales."
+    },
+    {
+      "category": "Curva de aprendizaje y documentación",
+      "toolA": "Su documentación cubre las funciones principales, aunque algunos temas avanzados dependen de ejemplos de la comunidad y la experiencia previa con ORMs clásicos ayuda bastante.",
+      "toolB": "Su documentación es clara y estructurada, si bien el flujo de generación del cliente y el lenguaje del esquema añaden pasos que hay que interiorizar antes de aprovechar todo su potencial."
+    },
+    {
+      "category": "Integración con el ecosistema y herramientas",
+      "toolA": "Al ser un ORM clásico, encaja con arquitecturas por capas y con equipos acostumbrados a inyección de dependencias y repositorios.",
+      "toolB": "No obstante, su enfoque centrado en el esquema puede chocar con arquitecturas que esperan entidades decoradas o un patrón de repositorio clásico, por lo que a veces se combina con capas de abstracción adicionales."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();"
+  },
+  "introduction": "TypeORM y Prisma responden a una necesidad similar, pero difieren en madurez y ecosistema. TypeORM: TypeORM lleva años en el ecosistema TypeScript y cuenta con una base amplia de usuarios, conectores para numerosas… Prisma: Prisma es un proyecto más reciente pero con evolución muy activa y una comunidad creciente. El criterio de sistema de tipos y experiencia de desarrollo añade otra diferencia práctica: TypeORM aprovecha los decoradores de TypeScript y el tipado de las entidades, aunque parte del tipado se resuelve en… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza flexibilidad y personalización: TypeORM ofrece múltiples estrategias de carga de relaciones, herencia de entidades, listeners y…",
+    "toolB": "tu proyecto prioriza madurez y ecosistema: Prisma es un proyecto más reciente pero con evolución muy activa y una comunidad creciente."
+  }
 }

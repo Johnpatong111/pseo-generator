@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express (2026): quelle solution choisir ?",
-    "description": "Bun vs Express en 2026 : comparez performances, écosystème, compatibilité Node.js, TypeScript, sécurité et cas d'usage pour choisir le bon runtime ou framework backend."
+    "title": "Bun vs Express: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Bun et Express : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Bun"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const server = Bun.serve({\n  port: 3000,\n  fetch() {\n    return new Response(\"Hello, World!\");\n  },\n});\n\nconsole.log(`Serveur démarré sur http://localhost:${server.port}`);",
-    "tech2Snippet": "const express = require(\"express\");\n\nconst app = express();\n\napp.get(\"/\", (req, res) => {\n  res.send(\"Hello, World!\");\n});\n\napp.listen(3000, () => {\n  console.log(\"Serveur démarré sur http://localhost:3000\");\n});"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "La migration d'Express vers Bun est-elle risquée ?",
       "a": "Le risque dépend de la complexité de votre application et de ses dépendances. Les applications Express simples peuvent souvent s'exécuter sur Bun avec peu de changements, tandis que les modules natifs, les addons ou les comportements spécifiques à Node.js peuvent nécessiter des adaptations. Une approche progressive, avec tests automatisés et comparaison des comportements, réduit les risques."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Bun et Express modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Bun convient mieux lorsque votre projet privilégie performances et charge : Bun revendique des performances élevées grâce à un moteur JavaScript optimisé et des primitives…. Express est préférable lorsque votre projet privilégie écosystème et compatibilité : Express bénéficie de années d'adoption et d'un très vaste écosystème de middlewares documentés.",
+  "tradeoffs": [
+    {
+      "category": "Nature de l'outil et positionnement",
+      "toolA": "Il se positionne comme une alternative intégrée à la chaîne Node.js classique, avec une API serveur HTTP native.",
+      "toolB": "Il fournit principalement le routage et un système de middlewares, en laissant le runtime et l'outillage à l'écosystème environnant."
+    },
+    {
+      "category": "Performances et charge",
+      "toolA": "Les résultats réels dépendent fortement de la version, du matériel, de la charge et du type de traitement, et doivent être mesurés sur votre propre cas d'usage plutôt que supposés.",
+      "toolB": "Sur des charges I/O classiques, il reste compétitif, mais il est généralement moins performant que des solutions natives optimisées lorsque la latence et le débit sont critiques."
+    },
+    {
+      "category": "Écosystème et compatibilité",
+      "toolA": "Cette compatibilité n'est toutefois pas totale : certains modules natifs, addons ou comportements subtils peuvent nécessiter des adaptations selon la version de Bun et du paquet concerné.",
+      "toolB": "Sa compatibilité avec Node.js est native par construction, ce qui réduit les surprises lors de l'intégration de bibliothèques anciennes ou spécialisées."
+    },
+    {
+      "category": "Développement et expérience développeur",
+      "toolA": "Cette intégration simplifie l'amorçage d'un projet, mais impose d'apprendre ses conventions et son outillage propres.",
+      "toolB": "En revanche, TypeScript, les tests et le build nécessitent généralement d'ajouter et de configurer des outils séparés."
+    },
+    {
+      "category": "Sécurité et maturité",
+      "toolA": "Il faut suivre attentivement les notes de version et les avis de sécurité, car la jeunesse du runtime implique une vigilance accrue sur les dépendances natives et les API récentes.",
+      "toolB": "Sa maturité ne dispense pas de mises à jour régulières, mais l'historique et la documentation facilitent l'audit."
+    },
+    {
+      "category": "Cas d'usage et infrastructure",
+      "toolA": "Il peut aussi servir de runtime pour des frameworks compatibles, mais son adoption en production dépend de la validation de vos dépendances et de votre hébergement.",
+      "toolB": "Il s'intègre facilement aux plateformes d'hébergement et aux pipelines existants, ce qui en fait un choix prudent pour les équipes et les bases de code établies."
+    }
+  ],
+  "introduction": "Bun et Express répondent à un besoin proche, mais diffèrent sur nature de l'outil et positionnement. Bun : Bun est un runtime JavaScript/TypeScript complet qui embarque aussi un gestionnaire de paquets, un bundler et un… Express : Express est un framework web minimaliste qui s'exécute au-dessus de Node.js et, par compatibilité, d'autres runtimes. Le critère « Performances et charge » met en évidence une autre différence pratique : Bun revendique des performances élevées grâce à un moteur JavaScript optimisé et des primitives natives comme Bun.serve. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie performances et charge : Bun revendique des performances élevées grâce à un moteur JavaScript optimisé et des primitives…",
+    "toolB": "votre projet privilégie écosystème et compatibilité : Express bénéficie de années d'adoption et d'un très vaste écosystème de middlewares documentés."
+  }
 }

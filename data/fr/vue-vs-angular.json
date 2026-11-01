@@ -1,8 +1,8 @@
 {
   "slug": "vue-vs-angular",
   "meta": {
-    "title": "Vue vs Angular (2026): quelle solution choisir ?",
-    "description": "Vue ou Angular en 2026 : comparez architecture, courbe d'apprentissage, écosystème, performances et TypeScript pour choisir le framework adapté à votre projet web."
+    "title": "Vue vs Angular: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Vue et Angular : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Vue"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createApp, ref } from 'vue'\n\ncreateApp({\n  setup() {\n    const message = ref('Hello, World!')\n    return { message }\n  },\n  template: '<h1>{{ message }}</h1>'\n}).mount('#app')",
-    "tech2Snippet": "import { Component } from '@angular/core';\nimport { bootstrapApplication } from '@angular/platform-browser';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: '<h1>{{ message }}</h1>'\n})\nexport class AppComponent {\n  message = 'Hello, World!';\n}\n\nbootstrapApplication(AppComponent);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "import { CommonModule } from \"@angular/common\";\nimport { Component, Input } from \"@angular/core\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\n@Component({\n  selector: \"app-product-list\",\n  standalone: true,\n  imports: [CommonModule],\n  template: `<ul><li *ngFor=\"let product of visibleProducts\">{{ product.name }}</li></ul>`,\n})\nexport class ProductListComponent {\n  @Input({ required: true }) products: Product[] = [];\n  @Input({ required: true }) categoryId = \"\";\n\n  get visibleProducts(): Product[] {\n    return this.products.filter(\n      (product) => product.active && product.categoryId === this.categoryId,\n    );\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Vue et Angular sont-ils adaptés aux applications accessibles et internationalisées ?",
       "a": "Les deux frameworks permettent de construire des interfaces accessibles et internationalisées, mais aucune solution ne garantit l'accessibilité à elle seule. Le résultat dépend des composants utilisés, du respect des normes et des tests réalisés. Pour l'internationalisation, des bibliothèques dédiées existent dans les deux écosystèmes et doivent être choisies selon vos besoins."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Vue et Angular modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Vue convient mieux lorsque votre projet privilégie courbe d'apprentissage et approche : Vue est réputé pour une prise en main rapide : l'API Options reste accessible aux débutants,…. Angular est préférable lorsque votre projet privilégie architecture et structure du projet : Angular propose une architecture plus directive, avec des modules ou des composants standalone,….",
+  "tradeoffs": [
+    {
+      "category": "Courbe d'apprentissage et approche",
+      "toolA": "La documentation officielle est structurée et propose des guides progressifs, ce qui facilite l'entrée en matière sans imposer immédiatement tous les concepts avancés.",
+      "toolB": "Cette exigence ralentit la première prise en main, mais elle fournit un cadre homogène que les grandes équipes peuvent standardiser plus facilement."
+    },
+    {
+      "category": "Architecture et structure du projet",
+      "toolA": "Cette liberté demande toutefois aux équipes de définir elles-mêmes certaines conventions, surtout sur les projets de grande taille.",
+      "toolB": "Cette structure réduit les décisions ad hoc, mais elle peut sembler lourde pour de petites applications."
+    },
+    {
+      "category": "TypeScript et typage",
+      "toolA": "Le niveau de rigueur dépend cependant de la configuration choisie et de la discipline de l'équipe, car Vue reste utilisable sans typage strict.",
+      "toolB": "Le typage est donc plus systématique, ce qui aide sur les grosses bases de code, même si cela ajoute des contraintes aux développeurs peu familiers avec TypeScript."
+    },
+    {
+      "category": "Écosystème et outils officiels",
+      "toolA": "Ces briques sont bien documentées, mais certaines décisions d'architecture restent à la charge de l'équipe.",
+      "toolB": "Cette intégration réduit les choix d'outils, au prix d'une adoption plus large et d'une dépendance plus forte aux conventions du framework."
+    },
+    {
+      "category": "Performances et rendu",
+      "toolA": "Les performances dépendent fortement de la taille de l'application, du découpage des composants et des pratiques de l'équipe.",
+      "toolB": "Les performances restent sensibles à la version utilisée, à la stratégie de détection de changements et à la qualité de l'implémentation."
+    },
+    {
+      "category": "Adoption en entreprise et maintenance",
+      "toolA": "En revanche, la liberté d'architecture peut entraîner une hétérogénéité si l'équipe ne fixe pas de conventions internes.",
+      "toolB": "La maintenance à long terme est facilitée par les conventions, mais les migrations majeures demandent de la préparation et des compétences à jour."
+    }
+  ],
+  "introduction": "Vue et Angular répondent à un besoin proche, mais diffèrent sur courbe d'apprentissage et approche. Vue : Vue est réputé pour une prise en main rapide : l'API Options reste accessible aux débutants, tandis que l'API… Angular : Angular impose dès le départ un socle conceptuel plus large : modules ou composants standalone, injection de… Le critère « Architecture et structure du projet » met en évidence une autre différence pratique : Vue reste flexible : il peut être intégré à une page existante ou structurer une application complète avec Vue Router… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie courbe d'apprentissage et approche : Vue est réputé pour une prise en main rapide : l'API Options reste accessible aux débutants,…",
+    "toolB": "votre projet privilégie architecture et structure du projet : Angular propose une architecture plus directive, avec des modules ou des composants standalone,…"
+  }
 }

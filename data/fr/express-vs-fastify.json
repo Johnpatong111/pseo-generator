@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-fastify",
   "meta": {
-    "title": "Express vs Fastify (2026): quelle solution choisir ?",
-    "description": "Comparaison détaillée entre Express et Fastify en 2026 : performances, écosystème, sécurité, courbe d'apprentissage et cas d'usage. Découvrez quel framework Node.js choisir selon votre projet."
+    "title": "Express vs Fastify: lequel choisir en 2026 — fonctionnalités et cas d’usage",
+    "description": "Comparez Express et Fastify : évaluez les compromis architecturaux liés à architecture, intégration et gestion des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Express"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hello, World!');\n});\n\napp.listen(3000, () => {\n  console.log('Express server listening on port 3000');\n});",
-    "tech2Snippet": "const fastify = require('fastify')({ logger: true });\n\nfastify.get('/', async (request, reply) => {\n  return { hello: 'world' };\n});\n\nfastify.listen({ port: 3000 }, (err) => {\n  if (err) {\n    fastify.log.error(err);\n    process.exit(1);\n  }\n  console.log('Fastify server listening on port 3000');\n});"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Express ou Fastify pour un projet TypeScript de bout en bout ?",
       "a": "Fastify est écrit en TypeScript et offre une expérience de typage supérieure, avec une inférence précise des schémas et des routes. Express fonctionne avec TypeScript via des types externes, mais l'expérience est moins fluide et peut nécessiter des ajustements. Pour une équipe TypeScript, Fastify est souvent plus confortable, à condition d'accepter un écosystème plus restreint."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Express et Fastify modifie la manière de gérer l’architecture et l’intégration ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Express convient mieux lorsque votre projet privilégie écosystème et middlewares : Express bénéficie de l'écosystème le plus vaste de l'écosystème Node.js : des milliers de…. Fastify est préférable lorsque votre projet privilégie performances et débit : Fastify est conçu autour d'un routeur radix-tree et d'un cycle de requête optimisé, avec un focus….",
+  "tradeoffs": [
+    {
+      "category": "Performances et débit",
+      "toolA": "Les résultats varient fortement selon le code applicatif, la version de Node.js et la configuration.",
+      "toolB": "Les benchmarks publics le placent régulièrement en tête face à Express, mais ces chiffres dépendent de la version, du matériel et du type de charge ; ils ne préjugent pas des performances de votre application réelle."
+    },
+    {
+      "category": "Écosystème et middlewares",
+      "toolA": "Cette maturité réduit les risques de blocage lors de l'adoption d'une nouvelle brique logicielle.",
+      "toolB": "Certaines bibliothèques tierces ne sont pas encore adaptées à Fastify, ce qui peut nécessiter des contournements."
+    },
+    {
+      "category": "Courbe d'apprentissage et developer experience",
+      "toolA": "Les développeurs débutants trouvent facilement des exemples et de l'aide, ce qui accélère la prise en main.",
+      "toolB": "La documentation officielle est soignée, mais la communauté est plus petite, ce qui peut ralentir la résolution de problèmes pointus."
+    },
+    {
+      "category": "Sécurité et validation des entrées",
+      "toolA": "Les bonnes pratiques (helmet, rate limiting, etc.) sont bien documentées, mais leur implémentation reste à la charge du développeur.",
+      "toolB": "Ces fonctionnalités native simplifient la mise en place de bonnes pratiques, même si elles ne dispensent pas d'une revue de sécurité globale."
+    },
+    {
+      "category": "Support de TypeScript",
+      "toolA": "La version 5 d'Express améliore progressivement ce point, sans être encore idéale.",
+      "toolB": "Cela en fait un choix de prédilection pour les équipes qui adopent TypeScript de bout en bout."
+    },
+    {
+      "category": "Maturité et stabilité",
+      "toolA": "La version 5, longtemps attendue, est désormais disponible et apporte des corrections sans bouleverser les fondamentaux.",
+      "toolB": "La stabilité est bonne, mais les migrations majeures peuvent demander des ajustements."
+    }
+  ],
+  "introduction": "Express et Fastify répondent à un besoin proche, mais diffèrent sur performances et débit. Express : Express s'appuie sur un routeur simple et un chaînage de middlewares qui peut introduire une surcharge à mesure que la… Fastify : Fastify est conçu autour d'un routeur radix-tree et d'un cycle de requête optimisé, avec un focus explicite sur le… Le critère « Écosystème et middlewares » met en évidence une autre différence pratique : Express bénéficie de l'écosystème le plus vaste de l'écosystème Node.js : des milliers de middlewares compatibles, une… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et middlewares : Express bénéficie de l'écosystème le plus vaste de l'écosystème Node.js : des milliers de…",
+    "toolB": "votre projet privilégie performances et débit : Fastify est conçu autour d'un routeur radix-tree et d'un cycle de requête optimisé, avec un focus…"
+  }
 }

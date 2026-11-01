@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-podman",
   "meta": {
-    "title": "Docker vs Podman (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Docker i Podman w 2026: architektura, bezpieczeństwo, zgodność z Kubernetes, narzędzia i koszty. Sprawdź, które narzędzie wybrać."
+    "title": "Docker vs Podman: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
+    "description": "Porównaj Docker i Podman: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Docker"
@@ -88,5 +88,49 @@
       "q": "Na co uważać przy migracji z Dockera do Podmana?",
       "a": "Przed migracją należy sprawdzić zgodność poleceń, sposób budowania obrazów, konfigurację sieci, wolumeny oraz zachowanie w trybie rootless. Warto zweryfikować, czy używane narzędzia i skrypty nie opierają się na API demona Dockera lub funkcjach specyficznych dla Docker Compose. Migrację najlepiej przeprowadzić etapowo, z testami w docelowej wersji Podman i na docelowym systemie operacyjnym."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Docker a Podman zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Docker będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość, dokumentacja i wsparcie”: Docker ma bardzo rozbudowaną dokumentację, liczne integracje i szerokie wsparcie społeczności, a…. Podman sprawdzi się, gdy projekt stawia na kryterium „Architektura i model działania”: Podman działa bez demona — polecenia uruchamiają procesy kontenerów bezpośrednio, często jako….",
+  "tradeoffs": [
+    {
+      "category": "Architektura i model działania",
+      "toolA": "Zachowanie i dostępne opcje zależą od wersji Dockera oraz konfiguracji demona.",
+      "toolB": "Pozwala też na pracę w trybie rootless, choć niektóre funkcje sieci i montowania mogą wymagać dodatkowej konfiguracji zależnie od wersji i systemu."
+    },
+    {
+      "category": "Bezpieczeństwo i uprawnienia",
+      "toolA": "Docker wspiera tryb rootless i mechanizmy ograniczania uprawnień, ale ich dostępność i zachowanie zależą od wersji oraz platformy.",
+      "toolB": "Nadal jednak konfiguracja wpływa na poziom izolacji, a niektóre scenariusze wymagają dodatkowych uprawnień, więc nie należy traktować rootless jako gwarancji pełnego bezpieczeństwa."
+    },
+    {
+      "category": "Zgodność z Kubernetes i ekosystemem",
+      "toolA": "Sam Docker nie jest jednak runtime'em używanym domyślnie przez Kubernetes, co warto uwzględnić przy projektowaniu przepływów produkcyjnych.",
+      "toolB": "Dostępność poszczególnych funkcji zależy od wersji Podman i wersji Kubernetesa, dlatego trzeba je zweryfikować w docelowym środowisku."
+    },
+    {
+      "category": "Dojrzałość, dokumentacja i wsparcie",
+      "toolA": "Dzięki temu łatwiej znaleźć rozwiązania typowych problemów i gotowe przykłady, choć niektóre funkcje są powiązane z płatnymi planami.",
+      "toolB": "Wsparcie komercyjne jest dostępne głównie poprzez dystrybucje i dostawców korporacyjnych, co zależy od wybranego planu."
+    },
+    {
+      "category": "Narzędzia towarzyszące i przepływ pracy",
+      "toolA": "Zakres funkcji i warunki licencyjne zależą od wersji oraz planu, szczególnie w środowiskach firmowych.",
+      "toolB": "Konfiguracja bywa bardziej rozproszona, a zgodność poleceń z Dockerem jest wysoka, ale nie zawsze pełna — różnice należy sprawdzić dla używanej wersji."
+    },
+    {
+      "category": "Wydajność i obciążenie systemu",
+      "toolA": "Rzeczywiste wyniki zależą od konfiguracji, liczby kontenerów i charakteru obciążenia.",
+      "toolB": "Nie ma uniwersalnej przewagi wydajności — wynik zależy od wersji, systemu i obciążenia."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Docker i Podman odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i model działania. Docker: Docker opiera się na centralnym demonie dockerd, który zarządza kontenerami, obrazami i sieciami, a klient komunikuje… Podman: Podman działa bez demona — polecenia uruchamiają procesy kontenerów bezpośrednio, często jako procesy potomne powłoki,… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo i uprawnienia”: Docker domyślnie uruchamia demona z uprawnieniami root, a dostęp do gniazda demona jest równoznaczny z szerokimi… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość, dokumentacja i wsparcie”: Docker ma bardzo rozbudowaną dokumentację, liczne integracje i szerokie wsparcie społeczności, a…",
+    "toolB": "projekt stawia na kryterium „Architektura i model działania”: Podman działa bez demona — polecenia uruchamiają procesy kontenerów bezpośrednio, często jako…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-hono",
   "meta": {
-    "title": "Bun vs Hono (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Bun y Hono en 2026: runtime integral frente a framework web ligero. Analizamos rendimiento, compatibilidad, ecosistema y casos de uso para tu proyecto."
+    "title": "Bun vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Bun y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "¿Qué opción tiene mejor soporte a largo plazo?",
       "a": "Node.js, como plataforma madura, cuenta con un historial de soporte a largo plazo más consolidado, mientras que Bun y Hono son proyectos más jóvenes con ciclos de evolución rápidos. Hono, al ser un framework desacoplado, puede mantener su estabilidad independientemente del runtime, pero tanto Bun como Hono dependen de sus equipos de mantenimiento y de la comunidad para ofrecer soporte continuo; conviene revisar sus políticas de versiones y su actividad en repositorios públicos."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Bun y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia: Bun está optimizado para el rendimiento, con un motor JavaScript basado en JavaScriptCore y un…. Hono es preferible cuando tu proyecto prioriza compatibilidad y portabilidad: Hono está diseñado desde cero para ser multiplataforma y funciona en Node.js, Deno, Bun,….",
+  "tradeoffs": [
+    {
+      "category": "Propósito y naturaleza de la herramienta",
+      "toolA": "Su objetivo es ofrecer un entorno de ejecución rápido y todo en uno para simplificar el desarrollo y el despliegue.",
+      "toolB": "No es un runtime, sino una capa de enrutamiento y utilidades que se integra con el entorno subyacente."
+    },
+    {
+      "category": "Rendimiento y eficiencia",
+      "toolA": "Sin embargo, el rendimiento real depende de la versión, la configuración y la naturaleza de la carga de trabajo, y no está garantizado para todos los escenarios.",
+      "toolB": "Su rendimiento está condicionado por el runtime subyacente, por lo que en Bun o Deno puede ser excelente, pero no incluye optimizaciones a nivel de motor de ejecución."
+    },
+    {
+      "category": "Compatibilidad y portabilidad",
+      "toolA": "Su portabilidad se limita a los entornos donde Bun está disponible, principalmente sistemas operativos de escritorio y servidores, con soporte creciente pero no universal.",
+      "toolB": "Su API se basa en Request y Response, lo que facilita desplegar la misma aplicación en distintos runtimes con cambios mínimos, aunque algunas utilidades específicas pueden variar según el adaptador."
+    },
+    {
+      "category": "Ecosistema y herramientas integradas",
+      "toolA": "Su ecosistema propio está en crecimiento, pero aún es más reducido que el de Node.js y no todas las bibliotecas del ecosistema tradicional funcionan sin ajustes.",
+      "toolB": "No incluye herramientas de desarrollo integradas como un gestor de paquetes o un bundler, por lo que se apoya en el ecosistema del runtime que lo ejecuta."
+    },
+    {
+      "category": "Curva de aprendizaje y experiencia de desarrollo",
+      "toolA": "Su API es similar a la de Node.js, pero los desarrolladores pueden encontrar diferencias en el comportamiento de algunos módulos y en la depuración de problemas específicos del runtime.",
+      "toolB": "Su documentación es clara y su modelo mental es sencillo, aunque requiere conocer el runtime subyacente para aprovechar al máximo sus capacidades."
+    },
+    {
+      "category": "Madurez y estabilidad",
+      "toolA": "Aunque se usa en producción en algunos casos, su madurez es menor que la de Node.js y pueden aparecer regresiones o comportamientos inesperados en según qué escenarios y versiones.",
+      "toolB": "Su diseño desacoplado del runtime reduce el riesgo de cambios disruptivos, pero su estabilidad final depende en parte del entorno de ejecución elegido."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Bun y Hono responden a una necesidad similar, pero difieren en propósito y naturaleza de la herramienta. Bun: Bun es un runtime de JavaScript y TypeScript diseñado como una alternativa integral a Node.js, que incluye un gestor… Hono: Hono es un framework web ligero y multiplataforma para JavaScript y TypeScript, pensado para construir APIs y… El criterio de rendimiento y eficiencia añade otra diferencia práctica: Bun está optimizado para el rendimiento, con un motor JavaScript basado en JavaScriptCore y un servidor HTTP nativo… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia: Bun está optimizado para el rendimiento, con un motor JavaScript basado en JavaScriptCore y un…",
+    "toolB": "tu proyecto prioriza compatibilidad y portabilidad: Hono está diseñado desde cero para ser multiplataforma y funciona en Node.js, Deno, Bun,…"
+  }
 }

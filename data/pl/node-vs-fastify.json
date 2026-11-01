@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-fastify",
   "meta": {
-    "title": "Node.js vs Fastify (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Node.js i Fastify w 2026: wydajność, ekosystem, bezpieczeństwo, krzywa uczenia i przypadki użycia. Sprawdź, które rozwiązanie lepiej pasuje do Twojego projektu."
+    "title": "Node.js vs Fastify: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Node.js i Fastify: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Node.js"
@@ -88,5 +88,49 @@
       "q": "Jakie są główne ograniczenia Fastify?",
       "a": "Fastify ma węższy ekosystem niż Node.js i niektóre biblioteki wymagają adapterów lub dodatkowej konfiguracji. Ponadto jego optymalizacje dotyczą głównie API HTTP, więc w zastosowaniach niezwiązanych z HTTP korzyści mogą być mniejsze. Przed wyborem warto sprawdzić kompatybilność kluczowych zależności i dostępność wsparcia dla używanej wersji Node.js."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Node.js a Fastify zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Node.js będzie lepszy, gdy projekt stawia na kryterium „Ekosystem i dostępność bibliotek”: Node.js ma największy ekosystem pakietów npm i szerokie wsparcie społeczności, co przekłada się na…. Fastify sprawdzi się, gdy projekt stawia na kryterium „Wydajność i przepustowość”: Fastify został zaprojektowany z myślą o wysokiej przepustowości i niskim narzucie — wykorzystuje….",
+  "tradeoffs": [
+    {
+      "category": "Wydajność i przepustowość",
+      "toolA": "Wersje Node.js różnią się wydajnością, dlatego warto testować na docelowej wersji i przy realistycznym obciążeniu.",
+      "toolB": "Nie należy traktować deklarowanej wydajności jako gwarancji bez własnych testów w środowisku produkcyjnym."
+    },
+    {
+      "category": "Ekosystem i dostępność bibliotek",
+      "toolA": "Należy jednak uważać na jakość pakietów i regularnie sprawdzać ich utrzymanie oraz podatności.",
+      "toolB": "Dostępność pluginów rośnie, ale przed wyborem warto zweryfikować, czy kluczowe dla projektu integracje są wspierane."
+    },
+    {
+      "category": "Krzywa uczenia się i prostota",
+      "toolA": "Z drugiej strony doświadczeni deweloperzy doceniają elastyczność i możliwość dostosowania stosu do potrzeb.",
+      "toolB": "Opanowanie zaawansowanych wzorców, takich jak enkapsulacja pluginów, wymaga jednak czasu."
+    },
+    {
+      "category": "Wbudowana walidacja i serializacja",
+      "toolA": "Jakość i wydajność zależą od wybranych narzędzi.",
+      "toolB": "To duża zaleta w API, ale wymaga nauczenia się składni i uważnego projektowania schematów."
+    },
+    {
+      "category": "Bezpieczeństwo",
+      "toolA": "Regularne aktualizacje i audyt zależności są kluczowe, podobnie jak świadome zarządzanie uprawnieniami procesu.",
+      "toolB": "Skuteczność zależy od wersji i sposobu wdrożenia."
+    },
+    {
+      "category": "Wsparcie dla TypeScript",
+      "toolA": "Wersje Node.js i narzędzi mogą wpływać na kompatybilność.",
+      "toolB": "Niektóre pluginy społecznościowe mogą mieć niekompletne typy."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});"
+  },
+  "introduction": "Node.js i Fastify odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i przepustowość. Node.js: Node.js zapewnia wydajne, asynchroniczne wejście/wyjście i model jednowątkowy z pętlą zdarzeń, który dobrze sprawdza… Fastify: Fastify został zaprojektowany z myślą o wysokiej przepustowości i niskim narzucie — wykorzystuje szybki routing oraz… Kolejną istotną różnicę pokazuje kryterium „Ekosystem i dostępność bibliotek”: Node.js ma największy ekosystem pakietów npm i szerokie wsparcie społeczności, co przekłada się na dostępność narzędzi… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ekosystem i dostępność bibliotek”: Node.js ma największy ekosystem pakietów npm i szerokie wsparcie społeczności, co przekłada się na…",
+    "toolB": "projekt stawia na kryterium „Wydajność i przepustowość”: Fastify został zaprojektowany z myślą o wysokiej przepustowości i niskim narzucie — wykorzystuje…"
+  }
 }

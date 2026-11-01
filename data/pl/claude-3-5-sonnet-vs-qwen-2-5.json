@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-qwen-2-5",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs Qwen 2.5 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude 3.5 Sonnet i Qwen 2.5 pod kątem kontekstu, wydajności, cen API, dostępu i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude 3.5 Sonnet vs Qwen 2.5: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.5 Sonnet i Qwen 2.5: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TWOJ_KLUCZ_API\")\n\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20240620\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninput_text = \"Hello, World!\"\ninputs = tokenizer(input_text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=50)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Czy wyniki benchmarków są miarodajne przy wyborze modelu?",
       "a": "Wyniki benchmarków takie jak MMLU czy HumanEval dają ogólny obraz możliwości modelu, ale mogą nie odzwierciedlać wydajności w konkretnym zastosowaniu. Należy pamiętać, że są one uzależnione od wersji modelu, sposobu przeprowadzenia testu i konfiguracji. Zawsze zaleca się przetestowanie modelu na własnych danych i zadaniach przed podjęciem decyzji produkcyjnej."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.5 Sonnet a Qwen 2.5 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.5 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. Qwen 2.5 sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: Qwen 2.5 jako model otwarty nie ma jednego cennika API – koszty zależą od dostawcy usług….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Należy pamiętać, że efektywne wykorzystanie kontekstu zależy również od jakości tokenizacji i sposobu formatowania danych wejściowych.",
+      "toolB": "Warto zweryfikować dokumentację dostawcy dla wybranej odmiany, ponieważ parametry te mogą się zmieniać wraz z aktualizacjami."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Nie należy zakładać, że przełożą się one bezpośrednio na każde zastosowanie produkcyjne.",
+      "toolB": "Publikowane wyniki dotyczą konkretnych wersji i konfiguracji, dlatego zaleca się ich weryfikację w oficjalnych źródłach."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Koszt może być wyższy niż w przypadku modeli open source hostowanych we własnej infrastrukturze.",
+      "toolB": "W przypadku wdrożenia lokalnego koszt obejmuje głównie zasoby obliczeniowe i utrzymanie."
+    },
+    {
+      "category": "Opóźnienia (lateność)",
+      "toolA": "Anthropic nie publikuje gwarantowanych wartości latencji, dlatego należy je traktować jako zmienne.",
+      "toolB": "W chmurze latencja zależy również od dostawcy i konfiguracji."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostępność może się różnić w zależności od regionu i planu.",
+      "toolB": "Licencje poszczególnych wersji należy sprawdzić przed użyciem komercyjnym."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Model jest często wybierany tam, gdzie liczy się niezawodność i jakość odpowiedzi.",
+      "toolB": "Wersje o większych rozmiarach konkurują z modelami komercyjnymi w zadaniach takich jak kodowanie czy rozumowanie."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet i Qwen 2.5 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Claude 3.5 Sonnet: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. Qwen 2.5: Qwen 2.5 występuje w wielu wariantach, a część modeli oferuje okno kontekstu do 128 tys. Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Claude 3.5 Sonnet osiąga wysokie wyniki w testach MMLU i HumanEval, co potwierdzają publiczne raporty Anthropic. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys.",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: Qwen 2.5 jako model otwarty nie ma jednego cennika API – koszty zależą od dostawcy usług…"
+  }
 }

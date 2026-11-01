@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-mistral",
   "meta": {
-    "title": "Ollama vs Mistral (2026) : quelle solution choisir ?",
-    "description": "Ollama vs Mistral en 2026 : comparez exécution locale, API cloud, confidentialité, coûts et cas d'usage pour choisir la solution IA adaptée à votre projet."
+    "title": "Ollama vs Mistral: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Ollama et Mistral : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Ollama"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Installer Ollama puis lancer un petit modèle\n# macOS/Linux : curl -fsSL https://ollama.com/install.sh | sh\nollama run llama3.2\n\n# Appel de l'API locale Ollama (Python, bibliothèque requests)\nimport requests\n\nresponse = requests.post(\n    \"http://localhost:11434/api/chat\",\n    json={\n        \"model\": \"llama3.2\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Bonjour, dis hello en une phrase.\"}],\n        \"stream\": False,\n    },\n    timeout=60,\n)\nprint(response.json()[\"message\"][\"content\"])",
-    "tech2Snippet": "# Appel minimal de l'API Mistral (Python, SDK officiel)\n# Installation : pip install mistralai\n# Clé : exporter MISTRAL_API_KEY=\"votre_cle\"\nimport os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-small-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Dis hello en une phrase.\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles compétences sont requises pour chaque option ?",
       "a": "Ollama demande des compétences en administration système, en gestion de GPU et en sécurité de l'infrastructure pour un usage sérieux. Mistral demande surtout des compétences d'intégration API, de gestion des clés et de suivi de la consommation. Le choix dépend donc de la disponibilité de ces compétences dans votre équipe et de votre tolérance à la dépendance externe."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Ollama et Mistral modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Ollama convient mieux lorsque votre projet privilégie nature et modèle de déploiement : Ollama est un exécuteur local qui télécharge et fait tourner des modèles ouverts sur votre…. Mistral est préférable lorsque votre projet privilégie facilité de prise en main et intégration : Mistral s'intègre via des appels HTTP ou des SDK, sans installation de modèles ni gestion de GPU….",
+  "tradeoffs": [
+    {
+      "category": "Nature et modèle de déploiement",
+      "toolA": "Il s'installe comme un service et expose une interface en ligne de commande ainsi qu'une API HTTP locale, sans nécessiter de compte cloud.",
+      "toolB": "Le déploiement se fait côté fournisseur, ce qui évite de gérer soi-même le matériel mais implique une dépendance réseau et contractuelle."
+    },
+    {
+      "category": "Confidentialité et contrôle des données",
+      "toolA": "Ce contrôle dépend toutefois de votre configuration réseau, de la sécurisation de l'hôte et de la politique de journalisation que vous mettez en place.",
+      "toolB": "Pour des données sensibles, il convient de vérifier les conditions propres à l'offre souscrite avant tout usage en production."
+    },
+    {
+      "category": "Qualité et choix des modèles",
+      "toolA": "Les petits modèles sont pratiques pour prototyper, tandis que les modèles plus grands exigent une mémoire et une puissance de calcul importantes.",
+      "toolB": "La qualité perçue varie selon le modèle, la version et la tâche, et nécessite une évaluation sur vos propres cas d'usage."
+    },
+    {
+      "category": "Coûts et prévisibilité budgétaire",
+      "toolA": "Les dépenses sont relativement prévisibles une fois l'infrastructure en place, à condition d'anticiper les besoins en GPU et en mémoire.",
+      "toolB": "À volume élevé, la facture peut croître rapidement, et les tarifs exacts doivent être vérifiés sur la documentation officielle à jour."
+    },
+    {
+      "category": "Facilité de prise en main et intégration",
+      "toolA": "En revanche, il faut gérer soi-même les mises à jour, la disponibilité du service et l'optimisation matérielle.",
+      "toolB": "La prise en main est rapide pour les développeurs, mais l'intégration dépend de la disponibilité de l'API et de la gestion des clés et quotas."
+    },
+    {
+      "category": "Performance et montée en charge",
+      "toolA": "Sur un poste unique, les débits restent limités, et une montée en charge sérieuse nécessite une architecture distribuée ou des serveurs dédiés.",
+      "toolB": "Les performances observées varient avec la latence réseau, le modèle choisi et la période de forte demande, sans garantie absolue de débit constant."
+    }
+  ],
+  "introduction": "Ollama et Mistral répondent à un besoin proche, mais diffèrent sur nature et modèle de déploiement. Ollama : Ollama est un exécuteur local qui télécharge et fait tourner des modèles ouverts sur votre machine, serveur ou poste… Mistral : Mistral est un fournisseur de modèles accessibles via une API cloud, avec des offres managées et des modèles… Le critère « Confidentialité et contrôle des données » met en évidence une autre différence pratique : Avec Ollama, les prompts et les réponses restent par défaut sur votre infrastructure, ce qui facilite le respect… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie nature et modèle de déploiement : Ollama est un exécuteur local qui télécharge et fait tourner des modèles ouverts sur votre…",
+    "toolB": "votre projet privilégie facilité de prise en main et intégration : Mistral s'intègre via des appels HTTP ou des SDK, sans installation de modèles ni gestion de GPU…"
+  }
 }

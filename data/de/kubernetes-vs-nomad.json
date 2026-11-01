@@ -1,8 +1,8 @@
 {
   "slug": "kubernetes-vs-nomad",
   "meta": {
-    "title": "Kubernetes vs Nomad (2026): welche Lösung passt besser?",
-    "description": "Kubernetes vs Nomad 2026 im Vergleich: Orchestrierung, Betriebsaufwand, Workloads, Skalierung, Ökosystem und Sicherheit – mit klarer Empfehlung für beide Tools."
+    "title": "Kubernetes vs Nomad: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Kubernetes und Nomad: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Kubernetes"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# hello.yaml – minimales Deployment und Service für Kubernetes\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: hello\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: hello\n  template:\n    metadata:\n      labels:\n        app: hello\n    spec:\n      containers:\n        - name: hello\n          image: nginx:alpine\n          ports:\n            - containerPort: 80\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: hello\nspec:\n  selector:\n    app: hello\n  ports:\n    - port: 80\n      targetPort: 80",
-    "tech2Snippet": "# hello.nomad – minimaler Job mit einem einzigen Task für Nomad\njob \"hello\" {\n  datacenters = [\"dc1\"]\n  type        = \"service\"\n\n  group \"web\" {\n    network {\n      port \"http\" {\n        to = 80\n      }\n    }\n\n    task \"nginx\" {\n      driver = \"docker\"\n\n      config {\n        image = \"nginx:alpine\"\n        ports = [\"http\"]\n      }\n    }\n  }\n}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Rolle spielen Kosten und Lizenzmodelle bei der Entscheidung?",
       "a": "Die Gesamtkosten umfassen weit mehr als die Lizenz: Infrastruktur, Personal, Monitoring und Sicherheitswerkzeuge sind wesentliche Faktoren. Nomad ist in der Community-Version kostenlos, während Kubernetes selbst Open Source ist und Kosten vor allem durch Betrieb und verwaltete Dienste entstehen. Konkrete Preisvergleiche erfordern aktuelle Angaben der Anbieter und eine Bewertung der eigenen Arbeitslast."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Kubernetes und Nomad verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Kubernetes passt besser, wenn dein Projekt priorisiert Ökosystem, Integrationsbreite und Community: Kubernetes profitiert von einem sehr breiten Ökosystem aus CNCF-Projekten, Helm-Charts,…. Nomad ist geeigneter, wenn dein Projekt priorisiert Betriebsaufwand und Lernkurve: Nomad gilt als einfacher zu installieren und zu warten, da ein Cluster aus wenigen Komponenten….",
+  "tradeoffs": [
+    {
+      "category": "Funktionsumfang und Workload-Typen",
+      "toolA": "Der Fokus liegt klar auf containerisierten Anwendungen; Nicht-Container-Workloads lassen sich nur über zusätzliche Werkzeuge oder eigene Controller integrieren.",
+      "toolB": "Dafür ist das Abstraktionsniveau niedriger und das Angebot an eingebauten Plattform-Primitiven kleiner als bei Kubernetes."
+    },
+    {
+      "category": "Betriebsaufwand und Lernkurve",
+      "toolA": "Insgesamt steigt der Betriebsaufwand mit der Anzahl der Erweiterungen und der Komplexität der Arbeitslast.",
+      "toolB": "Die Einstiegshürde ist für kleine Teams meist niedriger, ohne dass bereits alle Produktionsanforderungen erfüllt sind."
+    },
+    {
+      "category": "Ökosystem, Integrationsbreite und Community",
+      "toolA": "Dadurch finden sich für viele Anforderungen erprobte Bausteine, allerdings steigt die Auswahl- und Integrationskomplexität.",
+      "toolB": "Teams, die bereits HashiCorp-Produkte nutzen, profitieren von konsistenten Schnittstellen und einem einheitlichen Betriebsmodell."
+    },
+    {
+      "category": "Sicherheit und Mandantenfähigkeit",
+      "toolA": "Für starke Mandantentrennung sind zusätzliche Maßnahmen wie getrennte Cluster oder Virtualisierung erforderlich.",
+      "toolB": "Für sensible Umgebungen ist die Kombination mit Vault zur Geheimnisverwaltung üblich; die konkreten Möglichkeiten hängen von Version und Edition ab."
+    },
+    {
+      "category": "Skalierung und Scheduling-Verhalten",
+      "toolA": "Skalierung ist leistungsfähig, aber konfigurationsintensiv.",
+      "toolB": "Für viele Teams ist das Scheduling-Modell einfacher nachzuvollziehen als das von Kubernetes."
+    },
+    {
+      "category": "Deployment-Modell und Infrastrukturintegration",
+      "toolA": "Multi-Cluster- und Multi-Cloud-Szenarien erfordern zusätzliche Werkzeuge und Governance.",
+      "toolB": "Multi-Region-Funktionen sind verfügbar, aber ebenfalls editions- und konfigurationsabhängig."
+    }
+  ],
+  "introduction": "Kubernetes und Nomad lösen ein ähnliches Problem, unterscheiden sich jedoch bei funktionsumfang und workload-typen. Kubernetes: Kubernetes ist ein umfangreicher Container-Orchestrator mit ausgeprägten Abstraktionen wie Deployments, StatefulSets,… Nomad: Nomad ist ein vergleichsweise schlanker Orchestrator, der Container (Docker, Podman) und auch herkömmliche Binaries,… Das Kriterium betriebsaufwand und lernkurve zeigt einen weiteren praktischen Unterschied: Kubernetes hat eine steile Lernkurve: Selbst verwaltete Cluster erfordern Kenntnisse in Netzwerk (CNI), Speicher… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Ökosystem, Integrationsbreite und Community: Kubernetes profitiert von einem sehr breiten Ökosystem aus CNCF-Projekten, Helm-Charts,…",
+    "toolB": "dein Projekt priorisiert Betriebsaufwand und Lernkurve: Nomad gilt als einfacher zu installieren und zu warten, da ein Cluster aus wenigen Komponenten…"
+  }
 }

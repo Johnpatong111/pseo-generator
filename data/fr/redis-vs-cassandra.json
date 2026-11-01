@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-cassandra",
   "meta": {
-    "title": "Redis vs Apache Cassandra (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 Redis vs Apache Cassandra : modèles de données, cohérence, scalabilité, cas d'usage et conseils pour choisir la base adaptée à votre projet."
+    "title": "Redis vs Apache Cassandra: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez Redis et Apache Cassandra : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Redis"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import redis\n\nr = redis.Redis(host='localhost', port=6379, db=0)\nr.set('hello', 'world')\nprint(r.get('hello').decode())",
-    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.set_keyspace('demo')\nsession.execute('CREATE TABLE IF NOT EXISTS hello (id int PRIMARY KEY, message text)')\nsession.execute('INSERT INTO hello (id, message) VALUES (1, %s)', ('world',))\nrow = session.execute('SELECT message FROM hello WHERE id = 1').one()\nprint(row.message)\ncluster.shutdown()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment choisir entre Redis et Cassandra en 2026 ?",
       "a": "Le choix dépend des besoins : si la priorité est la latence, la simplicité et des structures de données variées pour du cache ou des sessions, Redis est souvent pertinent. Si le projet exige une scalabilité horizontale, une tolérance aux pannes multi-régions et des écritures massives avec une disponibilité continue, Cassandra est plus adaptée. Il est aussi possible de combiner les deux : Redis comme cache devant Cassandra pour accélérer les lectures fréquentes."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Redis et Apache Cassandra modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Redis convient mieux lorsque votre projet privilégie modèle de données et types supportés : Redis est un magasin clé-valeur en mémoire proposant des structures riches : chaînes, listes,…. Apache Cassandra est préférable lorsque votre projet privilégie cohérence et transactions : Cassandra privilégie la disponibilité et la tolérance au partitionnement (théorème CAP) et propose….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et types supportés",
+      "toolA": "Cette richesse permet de modéliser simplement des cas comme des compteurs, des files d'attente ou des classements.",
+      "toolB": "Elle convient mieux à des modèles dénormalisés et à des séries temporelles ou des événements massifs."
+    },
+    {
+      "category": "Cohérence et transactions",
+      "toolA": "La durabilité dépend de la politique de persistance (RDB, AOF) et du mode de réplication, avec un risque de perte de données en cas de défaillance selon les réglages.",
+      "toolB": "La cohérence finale est la norme pour les lectures à faible niveau de cohérence, avec des mécanismes de réparation (read repair, hinted handoff) pour converger."
+    },
+    {
+      "category": "Performances et latence",
+      "toolA": "La latence dépend fortement de la taille du jeu de données et de la bande passante réseau.",
+      "toolB": "Les performances dépendent beaucoup du dimensionnement, de la compaction et de la modélisation des données."
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "La montée en charge verticale reste souvent utilisée pour les jeux de données qui tiennent en mémoire, avec des limites liées à la RAM disponible.",
+      "toolB": "La scalabilité est un point fort, mais elle exige une bonne planification des partitions et une surveillance régulière."
+    },
+    {
+      "category": "Persistance et durabilité",
+      "toolA": "La persistance n'est pas activée par défaut dans tous les contextes, et la perte de données reste possible selon la configuration.",
+      "toolB": "Les données sont stockées sur disque de manière durable, ce qui la destine à des volumes qui ne tiennent pas en mémoire."
+    },
+    {
+      "category": "Requêtes et langage",
+      "toolA": "Cette simplicité favorise la rapidité de développement pour des cas ciblés.",
+      "toolB": "Cela impose une conception orientée requêtes, mais offre une expressivité plus grande que Redis pour des recherches structurées."
+    }
+  ],
+  "introduction": "Redis et Apache Cassandra répondent à un besoin proche, mais diffèrent sur modèle de données et types supportés. Redis : Redis est un magasin clé-valeur en mémoire proposant des structures riches : chaînes, listes, ensembles, ensembles… Apache Cassandra : Cassandra est une base de données large colonne distribuée, organisée en keyspaces, tables, partitions et clustering… Le critère « Cohérence et transactions » met en évidence une autre différence pratique : Redis offre une cohérence forte sur un nœud unique et, en mode cluster, une cohérence par clé avec des garanties… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de données et types supportés : Redis est un magasin clé-valeur en mémoire proposant des structures riches : chaînes, listes,…",
+    "toolB": "votre projet privilégie cohérence et transactions : Cassandra privilégie la disponibilité et la tolérance au partitionnement (théorème CAP) et propose…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-gemma-3",
   "meta": {
-    "title": "Llama 3.3 vs Gemma 3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Llama 3.3 i Gemma 3: kontekst, licencje, dostęp, wdrożenia, koszty i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "Llama 3.3 vs Gemma 3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Llama 3.3 i Gemma 3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Przykład minimalnego wywołania przez API zgodne z OpenAI, dla modelu hostowanego u dostawcy\n# Ustaw wcześniej zmienne środowiskowe: BASE_URL i API_KEY oraz nazwę modelu wg dokumentacji dostawcy\nimport os\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=os.environ[\"BASE_URL\"], api_key=os.environ[\"API_KEY\"])\nresponse = client.chat.completions.create(\n    model=os.environ.get(\"MODEL_NAME\", \"llama-3.3\"),\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Przykład minimalnego uruchomienia modelu z rodziny Gemma 3 przez transformers\n# Wymaga zainstalowanego pakietu transformers oraz dostępu do wag zgodnie z licencją\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"google/gemma-3\"  # potwierdź dokładny identyfikator wersji w dokumentacji\n\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "Czy modele można uruchomić lokalnie?",
       "a": "Oba modele są dostępne jako rodziny z otwartymi wagami, więc warianty lokalne są technicznie możliwe, ale wymagają odpowiedniej pamięci i narzędzi inferencyjnych. Mniejsze warianty Gemma 3 są łatwiejsze do uruchomienia na skromniejszym sprzęcie, a większe modele zwykle potrzebują mocniejszych akceleratorów. Przed wdrożeniem potwierdź wymagania sprzętowe i warunki licencji dla konkretnej wersji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Llama 3.3 a Gemma 3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Llama 3.3 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Llama 3.3 jest udostępniana z określonym oknem kontekstu, którego dokładna wartość zależy od…. Gemma 3 sprawdzi się, gdy projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Gemma 3 ma publikowane wyniki dla poszczególnych wariantów rozmiarowych, przy czym wartości różnią….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich wejść",
+      "toolA": "Przed wdrożeniem należy potwierdzić limit w oficjalnej dokumentacji wybranego dostawcy.",
+      "toolB": "Wartości liczbowe trzeba każdorazowo zweryfikować w dokumentacji modelu i frameworku inferencyjnego."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Porównuj tylko publikacje dotyczące tych samych wersji i metodologii.",
+      "toolB": "Rzetelne porównanie wymaga sprawdzenia oficjalnych kart modeli i identycznej metodologii."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Na koszt wpływa też długość promptu, cache'owanie i limity szybkości.",
+      "toolB": "Bez aktualnego cennika nie należy podawać konkretnych kwot."
+    },
+    {
+      "category": "Opóźnienie i wydajność inferencji",
+      "toolA": "Nie ma uniwersalnej liczby milisekund, którą można przypisać modelowi niezależnie od środowiska.",
+      "toolB": "Porównując opóźnienia, trzeba mierzyć je we własnym środowisku lub u konkretnego dostawcy."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość wag",
+      "toolA": "Dostępność konkretnych wag i narzędzi integracyjnych może się zmieniać.",
+      "toolB": "Dostępność i warunki dystrybucji zależą od konkretnej wersji i kanału pobrania."
+    },
+    {
+      "category": "Zastosowania praktyczne i ekosystem",
+      "toolA": "Jakość w konkretnym zadaniu należy zweryfikować testem na własnych danych.",
+      "toolB": "Wybór wariantu powinien wynikać z testów na reprezentatywnych danych."
+    }
+  ],
+  "introduction": "Llama 3.3 i Gemma 3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich wejść. Llama 3.3: Llama 3.3 jest udostępniana z określonym oknem kontekstu, którego dokładna wartość zależy od konkretnej wersji modelu… Gemma 3: Gemma 3 występuje w rodzinie wariantów o różnych rozmiarach, a dopuszczalna długość kontekstu zależy od konkretnej… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Dla Llama 3.3 producent publikuje wyniki na wybranych benchmarkach, w tym MMLU i HumanEval, ale są one powiązane z… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Llama 3.3 jest udostępniana z określonym oknem kontekstu, którego dokładna wartość zależy od…",
+    "toolB": "projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Gemma 3 ma publikowane wyniki dla poszczególnych wariantów rozmiarowych, przy czym wartości różnią…"
+  }
 }

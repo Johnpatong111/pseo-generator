@@ -1,8 +1,8 @@
 {
   "slug": "mistral-large-vs-mistral-small",
   "meta": {
-    "title": "Mistral Large vs Mistral Small (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Mistral Large y Mistral Small en 2026: contexto, rendimiento, precio por token, latencia, acceso y casos de uso para elegir el modelo adecuado."
+    "title": "Mistral Large vs Mistral Small: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Mistral Large y Mistral Small: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Mistral Large"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from mistralai import Mistral\nimport os\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hola, mundo\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from mistralai import Mistral\nimport os\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-small-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hola, mundo\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "¿Puedo combinar Mistral Small y Mistral Large en la misma aplicación?",
       "a": "Sí, es una estrategia habitual: usar Mistral Small como modelo por defecto para la mayoría de peticiones y derivar a Mistral Large los casos que requieran razonamiento complejo o contexto amplio. Este enfoque permite equilibrar coste y calidad, aunque añade complejidad de enrutamiento y requiere definir criterios claros para la derivación."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Mistral Large y Mistral Small cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Mistral Large encaja mejor cuando tu proyecto prioriza ventana de contexto y capacidad de entrada: Mistral Large está diseñado para cargas que requieren manejar documentos extensos, conversaciones…. Mistral Small es preferible cuando tu proyecto prioriza precio de api por millón de tokens (entrada y salida): Mistral Small tiene un coste por token notablemente menor, lo que lo hace atractivo para volúmenes….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y capacidad de entrada",
+      "toolA": "El límite exacto depende de la versión concreta del modelo publicada por Mistral AI, por lo que conviene confirmarlo en la documentación oficial antes de dimensionar una aplicación.",
+      "toolB": "Al igual que en Large, el valor exacto varía según la versión, así que debe verificarse en la ficha oficial del modelo."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU, HumanEval)",
+      "toolA": "No debe asumirse un número concreto sin comprobar la tabla oficial correspondiente al modelo y la fecha.",
+      "toolB": "Aun así, para muchas tareas prácticas su calidad es suficiente, y solo una evaluación propia con datos representativos permite decidir con fiabilidad."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada y salida)",
+      "toolA": "Los importes cambian con frecuencia y dependen del proveedor de inferencia y del plan, por lo que deben consultarse en la página de precios oficial en el momento de contratar.",
+      "toolB": "Como en el caso anterior, no conviene fijar cifras sin verificar la tarifa vigente, ya que pueden aplicarse descuentos por lote, caché o compromiso de uso."
+    },
+    {
+      "category": "Latencia y rendimiento en producción",
+      "toolA": "La latencia real depende del proveedor de inferencia, la región, la longitud del prompt y el uso de técnicas como streaming o caché de contexto.",
+      "toolB": "Aun así, la latencia efectiva debe medirse en el entorno concreto, porque varía según la infraestructura y la carga."
+    },
+    {
+      "category": "Acceso, licencia y disponibilidad abierta o cerrada",
+      "toolA": "No debe asumirse que los pesos estén disponibles abiertamente para todas las versiones; la disponibilidad depende de la edición y del canal de distribución.",
+      "toolB": "Es importante verificar la licencia exacta de la versión elegida, porque los términos pueden diferir entre ediciones y no todas las variantes son abiertas."
+    },
+    {
+      "category": "Casos de uso prácticos y calidad en tareas complejas",
+      "toolA": "Su mayor coste se justifica cuando la precisión y la profundidad importan más que el precio por petición.",
+      "toolB": "Para problemas de razonamiento muy complejo puede quedarse corto, por lo que conviene validar la calidad con un conjunto de evaluación propio antes de migrar cargas críticas."
+    }
+  ],
+  "introduction": "Mistral Large y Mistral Small responden a una necesidad similar, pero difieren en ventana de contexto y capacidad de entrada. Mistral Large: Mistral Large está diseñado para cargas que requieren manejar documentos extensos, conversaciones largas y prompts con… Mistral Small: Mistral Small ofrece una ventana de contexto más moderada, suficiente para la mayoría de tareas de clasificación,… El criterio de rendimiento en benchmarks publicados (mmlu, humaneval) añade otra diferencia práctica: En las publicaciones de Mistral AI, las variantes Large suelen obtener mejores resultados que las Small en… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y capacidad de entrada: Mistral Large está diseñado para cargas que requieren manejar documentos extensos, conversaciones…",
+    "toolB": "tu proyecto prioriza precio de api por millón de tokens (entrada y salida): Mistral Small tiene un coste por token notablemente menor, lo que lo hace atractivo para volúmenes…"
+  }
 }

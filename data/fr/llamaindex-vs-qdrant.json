@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-qdrant",
   "meta": {
-    "title": "LlamaIndex vs Qdrant (2026): quelle solution choisir ?",
-    "description": "Comparaison LlamaIndex vs Qdrant en 2026 : framework RAG contre base vectorielle. Critères, exemples de code et recommandations pour bien choisir votre brique IA."
+    "title": "LlamaIndex vs Qdrant: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez LlamaIndex et Qdrant : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from llama_index.core import VectorStoreIndex, SimpleDirectoryReader\n\ndocuments = SimpleDirectoryReader(\"data\").load_data()\nindex = VectorStoreIndex.from_documents(documents)\nquery_engine = index.as_query_engine()\nprint(query_engine.query(\"Bonjour, que contiennent ces documents ?\"))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.create_collection(\n    collection_name=\"hello\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"hello\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"texte\": \"Bonjour\"})],\n)\nprint(client.search(collection_name=\"hello\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Comment les combiner concrètement en 2026 ?",
       "a": "Configurez Qdrant comme vector store dans LlamaIndex afin de séparer orchestration et stockage vectoriel. Cette architecture facilite la montée en charge de la recherche tout en conservant la souplesse du pipeline RAG. Vérifiez la compatibilité des versions du connecteur et de Qdrant avant mise en production."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre LlamaIndex et Qdrant modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "LlamaIndex convient mieux lorsque votre projet privilégie prise en main et courbe d'apprentissage : LlamaIndex propose une API Python de haut niveau avec de nombreux concepts (index, retriever,…. Qdrant est préférable lorsque votre projet privilégie recherche vectorielle et filtrage : Qdrant est conçu pour la recherche par similarité à grande échelle avec un filtrage riche sur les….",
+  "tradeoffs": [
+    {
+      "category": "Rôle et positionnement dans une architecture IA",
+      "toolA": "Il abstrait plusieurs backends de stockage, dont des bases vectorielles externes, ce qui en fait une couche haut niveau.",
+      "toolB": "Elle ne fournit pas nativement d'orchestration RAG complète et se concentre sur la persistance et la recherche."
+    },
+    {
+      "category": "Prise en main et courbe d'apprentissage",
+      "toolA": "En contrepartie, la richesse des abstractions peut demander du temps pour maîtriser les cas avancés, selon la version utilisée.",
+      "toolB": "La courbe est douce pour un usage basique, mais les fonctionnalités avancées (filtrage, quantification) demandent de lire la documentation."
+    },
+    {
+      "category": "Recherche vectorielle et filtrage",
+      "toolA": "Ses performances dépendent donc fortement du backend vectoriel configuré.",
+      "toolB": "Ces capacités dépendent de la version et de la configuration du déploiement."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "Cet écosystème large facilite l'assemblage d'un pipeline complet sans réécrire chaque brique.",
+      "toolB": "Son écosystème est plus ciblé sur la recherche vectorielle que sur l'orchestration."
+    },
+    {
+      "category": "Déploiement et exploitation",
+      "toolA": "Il n'impose pas de serveur dédié mais transfère la responsabilité de la persistance au backend choisi.",
+      "toolB": "Les détails, limites et fonctionnalités de clustering varient selon l'édition et la version."
+    },
+    {
+      "category": "Cas d'usage typiques",
+      "toolA": "Il excelle lorsqu'on veut enchaîner ingestion, indexation et requêtes avec un minimum de code.",
+      "toolB": "Il sert aussi de backend à des frameworks comme LlamaIndex."
+    }
+  ],
+  "introduction": "LlamaIndex et Qdrant répondent à un besoin proche, mais diffèrent sur rôle et positionnement dans une architecture ia. LlamaIndex : LlamaIndex est un framework d'orchestration orienté données pour applications LLM : il gère le chargement, le… Qdrant : Qdrant est une base de données vectorielle dédiée, exposée via API HTTP/gRPC, qui stocke des points avec payload et… Le critère « Prise en main et courbe d'apprentissage » met en évidence une autre différence pratique : LlamaIndex propose une API Python de haut niveau avec de nombreux concepts (index, retriever, query engine) qui… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie prise en main et courbe d'apprentissage : LlamaIndex propose une API Python de haut niveau avec de nombreux concepts (index, retriever,…",
+    "toolB": "votre projet privilégie recherche vectorielle et filtrage : Qdrant est conçu pour la recherche par similarité à grande échelle avec un filtrage riche sur les…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-phi-4",
   "meta": {
-    "title": "Llama 3.3 vs Phi-4 (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Llama 3.3 y Phi-4 en contexto, rendimiento, latencia, acceso y casos de uso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "Llama 3.3 vs Phi-4: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Llama 3.3 y Phi-4: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "¿Qué modelo recomendarías para un asistente virtual de atención al cliente?",
       "a": "Para un asistente virtual de atención al cliente, Phi-4 puede ser suficiente si las conversaciones son relativamente cortas y se requiere baja latencia, además de ser más económico de desplegar. Sin embargo, si necesitas manejar historiales largos o consultar bases de conocimiento extensas, Llama 3.3 con su mayor contexto puede ofrecer mejores resultados. La decisión depende del volumen de información por interacción y de los requisitos de calidad y coste."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Llama 3.3 y Phi-4 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Llama 3.3 encaja mejor cuando tu proyecto prioriza ventana de contexto: Llama 3.3, en su versión de 70B, ofrece una ventana de contexto de 128.000 tokens según la…. Phi-4 es preferible cuando tu proyecto prioriza precio de api por millón de tokens (entrada/salida): Phi-4 puede desplegarse a través de Azure AI o proveedores que ofrecen modelos de Microsoft, y….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto",
+      "toolA": "No obstante, el rendimiento real puede degradarse en contextos muy largos y depende de la implementación del proveedor.",
+      "toolB": "La cifra exacta debe verificarse en la documentación oficial de Microsoft o del proveedor de despliegue."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "No obstante, las puntuaciones no son directamente comparables entre modelos sin verificar las condiciones exactas de cada evaluación.",
+      "toolB": "La comparación directa con Llama 3.3 requiere confirmar las versiones y metodologías de evaluación."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "En general, al ser un modelo de 70B, el coste por token suele ser mayor que el de modelos más pequeños, pero puede resultar competitivo frente a opciones propietarias de tamaño similar.",
+      "toolB": "Al ser un modelo más pequeño, el coste por token podría ser inferior al de Llama 3.3, pero no hay una cifra universal y depende del plan contratado."
+    },
+    {
+      "category": "Latencia",
+      "toolA": "No obstante, los proveedores suelen optimizar la inferencia y ofrecer diferentes niveles de servicio; las cifras concretas deben medirse en el entorno de producción.",
+      "toolB": "No se deben asumir cifras específicas sin realizar pruebas en el entorno previsto."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto/cerrado)",
+      "toolA": "La amplia adopción del ecosistema Llama implica una gran cantidad de herramientas y recursos disponibles.",
+      "toolB": "La disponibilidad de proveedores externos puede ser más limitada en comparación con Llama, por lo que conviene verificar las opciones de despliegue según la región."
+    },
+    {
+      "category": "Casos de uso prácticos",
+      "toolA": "Su tamaño de 70B puede ser excesivo para entornos con restricciones de memoria o latencia muy estrictas.",
+      "toolB": "Sin embargo, su menor contexto y conocimiento general pueden limitar su uso en aplicaciones que requieren procesar grandes volúmenes de información o un amplio conocimiento del mundo."
+    }
+  ],
+  "introduction": "Llama 3.3 y Phi-4 responden a una necesidad similar, pero difieren en ventana de contexto. Llama 3.3: Llama 3.3, en su versión de 70B, ofrece una ventana de contexto de 128.000 tokens según la documentación de Meta, lo… Phi-4: Phi-4, desarrollado por Microsoft, tiene una ventana de contexto de 16.000 tokens según la información publicada,… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: Meta ha publicado resultados para Llama 3.3 70B que muestran un rendimiento competitivo en MMLU y HumanEval, aunque… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto: Llama 3.3, en su versión de 70B, ofrece una ventana de contexto de 128.000 tokens según la…",
+    "toolB": "tu proyecto prioriza precio de api por millón de tokens (entrada/salida): Phi-4 puede desplegarse a través de Azure AI o proveedores que ofrecen modelos de Microsoft, y…"
+  }
 }

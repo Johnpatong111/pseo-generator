@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-fastify",
   "meta": {
-    "title": "Express vs Fastify (2026): welche Lösung passt besser?",
-    "description": "Express vs Fastify im Vergleich 2026: Performance, Plugins, Sicherheit, TypeScript und Lernkurve – mit klarer Empfehlung für dein nächstes Node.js-Projekt."
+    "title": "Express vs Fastify: welches 2026 wählen — Funktionen und Anwendungsfälle",
+    "description": "Vergleiche Express und Fastify: Bewerte Architekturkompromisse bei Architektur, Integration und Datenverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Express"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hallo, Welt!');\n});\n\napp.listen(3000, () => {\n  console.log('Express läuft auf Port 3000');\n});",
-    "tech2Snippet": "const fastify = require('fastify')({ logger: false });\n\nfastify.get('/', async (request, reply) => {\n  return 'Hallo, Welt!';\n});\n\nfastify.listen({ port: 3000 }, (err, address) => {\n  if (err) {\n    console.error(err);\n    process.exit(1);\n  }\n  console.log(`Fastify läuft auf ${address}`);\n});"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Alternative sollte ich prüfen, bevor ich mich entscheide?",
       "a": "Neben Express und Fastify lohnt ein Blick auf Frameworks wie Hono, Koa oder NestJS, je nach Anforderungsprofil. Hono ist beispielsweise für Edge-Umgebungen interessant, NestJS für stark strukturierte Enterprise-Anwendungen. Die Wahl sollte auf Teamkompetenz, Deployment-Ziel und langfristiger Wartbarkeit basieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Express und Fastify verändert den Umgang mit Architektur und Integration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Express passt besser, wenn dein Projekt priorisiert Reifegrad und Verbreitung des Ökosystems: Express existiert seit Jahren und ist das bekannteste Web-Framework für Node.js. Fastify ist geeigneter, wenn dein Projekt priorisiert Rohleistung und Durchsatz: Fastify wurde mit Fokus auf geringen Overhead entwickelt und nutzt unter anderem eine schnelle….",
+  "tradeoffs": [
+    {
+      "category": "Reifegrad und Verbreitung des Ökosystems",
+      "toolA": "Die Verbreitung hängt vom jeweiligen Projektumfeld ab, dürfte aber in vielen Teams weiterhin hoch sein.",
+      "toolB": "Bei Nischen-Middleware kann es nötig sein, Adapter oder eigene Lösungen zu schreiben."
+    },
+    {
+      "category": "Rohleistung und Durchsatz",
+      "toolA": "Für viele typische Anwendungen ist die Leistung ausreichend.",
+      "toolB": "Konkrete Leistungsvorteile sind mess- und konfigurationsabhängig und sollten mit eigenen Lasttests überprüft werden, statt sich auf pauschale Zahlen zu verlassen."
+    },
+    {
+      "category": "Plugin- und Middleware-Architektur",
+      "toolA": "Express verwendet einen linearen Middleware-Ansatz, der sehr flexibel und leicht verständlich ist. Allerdings gibt es keine strikte Kapselung, sodass Middleware-Reihenfolge und globale Zustände schnell unübersichtlich werden können. Das erfordert Disziplin im Projekt.",
+      "toolB": "Die Einarbeitung in Hooks und Plugin-Scopes ist dafür anfangs aufwendiger."
+    },
+    {
+      "category": "TypeScript-Unterstützung",
+      "toolA": "Das funktioniert, erfordert aber mehr Boilerplate.",
+      "toolB": "Die Qualität der Typen hängt auch von der Version ab."
+    },
+    {
+      "category": "Validierung und Serialisierung",
+      "toolA": "Das ist flexibel, erzeugt aber zusätzliche Abhängigkeiten und eigene Konventionen.",
+      "toolB": "Komplexe Validierungslogik lässt sich weiterhin über Plugins ergänzen."
+    },
+    {
+      "category": "Sicherheit und Fehlerbehandlung",
+      "toolA": "Express überlässt viele Sicherheitsaspekte der Middleware-Auswahl, etwa Header-Härtung oder Rate Limiting. Das ist sehr flexibel, aber fehleranfällig, wenn wichtige Schutzmaßnahmen vergessen werden. Ein bewusstes Setup ist daher Pflicht.",
+      "toolB": "Auch hier gilt: Endgültige Sicherheit hängt von der Konfiguration, den eingesetzten Plugins und der Anwendung ab und ist kein Selbstläufer."
+    }
+  ],
+  "introduction": "Express und Fastify lösen ein ähnliches Problem, unterscheiden sich jedoch bei reifegrad und verbreitung des ökosystems. Express: Express existiert seit Jahren und ist das bekannteste Web-Framework für Node.js. Fastify: Fastify ist deutlich jünger, hat sich aber als ernstzunehmende Alternative etabliert. Das Kriterium rohleistung und durchsatz zeigt einen weiteren praktischen Unterschied: Express basiert auf einem traditionellen Middleware-Stapel und ist nicht auf maximale Geschwindigkeit optimiert. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Reifegrad und Verbreitung des Ökosystems: Express existiert seit Jahren und ist das bekannteste Web-Framework für Node.js.",
+    "toolB": "dein Projekt priorisiert Rohleistung und Durchsatz: Fastify wurde mit Fokus auf geringen Overhead entwickelt und nutzt unter anderem eine schnelle…"
+  }
 }

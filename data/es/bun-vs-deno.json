@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-deno",
   "meta": {
-    "title": "Bun vs Deno (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Bun y Deno en 2026: rendimiento, compatibilidad, seguridad, herramientas y ecosistema. Descubre cuál conviene para tu próximo proyecto backend o frontend."
+    "title": "Bun vs Deno: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Bun y Deno: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Bun"
@@ -84,5 +84,49 @@
       "q": "¿Qué herramienta recomiendan para equipos que vienen de Node.js?",
       "a": "Bun facilita la transición desde Node.js gracias a su compatibilidad con npm y APIs, lo que reduce el esfuerzo de migración. Deno, aunque ha mejorado su compatibilidad, requiere adaptar el modelo de módulos y permisos. Para equipos con experiencia en Node.js, Bun suele ser una opción más directa."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Bun y Deno cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento en tiempo de ejecución: Bun utiliza el motor JavaScriptCore de WebKit y está escrito en Zig, lo que en pruebas…. Deno es preferible cuando tu proyecto prioriza seguridad y modelo de permisos: Deno se caracteriza por su seguridad por defecto: el código no puede acceder a la red, el sistema….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento en tiempo de ejecución",
+      "toolA": "Sin embargo, los resultados varían según la versión, la plataforma y el tipo de carga, por lo que conviene medir en tu propio entorno.",
+      "toolB": "Al igual que con Bun, el rendimiento depende de la versión, la configuración y la carga de trabajo, y no hay garantía de superioridad absoluta en todos los casos."
+    },
+    {
+      "category": "Compatibilidad con el ecosistema Node.js y npm",
+      "toolA": "No obstante, la compatibilidad no es total y algunas dependencias nativas o características avanzadas pueden requerir ajustes según la versión de Bun.",
+      "toolB": "La compatibilidad con Node.js ha aumentado, pero sigue siendo menos directa que en Bun para proyectos que dependen profundamente del ecosistema Node y sus convenciones."
+    },
+    {
+      "category": "Seguridad y modelo de permisos",
+      "toolA": "Esto puede ser práctico para desarrollo, pero exige que el equipo implemente sus propias medidas de seguridad y revise las dependencias.",
+      "toolB": "Este modelo reduce la superficie de ataque y facilita auditar qué recursos utiliza una aplicación, aunque puede requerir más configuración inicial en comparación con Bun."
+    },
+    {
+      "category": "Herramientas integradas y experiencia de desarrollo",
+      "toolA": "La integración es coherente, pero algunas herramientas aún pueden tener limitaciones o diferencias de comportamiento frente a alternativas consolidadas.",
+      "toolB": "La experiencia es uniforme y está bien documentada, aunque el ecosistema de plugins y extensiones es más reducido que el de Node.js y puede no cubrir todos los casos avanzados."
+    },
+    {
+      "category": "Madurez del ecosistema y comunidad",
+      "toolA": "La disponibilidad de recursos, tutoriales y soluciones a problemas específicos puede ser menor en comparación con plataformas más establecidas.",
+      "toolB": "Su enfoque moderno atrae a desarrolladores, pero la cantidad de bibliotecas y ejemplos prácticos aún es inferior a la de Node.js, lo que puede afectar la resolución de problemas menos comunes."
+    },
+    {
+      "category": "Soporte de TypeScript y configuración",
+      "toolA": "Sin embargo, el soporte de características avanzadas de TypeScript puede depender de la versión y no siempre es completo, por lo que conviene verificar la compatibilidad con tu código.",
+      "toolB": "La implementación es madura y estable, aunque al igual que Bun, puede no cubrir todas las peculiaridades de TypeScript en casos muy específicos."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Bun y Deno responden a una necesidad similar, pero difieren en rendimiento en tiempo de ejecución. Bun: Bun utiliza el motor JavaScriptCore de WebKit y está escrito en Zig, lo que en pruebas independientes ha mostrado un… Deno: Deno se basa en el motor V8 de Chromium y ha optimizado su arranque y ejecución con el tiempo, aunque históricamente… El criterio de compatibilidad con el ecosistema node.js y npm añade otra diferencia práctica: Bun se diseñó para ser compatible con Node.js y ofrece soporte para módulos npm, archivos package.json y muchas APIs… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento en tiempo de ejecución: Bun utiliza el motor JavaScriptCore de WebKit y está escrito en Zig, lo que en pruebas…",
+    "toolB": "tu proyecto prioriza seguridad y modelo de permisos: Deno se caracteriza por su seguridad por defecto: el código no puede acceder a la red, el sistema…"
+  }
 }

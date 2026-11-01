@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes (2026): quelle solution choisir ?",
-    "description": "Comparatif Docker vs Kubernetes 2026 : conteneurs, orchestration, montée en charge, sécurité, courbe d'apprentissage et coûts. Conseils concrets pour choisir selon votre projet."
+    "title": "Docker vs Kubernetes: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Docker et Kubernetes : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Docker"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Dockerfile\nFROM node:22-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY index.js ./\nEXPOSE 3000\nUSER node\nCMD [\"node\", \"index.js\"]\n\n# index.js\n# const http = require('http');\n# http.createServer((req, res) => res.end('Hello, World!\\n')).listen(3000);\n\n# Terminal\n# docker build -t hello-docker .\n# docker run --rm -p 3000:3000 hello-docker",
-    "tech2Snippet": "# hello-k8s.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: hello-k8s\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: hello-k8s\n  template:\n    metadata:\n      labels:\n        app: hello-k8s\n    spec:\n      containers:\n        - name: hello\n          image: nginx:alpine\n          ports:\n            - containerPort: 80\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: hello-k8s\nspec:\n  selector:\n    app: hello-k8s\n  ports:\n    - port: 80\n      targetPort: 80\n\n# Terminal\n# kubectl apply -f hello-k8s.yaml\n# kubectl port-forward service/hello-k8s 8080:80"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel outil est le plus adapté aux architectures microservices ?",
       "a": "Kubernetes est généralement mieux adapté aux microservices nombreux qui exigent découverte de services, répartition de charge et déploiements indépendants. Docker reste indispensable pour construire les images et pour le développement local de chaque service. Une équipe peut ainsi utiliser Docker au quotidien et Kubernetes en production, selon la maturité de l'organisation."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Docker et Kubernetes modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Docker convient mieux lorsque votre projet privilégie facilité de prise en main et courbe d'apprentissage : Docker s'installe vite sur un poste de travail et un fichier Dockerfile se comprend en quelques…. Kubernetes est préférable lorsque votre projet privilégie orchestration et haute disponibilité : Kubernetes est conçu pour la résilience : un contrôleur recrée les pods défaillants, répartit les….",
+  "tradeoffs": [
+    {
+      "category": "Rôle principal et positionnement",
+      "toolA": "Il reste très utilisé en développement local et pour des déploiements modestes où simplicité et rapidité priment.",
+      "toolB": "Il prend en charge la découverte de services, le redémarrage automatique et la distribution de la charge, ce qui le destine aux environnements de production à grande échelle."
+    },
+    {
+      "category": "Facilité de prise en main et courbe d'apprentissage",
+      "toolA": "Le parcours initial reste donc accessible et le retour d'expérience est immédiat sur des cas simples.",
+      "toolB": "Les distributions managées et les outils comme kind ou minikube réduisent la friction initiale, mais la complexité opérationnelle demeure supérieure à celle de Docker."
+    },
+    {
+      "category": "Orchestration et haute disponibilité",
+      "toolA": "Le mode Swarm existe mais son écosystème est bien plus restreint que celui de Kubernetes.",
+      "toolB": "Selon la configuration du cluster et du réseau, la haute disponibilité des applications s'obtient plus facilement, au prix d'une complexité accrue."
+    },
+    {
+      "category": "Mise à l'échelle",
+      "toolA": "Sans orchestrateur supplémentaire, elle ne s'ajuste pas automatiquement à la charge réelle.",
+      "toolB": "Ces mécanismes exigent des métriques fiables et une configuration soignée pour éviter surprovisionnement ou instabilité."
+    },
+    {
+      "category": "Écosystème et portabilité",
+      "toolA": "La portabilité des images est un atout majeur entre développement et production.",
+      "toolB": "Son écosystème (Helm, opérateurs, CNI, CSI) est très riche mais nécessite souvent plusieurs briques complémentaires à maintenir."
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "Le démon Docker s'exécute avec des privilèges élevés, ce qui impose de sécuriser l'accès à la machine hôte.",
+      "toolB": "Un cluster mal configuré peut exposer davantage qu'un simple hôte Docker, d'où l'importance des audits et des mises à jour."
+    }
+  ],
+  "introduction": "Docker et Kubernetes répondent à un besoin proche, mais diffèrent sur rôle principal et positionnement. Docker : Docker est d'abord une plateforme de conteneurisation : il fournit un moteur pour construire des images et lancer des… Kubernetes : Kubernetes est un orchestrateur de conteneurs : il ne construit pas d'images mais planifie, répartit et maintient des… Le critère « Facilité de prise en main et courbe d'apprentissage » met en évidence une autre différence pratique : Docker s'installe vite sur un poste de travail et un fichier Dockerfile se comprend en quelques minutes pour une… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie facilité de prise en main et courbe d'apprentissage : Docker s'installe vite sur un poste de travail et un fichier Dockerfile se comprend en quelques…",
+    "toolB": "votre projet privilégie orchestration et haute disponibilité : Kubernetes est conçu pour la résilience : un contrôleur recrée les pods défaillants, répartit les…"
+  }
 }

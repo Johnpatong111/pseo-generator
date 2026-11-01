@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Redis i Memcached w 2026 roku: struktury danych, trwałość, skalowanie, pamięć i bezpieczeństwo. Sprawdź, które narzędzie pasuje do Twojego projektu."
+    "title": "Redis vs Memcached: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj Redis i Memcached: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Redis"
@@ -94,5 +94,49 @@
       "q": "Czy ceny i limity mają znaczenie przy wyborze?",
       "a": "Ceny i limity zależą od dostawcy, planu, regionu i konfiguracji, więc nie należy ich porównywać bez sprawdzenia aktualnych warunków. Warto oszacować koszt pamięci, ruchu sieciowego i nakładu operacyjnego, a następnie zestawić go z realnymi wymaganiami funkcjonalnymi."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Redis a Memcached zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Redis będzie lepszy, gdy projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe,…. Memcached sprawdzi się, gdy projekt stawia na kryterium „Wydajność i model wątków”: Memcached jest wielowątkowy i dobrze wykorzystuje wiele rdzeni przy prostych operacjach get/set.",
+  "tradeoffs": [
+    {
+      "category": "Model danych i dostępne struktury",
+      "toolA": "Zakres funkcji zależy od wersji i modułów, więc przed wdrożeniem warto sprawdzić dokumentację konkretnego wydania.",
+      "toolB": "To ograniczenie bywa zaletą, bo upraszcza projekt i przewidywalność zachowania, ale wymusza budowanie logiki po stronie aplikacji."
+    },
+    {
+      "category": "Trwałość i odtwarzanie danych",
+      "toolA": "W trybie cache można je wyłączyć, ale w scenariuszach wymagających odtworzenia danych po restarcie stanowią istotną przewagę.",
+      "toolB": "Po restarcie dane znikają, co jest akceptowalne w czystym cache'owaniu, ale wyklucza użycie jako magazynu stanu."
+    },
+    {
+      "category": "Skalowanie i architektura klastra",
+      "toolA": "Skalowanie poziome jest możliwe, ale wymaga starannego planowania kluczy i topologii, co zwiększa złożoność operacyjną.",
+      "toolB": "Taki model jest prosty i sprawdzony, lecz utrudnia zmianę liczby węzłów bez przeprojektowania sposobu rozmieszczania danych."
+    },
+    {
+      "category": "Wydajność i model wątków",
+      "toolA": "W nowszych wersjach dostępne są wątki pomocnicze i zależy to od konfiguracji oraz obciążenia.",
+      "toolB": "W scenariuszach o wysokiej równoległości i prostym profilu dostępu może osiągać korzystne charakterystyki, choć wynik zależy od sprzętu, sieci i konfiguracji."
+    },
+    {
+      "category": "Zarządzanie pamięcią i polityki usuwania",
+      "toolA": "Obsługuje też TTL, co pozwala kontrolować cykl życia danych.",
+      "toolB": "Zarządzanie pamięcią jest proste, ale mniej elastyczne przy zróżnicowanych wzorcach dostępu."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Wdrożenie bez odpowiedniej konfiguracji może jednak prowadzić do ekspozycji danych, dlatego kluczowe jest ograniczenie dostępu sieciowego.",
+      "toolB": "To oznacza, że bezpieczeństwo zależy w dużej mierze od architektury i kontroli dostępu na poziomie infrastruktury."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Redis i Memcached odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i dostępne struktury. Redis: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe, strumienie, hiperloglogi i… Memcached: Memcached udostępnia prosty model klucz-wartość z wartościami binarnymi i tekstowymi, bez natywnych struktur złożonych. Kolejną istotną różnicę pokazuje kryterium „Trwałość i odtwarzanie danych”: Redis oferuje mechanizmy trwałości, takie jak snapshoty RDB i dziennik AOF, których dostępność i konfiguracja zależą… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe,…",
+    "toolB": "projekt stawia na kryterium „Wydajność i model wątków”: Memcached jest wielowątkowy i dobrze wykorzystuje wiele rdzeni przy prostych operacjach get/set."
+  }
 }

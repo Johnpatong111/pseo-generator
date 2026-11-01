@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-llama-3-3",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Llama 3.3 (2026): welche Lösung passt besser?",
-    "description": "Claude 3.7 Sonnet und Llama 3.3 im Vergleich: Kontextfenster, Leistung, API-Kosten, Latenz, Zugang und Einsatzgebiete. So treffen Sie die richtige Wahl."
+    "title": "Claude 3.7 Sonnet vs Llama 3.3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Claude 3.7 Sonnet und Llama 3.3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"])\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=64,\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"meta-llama/Llama-3.3-8B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\ninputs = tokenizer(\"Hallo, Welt!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=32)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Modell ist besser für den Einsatz in regulierten Branchen geeignet?",
       "a": "Claude 3.7 Sonnet bietet durch die verwaltete API von Anthropic Vorteile bei Compliance und Datenschutz, da der Anbieter Zertifizierungen wie SOC 2 vorweisen kann und klare Datenverarbeitungsrichtlinien hat. Llama 3.3 kann bei Selbsthosting volle Datenkontrolle bieten, erfordert aber eigene Compliance-Maßnahmen. In regulierten Branchen wie dem Gesundheitswesen oder Finanzwesen kann die verwaltete Lösung von Claude 3.7 Sonnet daher einfacher zu implementieren sein, sofern die Anforderungen des Anbieters erfüllt sind. Letztlich hängt die Wahl von den spezifischen regulatorischen Anforderungen und der Bereitschaft ab, eigene Compliance-Prozesse aufzubauen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Claude 3.7 Sonnet und Llama 3.3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Claude 3.7 Sonnet passt besser, wenn dein Projekt priorisiert Kontextfenster: Maximale Token-Anzahl, die ein Modell in einem Durchgang: Claude 3.7 Sonnet bietet ein Kontextfenster von 200.000 Token (laut Anbieter Anthropic, Stand 2025). Llama 3.3 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1M Input-/Output-Token: Direkte Kosten für die Nutzung über: Llama 3.3 ist ein offenes Modell und kann über verschiedene Cloud-Anbieter oder selbst gehostet….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster: Maximale Token-Anzahl, die ein Modell in einem Durchgang",
+      "toolA": "Für die meisten Unternehmensanwendungen ist diese Kapazität mehr als ausreichend, und sie wird durch eine effiziente Verarbeitung ergänzt.",
+      "toolB": "Bei sehr langen Kontexten kann eine Aufteilung erforderlich sein."
+    },
+    {
+      "category": "Benchmark-Leistung: Veröffentlichte Ergebnisse zu MMLU (Allgemeinwissen) und",
+      "toolA": "Tendenziell positioniert sich Claude 3.7 Sonnet als leistungsfähiges Allround-Modell mit besonderen Stärken bei komplexen Aufgaben.",
+      "toolB": "In der Praxis erreicht Llama 3.3 oft Ergebnisse, die mit proprietären Modellen vergleichbar sind, aber die genaue Rangfolge hängt vom Anwendungsfall ab."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Token: Direkte Kosten für die Nutzung über",
+      "toolA": "Als proprietäres Modell fallen keine Infrastrukturkosten für den Betrieb an, aber die Tokenkosten können bei hohem Volumen ins Gewicht fallen.",
+      "toolB": "Genaue Preise sollten bei den jeweiligen Anbietern geprüft werden, da sie sich häufig ändern."
+    },
+    {
+      "category": "Latenz: Reaktionszeit des Modells bei der Inferenz",
+      "toolA": "In der Regel bietet der verwaltete Dienst eine konsistente Leistung mit moderater Latenz, die für die meisten Echtzeitanwendungen geeignet ist.",
+      "toolB": "Eine genaue Angabe ist ohne konkrete Konfiguration nicht möglich."
+    },
+    {
+      "category": "Modellzugang und Offenheit: Verfügbarkeit als API, Open-Source oder beides;",
+      "toolA": "Dafür bietet der Anbieter verwaltete Sicherheits- und Compliance-Funktionen.",
+      "toolB": "Diese Offenheit ermöglicht volle Kontrolle über Daten und Betrieb, erfordert jedoch entsprechendes Know-how und Infrastruktur."
+    },
+    {
+      "category": "Praktische Einsatzgebiete: Typische Anwendungsfälle, für die sich das Modell",
+      "toolA": "Die verwaltete API ermöglicht eine schnelle Integration ohne Betriebsaufwand.",
+      "toolB": "Die Einrichtung erfordert jedoch mehr technische Ressourcen."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet und Llama 3.3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster: maximale token-anzahl, die ein modell in einem durchgang. Claude 3.7 Sonnet: Claude 3.7 Sonnet bietet ein Kontextfenster von 200.000 Token (laut Anbieter Anthropic, Stand 2025). Llama 3.3: Llama 3.3 ist in Varianten mit 128.000 Token Kontextfenster verfügbar (Stand 2025, abhängig von der spezifischen… Das Kriterium benchmark-leistung: veröffentlichte ergebnisse zu mmlu (allgemeinwissen) und zeigt einen weiteren praktischen Unterschied: Für Claude 3.7 Sonnet veröffentlichte Anthropic Benchmark-Ergebnisse, die eine starke Leistung in Bereichen wie Logik,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Maximale Token-Anzahl, die ein Modell in einem Durchgang: Claude 3.7 Sonnet bietet ein Kontextfenster von 200.000 Token (laut Anbieter Anthropic, Stand 2025).",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1M Input-/Output-Token: Direkte Kosten für die Nutzung über: Llama 3.3 ist ein offenes Modell und kann über verschiedene Cloud-Anbieter oder selbst gehostet…"
+  }
 }

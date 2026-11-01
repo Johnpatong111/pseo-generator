@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-nestjs",
   "meta": {
-    "title": "Gin vs NestJS (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Gin i NestJS w 2026 roku: wydajność, struktura projektu, ekosystem, bezpieczeństwo, krzywa uczenia się i realne scenariusze wdrożeń."
+    "title": "Gin vs NestJS: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Gin i NestJS: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Gin"
@@ -94,5 +94,49 @@
       "q": "Jakie ograniczenia mają oba rozwiązania przy długoterminowym utrzymaniu?",
       "a": "W Gin głównym wyzwaniem bywa brak narzuconej struktury, co przy dużym zespole może prowadzić do niespójności i trudniejszego utrzymania bez własnych konwencji. W NestJS ryzykiem jest nadmiar warstw i zależności, które zwiększają złożoność oraz koszt aktualizacji. W obu przypadkach kluczowe są wersjonowanie, testy, dokumentacja i regularne przeglądy architektury, niezależnie od wybranego frameworka."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Gin a NestJS zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Gin będzie lepszy, gdy projekt stawia na kryterium „Wydajność i zużycie zasobów w czasie żądania”: Gin opiera się na środowisku uruchomieniowym Go i lekkim routerze HTTP, co zazwyczaj przekłada się…. NestJS sprawdzi się, gdy projekt stawia na kryterium „Struktura projektu i dyscyplina architektoniczna”: NestJS silnie opiniuje strukturę aplikacji: moduły, kontrolery, providery oraz wstrzykiwanie….",
+  "tradeoffs": [
+    {
+      "category": "Wydajność i zużycie zasobów w czasie żądania",
+      "toolA": "Rzeczywiste wyniki silnie zależą od wersji Go, konfiguracji serwera, alokacji pamięci i charakteru obciążenia, dlatego konkretne liczby należy mierzyć we własnym środowisku, a nie przyjmować z oderwanych benchmarków.",
+      "toolB": "Przy dobrze zaprojektowanych kontrolerach i sensownym cache'owaniu różnice bywają mniejsze niż sugerują to uproszczone porównania, ale przy bardzo dużym obciążeniu i ograniczonych zasobach Node.js zwykle wypada mniej oszczędnie niż Go."
+    },
+    {
+      "category": "Struktura projektu i dyscyplina architektoniczna",
+      "toolA": "To zaleta w małych projektach i przy doświadczonym zespole, lecz w większych codebase'ach wymaga własnych konwencji, inaczej łatwo o niespójność i trudności w utrzymaniu.",
+      "toolB": "Ułatwia to wdrażanie nowych osób i testowanie, choć bywa nadmiarowe w prostych mikroserwisach oraz wymaga zrozumienia mechanizmów frameworka."
+    },
+    {
+      "category": "Język, typowanie i spójność z frontendem",
+      "toolA": "Typowanie jest proste i czytelne, ale nie oferuje zaawansowanych konstrukcji typów, więc nie zawsze da się współdzielić definicje z aplikacją frontendową w prosty sposób.",
+      "toolB": "Typowanie jest elastyczne i silne, jednak jakość zależy od dyscypliny zespołu oraz konfiguracji kompilatora i narzędzi statycznej analizy."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i biblioteki",
+      "toolA": "Wybór bibliotek bywa jednak mniej ujednolicony, więc zespół musi sam zadbać o standardy i weryfikację jakości zależności.",
+      "toolB": "Bogactwo pakietów oznacza też większe ryzyko wyboru słabo utrzymywanych zależności, dlatego warto sprawdzać ich aktywność i zgodność wersji."
+    },
+    {
+      "category": "Krzywa uczenia się i produktywność zespołu",
+      "toolA": "Dla początkujących w Go barierą może być samo środowisko języka, zarządzanie modułami i obsługa współbieżności, a nie sam framework.",
+      "toolB": "Po jej przejściu zespół zyskuje jednak powtarzalne wzorce, które przyspieszają rozwój większych aplikacji i ułatwiają onboarding kolejnych programistów."
+    },
+    {
+      "category": "Obsługa błędów, walidacja i bezpieczeństwo",
+      "toolA": "limitów rozmiaru ciała żądania, nagłówków bezpieczeństwa i obsługi CORS.",
+      "toolB": "Nie zwalnia to z konfiguracji nagłówków, ochrony przed atakami typu CSRF czy ograniczania tempa żądań, które zawsze zależą od wdrożenia i wersji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
+  },
+  "introduction": "Gin i NestJS odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i zużycie zasobów w czasie żądania. Gin: Gin opiera się na środowisku uruchomieniowym Go i lekkim routerze HTTP, co zazwyczaj przekłada się na niski narzut… NestJS: NestJS działa na Node.js lub alternatywnych runtime'ach i domyślnie korzysta z warstw abstrakcji oraz wstrzykiwania… Kolejną istotną różnicę pokazuje kryterium „Struktura projektu i dyscyplina architektoniczna”: Gin celowo pozostawia architekturę decyzji zespołu — udostępnia routing, middleware i obsługę kontekstu, ale nie… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i zużycie zasobów w czasie żądania”: Gin opiera się na środowisku uruchomieniowym Go i lekkim routerze HTTP, co zazwyczaj przekłada się…",
+    "toolB": "projekt stawia na kryterium „Struktura projektu i dyscyplina architektoniczna”: NestJS silnie opiniuje strukturę aplikacji: moduły, kontrolery, providery oraz wstrzykiwanie…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nextjs-vs-solidjs",
   "meta": {
-    "title": "Next.js vs SolidJS (2026) : quelle solution choisir ?",
-    "description": "Comparaison Next.js vs SolidJS en 2026 : rendu, réactivité, routing, écosystème, SEO, apprentissage et cas d'usage, avec un verdict clair pour choisir votre framework."
+    "title": "Next.js vs SolidJS: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Next.js et SolidJS : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Next.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// app/page.tsx — Next.js (App Router)\nexport default function Page() {\n  return <h1>Hello, World!</h1>;\n}",
-    "tech2Snippet": "// index.tsx — SolidJS\nimport { render } from 'solid-js/web';\n\nfunction App() {\n  return <h1>Hello, World!</h1>;\n}\n\nrender(() => <App />, document.getElementById('root')!);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
+    "tech2Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il migrer de Next.js vers SolidJS pour gagner en performance ?",
       "a": "Ce n'est généralement pas recommandé sans mesure préalable : une migration représente un coût important et les gains dépendent de la nature de votre application. Commencez par profiler votre version actuelle et identifier les goulets d'étranglement réels, qui peuvent aussi venir des images, du cache ou du réseau. Un framework différent n'efface pas les mauvaises pratiques de rendu."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Next.js et SolidJS modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Next.js convient mieux lorsque votre projet privilégie modèle de rendu et seo : Next.js propose un rendu serveur, un rendu statique et une génération incrémentale selon la…. SolidJS est préférable lorsque votre projet privilégie modèle de réactivité : SolidJS utilise des signaux à granularité fine : seules les parties du DOM concernées sont mises à….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de rendu et SEO",
+      "toolA": "La gestion fine du cache et des segments dépend de l'offre et des options retenues, donc il faut valider le comportement réel dans votre environnement.",
+      "toolB": "Son approche reste plus modulaire : selon le méta-framework choisi, certaines fonctionnalités de cache ou de streaming demandent plus de configuration."
+    },
+    {
+      "category": "Modèle de réactivité",
+      "toolA": "Ce modèle est mature et très documenté, mais il peut exiger une attention particulière aux dépendances et aux re-rendus pour tenir la charge.",
+      "toolB": "Cette approche réduit souvent le travail de rendu côté client, mais elle demande d'adopter ses primitives et de vérifier la compatibilité des bibliothèques tierces."
+    },
+    {
+      "category": "Routing et structure de projet",
+      "toolA": "Cette structure accélère la mise en route et convient aux applications à nombreuses routes, au prix d'une certaine convention à apprendre.",
+      "toolB": "Il offre de la souplesse et un bon contrôle, mais le développeur doit davantage assembler lui-même la structure de l'application."
+    },
+    {
+      "category": "Écosystème et bibliothèques compatibles",
+      "toolA": "Toutes les bibliothèques ne sont pas compatibles avec le rendu serveur et les composants serveur, donc une vérification au cas par cas reste nécessaire.",
+      "toolB": "Certaines bibliothèques React ne sont pas directement réutilisables, ce qui peut allonger l'adaptation ou imposer des alternatives moins connues."
+    },
+    {
+      "category": "Courbe d'apprentissage",
+      "toolA": "Pour une équipe déjà familière avec React, l'apprentissage est souvent rapide, mais les notions de rendu serveur et de cache peuvent dérouter.",
+      "toolB": "En revanche, la transition depuis React et la compréhension fine de la réactivité demandent un temps d'adaptation, notamment pour les effets et les dépendances."
+    },
+    {
+      "category": "Performance et charge",
+      "toolA": "La charge dépend fortement du poids des composants client et de la configuration, donc les chiffres varient d'un projet à l'autre.",
+      "toolB": "Cette approche peut être avantageuse sur les interfaces très interactives, même si le résultat dépend de l'implémentation, de l'hydratation et du poids applicatif."
+    }
+  ],
+  "introduction": "Next.js et SolidJS répondent à un besoin proche, mais diffèrent sur modèle de rendu et seo. Next.js : Next.js propose un rendu serveur, un rendu statique et une génération incrémentale selon la configuration et la… SolidJS : SolidJS propose également du rendu serveur et de la génération statique via ses intégrations officielles, avec un… Le critère « Modèle de réactivité » met en évidence une autre différence pratique : Next.js s'appuie sur React, avec un modèle de réactivité par re-rendu de composants et des hooks pour mémoriser les… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de rendu et seo : Next.js propose un rendu serveur, un rendu statique et une génération incrémentale selon la…",
+    "toolB": "votre projet privilégie modèle de réactivité : SolidJS utilise des signaux à granularité fine : seules les parties du DOM concernées sont mises à…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-v3-vs-gemini-2-5-flash",
   "meta": {
-    "title": "DeepSeek V3 vs Gemini 2.5 Flash (2026): ¿Qué solución elegir?",
-    "description": "Comparativa práctica entre DeepSeek V3 y Gemini 2.5 Flash en 2026: contexto, rendimiento, precios de API, latencia, acceso y casos de uso reales para elegir bien."
+    "title": "DeepSeek V3 vs Gemini 2.5 Flash: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara DeepSeek V3 y Gemini 2.5 Flash: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "DeepSeek V3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\n# DeepSeek V3 expone una API compatible con el formato de OpenAI.\nclient = OpenAI(\n    api_key=os.environ[\"DEEPSEEK_API_KEY\"],\n    base_url=\"https://api.deepseek.com\",\n)\n\nrespuesta = client.chat.completions.create(\n    model=\"deepseek-chat\",\n    messages=[{\"role\": \"user\", \"content\": \"Hola, mundo\"}],\n)\n\nprint(respuesta.choices[0].message.content)",
-    "tech2Snippet": "import os\nfrom google import genai\n\n# Gemini 2.5 Flash se invoca mediante el SDK oficial de Google Gen AI.\nclient = genai.Client(api_key=os.environ[\"GEMINI_API_KEY\"])\n\nrespuesta = client.models.generate_content(\n    model=\"gemini-2.5-flash\",\n    contents=\"Hola, mundo\",\n)\n\nprint(respuesta.text)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "¿Qué debo verificar antes de fijar un precio o un límite de contexto en mi proyecto?",
       "a": "Debes comprobar en la documentación oficial la versión exacta del modelo, la ventana de contexto, el máximo de tokens de salida, las tarifas por millón de tokens y las condiciones de uso vigentes. Estos valores cambian con frecuencia y pueden diferir entre el proveedor oficial y los servicios de terceros. Documenta la fecha de consulta y vuelve a validar los datos antes de cerrar un presupuesto o un diseño técnico."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre DeepSeek V3 y Gemini 2.5 Flash cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "DeepSeek V3 encaja mejor cuando tu proyecto prioriza precio de api por millón de tokens de entrada y salida: DeepSeek V3 se ofrece a través de su API oficial y de diversos proveedores de inferencia, con…. Gemini 2.5 Flash es preferible cuando tu proyecto prioriza latencia y rendimiento en cargas interactivas: Gemini 2.5 Flash se posiciona dentro de la familia Gemini como una variante orientada a baja….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y manejo de entradas largas",
+      "toolA": "El límite exacto y el máximo de tokens de salida dependen de la versión y del proveedor que sirva el modelo, así que deben verificarse en la documentación vigente.",
+      "toolB": "El valor concreto varía según la versión y la plataforma de acceso (API de Google o servicios de terceros), por lo que conviene consultar los límites publicados."
+    },
+    {
+      "category": "Rendimiento en benchmarks comparables (MMLU y HumanEval)",
+      "toolA": "No obstante, las cifras dependen de la versión exacta, de la configuración de decodificación y del arnés de evaluación, y no siempre son directamente comparables con las de otros proveedores.",
+      "toolB": "Las puntuaciones concretas de la variante Flash deben verificarse en la documentación oficial, ya que pueden variar entre versiones y configuraciones."
+    },
+    {
+      "category": "Precio de API por millón de tokens de entrada y salida",
+      "toolA": "Los precios exactos, los descuentos por caché y las condiciones de uso cambian con el tiempo, por lo que deben consultarse en la página de precios oficial.",
+      "toolB": "Las cifras publicadas son sensibles a la versión y a la región, así que conviene revisar la tabla de precios oficial antes de presupuestar."
+    },
+    {
+      "category": "Latencia y rendimiento en cargas interactivas",
+      "toolA": "En despliegues propios, el rendimiento vendrá determinado por el hardware disponible y la optimización de la inferencia.",
+      "toolB": "La latencia efectiva varía según la región, el nivel de servicio y la modalidad utilizada, por lo que conviene medirla en el entorno real de la aplicación."
+    },
+    {
+      "category": "Acceso al modelo y disponibilidad abierta o cerrada",
+      "toolA": "Esto facilita el autoalojamiento y la inspección del modelo, aunque requiere infraestructura considerable y conocimientos técnicos para operarlo.",
+      "toolB": "No permite descargar pesos ni ejecutarlo en infraestructura propia, lo que simplifica la operación pero limita el control sobre el despliegue y los datos."
+    },
+    {
+      "category": "Capacidades multimodales y modalidades de entrada",
+      "toolA": "Para tareas multimodales conviene confirmar qué variantes o servicios adicionales están disponibles en la versión concreta.",
+      "toolB": "La disponibilidad exacta de cada modalidad debe verificarse en la documentación oficial del modelo."
+    }
+  ],
+  "introduction": "DeepSeek V3 y Gemini 2.5 Flash responden a una necesidad similar, pero difieren en ventana de contexto y manejo de entradas largas. DeepSeek V3: DeepSeek V3 se ha publicado con una ventana de contexto muy amplia, pensada para cargas de documentos extensos y… Gemini 2.5 Flash: Gemini 2.5 Flash ofrece asimismo una ventana de contexto amplia dentro de la familia Gemini, adecuada para resúmenes… El criterio de rendimiento en benchmarks comparables (mmlu y humaneval) añade otra diferencia práctica: DeepSeek ha publicado resultados de su familia V3 en pruebas como MMLU y HumanEval, con un rendimiento competitivo en… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza precio de api por millón de tokens de entrada y salida: DeepSeek V3 se ofrece a través de su API oficial y de diversos proveedores de inferencia, con…",
+    "toolB": "tu proyecto prioriza latencia y rendimiento en cargas interactivas: Gemini 2.5 Flash se posiciona dentro de la familia Gemini como una variante orientada a baja…"
+  }
 }

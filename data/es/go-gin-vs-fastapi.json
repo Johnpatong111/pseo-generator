@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-fastapi",
   "meta": {
-    "title": "Gin vs FastAPI (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Gin y FastAPI en 2026: rendimiento, tipado, validación, ecosistema, seguridad y curva de aprendizaje para elegir el framework adecuado."
+    "title": "Gin vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Gin y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Gin"
@@ -94,5 +94,49 @@
       "q": "¿Qué framework es más seguro por defecto?",
       "a": "Ninguno de los dos es una solución de seguridad completa por sí solo. FastAPI ofrece validación declarativa y utilidades para OAuth2 y JWT, lo que puede reducir ciertos errores de entrada, mientras que Gin deja la validación y la configuración de seguridad en manos del desarrollador. En ambos casos conviene complementar con revisión de código, control de acceso y configuración adecuada del servidor."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Gin y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Gin encaja mejor cuando tu proyecto prioriza lenguaje y modelo de concurrencia: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia. FastAPI es preferible cuando tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de….",
+  "tradeoffs": [
+    {
+      "category": "Lenguaje y modelo de concurrencia",
+      "toolA": "La simplicidad del lenguaje reduce sorpresas, aunque exige disciplina con los errores y la gestión de estado compartido.",
+      "toolB": "La concurrencia es correcta, pero el intérprete de Python y el GIL condicionan el rendimiento en tareas intensivas de CPU."
+    },
+    {
+      "category": "Rendimiento y carga de trabajo",
+      "toolA": "Aun así, la cifra real depende del diseño del servicio, la base de datos y la configuración del servidor, no solo del framework.",
+      "toolB": "Las comparativas públicas varían según el escenario, por lo que conviene medir con la carga real del proyecto."
+    },
+    {
+      "category": "Tipado, validación y documentación automática",
+      "toolA": "Es flexible, pero exige más disciplina para mantener contratos de datos coherentes.",
+      "toolB": "Esto reduce errores de contrato y acelera el desarrollo de APIs, siempre que el equipo mantenga los tipos actualizados."
+    },
+    {
+      "category": "Curva de aprendizaje y productividad",
+      "toolA": "La productividad depende de la familiaridad con el lenguaje y de las convenciones del proyecto.",
+      "toolB": "Para perfiles con base en Python, el arranque suele ser más rápido."
+    },
+    {
+      "category": "Ecosistema, bibliotecas y madurez",
+      "toolA": "La estabilidad del lenguaje y la compatibilidad hacia atrás facilitan el mantenimiento a largo plazo.",
+      "toolB": "Su comunidad crece, pero conviene revisar la compatibilidad entre versiones de Pydantic y Starlette."
+    },
+    {
+      "category": "Seguridad y gestión de errores",
+      "toolA": "El modelo explícito de Go contribuye a un código auditable, pero exige revisiones constantes.",
+      "toolB": "La validación estricta reduce ciertos riesgos, pero no sustituye una revisión de seguridad integral."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Gin y FastAPI responden a una necesidad similar, pero difieren en lenguaje y modelo de concurrencia. Gin: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia. FastAPI: FastAPI usa Python y aprovecha el modelo asíncrono de asyncio en el servicio ASGI. El criterio de rendimiento y carga de trabajo añade otra diferencia práctica: Gin es conocido por su bajo consumo de recursos y su capacidad de respuesta en servicios de alta concurrencia. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza lenguaje y modelo de concurrencia: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia.",
+    "toolB": "tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de…"
+  }
 }

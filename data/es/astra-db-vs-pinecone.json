@@ -1,8 +1,8 @@
 {
   "slug": "astra-db-vs-pinecone",
   "meta": {
-    "title": "Astra DB vs Pinecone (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Astra DB y Pinecone en 2026: modelo de datos, búsqueda vectorial, operación, integraciones, seguridad y encaje de carga para decidir tu base de datos para RAG."
+    "title": "Astra DB vs Pinecone: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Astra DB y Pinecone: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Astra DB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"TU_TOKEN\")\ndb = client.get_database(\"TU_ENDPOINT\", keyspace=\"default_keyspace\")\ncollection = db.create_collection(\"demo\", dimension=3)\ncollection.insert_one({\"_id\": \"1\", \"texto\": \"Hola, mundo\", \"vector\": [0.1, 0.2, 0.3]})\nprint(collection.find_one({}, projection={\"texto\": True}))",
-    "tech2Snippet": "from pinecone import Pinecone\n\npc = Pinecone(api_key=\"TU_API_KEY\")\nindex = pc.Index(\"demo\")\nindex.upsert(vectors=[(\"1\", [0.1, 0.2, 0.3], {\"texto\": \"Hola, mundo\"})])\nprint(index.query(vector=[0.1, 0.2, 0.3], top_k=1, include_metadata=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "¿Puedo migrar de una opción a otra sin fricción?",
       "a": "La migración no es trivial: los modelos de datos, los índices y los filtros difieren entre una base sobre Cassandra y un servicio vectorial especializado. Tendrás que exportar vectores y metadatos, adaptar el esquema y reescribir las consultas y la lógica de recuperación. Planifica pruebas de calidad de recuperación y valora la portabilidad y el coste antes de cambiar de plataforma."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Astra DB y Pinecone cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Astra DB encaja mejor cuando tu proyecto prioriza naturaleza de la plataforma y modelo de datos: Astra DB es una base de datos gestionada construida sobre Apache Cassandra, distribuida y…. Pinecone es preferible cuando tu proyecto prioriza búsqueda vectorial e indexación: Pinecone ofrece índices vectoriales gestionados con búsquedas por similitud, filtros por metadatos….",
+  "tradeoffs": [
+    {
+      "category": "Naturaleza de la plataforma y modelo de datos",
+      "toolA": "Conviene distinguir la base de datos de las capas de aplicación que completan un sistema RAG.",
+      "toolB": "Su modelo gira en torno a índices y registros vectoriales con filtros por metadatos."
+    },
+    {
+      "category": "Búsqueda vectorial e indexación",
+      "toolA": "Las opciones concretas de índice, métricas y límites pueden variar según versión, plan y configuración, por lo que deben verificarse en la documentación oficial.",
+      "toolB": "Es una plataforma madura para recuperación semántica, aunque las capacidades exactas y los límites dependen de la versión y del servicio contratado."
+    },
+    {
+      "category": "Modelo operativo y gestión",
+      "toolA": "El modelo distribuido aporta tolerancia a fallos y escalado horizontal, pero el diseño de particiones y la coherencia requieren criterio experto.",
+      "toolB": "Reduce la carga operativa para equipos centrados en búsqueda semántica, si bien el control de infraestructura y la portabilidad difieren de una base de datos autogestionada."
+    },
+    {
+      "category": "Integraciones y ecosistema para RAG",
+      "toolA": "La disponibilidad de integraciones específicas varía por versión y plan, así que conviene revisar la documentación del conector que se vaya a usar.",
+      "toolB": "Su ecosistema está enfocado en flujos RAG y búsqueda vectorial, aunque la lista de integraciones y detalles de compatibilidad pueden cambiar con el tiempo."
+    },
+    {
+      "category": "Seguridad, control de acceso y cumplimiento",
+      "toolA": "No conviene asumir certificaciones o garantías concretas sin consultar la documentación de seguridad vigente y las condiciones del servicio.",
+      "toolB": "Las certificaciones y garantías de cumplimiento deben confirmarse directamente en su documentación oficial antes de comprometerse."
+    },
+    {
+      "category": "Encaje de carga de trabajo y casos de uso",
+      "toolA": "Requiere valorar el modelado Cassandra y el dimensionamiento de particiones, y no equivale por sí sola a una aplicación RAG completa.",
+      "toolB": "No está pensada como base de datos transaccional principal, por lo que los datos de negocio suelen residir en otro sistema."
+    }
+  ],
+  "introduction": "Astra DB y Pinecone responden a una necesidad similar, pero difieren en naturaleza de la plataforma y modelo de datos. Astra DB: Astra DB es una base de datos gestionada construida sobre Apache Cassandra, distribuida y orientada a cargas de… Pinecone: Pinecone es un servicio especializado en bases de datos vectoriales, diseñado para almacenar embeddings y ejecutar… El criterio de búsqueda vectorial e indexación añade otra diferencia práctica: Astra DB permite almacenar vectores junto a campos estructurados y aplicar filtros en las consultas, lo que facilita… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza naturaleza de la plataforma y modelo de datos: Astra DB es una base de datos gestionada construida sobre Apache Cassandra, distribuida y…",
+    "toolB": "tu proyecto prioriza búsqueda vectorial e indexación: Pinecone ofrece índices vectoriales gestionados con búsquedas por similitud, filtros por metadatos…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nextjs-vs-astro",
   "meta": {
-    "title": "Next.js vs Astro (2026): quelle solution choisir ?",
-    "description": "Next.js ou Astro en 2026 : comparaison détaillée du rendu, des îlots, du routage, de l’écosystème, des performances et de l’hébergement pour choisir la bonne architecture web."
+    "title": "Next.js vs Astro: lequel choisir en 2026 — fonctionnalités et cas d’usage",
+    "description": "Comparez Next.js et Astro : évaluez les compromis architecturaux liés à architecture, intégration et gestion des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Next.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// app/page.tsx\nexport default function Page() {\n  return <h1>Hello, World!</h1>;\n}",
-    "tech2Snippet": "---\n// src/pages/index.astro\n---\n<html lang=\"fr\">\n  <head><title>Hello</title></head>\n  <body><h1>Hello, World!</h1></body>\n</html>"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listActiveProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true`,\n    { headers: { accept: \"application/json\" } },\n  );\n  if (!response.ok) {\n    throw new Error(`Product request failed with status ${response.status}`);\n  }\n  const payload: { products: Product[] } = await response.json();\n  return payload.products;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il choisir en fonction du SEO ?",
       "a": "Les deux frameworks peuvent produire des pages exploitables par les moteurs de recherche, car ils permettent un rendu HTML côté serveur ou statique. Le SEO dépend surtout du contenu, de la structure, des métadonnées, de la vitesse réelle et de l’indexabilité, pas uniquement du framework. Testez vos pages avec les outils de votre choix et validez les métadonnées générées."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Next.js et Astro modifie la manière de gérer l’architecture et l’intégration ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Next.js convient mieux lorsque votre projet privilégie cas d’usage applicatif et gestion d’état : Next.js est adapté aux applications avec authentification, formulaires complexes, tableaux de bord…. Astro est préférable lorsque votre projet privilégie interactivité et hydratation : Astro repose sur des îlots interactifs isolés, chargés uniquement là où c’est nécessaire, avec….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de rendu et stratégie de pages",
+      "toolA": "Selon la version et l’adaptateur d’hébergement, certaines capacités comme la régénération ou les fonctions serveur peuvent demander une infrastructure compatible.",
+      "toolB": "Ce choix simplifie le déploiement sur un CDN statique, mais le rendu serveur dépend d’un adaptateur et d’une plateforme adaptés."
+    },
+    {
+      "category": "Interactivité et hydratation",
+      "toolA": "L’interactivité est native, au prix d’un JavaScript client plus ou moins important selon l’architecture et les composants utilisés.",
+      "toolB": "Cette approche réduit souvent le JavaScript envoyé, mais une page très interactive peut multiplier les îlots et compliquer la coordination d’état global."
+    },
+    {
+      "category": "Routage et structure de projet",
+      "toolA": "La structure est puissante pour les applications multi-pages complexes, mais elle impose d’apprendre ses conventions et ses cas particuliers.",
+      "toolB": "Le modèle est simple pour les sites de contenu, tandis que les besoins applicatifs avancés reposent davantage sur des intégrations et des composants framework."
+    },
+    {
+      "category": "Écosystème et intégration de frameworks",
+      "toolA": "Cette intégration est un atout pour les équipes React, mais elle oriente fortement les choix techniques et les dépendances.",
+      "toolB": "Cette souplesse peut toutefois entraîner une plus grande diversité de dépendances et exiger une gouvernance technique claire."
+    },
+    {
+      "category": "Performances et poids côté client",
+      "toolA": "Une application bien conçue peut être rapide, mais l’hydratation et les dépendances React doivent être surveillées.",
+      "toolB": "Le gain réel dépend néanmoins du nombre d’îlots, des intégrations et des ressources tierces ajoutées au site."
+    },
+    {
+      "category": "Courbe d’apprentissage et expérience développeur",
+      "toolA": "Les développeurs React y trouvent un cadre structuré, mais les notions de cache, de rendu et de frontières client/serveur peuvent complexifier le débogage.",
+      "toolB": "Les développeurs habitués aux frameworks front-end doivent toutefois comprendre le modèle des îlots et choisir les intégrations appropriées."
+    }
+  ],
+  "introduction": "Next.js et Astro répondent à un besoin proche, mais diffèrent sur modèle de rendu et stratégie de pages. Next.js : Next.js propose un modèle hybride avec rendu serveur, génération statique et rendu incrémental, configurable par route. Astro : Astro privilégie la génération statique par défaut et permet d’activer un rendu serveur par page ou globalement. Le critère « Interactivité et hydratation » met en évidence une autre différence pratique : Next.js hydrate généralement l’application React et permet de découper le rendu client via des composants serveur et… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie cas d’usage applicatif et gestion d’état : Next.js est adapté aux applications avec authentification, formulaires complexes, tableaux de bord…",
+    "toolB": "votre projet privilégie interactivité et hydratation : Astro repose sur des îlots interactifs isolés, chargés uniquement là où c’est nécessaire, avec…"
+  }
 }

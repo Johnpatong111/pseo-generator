@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-qdrant",
   "meta": {
-    "title": "LangChain vs Qdrant (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 LangChain vs Qdrant : framework d'orchestration LLM contre base vectorielle. Rôles, critères, exemples de code et conseils pour choisir ou combiner les deux."
+    "title": "LangChain vs Qdrant: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez LangChain et Qdrant : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\nfrom langchain_openai import ChatOpenAI\n\nprompt = ChatPromptTemplate.from_template(\"Dis bonjour à {nom} en une phrase.\")\nchain = prompt | ChatOpenAI(model=\"gpt-4o-mini\") | StrOutputParser()\nprint(chain.invoke({\"nom\": \"monde\"}))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.create_collection(\n    collection_name=\"hello\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"hello\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"texte\": \"bonjour\"})],\n)\nresultats = client.search(collection_name=\"hello\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1)\nprint(resultats)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Qdrant convient-il à des recherches avec filtres métier complexes ?",
       "a": "Qdrant prend en charge le filtrage sur les payloads associés aux vecteurs, ce qui permet de combiner similarité et conditions métier. La performance dépend de la conception de l'index, du nombre de filtres et de la charge ; il faut donc tester avec vos données. Pour des besoins très relationnels, une base classique peut rester complémentaire."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre LangChain et Qdrant modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "LangChain convient mieux lorsque votre projet privilégie nature et rôle principal de l'outil : LangChain est un framework d'orchestration pour applications LLM : chaînes, agents, outils,…. Qdrant est préférable lorsque votre projet privilégie performance et passage à l'échelle : Qdrant est optimisé pour la recherche vectorielle à faible latence et gère des collections de….",
+  "tradeoffs": [
+    {
+      "category": "Nature et rôle principal de l'outil",
+      "toolA": "Il ne stocke pas lui-même de vecteurs à grande échelle et s'appuie sur des bases externes pour la recherche vectorielle.",
+      "toolB": "Elle expose une API REST et gRPC, un moteur de recherche approximative (HNSW) et des fonctionnalités de production comme la réplication et les snapshots."
+    },
+    {
+      "category": "Adéquation aux cas d'usage RAG et agents",
+      "toolA": "En revanche, ses abstractions évoluent rapidement entre versions, ce qui peut demander des ajustements de code lors des mises à jour.",
+      "toolB": "Il ne fournit pas nativement d'orchestration de prompts ni de logique d'agent, qui doivent être implémentés côté application."
+    },
+    {
+      "category": "Performance et passage à l'échelle",
+      "toolA": "Il n'est pas conçu pour servir lui-même des requêtes vectorielles massives.",
+      "toolB": "Les performances réelles dépendent de la configuration matérielle, de l'indexation et des filtres appliqués."
+    },
+    {
+      "category": "Écosystème, intégrations et interopérabilité",
+      "toolA": "La qualité et la maintenance de chaque intégration peuvent varier selon les versions.",
+      "toolB": "Son écosystème est plus ciblé sur la recherche vectorielle que sur l'orchestration LLM."
+    },
+    {
+      "category": "Déploiement, exploitation et sécurité",
+      "toolA": "Le framework n'impose pas de modèle de déploiement unique.",
+      "toolB": "Une revue de sécurité adaptée à votre environnement reste nécessaire, notamment pour l'exposition réseau et la gestion des clés."
+    },
+    {
+      "category": "Courbe d'apprentissage et productivité",
+      "toolA": "La productivité dépend fortement de la familiarité avec l'écosystème LLM.",
+      "toolB": "Une fois ces bases acquises, l'usage est généralement simple."
+    }
+  ],
+  "introduction": "LangChain et Qdrant répondent à un besoin proche, mais diffèrent sur nature et rôle principal de l'outil. LangChain : LangChain est un framework d'orchestration pour applications LLM : chaînes, agents, outils, gestion de prompts,… Qdrant : Qdrant est une base de données vectorielle dédiée à la recherche de similarité et au filtrage de payloads. Le critère « Adéquation aux cas d'usage RAG et agents » met en évidence une autre différence pratique : LangChain fournit des abstractions prêtes à l'emploi pour les chaînes RAG, les retrievers, les agents et les appels… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie nature et rôle principal de l'outil : LangChain est un framework d'orchestration pour applications LLM : chaînes, agents, outils,…",
+    "toolB": "votre projet privilégie performance et passage à l'échelle : Qdrant est optimisé pour la recherche vectorielle à faible latence et gère des collections de…"
+  }
 }

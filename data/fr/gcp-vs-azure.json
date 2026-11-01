@@ -1,8 +1,8 @@
 {
   "slug": "gcp-vs-azure",
   "meta": {
-    "title": "Google Cloud vs Microsoft Azure (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 Google Cloud vs Microsoft Azure : calcul, données, IA, réseau, sécurité, tarifs et écosystème. Critères détaillés pour choisir le bon cloud selon votre contexte."
+    "title": "Google Cloud vs Microsoft Azure: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Google Cloud et Microsoft Azure : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Google Cloud"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal Google Cloud Storage (Python)\nfrom google.cloud import storage\n\nclient = storage.Client()\nbucket = client.bucket(\"mon-bucket-exemple\")\nblob = bucket.blob(\"hello.txt\")\nblob.upload_from_string(\"Hello, World!\")\nprint(\"Fichier envoyé dans Google Cloud Storage.\")",
-    "tech2Snippet": "# Exemple minimal Azure Blob Storage (Python)\nfrom azure.storage.blob import BlobServiceClient\n\nconnect_str = \"DefaultEndpointsProtocol=https;AccountName=moncompte;AccountKey=...;EndpointSuffix=core.windows.net\"\nservice = BlobServiceClient.from_connection_string(connect_str)\nblob = service.get_blob_client(container=\"exemple\", blob=\"hello.txt\")\nblob.upload_blob(\"Hello, World!\", overwrite=True)\nprint(\"Fichier envoyé dans Azure Blob Storage.\")"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as azure from \"@pulumi/azure-native\";\n\nconst productsStorage = new azure.storage.StorageAccount(\"products\", {\n  resourceGroupName: resourceGroup.name,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n});\n\nexport const productStorageId = productsStorage.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel cloud offre la meilleure sécurité en 2026 ?",
       "a": "Les deux plateformes proposent des mécanismes de sécurité avancés, mais la sécurité réelle dépend de la configuration, des processus et des compétences de votre équipe. Azure bénéficie d'une forte intégration à Entra ID et à Defender, tandis que Google Cloud s'appuie sur une hiérarchie IAM claire et une journalisation auditables. La bonne approche consiste à vérifier les certifications, la couverture régionale et les exigences de votre secteur, puis à tester les contrôles sur un périmètre représentatif."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Google Cloud et Microsoft Azure modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Google Cloud convient mieux lorsque votre projet privilégie écosystème data et analytique : BigQuery reste une référence pour l'analytique serverless, avec un modèle de facturation à la…. Microsoft Azure est préférable lorsque votre projet privilégie identité, sécurité et conformité : Microsoft Azure bénéficie d'Entra ID, de Defender for Cloud et d'une longue expérience des….",
+  "tradeoffs": [
+    {
+      "category": "Étendue des services et maturité de la plateforme",
+      "toolA": "Certains services spécialisés sont plus récents ou moins profonds que chez les concurrents, et la disponibilité de chaque offre varie selon la région et le niveau de support choisi.",
+      "toolB": "La profondeur de l'offre est réelle, mais la multiplicité des produits peut compliquer la sélection et la gouvernance si l'équipe n'est pas formée."
+    },
+    {
+      "category": "Écosystème data et analytique",
+      "toolA": "L'écosystème Dataflow, Pub/Sub et Dataproc complète bien les pipelines, mais les coûts et les quotas dépendent fortement de la conception et du dimensionnement.",
+      "toolB": "La plateforme est puissante pour les organisations déjà équipées en outils Microsoft, mais l'architecture à assembler est parfois plus fragmentée et nécessite une bonne maîtrise des SKU et des capacités."
+    },
+    {
+      "category": "Intelligence artificielle et apprentissage automatique",
+      "toolA": "La plateforme est cohérente pour les équipes data, mais les coûts d'inférence et de stockage de modèles varient selon les configurations et doivent être surveillés.",
+      "toolB": "L'attrait est fort pour les organisations Microsoft, mais les fonctionnalités et quotas dépendent de la région, du contrat et des services activés."
+    },
+    {
+      "category": "Conteneurs et orchestration",
+      "toolA": "Autopilot simplifie la gestion mais impose des choix de configuration et des coûts qui doivent être évalués au regard de la charge réelle.",
+      "toolB": "La flexibilité est grande, mais la gestion des mises à niveau, du réseau et des coûts demande une équipe compétente et des processus solides."
+    },
+    {
+      "category": "Identité, sécurité et conformité",
+      "toolA": "La conformité dépend des certifications disponibles par région et par service, et certaines exigences sectorielles imposent de vérifier précisément la couverture avant engagement.",
+      "toolB": "La sécurité est puissante mais repose sur une configuration rigoureuse des rôles, des stratégies et des journaux, sous peine de complexité opérationnelle."
+    },
+    {
+      "category": "Réseau, hybride et multicloud",
+      "toolA": "L'offre est solide, mais la couverture de régions et les options d'interconnexion varient, et les coûts de sortie de données doivent être modélisés avec soin.",
+      "toolB": "Cette richesse facilite la continuité avec le datacenter existant, mais elle exige une conception réseau et une gouvernance adaptées pour éviter la dispersion."
+    }
+  ],
+  "introduction": "Google Cloud et Microsoft Azure répondent à un besoin proche, mais diffèrent sur étendue des services et maturité de la plateforme. Google Cloud : Google Cloud propose un catalogue large couvrant le calcul, le stockage, les bases de données, le réseau et… Microsoft Azure : Microsoft Azure affiche un portefeuille très étendu, des machines virtuelles aux services managés, avec une couverture… Le critère « Écosystème data et analytique » met en évidence une autre différence pratique : BigQuery reste une référence pour l'analytique serverless, avec un modèle de facturation à la requête ou par capacité… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème data et analytique : BigQuery reste une référence pour l'analytique serverless, avec un modèle de facturation à la…",
+    "toolB": "votre projet privilégie identité, sécurité et conformité : Microsoft Azure bénéficie d'Entra ID, de Defender for Cloud et d'une longue expérience des…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-aws",
   "meta": {
-    "title": "Cloudflare vs AWS (2026): Which option should you choose?",
-    "description": "Cloudflare vs AWS in 2026: compare edge networking, compute, storage, developer experience, pricing models, and lock-in to decide which platform fits your workload."
+    "title": "Cloudflare vs AWS: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
+    "description": "Compare Cloudflare and AWS architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -94,5 +94,49 @@
       "q": "How do I avoid lock-in on either platform?",
       "a": "Prefer standard protocols and interfaces where possible, such as S3-compatible APIs and containerized workloads, and isolate platform-specific code behind internal abstractions. On Cloudflare, be mindful of Workers runtime APIs and Durable Objects, and on AWS, avoid spreading business logic across proprietary managed services without an exit plan. No major cloud is fully portable, so treat lock-in as a cost to manage rather than eliminate."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between Cloudflare and AWS changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "Cloudflare is the better fit when your project prioritizes edge networking and web performance: Cloudflare's origin is a globally distributed anycast network built for proxying, caching, and…. AWS is a stronger fit when your project prioritizes service breadth and platform scope: AWS offers one of the widest portfolios in cloud computing, spanning hundreds of services across….",
+  "tradeoffs": [
+    {
+      "category": "Service breadth and platform scope",
+      "toolA": "Exact availability can vary by plan and region, so verify individual products against your requirements and current documentation.",
+      "toolB": "Regional availability differs by service and feature, so check current regional service lists before committing to a design."
+    },
+    {
+      "category": "Edge networking and web performance",
+      "toolA": "Results still depend on cache rules, plan tier, and how much logic you place in Workers versus your origin.",
+      "toolB": "Performance outcomes depend heavily on configuration and on where your origin compute is deployed."
+    },
+    {
+      "category": "Compute model and developer experience",
+      "toolA": "The overall experience favors small, event-driven services and teams that value minimal operational setup.",
+      "toolB": "Teams generally need more platform expertise to run AWS well than to deploy a first Worker."
+    },
+    {
+      "category": "Pricing predictability and cost transparency",
+      "toolA": "Complex multi-product deployments still require careful estimation, and enterprise terms are negotiated rather than list-priced.",
+      "toolB": "Cost optimization typically requires tagging discipline, budgets, and active monitoring."
+    },
+    {
+      "category": "Security and DDoS protection",
+      "toolA": "Feature depth varies by plan, and advanced bot or API protection may require higher tiers or add-ons.",
+      "toolB": "Enterprises often value AWS's compliance certifications and audit tooling when regulatory requirements are strict."
+    },
+    {
+      "category": "Storage and data services",
+      "toolA": "Heavy analytics, managed warehouses, and mature database engines generally are not Cloudflare strengths.",
+      "toolB": "Choosing among the many options requires matching engine type and durability model to the workload."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Cloudflare and AWS address a related need, but differ in service breadth and platform scope. Cloudflare: Cloudflare has expanded well beyond its CDN and DDoS origin into Workers, R2 object storage, D1 databases, Pages, Zero… AWS: AWS offers one of the widest portfolios in cloud computing, spanning hundreds of services across compute, storage,… The edge networking and web performance criterion adds another practical distinction: Cloudflare's origin is a globally distributed anycast network built for proxying, caching, and filtering web traffic,… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes edge networking and web performance: Cloudflare's origin is a globally distributed anycast network built for proxying, caching, and…",
+    "toolB": "your project prioritizes service breadth and platform scope: AWS offers one of the widest portfolios in cloud computing, spanning hundreds of services across…"
+  }
 }

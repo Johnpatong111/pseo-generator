@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-mistral-large",
   "meta": {
-    "title": "Llama 3.3 vs Mistral Large (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Llama 3.3 i Mistral Large w 2026: kontekst, wydajność, ceny API, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "Llama 3.3 vs Mistral Large: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Llama 3.3 i Mistral Large: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Czy Llama 3.3 jest dostępna w chmurze Azure lub AWS?",
       "a": "Tak, Llama 3.3 jest dostępna w wielu usługach chmurowych, w tym AWS Bedrock, Azure AI i Google Vertex AI, a także u dostawców takich jak Together AI czy Fireworks. Dokładna oferta i regiony zależą od dostawcy i mogą się zmieniać, więc warto sprawdzić aktualną dostępność."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Llama 3.3 a Mistral Large zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Llama 3.3 będzie lepszy, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów (wejście/wyjście)”: Llama 3.3 nie ma jednego cennika – koszt zależy od dostawcy hostingu (np. Mistral Large sprawdzi się, gdy projekt stawia na kryterium „Typowe zastosowania”: Mistral Large jest często wybierany do zastosowań komercyjnych wymagających wysokiej jakości….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Rzeczywista długość może zależeć od dostawcy hostingu i konfiguracji, dlatego warto sprawdzić limity u wybranego operatora.",
+      "toolB": "Dostępność i dokładna wartość zależą od planu i punktu końcowego API, więc należy potwierdzić ją w dokumentacji Mistral."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Są to wyniki deklarowane przez Meta dla konkretnej wersji modelu i mogą się różnić w zależności od sposobu ewaluacji.",
+      "toolB": "Należy pamiętać, że benchmarki są wrażliwe na wersję i konfigurację, a producent może publikować różne zestawy danych."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów (wejście/wyjście)",
+      "toolA": "Aktualne stawki trzeba sprawdzić u wybranego operatora.",
+      "toolB": "Warto zweryfikować aktualny cennik na stronie Mistral."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "Brak jednolitych, publicznych pomiarów dla wszystkich providerów.",
+      "toolB": "Rzeczywista latencja zależy od regionu, planu i obciążenia serwerów."
+    },
+    {
+      "category": "Dostępność modelu (otwarty/zamknięty)",
+      "toolA": "Jest dostępny w wielu chmurach i jako model samoobsługowy, co daje dużą elastyczność.",
+      "toolB": "Nie można pobrać wag ani hostować go samodzielnie, co ogranicza kontrolę nad danymi i infrastrukturą."
+    },
+    {
+      "category": "Typowe zastosowania",
+      "toolA": "Dobrze działa w chatbotach, analizie dokumentów i generowaniu kodu, zwłaszcza gdy liczy się koszt i kontrola.",
+      "toolB": "Świetnie nadaje się do szybkiego wdrożenia przez API bez zarządzania infrastrukturą."
+    }
+  ],
+  "introduction": "Llama 3.3 i Mistral Large odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Llama 3.3: Llama 3.3 70B ma okno kontekstu 128 tysięcy tokenów, co pozwala przetwarzać długie dokumenty, rozmowy i fragmenty kodu… Mistral Large: Mistral Large (w zależności od wersji) oferuje okno kontekstu od 32 do 128 tysięcy tokenów; nowsze wersje zwykle mają… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Według publicznych wyników Llama 3.3 70B osiąga około 86% na MMLU i około 88% na HumanEval, co świadczy o wysokiej… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ceny API za 1 mln tokenów (wejście/wyjście)”: Llama 3.3 nie ma jednego cennika – koszt zależy od dostawcy hostingu (np.",
+    "toolB": "projekt stawia na kryterium „Typowe zastosowania”: Mistral Large jest często wybierany do zastosowań komercyjnych wymagających wysokiej jakości…"
+  }
 }

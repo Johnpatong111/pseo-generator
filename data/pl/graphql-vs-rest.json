@@ -1,8 +1,8 @@
 {
   "slug": "graphql-vs-rest",
   "meta": {
-    "title": "Graphql vs Rest (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie GraphQL i REST w 2026: elastyczność, wydajność, bezpieczeństwo i koszty. Sprawdź, które API lepiej pasuje do Twojego projektu."
+    "title": "Graphql vs Rest: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Graphql i Rest: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Graphql"
@@ -94,5 +94,49 @@
       "q": "Jakie są główne ograniczenia GraphQL i REST?",
       "a": "GraphQL zwiększa złożoność serwera, utrudnia cache'owanie HTTP i wymaga zaawansowanego bezpieczeństwa, a jego wydajność zależy od limitów zapytań. REST bywa mniej elastyczny i może prowadzić do wielu żądań oraz nadmiarowych danych, choć jest prostszy we wdrożeniu i dobrze wspiera cache'owanie."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Graphql a Rest zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Graphql będzie lepszy, gdy projekt stawia na kryterium „Elastyczność pobierania danych”: GraphQL pozwala klientowi precyzyjnie określić, jakie pola i relacje chce otrzymać w jednym…. Rest sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i kontrola dostępu”: REST naturalnie mapuje uprawnienia na endpointy i metody HTTP, co upraszcza wdrażanie kontroli….",
+  "tradeoffs": [
+    {
+      "category": "Elastyczność pobierania danych",
+      "toolA": "Elastyczność ta jest szczególnie cenna w aplikacjach mobilnych i interfejsach o zróżnicowanych potrzebach, ale wymaga starannego projektowania schematu i może zwiększać złożoność zapytań po stronie serwera.",
+      "toolB": "Z drugiej strony przewidywalność odpowiedzi ułatwia cache'owanie, testowanie i dokumentowanie, a nadmiarowe dane można ograniczać przez projekcje pól, parametry zapytania lub dedykowane endpointy."
+    },
+    {
+      "category": "Wydajność i liczba żądań",
+      "toolA": "Jednak złożone zapytania mogą obciążać serwer, a bez limitów głębokości i złożoności łatwo o kosztowne operacje; rzeczywista wydajność zależy od implementacji, cache'owania i konfiguracji serwera.",
+      "toolB": "Wydajność REST bywa przewidywalna i dobrze skalowalna przy równomiernym obciążeniu, choć nadmiarowe dane i efekt N+1 mogą pogarszać wyniki bez optymalizacji."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Bez odpowiednich zabezpieczeń, takich jak limity złożoności, głębokości zapytań i analiza kosztów, API może być narażone na nadużycia; dostępność funkcji bezpieczeństwa zależy od biblioteki i konfiguracji.",
+      "toolB": "Bezpieczeństwo zależy od poprawnego stosowania uwierzytelniania, autoryzacji i limitów zapytań, ale przewidywalna struktura zasobów ułatwia stosowanie sprawdzonych wzorców, takich jak OAuth 2.0 i bramy API."
+    },
+    {
+      "category": "Krzywa uczenia i złożoność wdrożenia",
+      "toolA": "Złożoność rośnie wraz z liczbą relacji i klientów, a utrzymanie schematu oraz zarządzanie wersjami wymaga dyscypliny i dojrzałych praktyk inżynierskich.",
+      "toolB": "Prostota bywa jednak zwodnicza przy rozbudowanych relacjach, gdzie liczba endpointów i wersji może zwiększać złożoność utrzymania."
+    },
+    {
+      "category": "Cache'owanie i strategie optymalizacji",
+      "toolA": "Konieczne bywa cache'owanie po stronie klienta, na poziomie resolverów lub z użyciem wyspecjalizowanych rozwiązań, a skuteczność zależy od narzędzi i konfiguracji serwera.",
+      "toolB": "Dostępność i efektywność cache'owania zależą od projektu endpointów i polityk, ale ekosystem narzędzi jest dojrzały i szeroko stosowany."
+    },
+    {
+      "category": "Wersjonowanie i ewolucja API",
+      "toolA": "Podejście to bywa wygodne dla klientów, ale wymaga narzędzi do analizy wpływu zmian i dyscypliny, a stare pola mogą przez długi czas obciążać schemat.",
+      "toolB": "Z drugiej strony wiele wersji oznacza większe koszty utrzymania i ryzyko rozjazdu dokumentacji, jeśli nie stosuje się jasnych zasad deprecjacji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Graphql i Rest odpowiadają na podobną potrzebę, ale różnią się w obszarze elastyczność pobierania danych. Graphql: GraphQL pozwala klientowi precyzyjnie określić, jakie pola i relacje chce otrzymać w jednym zapytaniu, co eliminuje… Rest: REST zwraca ustaloną reprezentację zasobu, co bywa mniej elastyczne, gdy klient potrzebuje tylko części danych lub… Kolejną istotną różnicę pokazuje kryterium „Wydajność i liczba żądań”: GraphQL często redukuje liczbę żądań, ponieważ klient pobiera wiele zasobów w jednym zapytaniu, co bywa korzystne przy… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Elastyczność pobierania danych”: GraphQL pozwala klientowi precyzyjnie określić, jakie pola i relacje chce otrzymać w jednym…",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i kontrola dostępu”: REST naturalnie mapuje uprawnienia na endpointy i metody HTTP, co upraszcza wdrażanie kontroli…"
+  }
 }

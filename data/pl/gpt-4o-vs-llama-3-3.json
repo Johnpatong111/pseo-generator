@@ -1,8 +1,8 @@
 {
   "slug": "gpt-4o-vs-llama-3-3",
   "meta": {
-    "title": "GPT-4o vs Llama 3.3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie GPT-4o i Llama 3.3 w 2026 r.: wydajność, ceny API, kontekst, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twoich potrzeb."
+    "title": "GPT-4o vs Llama 3.3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj GPT-4o i Llama 3.3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "GPT-4o"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from openai import OpenAI\nclient = OpenAI(api_key=\"TWÓJ_KLUCZ\")\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from transformers import pipeline\npipe = pipeline(\"text-generation\", model=\"meta-llama/Llama-3.3-8B-Instruct\")\noutput = pipe(\"Hello, World!\", max_new_tokens=20)\nprint(output[0]['generated_text'])"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jak wygląda kwestia prywatności danych w obu rozwiązaniach?",
       "a": "W GPT-4o dane są przetwarzane przez OpenAI, a polityka prywatności zależy od umowy i ustawień API; użytkownik nie ma pełnej kontroli nad infrastrukturą. Llama 3.3, hostowana lokalnie lub u wybranego dostawcy, pozwala na większą kontrolę nad danymi, ale wymaga samodzielnego zapewnienia zgodności z przepisami."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między GPT-4o a Llama 3.3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "GPT-4o będzie lepszy, gdy projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: GPT-4o osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdzają publiczne…. Llama 3.3 sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Llama 3.3 nie ma oficjalnego cennika API od Meta, ponieważ jest modelem otwartym; koszty zależą od….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Należy sprawdzić aktualną dokumentację, ponieważ limity mogą ulegać zmianom.",
+      "toolB": "W praktyce może być dostosowywane do potrzeb aplikacji."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Należy porównywać wyniki dla konkretnych wersji i dat, ponieważ mogą się różnić.",
+      "toolB": "Rzetelne porównanie wymaga uwzględnienia tych samych warunków testowych i wersji modeli."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Koszty mogą się zmieniać wraz z nowymi wersjami.",
+      "toolB": "Niektórzy dostawcy oferują konkurencyjne stawki, ale trzeba je sprawdzić indywidualnie, uwzględniając także koszty utrzymania."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "GPT-4o jest zoptymalizowany pod kątem niskich opóźnień dzięki infrastrukturze OpenAI, a w testach społecznościowych często wykazuje szybkie odpowiedzi, jednak rzeczywiste czasy zależą od obciążenia i regionu. Brak oficjalnych gwarancji latencji.",
+      "toolB": "Wymaga to jednak większej wiedzy technicznej."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "To ogranicza kontrolę nad modelem, ale zapewnia gotowe wsparcie i aktualizacje.",
+      "toolB": "Daje to większą kontrolę i elastyczność, ale wiąże się z odpowiedzialnością za wdrożenie i utrzymanie."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Jest dobrym wyborem, gdy liczy się czas wdrożenia i wsparcie dostawcy.",
+      "toolB": "Sprawdza się tam, gdzie liczy się elastyczność i możliwość modyfikacji."
+    }
+  ],
+  "introduction": "GPT-4o i Llama 3.3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. GPT-4o: GPT-4o oferuje okno kontekstowe o rozmiarze zależnym od wersji i planu; według informacji OpenAI z 2024 r. Llama 3.3: Llama 3.3 jest modelem otwartym, a jej okno kontekstu zależy od implementacji i konfiguracji przez dostawcę lub własne… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: GPT-4o osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdzają publiczne raporty OpenAI,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: GPT-4o osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdzają publiczne…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Llama 3.3 nie ma oficjalnego cennika API od Meta, ponieważ jest modelem otwartym; koszty zależą od…"
+  }
 }

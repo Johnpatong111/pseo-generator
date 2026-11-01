@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-hono",
   "meta": {
-    "title": "Fastify vs Hono (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Fastify i Hono w 2026 roku: wydajność, ekosystem, wsparcie środowisk, TypeScript, bezpieczeństwo i przypadki użycia. Sprawdź, który framework wybrać."
+    "title": "Fastify vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Fastify i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Fastify"
@@ -94,5 +94,49 @@
       "q": "Który framework lepiej sprawdzi się przy zadaniach długotrwałych i WebSocketach?",
       "a": "Fastify ma bardziej ugruntowane wsparcie dla strumieni i integracji z protokołami czasu rzeczywistego w Node.js, co bywa korzystne przy zadaniach długotrwałych i trwałych połączeniach. Hono obsługuje strumieniowanie i WebSockety w zakresie możliwości danego runtime'u, ale na platformach edge mogą obowiązywać limity czasu i połączeń. Przed wyborem sprawdź wymagania swojego scenariusza i ograniczenia dostawcy infrastruktury."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Fastify a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych…. Hono sprawdzi się, gdy projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono projektowano jako framework wielośrodowiskowy, działający m.in.",
+  "tradeoffs": [
+    {
+      "category": "Dojrzałość ekosystemu i integracje",
+      "toolA": "Wersje są utrzymywane z jasną polityką wsparcia, choć konkretne pluginy różnią się jakością i terminem aktualizacji — warto sprawdzić ich stan przed wdrożeniem produkcyjnym.",
+      "toolB": "Ekosystem jest młodszy niż w Fastify, więc część niszowych integracji może wymagać własnej implementacji lub adapterów społecznościowych; dostępność funkcji zależy od wersji i środowiska uruchomieniowego."
+    },
+    {
+      "category": "Wydajność i narzut frameworka",
+      "toolA": "Rzeczywiste wyniki silnie zależą od konfiguracji, wersji Node.js, sprzętu i charakteru obciążenia, dlatego deklaracje producenta należy traktować jako punkt wyjścia, a nie gwarancję.",
+      "toolB": "Zachowanie wydajnościowe różni się między Node.js, Bun, Deno i platformami edge, więc porównania należy prowadzić na własnym, reprezentatywnym obciążeniu i docelowym środowisku."
+    },
+    {
+      "category": "Wsparcie środowisk uruchomieniowych",
+      "toolA": "Uruchomienie w innych runtime'ach może być możliwe, ale nie jest głównym celem projektu, więc przenośność wymaga weryfikacji i dodatkowej pracy.",
+      "toolB": "Różnice w API platform nadal istnieją, więc adaptery i funkcje specyficzne dla runtime'u trzeba sprawdzić w dokumentacji danej wersji."
+    },
+    {
+      "category": "Wsparcie TypeScript i typowanie",
+      "toolA": "Typowanie bywa bardziej rozproszone przy rozbudowanych pluginach, a jakość typów zależy od konkretnej integracji.",
+      "toolB": "Nie zwalnia to z uwagi na granice runtime'ów i zewnętrzne biblioteki, gdzie typy mogą być mniej precyzyjne."
+    },
+    {
+      "category": "Krzywa uczenia się i ergonomia API",
+      "toolA": "Początkującym może zająć chwilę zrozumienie cyklu życia żądania i zasad enkapsulacji pluginów, ale dokumentacja jest obszerna.",
+      "toolB": "W bardziej złożonych przypadkach trzeba świadomie projektować strukturę middleware'ów, bo framework celowo pozostaje lekki."
+    },
+    {
+      "category": "Bezpieczeństwo i utrzymanie",
+      "toolA": "Zespół musi samodzielnie zadbać o nagłówki bezpieczeństwa, limity i politykę aktualizacji.",
+      "toolB": "Konieczne jest sprawdzenie, które funkcje bezpieczeństwa zapewnia framework, a które dostawca infrastruktury, i regularne aktualizowanie zależności."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Fastify i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i integracje. Fastify: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych pluginów, m.in. Hono: Hono rozwija się szybko i oferuje zestaw middleware'ów obejmujących typowe potrzeby API, takie jak CORS,… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Fastify jest projektowany z myślą o wysokiej przepustowości w Node.js, m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych…",
+    "toolB": "projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono projektowano jako framework wielośrodowiskowy, działający m.in."
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes (2026): welche Lösung passt besser?",
-    "description": "Docker vs Kubernetes 2026 im Vergleich: Container, Orchestrierung, Skalierung, Sicherheit und Betrieb. Mit klarer Empfehlung, Codebeispielen und FAQ für die richtige Wahl."
+    "title": "Docker vs Kubernetes: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Docker und Kubernetes: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Docker"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Dockerfile\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Build und Start:\n# docker build -t hello-docker .\n# docker run --rm hello-docker",
-    "tech2Snippet": "# hello-pod.yaml\napiVersion: v1\nkind: Pod\nmetadata:\n  name: hello-kubernetes\nspec:\n  containers:\n    - name: hello\n      image: alpine:3.20\n      command: [\"echo\", \"Hello, World!\"]\n  restartPolicy: Never\n\n# kubectl apply -f hello-pod.yaml\n# kubectl logs hello-kubernetes"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich mit Docker erstellte Images in Kubernetes verwenden?",
       "a": "Ja, sofern die Images der OCI-Spezifikation entsprechen und in einer für den Cluster erreichbaren Registry liegen. Kubernetes lädt Images über die konfigurierte Container-Runtime und benötigt lediglich Angaben zu Image-Name, Tag und gegebenenfalls Pull-Secret. Achten Sie darauf, unveränderliche Tags oder Digests zu verwenden, um reproduzierbare Deployments zu ermöglichen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Docker und Kubernetes verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Docker passt besser, wenn dein Projekt priorisiert Einstieg, Lernkurve und Betriebsaufwand: Docker lässt sich auf einem einzelnen Rechner schnell installieren, und ein einzelner Container…. Kubernetes ist geeigneter, wenn dein Projekt priorisiert Skalierung und Ausfallsicherheit: Kubernetes wurde für Skalierung und Ausfallsicherheit entworfen: Deployments halten eine….",
+  "tradeoffs": [
+    {
+      "category": "Grundlegende Rolle und Abstraktionsebene",
+      "toolA": "Damit ist Docker eher die Ebene, auf der Container erzeugt und ausgeführt werden.",
+      "toolB": "Kubernetes ersetzt also nicht das Containern selbst, sondern verwaltet Container im Cluster."
+    },
+    {
+      "category": "Einstieg, Lernkurve und Betriebsaufwand",
+      "toolA": "Der Aufwand steigt vor allem dann, wenn Ausfallsicherheit und Mehrknotenbetrieb selbst abgebildet werden müssen.",
+      "toolB": "Managed Angebote der Cloud-Anbieter reduzieren diesen Aufwand, beseitigen ihn aber nicht vollständig, und die Details hängen vom jeweiligen Anbieter und Tarif ab."
+    },
+    {
+      "category": "Skalierung und Ausfallsicherheit",
+      "toolA": "Für einfache Szenarien lassen sich Container mit Compose oder Skripten mehrfach starten, echte Selbstheilung bleibt jedoch begrenzt.",
+      "toolB": "Das tatsächliche Verhalten hängt stark von der Konfiguration, den Ressourcenanfragen und der Cluster-Umgebung ab."
+    },
+    {
+      "category": "Ökosystem, Portabilität und Standards",
+      "toolA": "Die Portabilität einzelner Images ist hoch, die Portabilität kompletter Mehr-Container-Setups über verschiedene Umgebungen hängt jedoch von der verwendeten Compose-Konfiguration ab.",
+      "toolB": "Die Portabilität zwischen Clustern ist gut, sofern keine anbieterspezifischen Erweiterungen oder Netzwerk- und Speicherklassen fest verdrahtet sind."
+    },
+    {
+      "category": "Sicherheit und Isolation",
+      "toolA": "Die konkrete Härtung hängt von der eigenen Konfiguration und der Host-Umgebung ab.",
+      "toolB": "Zusätzlich müssen Cluster-Komponenten und die zugrunde liegende Infrastruktur regelmäßig gepatcht werden."
+    },
+    {
+      "category": "Lokale Entwicklung und Produktionsnähe",
+      "toolA": "Der Unterschied zur Produktion kann allerdings wachsen, wenn dort ein Cluster mit anderen Netzwerk- und Speicherregeln läuft.",
+      "toolB": "Ob der lokale Aufbau dem produktiven Cluster wirklich entspricht, hängt von den eingesetzten Versionen und der Konfiguration ab."
+    }
+  ],
+  "introduction": "Docker und Kubernetes lösen ein ähnliches Problem, unterscheiden sich jedoch bei grundlegende rolle und abstraktionsebene. Docker: Docker ist eine Container-Plattform, die Anwendungen samt Abhängigkeiten in portable Images verpackt und über eine… Kubernetes: Kubernetes ist ein Orchestrierungssystem, das Container über einen Verbund von Rechnern hinweg plant, startet und… Das Kriterium einstieg, lernkurve und betriebsaufwand zeigt einen weiteren praktischen Unterschied: Docker lässt sich auf einem einzelnen Rechner schnell installieren, und ein einzelner Container ist mit wenigen… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Einstieg, Lernkurve und Betriebsaufwand: Docker lässt sich auf einem einzelnen Rechner schnell installieren, und ein einzelner Container…",
+    "toolB": "dein Projekt priorisiert Skalierung und Ausfallsicherheit: Kubernetes wurde für Skalierung und Ausfallsicherheit entworfen: Deployments halten eine…"
+  }
 }

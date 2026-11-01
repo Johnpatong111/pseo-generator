@@ -1,8 +1,8 @@
 {
   "slug": "deno-vs-hono",
   "meta": {
-    "title": "Deno vs Hono (2026): welche Lösung passt besser?",
-    "description": "Deno und Hono im Vergleich 2026: Laufzeitumgebung gegen Web-Framework. Erfahre, welche Technologie für dein Projekt die richtige Wahl ist – mit Kriterien, Codebeispielen und FAQ."
+    "title": "Deno vs Hono: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Deno und Hono: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Deno"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// Deno: Einfacher HTTP-Server\nconst server = Deno.serve({ port: 8000 }, (req) => {\n  return new Response(\"Hello, World!\");\n});\nconsole.log(\"Server läuft auf http://localhost:8000\");",
-    "tech2Snippet": "// Hono: Minimaler Server (z. B. für Deno)\nimport { Hono } from 'https://deno.land/x/hono/mod.ts';\n\nconst app = new Hono();\napp.get('/', (c) => c.text('Hello, World!'));\n\nDeno.serve(app.fetch);"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Wie sieht die Zukunft von Deno und Hono aus?",
       "a": "Beide Projekte werden aktiv weiterentwickelt. Deno hat in den letzten Jahren seine Kompatibilität mit dem Node.js-Ökosystem verbessert und strebt danach, eine universelle Laufzeitumgebung zu sein. Hono gewinnt durch seine Portabilität und Leistungsfähigkeit an Popularität, insbesondere in Edge-Umgebungen. Zukünftige Entwicklungen hängen von der Community und den Maintainern ab; eine langfristige Vorhersage ist ohne spezifische Roadmap nicht möglich. Es empfiehlt sich, die offiziellen Ankündigungen zu verfolgen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Deno und Hono verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Deno passt besser, wenn dein Projekt priorisiert Sicherheitsmodell: Deno verfolgt einen standardmäßig sicheren Ansatz: Skripte haben keinen Zugriff auf Dateisystem,…. Hono ist geeigneter, wenn dein Projekt priorisiert Ökosystem und Kompatibilität: Hono ist so konzipiert, dass es auf vielen Laufzeiten und Plattformen funktioniert, darunter Deno,….",
+  "tradeoffs": [
+    {
+      "category": "Kernfunktion und Zweck",
+      "toolA": "Die Laufzeit kann eigenständige Anwendungen, Skripte und Server ausführen, ohne dass zusätzliche Pakete erforderlich sind.",
+      "toolB": "Hono ist keine Laufzeitumgebung, sondern ein Framework, das auf einer solchen ausgeführt wird."
+    },
+    {
+      "category": "Sicherheitsmodell",
+      "toolA": "Die feingranulare Steuerung kann jedoch für komplexe Anwendungen zusätzlichen Konfigurationsaufwand bedeuten.",
+      "toolB": "Die tatsächliche Sicherheit hängt stark von der zugrunde liegenden Laufzeit und der Implementierung durch die Entwickler ab."
+    },
+    {
+      "category": "Ökosystem und Kompatibilität",
+      "toolA": "Die Deno-eigene Registry (JSR) und die wachsende Community tragen zu einem stabilen, aber kleineren Ökosystem im Vergleich zu Node.js bei.",
+      "toolB": "Die Portabilität macht Hono besonders für Projekte interessant, die mehrere Deployment-Ziele anvisieren."
+    },
+    {
+      "category": "Entwicklererfahrung und Werkzeuge",
+      "toolA": "Die einheitliche Toolchain kann die Einrichtung vereinfachen, schränkt aber auch die Auswahl an spezialisierten Drittanbieter-Tools ein.",
+      "toolB": "Allerdings müssen Entwickler je nach Laufzeit zusätzliche Tools für Tests, Builds und Linting selbst konfigurieren."
+    },
+    {
+      "category": "Leistung und Effizienz",
+      "toolA": "Benchmarks sollten stets im Kontext der eigenen Anwendung durchgeführt werden.",
+      "toolB": "Allgemeine Aussagen zur Überlegenheit sind ohne spezifische Messungen nicht möglich."
+    },
+    {
+      "category": "Reifegrad und Stabilität",
+      "toolA": "Die Versionsverwaltung folgt semantic Versioning, und Breaking Changes werden in Hauptversionen kommuniziert.",
+      "toolB": "Die Stabilität hängt auch von der jeweiligen Laufzeit ab, auf der Hono betrieben wird."
+    }
+  ],
+  "introduction": "Deno und Hono lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernfunktion und zweck. Deno: Deno ist eine JavaScript- und TypeScript-Laufzeitumgebung, die auf der V8-Engine basiert und standardmäßig… Hono: Hono ist ein leichtgewichtiges Web-Framework, das für verschiedene JavaScript-Laufzeiten wie Deno, Node.js, Bun und… Das Kriterium sicherheitsmodell zeigt einen weiteren praktischen Unterschied: Deno verfolgt einen standardmäßig sicheren Ansatz: Skripte haben keinen Zugriff auf Dateisystem, Netzwerk oder… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Sicherheitsmodell: Deno verfolgt einen standardmäßig sicheren Ansatz: Skripte haben keinen Zugriff auf Dateisystem,…",
+    "toolB": "dein Projekt priorisiert Ökosystem und Kompatibilität: Hono ist so konzipiert, dass es auf vielen Laufzeiten und Plattformen funktioniert, darunter Deno,…"
+  }
 }

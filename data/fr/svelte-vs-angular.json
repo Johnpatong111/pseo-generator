@@ -1,8 +1,8 @@
 {
   "slug": "svelte-vs-angular",
   "meta": {
-    "title": "Svelte vs Angular (2026): quelle solution choisir ?",
-    "description": "Comparez Svelte et Angular en 2026 : philosophie, réactivité, écosystème, SEO, accessibilité et courbe d'apprentissage. Conseils pour choisir selon votre projet et votre équipe."
+    "title": "Svelte vs Angular: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Svelte et Angular : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Svelte"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { mount } from 'svelte';\nimport App from './App.svelte';\n\nconst app = mount(App, {\n  target: document.getElementById('app')\n});\n\nexport default app;\n\n<!-- App.svelte -->\n<script>\n  let name = 'monde';\n</script>\n\n<h1>Bonjour, {name} !</h1>",
-    "tech2Snippet": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: '<h1>Bonjour, {{ name }} !</h1>'\n})\nexport class AppComponent {\n  name = 'monde';\n}\n\nbootstrapApplication(AppComponent);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>",
+    "tech2Snippet": "import { CommonModule } from \"@angular/common\";\nimport { Component, Input } from \"@angular/core\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\n@Component({\n  selector: \"app-product-list\",\n  standalone: true,\n  imports: [CommonModule],\n  template: `<ul><li *ngFor=\"let product of visibleProducts\">{{ product.name }}</li></ul>`,\n})\nexport class ProductListComponent {\n  @Input({ required: true }) products: Product[] = [];\n  @Input({ required: true }) categoryId = \"\";\n\n  get visibleProducts(): Product[] {\n    return this.products.filter(\n      (product) => product.active && product.categoryId === this.categoryId,\n    );\n  }\n}"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "Quel framework choisir pour une équipe qui doit recruter facilement ?",
       "a": "Angular bénéficie d'une adoption forte en entreprise et d'un vivier de développeurs plus large, ce qui peut faciliter le recrutement. Svelte séduit par sa simplicité, mais les profils expérimentés sont moins nombreux sur le marché. Si le recrutement est un critère majeur, Angular offre souvent plus de garanties, au prix d'une courbe d'apprentissage interne plus élevée."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Svelte et Angular modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Svelte convient mieux lorsque votre projet privilégie performance et rendu : Svelte compile les composants en code optimisé et met à jour le DOM de manière ciblée, ce qui peut…. Angular est préférable lorsque votre projet privilégie langage et typage : Angular est conçu pour TypeScript et l'utilise par défaut dans la documentation et les générateurs….",
+  "tradeoffs": [
+    {
+      "category": "Philosophie et architecture",
+      "toolA": "Son écosystème, notamment SvelteKit, fournit le routage, le rendu côté serveur et le prérendu pour des applications complètes.",
+      "toolB": "Il vise la robustesse, la maintenabilité et la cohérence sur de grands projets."
+    },
+    {
+      "category": "Réactivité et gestion d'état",
+      "toolA": "Cette approche réduit le code cérémoniel et facilite la compréhension du flux de données.",
+      "toolB": "La puissance est réelle, mais la maîtrise demande de comprendre les différents modèles disponibles."
+    },
+    {
+      "category": "Langage et typage",
+      "toolA": "Les développeurs peuvent donc choisir un typage progressif ou strict selon leurs besoins.",
+      "toolB": "Cette approche améliore la détection d'erreurs à la compilation, au prix d'un apprentissage plus exigeant pour les équipes peu familières avec TypeScript."
+    },
+    {
+      "category": "Performance et rendu",
+      "toolA": "SvelteKit ajoute le rendu côté serveur et le prérendu, utiles pour le SEO et le temps de chargement initial.",
+      "toolB": "Les résultats varient selon la version, l'architecture et la charge."
+    },
+    {
+      "category": "Écosystème et outillage",
+      "toolA": "La communauté est active, mais le nombre de bibliothèques tierces spécialisées reste inférieur à celui d'Angular.",
+      "toolB": "La contrepartie est une surface d'apprentissage plus large et des mises à jour qui demandent parfois des migrations."
+    },
+    {
+      "category": "Courbe d'apprentissage et expérience développeur",
+      "toolA": "L'expérience de développement est généralement jugée fluide, avec des rechargements rapides selon l'outillage.",
+      "toolB": "La maîtrise s'acquiert avec l'expérience et bénéficie d'un cadre clair pour les grandes équipes."
+    }
+  ],
+  "introduction": "Svelte et Angular répondent à un besoin proche, mais diffèrent sur philosophie et architecture. Svelte : Svelte est un framework de compilation : le code source est transformé en JavaScript optimisé au moment du build, ce… Angular : Angular est un framework complet et opinionné qui fournit un ensemble intégré : composants, injection de dépendances,… Le critère « Réactivité et gestion d'état » met en évidence une autre différence pratique : Svelte utilise une réactivité au niveau du compilateur : les variables déclarées avec let sont suivies et les mises à… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie performance et rendu : Svelte compile les composants en code optimisé et met à jour le DOM de manière ciblée, ce qui peut…",
+    "toolB": "votre projet privilégie langage et typage : Angular est conçu pour TypeScript et l'utilise par défaut dans la documentation et les générateurs…"
+  }
 }

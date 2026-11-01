@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-mysql",
   "meta": {
-    "title": "PostgreSQL vs MySQL (2026): ¿Qué solución elegir?",
-    "description": "Comparativa actualizada de PostgreSQL y MySQL en 2026: características, rendimiento, escalabilidad, seguridad y facilidad de uso para elegir la base de datos adecuada."
+    "title": "PostgreSQL vs MySQL: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara PostgreSQL y MySQL: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -94,5 +94,49 @@
       "q": "¿Cuál es mejor para alta disponibilidad y replicación?",
       "a": "Ambas permiten arquitecturas de alta disponibilidad, pero con herramientas y topologías diferentes: PostgreSQL ofrece replicación en streaming y lógica, y MySQL dispone de replicación y Group Replication. La idoneidad depende de la versión, el proveedor y la experiencia del equipo en operar el failover. En cualquier caso, hay que probar los escenarios de conmutación y monitorizar la replicación."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre PostgreSQL y MySQL cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza modelo de datos y tipos avanzados: evalúa la riqueza del sistema de tipos y la: PostgreSQL ofrece tipos nativos como JSONB, arrays, rangos, tipos compuestos, enumeraciones y…. MySQL es preferible cuando tu proyecto prioriza facilidad de uso y ecosistema: considera la curva de aprendizaje, las: MySQL es sencillo de instalar y usar en proyectos web, cuenta con una amplia base de….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y tipos avanzados: evalúa la riqueza del sistema de tipos y la",
+      "toolA": "Su extensibilidad permite definir tipos y operadores propios, lo que resulta útil en dominios especializados, aunque exige conocer bien el modelo para aprovecharlo sin complicar el esquema.",
+      "toolB": "Para muchos esquemas relacionales habituales es suficiente y mantiene una curva de aprendizaje menor, aunque puede requerir tablas auxiliares o lógica en la aplicación para modelos avanzados."
+    },
+    {
+      "category": "Cumplimiento ACID y comportamiento transaccional: analiza la fiabilidad de las",
+      "toolA": "Su comportamiento transaccional es coherente en operaciones complejas, aunque un uso intensivo de escrituras y transacciones largas puede requerir ajustes de configuración y monitorización.",
+      "toolB": "Es importante verificar el motor de cada tabla y la configuración del servidor, ya que el comportamiento transaccional y el bloqueo pueden variar según la versión y los parámetros elegidos."
+    },
+    {
+      "category": "Rendimiento en lecturas y escrituras: compara el comportamiento esperado bajo",
+      "toolA": "En cargas OLTP muy intensivas en escrituras puede necesitar ajustes específicos, y su rendimiento depende en gran medida de la configuración, el hardware y el diseño del esquema.",
+      "toolB": "En cargas mixtas o analíticas complejas puede quedar por detrás de PostgreSQL según la consulta y la versión, por lo que conviene medir con el esquema y el tráfico reales antes de decidir."
+    },
+    {
+      "category": "Escalabilidad y alta disponibilidad: valora las opciones de replicación,",
+      "toolA": "Su ecosistema permite arquitecturas robustas, pero algunas soluciones requieren componentes adicionales y una operación más cuidadosa que una instalación básica.",
+      "toolB": "Su implantación está muy documentada y es habitual en entornos gestionados, aunque la topología y el failover deben diseñarse y probarse según la versión y el proveedor."
+    },
+    {
+      "category": "Seguridad y control de acceso: revisa autenticación, permisos y",
+      "toolA": "También permite extensiones y políticas personalizadas, pero una seguridad eficaz depende de una configuración cuidadosa y de mantener el servidor actualizado.",
+      "toolB": "Su modelo de permisos es conocido y funcional, aunque algunas capacidades avanzadas pueden depender de la edición, la versión o el servicio gestionado contratado."
+    },
+    {
+      "category": "Facilidad de uso y ecosistema: considera la curva de aprendizaje, las",
+      "toolA": "Puede resultar más exigente para equipos principiantes, aunque la documentación oficial y la familiaridad del sector facilitan la adopción con práctica.",
+      "toolB": "Su simplicidad inicial puede convertirse en limitación si el proyecto necesita funciones avanzadas que requieran soluciones externas."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL y MySQL responden a una necesidad similar, pero difieren en modelo de datos y tipos avanzados: evalúa la riqueza del sistema de tipos y la. PostgreSQL: PostgreSQL ofrece tipos nativos como JSONB, arrays, rangos, tipos compuestos, enumeraciones y geometría mediante… MySQL: MySQL soporta tipos estándar, JSON nativo y algunas funciones geoespaciales, pero su sistema de tipos es más limitado… El criterio de cumplimiento acid y comportamiento transaccional: analiza la fiabilidad de las añade otra diferencia práctica: PostgreSQL implementa ACID de forma predeterminada en su motor principal, con control de concurrencia multiversión y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y tipos avanzados: evalúa la riqueza del sistema de tipos y la: PostgreSQL ofrece tipos nativos como JSONB, arrays, rangos, tipos compuestos, enumeraciones y…",
+    "toolB": "tu proyecto prioriza facilidad de uso y ecosistema: considera la curva de aprendizaje, las: MySQL es sencillo de instalar y usar en proyectos web, cuenta con una amplia base de…"
+  }
 }

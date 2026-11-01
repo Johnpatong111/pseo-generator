@@ -1,8 +1,8 @@
 {
   "slug": "hono-vs-fastapi",
   "meta": {
-    "title": "Hono vs FastAPI (2026): welche Lösung passt besser?",
-    "description": "Hono und FastAPI im Vergleich 2026: Einsatzgebiete, Performance, Ökosystem, Typsicherheit, Betrieb und Lernkurve – mit klarer Empfehlung für Ihr Projekt."
+    "title": "Hono vs FastAPI: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Hono und FastAPI: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Hono"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { Hono } from 'hono';\n\nconst app = new Hono();\n\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;",
-    "tech2Snippet": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello, World!\"}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie aufwendig ist die Migration von einem Framework zum anderen?",
       "a": "Eine Migration zwischen Hono und FastAPI bedeutet in der Regel einen Sprachwechsel und damit einen erheblichen Aufwand, da sich Typsystem, Validierung und Ökosystem grundlegend unterscheiden. Eine schrittweise Ablösung über eine gemeinsame API-Schnittstelle kann sinnvoller sein als ein vollständiger Neuaufbau."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Hono und FastAPI verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Hono passt besser, wenn dein Projekt priorisiert Laufzeitumgebung und Deployment: Hono läuft auf vielen JavaScript-Laufzeiten, darunter Node.js, Deno, Bun und Edge-Plattformen wie…. FastAPI ist geeigneter, wenn dein Projekt priorisiert Automatische API-Dokumentation: FastAPI generiert aus den Pydantic-Modellen und Routen automatisch OpenAPI-Schemas sowie….",
+  "tradeoffs": [
+    {
+      "category": "Primäre Sprache und Typsicherheit",
+      "toolA": "Die Typprüfung erfolgt zur Compile-Zeit, und die Validierung von Eingaben lässt sich mit optionalen Middlewares wie Zod ergänzen, was von der jeweiligen Konfiguration abhängt.",
+      "toolB": "Die Typsicherheit ist damit stark, aber dynamischer geprägt als bei TypeScript, und statische Prüfung erfordert zusätzliche Werkzeuge wie mypy oder pyright."
+    },
+    {
+      "category": "Automatische API-Dokumentation",
+      "toolA": "Der Aufwand hängt von der gewählten Integration und der gewünschten Detailtiefe ab.",
+      "toolB": "Das ist ein zentraler Bestandteil des Frameworks und reduziert den manuellen Dokumentationsaufwand erheblich."
+    },
+    {
+      "category": "Laufzeitumgebung und Deployment",
+      "toolA": "Diese Portabilität macht es attraktiv für serverlose und Edge-nahe Architekturen, wobei einzelne APIs je nach Plattform variieren können.",
+      "toolB": "Serverless-Deployments sind möglich, etwa über Container oder spezielle Adapter, erfordern aber mehr Konfiguration als bei Edge-nativen Frameworks."
+    },
+    {
+      "category": "Ökosystem und Bibliotheksreife",
+      "toolA": "Viele Bausteine existieren als Middlewares, und die Qualität einzelner Pakete kann variieren.",
+      "toolB": "Die Integration in bestehende Python-Workflows, etwa für Machine Learning, ist in der Regel unkompliziert."
+    },
+    {
+      "category": "Leistung und Durchsatz",
+      "toolA": "Konkrete Durchsatzwerte hängen stark von Laufzeit, Hardware und Arbeitslast ab und sollten nicht pauschal übertragen werden.",
+      "toolB": "Die tatsächliche Leistung variiert je nach Version, Konfiguration und Datenbankzugriff erheblich, sodass eigene Messungen sinnvoll sind."
+    },
+    {
+      "category": "Validierung und Fehlerbehandlung",
+      "toolA": "Fehlerantworten müssen häufig selbst definiert werden, was Flexibilität, aber auch mehr Eigenarbeit bedeutet.",
+      "toolB": "Das erleichtert konsistente APIs, kann aber bei sehr individuellen Anforderungen zusätzliche Anpassungen erfordern."
+    }
+  ],
+  "introduction": "Hono und FastAPI lösen ein ähnliches Problem, unterscheiden sich jedoch bei primäre sprache und typsicherheit. Hono: Hono ist in TypeScript geschrieben und bietet über generische Typen eine enge Verzahnung von Routen, Pfadparametern… FastAPI: FastAPI basiert auf Python und nutzt Typannotationen zusammen mit Pydantic, um Anfrage- und Antwortmodelle zur… Das Kriterium automatische api-dokumentation zeigt einen weiteren praktischen Unterschied: Hono erzeugt nicht von Haus aus eine vollständige OpenAPI-Oberfläche, sondern bietet über Erweiterungen und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Laufzeitumgebung und Deployment: Hono läuft auf vielen JavaScript-Laufzeiten, darunter Node.js, Deno, Bun und Edge-Plattformen wie…",
+    "toolB": "dein Projekt priorisiert Automatische API-Dokumentation: FastAPI generiert aus den Pydantic-Modellen und Routen automatisch OpenAPI-Schemas sowie…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "autogen-vs-llamaindex",
   "meta": {
-    "title": "AutoGen vs LlamaIndex (2026): welche Lösung passt besser?",
-    "description": "AutoGen vs LlamaIndex 2026 im Vergleich: Agenten-Orchestrierung, RAG, Datenkonnektoren, Code-Ausführung, Ökosystem und Kontrolle – mit Empfehlungen und Codebeispielen."
+    "title": "AutoGen vs LlamaIndex: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche AutoGen und LlamaIndex: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "AutoGen"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from autogen import AssistantAgent, UserProxyAgent\n\nassistant = AssistantAgent(name=\"assistant\", llm_config={\"config_list\": [{\"model\": \"gpt-4o-mini\"}]})\nuser = UserProxyAgent(name=\"user\", human_input_mode=\"NEVER\", code_execution_config=False)\n\nuser.initiate_chat(assistant, message=\"Sag Hallo und stelle dich kurz vor.\")",
-    "tech2Snippet": "from llama_index.core import VectorStoreIndex, Document\n\nindex = VectorStoreIndex.from_documents([Document(text=\"Hallo Welt. Dies ist ein minimales Beispiel.\")])\nquery_engine = index.as_query_engine()\nresponse = query_engine.query(\"Worum geht es im Text?\")\nprint(response)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Sicherheitsaspekte sollte ich beachten?",
       "a": "Bei beiden Frameworks sollten Zugriffe auf Modelle, Daten und Ausführungsumgebungen kontrolliert werden, insbesondere wenn Agenten Code ausführen oder externe Werkzeuge aufrufen. AutoGen verlangt besondere Aufmerksamkeit bei der Isolation von Code-Ausführung, während bei LlamaIndex der Schutz der angebundenen Datenquellen und Indizes im Vordergrund steht. Konkrete Sicherheitsgarantien lassen sich nicht pauschal zusagen, da sie von Version, Konfiguration und Betriebsumgebung abhängen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen AutoGen und LlamaIndex verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "AutoGen passt besser, wenn dein Projekt priorisiert Multi-Agenten-Orchestrierung: AutoGen bietet ausgereifte Bausteine für Gruppen-Chats, Sprecher-Auswahl und Werkzeugnutzung durch…. LlamaIndex ist geeigneter, wenn dein Projekt priorisiert Retrieval und RAG-Funktionen: LlamaIndex stellt umfangreiche RAG-Funktionen bereit, darunter Ingestion, Chunking, Indizes,….",
+  "tradeoffs": [
+    {
+      "category": "Kernausrichtung und Programmiermodell",
+      "toolA": "Agenten kommunizieren über Nachrichten, und Rollen wie Assistent oder Nutzerproxy lassen sich explizit modellieren, wobei sich Abläufe je nach Version und Konfiguration über definierte Gruppen-Chats oder Graph-Strukturen steuern lassen.",
+      "toolB": "Das Modell ist stark datengetrieben: Dokumente werden geladen, zerlegt, eingebettet und für Abfragen verfügbar gemacht, während Agenten eher als Ergänzung auf dieser Datenbasis dienen."
+    },
+    {
+      "category": "Multi-Agenten-Orchestrierung",
+      "toolA": "Je nach Version und Einstellung lassen sich Rundengespräche, hierarchische Muster oder feste Ablaufgraphen abbilden, was die Modellierung arbeitsteiliger Aufgaben erleichtert.",
+      "toolB": "Mehrere Agenten und Workflows sind je nach Version möglich, wirken aber weniger als zentrales Paradigma des Frameworks."
+    },
+    {
+      "category": "Retrieval und RAG-Funktionen",
+      "toolA": "Umfang und Komfort hängen stark von der gewählten Version, den Erweiterungen und der eigenen Verdrahtung ab.",
+      "toolB": "Viele Datenquellen und Vektorspeicher werden über Konnektoren unterstützt, wobei die Verfügbarkeit einzelner Integrationen von Version und Paket abhängt."
+    },
+    {
+      "category": "Datenkonnektoren und Ökosystem",
+      "toolA": "Datenzugriff erfolgt häufig über Werkzeugfunktionen oder eigene Anbindungen, was Flexibilität bietet, aber mehr Eigenarbeit verlangen kann.",
+      "toolB": "Der Umfang wächst mit der Version, und einzelne Integrationen können unterschiedlich gepflegt sein, weshalb eine Prüfung der konkreten Anbindung sinnvoll ist."
+    },
+    {
+      "category": "Code-Ausführung und Werkzeugnutzung",
+      "toolA": "Je nach Konfiguration und Sicherheitsmodell sollten Ausführungsumgebungen isoliert und Berechtigungen eng gefasst werden.",
+      "toolB": "Die Sicherheit und Isolation hängen von der jeweiligen Umsetzung und der gewählten Laufzeitumgebung ab."
+    },
+    {
+      "category": "Steuerung, Nachvollziehbarkeit und Debugging",
+      "toolA": "Die Nachvollziehbarkeit hängt jedoch von Protokollierung, Version und der Komplexität des konfigurierten Agentenverbunds ab.",
+      "toolB": "Für RAG-Anwendungen lassen sich Abfragepfade und abgerufene Kontexte vergleichsweise gut untersuchen."
+    }
+  ],
+  "introduction": "AutoGen und LlamaIndex lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernausrichtung und programmiermodell. AutoGen: AutoGen ist als Framework für konversationsbasierte Multi-Agenten-Systeme konzipiert. LlamaIndex: LlamaIndex konzentriert sich auf die Verbindung von Sprachmodellen mit eigenen Daten, etwa über Indizes,… Das Kriterium multi-agenten-orchestrierung zeigt einen weiteren praktischen Unterschied: AutoGen bietet ausgereifte Bausteine für Gruppen-Chats, Sprecher-Auswahl und Werkzeugnutzung durch Agenten. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Multi-Agenten-Orchestrierung: AutoGen bietet ausgereifte Bausteine für Gruppen-Chats, Sprecher-Auswahl und Werkzeugnutzung durch…",
+    "toolB": "dein Projekt priorisiert Retrieval und RAG-Funktionen: LlamaIndex stellt umfangreiche RAG-Funktionen bereit, darunter Ingestion, Chunking, Indizes,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "qdrant-vs-weaviate",
   "meta": {
-    "title": "Qdrant vs Weaviate (2026): welche Lösung passt besser?",
-    "description": "Qdrant und Weaviate im Vergleich 2026: Unterschiede bei Architektur, Filterung, Hybridsuche, Betrieb und Sprache – plus Empfehlung, welches Tool zu welchem Projekt passt."
+    "title": "Qdrant vs Weaviate: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Qdrant und Weaviate: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Qdrant"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.create_collection(\n    collection_name=\"demo\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"demo\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"text\": \"Hallo Welt\"})],\n)\nprint(client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))",
-    "tech2Snippet": "import weaviate\n\nclient = weaviate.connect_to_local()\ntry:\n    client.collections.create(\n        name=\"Demo\",\n        vectorizer_config=weaviate.classes.config.Configure.Vectorizer.none(),\n    )\n    demo = client.collections.get(\"Demo\")\n    demo.data.insert(properties={\"text\": \"Hallo Welt\"}, vector=[0.1, 0.2, 0.3, 0.4])\n    result = demo.query.near_vector(near_vector=[0.1, 0.2, 0.3, 0.4], limit=1)\n    print(result.objects)\nfinally:\n    client.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte ich eine Entscheidung strukturiert treffen?",
       "a": "Definieren Sie zuerst die Muss-Kriterien Ihres Projekts, etwa Filterkomplexität, Hybridsuche, Betriebsmodell und Sicherheitsanforderungen. Erstellen Sie danach einen kleinen Prototyp mit repräsentativen Daten und prüfen Sie Import, Abfragen und Betriebsaufwand in beiden Systemen. Berücksichtigen Sie außerdem die bestehende Toolchain und die Verfügbarkeit von Know-how im Team. So treffen Sie eine fundierte Entscheidung, ohne sich auf pauschale Empfehlungen oder veraltete Angaben zu verlassen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Qdrant und Weaviate verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Qdrant passt besser, wenn dein Projekt priorisiert Architektur und Datenmodell: Qdrant speichert Punkte mit Vektoren und optionalen JSON-Payloads in Collections und setzt auf…. Weaviate ist geeigneter, wenn dein Projekt priorisiert Hybridsuche und Textsuche: Weaviate bringt eine integrierte Hybridsuche mit BM25 und Vektorsuche mit, inklusive Fusionierung….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Datenmodell",
+      "toolA": "Die genaue Speicherkonfiguration hängt von Version, Deployment und gewählten Einstellungen ab.",
+      "toolB": "Wie streng das Schema wirkt, unterscheidet sich je nach Version und Konfiguration."
+    },
+    {
+      "category": "Filterung und Abfrageflexibilität",
+      "toolA": "Zusätzlich stehen Empfehlungs- und Discover-Abfragen zur Verfügung.",
+      "toolB": "Die Fähigkeiten einzelner Filtertypen können sich je nach Version und Modul unterscheiden."
+    },
+    {
+      "category": "Hybridsuche und Textsuche",
+      "toolA": "Details hängen von Version und genutzten Client-Bibliotheken ab.",
+      "toolB": "Das Verhalten und die verfügbaren Parameter können sich zwischen Versionen ändern."
+    },
+    {
+      "category": "Ökosystem, Module und Integrationen",
+      "toolA": "Das hält das System schlank, verlangt aber eigene Integrationsarbeit.",
+      "toolB": "Verfügbarkeit und Verhalten der Module sind versionsabhängig."
+    },
+    {
+      "category": "Betrieb, Deployment und Skalierung",
+      "toolA": "Für den Managed-Betrieb gelten die jeweils aktuellen Tarifbedingungen.",
+      "toolB": "Welche Funktionen in welchem Tarif enthalten sind, sollte vor der Planung in der aktuellen Dokumentation geprüft werden."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Eine sorgfältige Härtung der Deployment-Umgebung bleibt in jedem Fall erforderlich.",
+      "toolB": "Verbindliche Aussagen zu Zertifizierungen sollten Sie in der aktuellen Dokumentation prüfen."
+    }
+  ],
+  "introduction": "Qdrant und Weaviate lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und datenmodell. Qdrant: Qdrant speichert Punkte mit Vektoren und optionalen JSON-Payloads in Collections und setzt auf einen in Rust… Weaviate: Weaviate organisiert Daten in Klassen mit einem Schema, das Eigenschaften und Vektorisierungsmodule definiert, und… Das Kriterium filterung und abfrageflexibilität zeigt einen weiteren praktischen Unterschied: Qdrant bietet eine ausdrucksstarke Payload-Filter-API mit Bedingungen wie match, range, geo und verschachtelten… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Architektur und Datenmodell: Qdrant speichert Punkte mit Vektoren und optionalen JSON-Payloads in Collections und setzt auf…",
+    "toolB": "dein Projekt priorisiert Hybridsuche und Textsuche: Weaviate bringt eine integrierte Hybridsuche mit BM25 und Vektorsuche mit, inklusive Fusionierung…"
+  }
 }

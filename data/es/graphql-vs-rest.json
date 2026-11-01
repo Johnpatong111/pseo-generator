@@ -1,8 +1,8 @@
 {
   "slug": "graphql-vs-rest",
   "meta": {
-    "title": "Graphql vs Rest (2026): ¿Qué solución elegir?",
-    "description": "Comparamos GraphQL y REST en 2026: ventajas, limitaciones y criterios clave para elegir la arquitectura de API adecuada según tu proyecto y equipo."
+    "title": "Graphql vs Rest: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Graphql y Rest: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Graphql"
@@ -90,5 +90,49 @@
       "q": "¿Qué impacto tiene la elección en la caché y la escalabilidad?",
       "a": "REST se beneficia de la caché HTTP estándar, lo que facilita la escalabilidad en lecturas y la integración con CDN. GraphQL requiere estrategias de caché más específicas, como consultas persistidas o caché a nivel de aplicación, lo que puede añadir complejidad pero también ofrece flexibilidad para optimizar consultas frecuentes."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Graphql y Rest cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Graphql encaja mejor cuando tu proyecto prioriza flexibilidad en la consulta de datos: GraphQL permite al cliente solicitar exactamente los campos que necesita en una sola petición,…. Rest es preferible cuando tu proyecto prioriza facilidad de implementación y aprendizaje: REST se apoya en métodos HTTP estándar y en convenciones ampliamente conocidas, lo que reduce la….",
+  "tradeoffs": [
+    {
+      "category": "Flexibilidad en la consulta de datos",
+      "toolA": "Su sistema de tipos y el lenguaje de consulta facilitan la evolución controlada del esquema, aunque requieren un aprendizaje inicial.",
+      "toolB": "Es sencillo de entender y consumir, pero puede provocar sobrecarga de datos o múltiples peticiones para obtener información relacionada."
+    },
+    {
+      "category": "Facilidad de implementación y aprendizaje",
+      "toolA": "Su curva de aprendizaje es mayor, especialmente en equipos sin experiencia previa en este paradigma.",
+      "toolB": "Implementar un servicio REST básico suele ser más rápido y requiere menos infraestructura específica."
+    },
+    {
+      "category": "Rendimiento y eficiencia en red",
+      "toolA": "Sin embargo, consultas mal diseñadas pueden ser costosas y requieren mecanismos de limitación y análisis de complejidad.",
+      "toolB": "A cambio, su modelo es predecible y permite optimizar cada endpoint de forma independiente, con un impacto en red que depende del diseño de la API."
+    },
+    {
+      "category": "Caché y entrega de contenido",
+      "toolA": "Existen enfoques como consultas persistidas o CDN con GraphQL, pero su configuración es más compleja.",
+      "toolB": "Esto lo hace muy adecuado para contenido estático o semiestático y para APIs públicas."
+    },
+    {
+      "category": "Versionado y evolución del esquema",
+      "toolA": "No obstante, los cambios disruptivos requieren planificación y herramientas de análisis de uso.",
+      "toolB": "Este enfoque es claro y ampliamente soportado, aunque puede incrementar el mantenimiento a largo plazo."
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Además, es necesario limitar la profundidad y complejidad de las consultas para prevenir abusos.",
+      "toolB": "Su modelo es más sencillo de auditar, aunque requiere proteger cada ruta de forma consistente."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Graphql y Rest responden a una necesidad similar, pero difieren en flexibilidad en la consulta de datos. Graphql: GraphQL permite al cliente solicitar exactamente los campos que necesita en una sola petición, evitando respuestas… Rest: REST expone recursos con representaciones fijas, de modo que el cliente recibe todos los campos definidos por el… El criterio de facilidad de implementación y aprendizaje añade otra diferencia práctica: GraphQL exige configurar un servidor que resuelva consultas y mutaciones, definir un esquema y gestionar herramientas… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza flexibilidad en la consulta de datos: GraphQL permite al cliente solicitar exactamente los campos que necesita en una sola petición,…",
+    "toolB": "tu proyecto prioriza facilidad de implementación y aprendizaje: REST se apoya en métodos HTTP estándar y en convenciones ampliamente conocidas, lo que reduce la…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-qdrant",
   "meta": {
-    "title": "LangChain vs Qdrant (2026): ¿Qué solución elegir?",
-    "description": "Comparativa 2026 entre LangChain y Qdrant: framework de orquestación frente a base de datos vectorial. Analizamos casos de uso, rendimiento, seguridad y cuándo combinar ambas."
+    "title": "LangChain vs Qdrant: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara LangChain y Qdrant: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "LangChain"
@@ -94,5 +94,49 @@
       "q": "¿Es razonable combinar LangChain y Qdrant en el mismo proyecto?",
       "a": "Sí, es una combinación habitual: LangChain orquesta la lógica, los prompts y los agentes, y Qdrant almacena y recupera los vectores. Esa separación permite cambiar el motor de recuperación o la lógica de negocio sin rehacer todo el sistema. Eso sí, conviene fijar versiones y medir el rendimiento con la carga real antes de escalar."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre LangChain y Qdrant cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "LangChain encaja mejor cuando tu proyecto prioriza ecosistema e integraciones: LangChain destaca por su ecosistema de integraciones con proveedores de modelos, herramientas de…. Qdrant es preferible cuando tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Qdrant tiene una API relativamente acotada centrada en colecciones, puntos, vectores y filtros,….",
+  "tradeoffs": [
+    {
+      "category": "Propósito principal y categoría de herramienta",
+      "toolA": "No almacena vectores de forma nativa ni sustituye a una base de datos; su función es componer flujos y abstraer integraciones, algo que depende de la versión y de los paquetes que se instalen.",
+      "toolB": "Ofrece API propia, despliegue local o en la nube y no incluye lógica de agentes ni cadenas de LLM, por lo que no compite en la capa de orquestación."
+    },
+    {
+      "category": "Curva de aprendizaje y experiencia de desarrollo",
+      "toolA": "La documentación es amplia, aunque la rapidez de evolución puede obligar a consultar la versión concreta que se esté usando.",
+      "toolB": "Su curva es más suave si el equipo ya conoce bases de datos y conceptos de similitud, aunque requiere comprender indexación, distancia y dimensiones vectoriales para un uso eficiente."
+    },
+    {
+      "category": "Rendimiento y escalabilidad en búsqueda vectorial",
+      "toolA": "Su rendimiento en recuperación depende por completo del backend elegido y de cómo se configuren los retrievers, por lo que no procede compararlo como motor de búsqueda.",
+      "toolB": "El rendimiento real varía con la dimensionalidad, el tamaño de la colección, los filtros aplicados y los recursos disponibles, por lo que conviene medirlo en la carga de trabajo concreta."
+    },
+    {
+      "category": "Ecosistema e integraciones",
+      "toolA": "Esa amplitud facilita cambiar de componente, aunque algunas integraciones son mantenidas por terceros y su calidad puede variar según el paquete y la versión.",
+      "toolB": "Su ecosistema es más acotado porque su alcance es específico: no pretende cubrir toda la orquestación de aplicaciones con LLM."
+    },
+    {
+      "category": "Seguridad, control de acceso y despliegue",
+      "toolA": "No proporciona por sí mismo autenticación de usuarios ni control de acceso a datos; eso se delega en la infraestructura y en los componentes conectados.",
+      "toolB": "Las capacidades concretas de seguridad y su disponibilidad dependen de la versión y del plan, por lo que deben verificarse en la documentación oficial antes de un despliegue en producción."
+    },
+    {
+      "category": "Coste y modelo de precios",
+      "toolA": "Existen componentes y servicios de socios con precios propios, que varían con el proveedor y el consumo.",
+      "toolB": "El coste total también depende del almacenamiento, la memoria y el tráfico de consultas necesarios para la carga de trabajo."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "LangChain y Qdrant responden a una necesidad similar, pero difieren en propósito principal y categoría de herramienta. LangChain: LangChain es un framework de orquestación para aplicaciones basadas en modelos de lenguaje: cadenas, agentes,… Qdrant: Qdrant es una base de datos vectorial (y de búsqueda por similitud) diseñada para almacenar embeddings y ejecutar… El criterio de curva de aprendizaje y experiencia de desarrollo añade otra diferencia práctica: LangChain ofrece muchas abstracciones y patrones (chains, runnables, agentes, retrievers), lo que acelera prototipos… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ecosistema e integraciones: LangChain destaca por su ecosistema de integraciones con proveedores de modelos, herramientas de…",
+    "toolB": "tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Qdrant tiene una API relativamente acotada centrada en colecciones, puntos, vectores y filtros,…"
+  }
 }

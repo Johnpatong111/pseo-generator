@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik (2026): quelle solution choisir ?",
-    "description": "Comparaison SolidJS vs Qwik en 2026 : réactivité fine, hydratation, résumabilité, écosystème, courbe d'apprentissage et cas d'usage pour choisir votre framework JavaScript."
+    "title": "SolidJS vs Qwik: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez SolidJS et Qwik : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "SolidJS"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createSignal } from 'solid-js';\nimport { render } from 'solid-js/web';\n\nfunction App() {\n  const [count, setCount] = createSignal(0);\n  return <button onClick={() => setCount(count() + 1)}>Compteur : {count()}</button>;\n}\n\nrender(() => <App />, document.getElementById('app'));",
-    "tech2Snippet": "import { component$, useSignal } from '@builder.io/qwik';\n\nexport const Counter = component$(() => {\n  const count = useSignal(0);\n  return <button onClick$={() => count.value++}>Compteur : {count.value}</button>;\n});"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre SolidJS et Qwik pour un nouveau projet en 2026 ?",
       "a": "Commencez par identifier si votre priorité est une SPA riche et réactive ou un chargement initial minimal avec interactivité différée. SolidJS correspond souvent au premier cas, Qwik au second, mais un prototype comparatif sur vos pages clés reste la meilleure méthode. Tenez compte de la maturité des bibliothèques, de l'équipe et de la stratégie de déploiement avant de trancher."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre SolidJS et Qwik modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "SolidJS convient mieux lorsque votre projet privilégie écosystème et bibliothèques : L'écosystème SolidJS est plus restreint que celui de React, mais il propose des routeurs, des…. Qwik est préférable lorsque votre projet privilégie hydratation et démarrage : Qwik est conçu autour de la résumabilité : l'application reprend depuis l'état sérialisé sans….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de réactivité et rendu",
+      "toolA": "Ce modèle est performant et prévisible, mais il demande d'accepter que les composants soient des fonctions d'initialisation plutôt que des fonctions de rendu classiques.",
+      "toolB": "Le modèle est cohérent, mais il introduit des contraintes de sérialisation qui peuvent surprendre au début."
+    },
+    {
+      "category": "Hydratation et démarrage",
+      "toolA": "La charge initiale dépend donc de la taille de l'application et du découpage mis en place.",
+      "toolB": "Cela peut réduire le travail initial, mais le bénéfice dépend fortement du découpage, du réseau et de la configuration de déploiement."
+    },
+    {
+      "category": "Écosystème et bibliothèques",
+      "toolA": "La compatibilité avec les paquets React n'est pas native et peut nécessiter des adaptations.",
+      "toolB": "Certaines bibliothèques tierces doivent être adaptées ou remplacées, ce qui demande une évaluation au cas par cas selon votre pile."
+    },
+    {
+      "category": "Courbe d'apprentissage et lisibilité",
+      "toolA": "La distinction entre création et mise à jour demande toutefois un temps d'adaptation si l'on vient d'un modèle à réexécution.",
+      "toolB": "La documentation progresse, mais la familiarité initiale est généralement plus faible que celle d'un framework React-like."
+    },
+    {
+      "category": "Performance à l'exécution",
+      "toolA": "Les performances dépendent ensuite de la taille du bundle initial, du découpage et de la complexité de l'interface.",
+      "toolB": "Sur des applications très interactives, le coût des chargements successifs peut apparaître selon la latence réseau et la stratégie de préchargement."
+    },
+    {
+      "category": "Rendu côté serveur et métaframework",
+      "toolA": "L'écosystème est en évolution et certaines fonctionnalités avancées peuvent varier selon la version utilisée.",
+      "toolB": "Il est cohérent avec Qwik mais évolue rapidement, ce qui impose de vérifier la stabilité des API à chaque montée de version."
+    }
+  ],
+  "introduction": "SolidJS et Qwik répondent à un besoin proche, mais diffèrent sur modèle de réactivité et rendu. SolidJS : SolidJS repose sur des signaux et des primitives réactives fines : les composants ne se réexécutent pas comme en… Qwik : Qwik s'appuie également sur des signaux, mais son architecture sérialise l'état et les gestionnaires d'événements pour… Le critère « Hydratation et démarrage » met en évidence une autre différence pratique : SolidJS effectue une hydratation classique : le HTML est rendu côté serveur puis repris côté client, ce qui implique… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et bibliothèques : L'écosystème SolidJS est plus restreint que celui de React, mais il propose des routeurs, des…",
+    "toolB": "votre projet privilégie hydratation et démarrage : Qwik est conçu autour de la résumabilité : l'application reprend depuis l'état sérialisé sans…"
+  }
 }

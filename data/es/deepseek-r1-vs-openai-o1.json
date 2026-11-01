@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-openai-o1",
   "meta": {
-    "title": "DeepSeek R1 vs OpenAI o1 (2026): ¿Qué solución elegir?",
-    "description": "Comparamos DeepSeek R1 y OpenAI o1 en contexto, rendimiento, precio, latencia, acceso y casos de uso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "DeepSeek R1 vs OpenAI o1: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara DeepSeek R1 y OpenAI o1: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"deepseek-ai/DeepSeek-R1\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\n\ninput_text = \"Hello, world!\"\ninputs = tokenizer(input_text, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"tu_clave_api\")\nresponse = client.chat.completions.create(\n    model=\"o1-preview\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, world!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -82,5 +83,44 @@
       "q": "¿Qué modelo es más adecuado para investigación académica?",
       "a": "DeepSeek R1 es muy atractivo para investigación académica porque es de código abierto, lo que facilita la reproducibilidad y la experimentación sin depender de un servicio externo. OpenAI o1, aunque potente, es cerrado y su uso está sujeto a términos comerciales. Para proyectos que requieren transparencia y modificación del modelo, R1 es la opción más flexible."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre DeepSeek R1 y OpenAI o1 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "DeepSeek R1 encaja mejor cuando tu proyecto prioriza precio de api por millón de tokens (entrada/salida): DeepSeek R1, al ser un modelo abierto, puede ser utilizado a través de proveedores de API de…. OpenAI o1 es preferible cuando tu proyecto prioriza casos de uso prácticos: OpenAI o1 brilla en aplicaciones empresariales que necesitan razonamiento complejo, como….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto",
+      "toolA": "DeepSeek R1, según su documentación oficial, ofrece una ventana de contexto que puede variar según la versión y el proveedor de alojamiento; se recomienda consultar las especificaciones actuales para confirmar el límite exacto, ya que modelos abiertos pueden tener configuraciones distintas.",
+      "toolB": "OpenAI o1, en sus versiones más recientes, ha ampliado su ventana de contexto para manejar conversaciones extensas y documentos largos; el valor concreto depende del modelo y plan contratado, por lo que conviene verificar la documentación oficial de OpenAI para el límite exacto."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "Es importante contrastar con fuentes independientes y considerar que los resultados publicados por el proveedor no siempre reflejan el rendimiento en cargas reales.",
+      "toolB": "Sin embargo, los números exactos dependen de la versión del modelo y de las condiciones de evaluación, por lo que se recomienda verificar los datos más recientes en la documentación de OpenAI."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "Los precios por millón de tokens varían según el proveedor y el volumen; no hay una tarifa única oficial, por lo que se debe consultar cada plataforma para obtener cifras actualizadas.",
+      "toolB": "Los costes por millón de tokens de entrada y salida son públicos en la página de precios de OpenAI, pero están sujetos a cambios, por lo que se recomienda verificar la tarifa vigente antes de calcular el gasto."
+    },
+    {
+      "category": "Latencia",
+      "toolA": "En implementaciones autoalojadas, la latencia está influenciada por el hardware y la carga del servidor.",
+      "toolB": "La latencia exacta varía según la carga del servicio y la complejidad de la consulta, y no se garantiza un tiempo de respuesta fijo."
+    },
+    {
+      "category": "Acceso al modelo y disponibilidad abierta/cerrada",
+      "toolA": "Su disponibilidad depende de los repositorios oficiales y de la comunidad, y requiere conocimientos técnicos para su despliegue.",
+      "toolB": "Esto simplifica la integración y garantiza actualizaciones gestionadas, pero limita el control sobre la infraestructura subyacente."
+    },
+    {
+      "category": "Casos de uso prácticos",
+      "toolA": "Su naturaleza abierta facilita la adaptación a dominios específicos mediante fine-tuning.",
+      "toolB": "Es una opción sólida para equipos que priorizan la rapidez de implementación y el soporte comercial."
+    }
+  ],
+  "introduction": "DeepSeek R1 y OpenAI o1 responden a una necesidad similar, pero difieren en ventana de contexto. DeepSeek R1: DeepSeek R1, según su documentación oficial, ofrece una ventana de contexto que puede variar según la versión y el… OpenAI o1: OpenAI o1, en sus versiones más recientes, ha ampliado su ventana de contexto para manejar conversaciones extensas y… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: DeepSeek R1 ha reportado resultados competitivos en benchmarks como MMLU y HumanEval en sus publicaciones técnicas,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza precio de api por millón de tokens (entrada/salida): DeepSeek R1, al ser un modelo abierto, puede ser utilizado a través de proveedores de API de…",
+    "toolB": "tu proyecto prioriza casos de uso prácticos: OpenAI o1 brilla en aplicaciones empresariales que necesitan razonamiento complejo, como…"
+  }
 }

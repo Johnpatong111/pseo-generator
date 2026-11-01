@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-nestjs",
   "meta": {
-    "title": "Express vs NestJS (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Express i NestJS w 2026 roku: wydajność, architektura, TypeScript, ekosystem, bezpieczeństwo i wsparcie. Sprawdź, które rozwiązanie lepiej pasuje do Twojego projektu."
+    "title": "Express vs NestJS: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Express i NestJS: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Express"
@@ -94,5 +94,49 @@
       "q": "Które narzędzie lepiej wspiera pracę w większym zespole?",
       "a": "W większym zespole NestJS zwykle lepiej wspiera współpracę, ponieważ narzuca spójną strukturę modułów, kontrolerów i serwisów oraz ułatwia wstrzykiwanie zależności i testowanie. Express daje więcej swobody, ale bez wypracowanych konwencji łatwiej o niespójność, dlatego wymaga większej dyscypliny i jasnych zasad wewnątrz zespołu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Express a NestJS zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Express będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i produktywność na starcie”: Express ma bardzo niski próg wejścia: kilka linii kodu wystarcza, by uruchomić serwer HTTP, a…. NestJS sprawdzi się, gdy projekt stawia na kryterium „Architektura i struktura projektu”: NestJS opiera się na architekturze inspirowanej frameworkami enterprise, z modułami, kontrolerami,….",
+  "tradeoffs": [
+    {
+      "category": "Architektura i struktura projektu",
+      "toolA": "Express nie wymusza podziału na moduły, kontrolery czy serwisy, więc jakość struktury zależy wyłącznie od zespołu.",
+      "toolB": "Framework narzuca konwencje, które przekładają się na przewidywalność kodu, ale mogą być nadmiarowe dla bardzo prostych aplikacji."
+    },
+    {
+      "category": "Wydajność i narzut",
+      "toolA": "W aplikacjach intensywnie korzystających z middleware warto mierzyć wpływ każdej warstwy na opóźnienia.",
+      "toolB": "Ostateczne wyniki silnie zależą od wersji, konfiguracji i profilu obciążenia, więc decyzję najlepiej poprzeć własnymi pomiarami."
+    },
+    {
+      "category": "Wsparcie TypeScript i bezpieczeństwo typów",
+      "toolA": "TypeScript w Express jest możliwy i popularny, ale nie jest pierwszoplanowym elementem projektu.",
+      "toolB": "Wersje i konfiguracja mają znaczenie, ale TypeScript jest tu domyślnym i najlepiej wspieranym językiem."
+    },
+    {
+      "category": "Krzywa nauki i produktywność na starcie",
+      "toolA": "Cena tej prostoty ujawnia się później, gdy projekt rośnie i trzeba samodzielnie rozwiązywać problemy architektoniczne.",
+      "toolB": "Krzywa nauki jest stromsza, ale inwestycja zwraca się w zespołach i projektach o większej złożoności."
+    },
+    {
+      "category": "Ekosystem i dostępność bibliotek",
+      "toolA": "Wersje Express 4 i 5 różnią się szczegółami, więc przed aktualizacją warto sprawdzić kompatybilność.",
+      "toolB": "Dostępność funkcji zależy od wersji NestJS i konkretnego adaptera, dlatego warto sprawdzić dokumentację dla wybranej konfiguracji."
+    },
+    {
+      "category": "Testowanie i utrzymanie",
+      "toolA": "Utrzymanie dużego projektu bywa trudniejsze, gdy brakuje jasnych granic między warstwami.",
+      "toolB": "To przekłada się na lepszą utrzymywalność, zwłaszcza gdy zespół jest większy, choć wymaga opanowania frameworka."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
+  },
+  "introduction": "Express i NestJS odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i struktura projektu. Express: Express celowo nie narzuca architektury – dostarcza minimalny zestaw prymitywów do obsługi żądań i odpowiedzi, a… NestJS: NestJS opiera się na architekturze inspirowanej frameworkami enterprise, z modułami, kontrolerami, providerami i… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut”: Express jest minimalistyczny i w typowych scenariuszach API generuje niewielki narzut względem surowego Node.js, co… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Krzywa nauki i produktywność na starcie”: Express ma bardzo niski próg wejścia: kilka linii kodu wystarcza, by uruchomić serwer HTTP, a…",
+    "toolB": "projekt stawia na kryterium „Architektura i struktura projektu”: NestJS opiera się na architekturze inspirowanej frameworkami enterprise, z modułami, kontrolerami,…"
+  }
 }

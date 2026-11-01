@@ -1,8 +1,8 @@
 {
   "slug": "gcp-vs-cloudflare",
   "meta": {
-    "title": "Google Cloud vs Cloudflare (2026): welche Lösung passt besser?",
-    "description": "Google Cloud vs Cloudflare im Vergleich 2026: Compute, Edge, Sicherheit, Preislogik und Betrieb. So finden Sie die passende Plattform für Ihr Projekt."
+    "title": "Google Cloud vs Cloudflare: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Google Cloud und Cloudflare: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Google Cloud"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from flask import Flask\nfrom google.cloud import storage\n\napp = Flask(__name__)\n\n@app.get(\"/\")\ndef hello():\n    return \"Hallo, Welt von Google Cloud!\"\n\nif __name__ == \"__main__\":\n    client = storage.Client()\n    print(\"Storage-Client initialisiert für Projekt:\", client.project)\n    app.run(host=\"0.0.0.0\", port=8080)",
-    "tech2Snippet": "export default {\n  async fetch(request, env, ctx) {\n    return new Response(\"Hallo, Welt von Cloudflare Workers!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  },\n};"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte ich die Entscheidung strukturiert angehen?",
       "a": "Definieren Sie zunächst die zentralen Anforderungen an Datenhaltung, Latenz, Sicherheit und Compliance und prüfen Sie anschließend, welche Plattform diese ohne zusätzliche Dienste abdeckt. Ein Prototyp mit realistischem Lastprofil hilft, Kosten und Betriebsaufwand belastbar zu bewerten, ohne sich auf pauschale Aussagen zu verlassen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Google Cloud und Cloudflare verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Google Cloud passt besser, wenn dein Projekt priorisiert Datenbanken und Speicher: Welche Managed-Dienste für persistente Daten: Google Cloud bietet ein breites Portfolio mit Cloud SQL, Spanner, Firestore und BigQuery sowie…. Cloudflare ist geeigneter, wenn dein Projekt priorisiert Globale Verteilung und Latenz: Wie nah Anwendungen den Nutzern weltweit: Cloudflare betreibt ein weltweit verteiltes Edge-Netz und bringt Workers, CDN und DNS-Auflösung….",
+  "tradeoffs": [
+    {
+      "category": "Compute- und Laufzeitmodell: Welche Art von Rechenressourcen die Plattform",
+      "toolA": "Dadurch lassen sich sowohl klassische Langläufer als auch ereignisgetriebene Workloads abbilden, wobei die konkrete Auswahl und die verfügbaren Limits vom Tarif, der Region und der jeweiligen Dienstkonfiguration abhängen.",
+      "toolB": "Das Modell ist stark auf kurze, verteilte und latenzkritische Ausführungen ausgelegt, während sehr speicher- oder rechenintensive Dauerlast je nach Tarif und Konfiguration an Grenzen stoßen kann."
+    },
+    {
+      "category": "Globale Verteilung und Latenz: Wie nah Anwendungen den Nutzern weltweit",
+      "toolA": "Die Latenz hängt dabei stark von der gewählten Region, der Architektur und der Konfiguration des Netzwerks ab und erfordert eine bewusste Planung der Verteilung.",
+      "toolB": "Das reduziert typischerweise den Aufwand für globale Auslieferung, wobei die tatsächliche Performance von Faktoren wie Tarif, Cache-Konfiguration und Arbeitslast abhängt."
+    },
+    {
+      "category": "Sicherheit und DDoS-Schutz: Welche Schutzmechanismen standardmäßig oder",
+      "toolA": "Diese Funktionen sind leistungsfähig, müssen aber je nach Umfang bewusst eingerichtet und lizenziert werden, sodass der Schutzgrad von der Konfiguration und dem gewählten Tarif abhängt.",
+      "toolB": "Der Schutz greift früh auf Netzwerkebene und ist auch für kleinere Teams verhältnismäßig einfach zu aktivieren, ohne dass eine eigene Security-Infrastruktur aufgebaut werden muss."
+    },
+    {
+      "category": "Datenbanken und Speicher: Welche Managed-Dienste für persistente Daten",
+      "toolA": "Damit lassen sich relationale, dokumentenorientierte und analytische Anforderungen in derselben Plattform abdecken, wobei Kosten und Leistung von Dienst, Region und Skalierung abhängen.",
+      "toolB": "Dieses Angebot ist schlank und auf verteilte Anwendungen zugeschnitten, ersetzt aber in der Regel kein vollständiges Data-Warehouse oder transaktionales Großdatenbanksystem."
+    },
+    {
+      "category": "Entwicklererfahrung und Ökosystem: Wie gut sich Anwendungen bauen, testen und",
+      "toolA": "Die Qualität der Erfahrung hängt stark von Teamgröße und Vorwissen ab.",
+      "toolB": "Bei komplexen Unternehmensanforderungen oder umfangreichen Datenbanklandschaften kann das Ökosystem dagegen weniger abdecken als eine vollständige Cloud-Plattform."
+    },
+    {
+      "category": "Preis- und Abrechnungslogik: Wie Kosten entstehen und kalkulierbar bleiben",
+      "toolA": "Die tatsächlichen Preise sind von Region, Dienst, Tarif und aktuellem Preisstand abhängig und sollten vor dem Einsatz geprüft werden.",
+      "toolB": "Bei hohem Traffic oder vielen Edge-Aufrufen können die Kosten dennoch deutlich steigen, sodass die Preisgestaltung je nach Tarif und Arbeitslast zu bewerten ist."
+    }
+  ],
+  "introduction": "Google Cloud und Cloudflare lösen ein ähnliches Problem, unterscheiden sich jedoch bei compute- und laufzeitmodell: welche art von rechenressourcen die plattform. Google Cloud: Google Cloud bietet mit Compute Engine virtuelle Maschinen, mit Google Kubernetes Engine einen… Cloudflare: Cloudflare stellt mit Workers eine serverlose Laufzeit auf einem globalen Edge-Netz bereit und ergänzt sie um Durable… Das Kriterium globale verteilung und latenz: wie nah anwendungen den nutzern weltweit zeigt einen weiteren praktischen Unterschied: Google Cloud betreibt eigene Regionen und Zonen und erlaubt es, Ressourcen gezielt geografisch zu platzieren sowie mit… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenbanken und Speicher: Welche Managed-Dienste für persistente Daten: Google Cloud bietet ein breites Portfolio mit Cloud SQL, Spanner, Firestore und BigQuery sowie…",
+    "toolB": "dein Projekt priorisiert Globale Verteilung und Latenz: Wie nah Anwendungen den Nutzern weltweit: Cloudflare betreibt ein weltweit verteiltes Edge-Netz und bringt Workers, CDN und DNS-Auflösung…"
+  }
 }

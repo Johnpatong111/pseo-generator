@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen3",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen3 (2026): quelle solution choisir ?",
-    "description": "Comparaison Qwen 2.5 vs Qwen3 : contexte, benchmarks, tarifs API, latence, accès ouvert et cas d'usage. Conseils concrets pour choisir selon votre projet en 2026."
+    "title": "Qwen 2.5 vs Qwen3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qwen 2.5 et Qwen3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal avec Qwen 2.5 via transformers (auto-hébergement)\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Bonjour, écris un Hello World en Python.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=128)\nprint(tokenizer.decode(outputs[0][inputs.input_ids.shape[-1]:], skip_special_tokens=True))",
-    "tech2Snippet": "# Exemple minimal avec Qwen3 via transformers (auto-hébergement)\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"Qwen/Qwen3-8B\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Bonjour, écris un Hello World en Python.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=128)\nprint(tokenizer.decode(outputs[0][inputs.input_ids.shape[-1]:], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment migrer de Qwen 2.5 vers Qwen3 sans casser mon application ?",
       "a": "Commencez par isoler l'appel au modèle derrière une interface commune afin de pouvoir basculer entre les deux versions. Vérifiez ensuite le format du template de chat, la gestion du mode raisonnement et les limites de contexte de la version cible. Déployez progressivement, avec un test A/B et des métriques de qualité, de latence et de coût, et conservez Qwen 2.5 comme solution de repli en cas de régression sur certaines tâches."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qwen 2.5 et Qwen3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qwen 2.5 convient mieux lorsque votre projet privilégie latence et débit en production : La latence de Qwen 2.5 dépend de la taille du modèle, du matériel, de la quantification et de la…. Qwen3 est préférable lorsque votre projet privilégie fenêtre de contexte et gestion des longues entrées : Qwen3 introduit une famille plus large avec des modèles denses et MoE, et des fenêtres de contexte….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et gestion des longues entrées",
+      "toolA": "Les valeurs exactes doivent être vérifiées dans la documentation officielle et sur la fiche du modèle utilisé, car elles diffèrent entre déploiement local, API et versions quantifiées.",
+      "toolB": "Comme pour Qwen 2.5, la limite effective dépend du modèle précis, du fournisseur d'API et du mode de raisonnement activé, ce qui impose une vérification au cas par cas avant de dimensionner une application."
+    },
+    {
+      "category": "Performance sur benchmarks publiés (MMLU, HumanEval)",
+      "toolA": "Ces chiffres ne sont comparables qu'à modèle et protocole d'évaluation identiques, et ils ne préjugent pas des performances sur votre domaine métier.",
+      "toolB": "Il faut consulter les rapports techniques officiels et reproduire les évaluations sur vos propres données avant de conclure, car les classements évoluent avec les versions."
+    },
+    {
+      "category": "Tarification API par million de tokens (entrée/sortie)",
+      "toolA": "Les montants doivent être vérifiés sur la grille tarifaire officielle au moment de la mise en production, car ils varient aussi selon la région et les remises.",
+      "toolB": "Comparez le coût réel par requête plutôt que le prix affiché par token, car la longueur des réponses et le raisonnement pèsent sur la facture."
+    },
+    {
+      "category": "Latence et débit en production",
+      "toolA": "Aucune valeur chiffrée universelle ne peut être avancée sans mesure sur votre infrastructure ou votre fournisseur d'API.",
+      "toolB": "Pour les applications à faible latence, il faut tester le mode non raisonnement ou les variantes plus petites, et mesurer le temps jusqu'au premier token ainsi que le débit sur votre propre charge."
+    },
+    {
+      "category": "Accès, ouverture des poids et déploiement",
+      "toolA": "Il bénéficie d'un écosystème mature (vLLM, Ollama, llama.cpp, transformers) et d'une large communauté de tutoriels et d'adaptateurs.",
+      "toolB": "L'écosystème de déploiement le prend progressivement en charge dans les moteurs d'inférence courants, mais la compatibilité exacte dépend des versions des outils et doit être contrôlée avant adoption."
+    },
+    {
+      "category": "Capacités de raisonnement et de code",
+      "toolA": "Le modèle est adapté aux tâches classiques de développement, mais il n'expose pas de mode de raisonnement explicite séparé.",
+      "toolB": "Sur des tâches simples, ce mode peut toutefois être superflu et coûteux en tokens, d'où l'intérêt de l'activer sélectivement."
+    }
+  ],
+  "introduction": "Qwen 2.5 et Qwen3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et gestion des longues entrées. Qwen 2.5 : Qwen 2.5 est proposé en plusieurs tailles (de 0,5 à 72 milliards de paramètres en versions denses, plus des variantes… Qwen3 : Qwen3 introduit une famille plus large avec des modèles denses et MoE, et des fenêtres de contexte généralement plus… Le critère « Performance sur benchmarks publiés (MMLU, HumanEval) » met en évidence une autre différence pratique : Les scores MMLU et HumanEval de Qwen 2.5 publiés par l'équipe Qwen montrent de bonnes performances pour la génération… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie latence et débit en production : La latence de Qwen 2.5 dépend de la taille du modèle, du matériel, de la quantification et de la…",
+    "toolB": "votre projet privilégie fenêtre de contexte et gestion des longues entrées : Qwen3 introduit une famille plus large avec des modèles denses et MoE, et des fenêtres de contexte…"
+  }
 }

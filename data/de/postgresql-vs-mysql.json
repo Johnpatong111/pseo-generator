@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-mysql",
   "meta": {
-    "title": "PostgreSQL vs MySQL (2026): welche Lösung passt besser?",
-    "description": "PostgreSQL und MySQL im Vergleich 2026: Funktionen, SQL-Standard, JSON, Replikation, Sicherheit und Betrieb. Klare Empfehlung, für wen sich welche Datenbank eignet."
+    "title": "PostgreSQL vs MySQL: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche PostgreSQL und MySQL: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "-- Voraussetzung: PostgreSQL-Datenbank und psql\nCREATE TABLE greeting (id serial PRIMARY KEY, message text NOT NULL);\nINSERT INTO greeting (message) VALUES ('Hello, World!');\nSELECT message FROM greeting;",
-    "tech2Snippet": "-- Voraussetzung: MySQL-Datenbank und mysql-Client\nCREATE TABLE greeting (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(255) NOT NULL);\nINSERT INTO greeting (message) VALUES ('Hello, World!');\nSELECT message FROM greeting;"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Kann ich eine bestehende MySQL-Anwendung ohne große Änderungen auf PostgreSQL migrieren?",
       "a": "Eine Migration ist in vielen Fällen möglich, erfordert aber eine sorgfältige Prüfung von SQL-Dialekt, Datentypen, Indizes und Transaktionsverhalten. Unterschiede bei Funktionen, Standardwerten oder JSON-Operatoren können Anpassungen notwendig machen. Planen Sie deshalb Tests mit realen Abfragen und einem repräsentativen Datenbestand ein, bevor Sie produktiv wechseln."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen PostgreSQL und MySQL verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "PostgreSQL passt besser, wenn dein Projekt priorisiert SQL-Standardkonformität und Funktionsumfang: PostgreSQL orientiert sich vergleichsweise eng am SQL-Standard und bietet zahlreiche…. MySQL ist geeigneter, wenn dein Projekt priorisiert Betrieb, Einstieg und Lernkurve: MySQL ist im Webumfeld weit verbreitet und wird von vielen Anwendungen sowie Hosting-Paketen….",
+  "tradeoffs": [
+    {
+      "category": "SQL-Standardkonformität und Funktionsumfang",
+      "toolA": "Der Funktionsumfang hängt von der eingesetzten Version ab, ist aber generell sehr breit und eignet sich auch für anspruchsvolle analytische Abfragen.",
+      "toolB": "Bei bestimmten Standarddetails und Randfällen weicht das Verhalten jedoch stärker von der Spezifikation ab als bei PostgreSQL, was bei Portierungen relevant sein kann."
+    },
+    {
+      "category": "JSON-Unterstützung",
+      "toolA": "Das erlaubt eine flexible Modellierung, ohne vollständig auf relationale Strukturen zu verzichten, und ist besonders für gemischte Workloads interessant.",
+      "toolB": "Für einfache bis mittlere JSON-Anwendungsfälle ist das ausreichend, bei sehr komplexen Abfragen auf verschachtelten Dokumenten sind die Möglichkeiten jedoch weniger umfangreich als bei PostgreSQL."
+    },
+    {
+      "category": "Transaktionen und Datenintegrität",
+      "toolA": "Constraint-Prüfungen und Fehlerbehandlung folgen klaren Regeln, was die Datenkonsistenz bei komplexen Geschäftslogiken begünstigt.",
+      "toolB": "Je nach Konfiguration und Storage-Engine können sich Verhalten und Isolationsdetails unterscheiden, sodass eine bewusste Prüfung der Einstellungen empfehlenswert ist."
+    },
+    {
+      "category": "Erweiterbarkeit und Ökosystem",
+      "toolA": "Diese Erweiterbarkeit hängt von Version und installierten Modulen ab, macht die Datenbank aber für spezialisierte Anwendungsfälle attraktiv.",
+      "toolB": "Die funktionale Erweiterbarkeit innerhalb der Datenbank ist begrenzter, dafür ist die Verfügbarkeit von Werkzeugen und Fachwissen im Webumfeld sehr hoch."
+    },
+    {
+      "category": "Replikation, Hochverfügbarkeit und Skalierung",
+      "toolA": "Für Lese-Skalierung und Failover existieren erprobte Muster, deren Eignung jedoch von Konfiguration, Version und Betriebsmodell abhängt.",
+      "toolB": "Im Webhosting-Umfeld finden sich viele dokumentierte Betriebsmuster, während sehr spezialisierte Anforderungen eine sorgfältige Architekturprüfung erfordern."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Sichere Standardeinstellungen erfordern dennoch eine bewusste Administration, da die tatsächliche Härtung von Ihrer Umgebung abhängt.",
+      "toolB": "Einzelne Sicherheitsfunktionen und deren Standardverhalten unterscheiden sich je nach Version und Edition, weshalb die jeweils eingesetzte Variante geprüft werden sollte."
+    }
+  ],
+  "introduction": "PostgreSQL und MySQL lösen ein ähnliches Problem, unterscheiden sich jedoch bei sql-standardkonformität und funktionsumfang. PostgreSQL: PostgreSQL orientiert sich vergleichsweise eng am SQL-Standard und bietet zahlreiche fortgeschrittene Sprachmittel wie… MySQL: MySQL deckt die gängigen SQL-Anforderungen solide ab und hat in neueren Versionen viele Funktionen ergänzt, darunter… Das Kriterium json-unterstützung zeigt einen weiteren praktischen Unterschied: PostgreSQL bietet native JSON- und JSONB-Typen mit umfangreichen Operatoren, Funktionen und Indexierungsmöglichkeiten… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert SQL-Standardkonformität und Funktionsumfang: PostgreSQL orientiert sich vergleichsweise eng am SQL-Standard und bietet zahlreiche…",
+    "toolB": "dein Projekt priorisiert Betrieb, Einstieg und Lernkurve: MySQL ist im Webumfeld weit verbreitet und wird von vielen Anwendungen sowie Hosting-Paketen…"
+  }
 }

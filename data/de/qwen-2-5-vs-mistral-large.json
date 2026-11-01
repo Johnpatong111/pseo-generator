@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-mistral-large",
   "meta": {
-    "title": "Qwen 2.5 vs Mistral Large (2026): welche Lösung passt besser?",
-    "description": "Qwen 2.5 und Mistral Large im Vergleich: Kontextfenster, Benchmarks, Preise, Latenz, Verfügbarkeit und Einsatzbereiche. So wählen Sie 2026 das passende Modell."
+    "title": "Qwen 2.5 vs Mistral Large: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Qwen 2.5 und Mistral Large: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hallo, Welt!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es Unterschiede bei der maximalen Kontextlänge?",
       "a": "Beide Modelle bieten in ihren aktuellen Versionen Kontextfenster von bis zu 128.000 Token, wobei die genauen Grenzen je nach Modellvariante und API-Version variieren können. Qwen 2.5 ist in verschiedenen Größen erhältlich, die unterschiedliche Kontextlängen unterstützen; Mistral Large bietet ein einheitliches Fenster für alle Nutzer. Prüfen Sie die exakten Werte in der offiziellen Dokumentation, bevor Sie sich auf eine bestimmte Länge verlassen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Qwen 2.5 und Mistral Large verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Qwen 2.5 passt besser, wenn dein Projekt priorisiert Modellzugang und Offenheit: Qwen 2.5 ist in mehreren Varianten als Open-Weight-Modell verfügbar und kann heruntergeladen und…. Mistral Large ist geeigneter, wenn dein Projekt priorisiert Praktische Einsatzbereiche: Mistral Large ist aufgrund seiner mehrsprachigen Fähigkeiten und der einfachen API-Integration gut….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Die genauen Werte sollten in der offiziellen Dokumentation der jeweiligen Variante überprüft werden, da sie sich je nach Version unterscheiden können.",
+      "toolB": "Die genaue Grenze kann je nach API-Version und Tarif variieren und sollte vor der Integration in der aktuellen Dokumentation von Mistral AI verifiziert werden."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval)",
+      "toolA": "Größere Varianten erzielen in veröffentlichten Benchmarks wettbewerbsfähige Werte, die jedoch nicht direkt mit Mistral Large vergleichbar sind, wenn unterschiedliche Evaluierungsmethoden oder Versionen verwendet werden.",
+      "toolB": "Ein direkter Vergleich mit Qwen 2.5 ist nur eingeschränkt möglich, da die Benchmarks nicht immer unter identischen Bedingungen erhoben wurden und sich die Modelle ständig weiterentwickeln."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input-/Output-Token",
+      "toolA": "Pauschale Aussagen zu Preisen sind daher nicht möglich.",
+      "toolB": "Die genauen Kosten sind auf der offiziellen Website von Mistral AI zu finden und können sich ändern; sie sollten vor der Nutzung geprüft werden."
+    },
+    {
+      "category": "Latenz",
+      "toolA": "Konkrete Latenzwerte sind ohne Messung unter realen Bedingungen nicht verlässlich vergleichbar und sollten bei Bedarf selbst erhoben werden.",
+      "toolB": "Öffentlich verfügbare Durchschnittswerte sind begrenzt und können sich ändern; für eine belastbare Bewertung sind eigene Messungen oder Angaben des Anbieters erforderlich."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Daneben gibt es gehostete API-Angebote, sodass Nutzer zwischen lokaler Ausführung und Cloud-Nutzung wählen können.",
+      "toolB": "Dies ermöglicht eine einfache Integration ohne eigene Infrastruktur, schränkt aber die Möglichkeit zur lokalen Anpassung und Datenkontrolle ein."
+    },
+    {
+      "category": "Praktische Einsatzbereiche",
+      "toolA": "Die Vielfalt der Modellgrößen erlaubt eine Optimierung zwischen Leistung und Ressourcenverbrauch.",
+      "toolB": "Der europäische Fokus kann für Organisationen mit besonderen Compliance-Anforderungen relevant sein."
+    }
+  ],
+  "introduction": "Qwen 2.5 und Mistral Large lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Qwen 2.5: Qwen 2.5 wird in mehreren Varianten mit unterschiedlichen Kontextfenstern angeboten; einige Versionen unterstützen bis… Mistral Large: Mistral Large bietet ein Kontextfenster von bis zu 128.000 Token, was für viele Dokumentenanalysen und längere Dialoge… Das Kriterium benchmark-leistung (mmlu und humaneval) zeigt einen weiteren praktischen Unterschied: Für Qwen 2.5 liegen veröffentlichte Ergebnisse zu MMLU und HumanEval vor, die je nach Modellgröße (z. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Modellzugang und Offenheit: Qwen 2.5 ist in mehreren Varianten als Open-Weight-Modell verfügbar und kann heruntergeladen und…",
+    "toolB": "dein Projekt priorisiert Praktische Einsatzbereiche: Mistral Large ist aufgrund seiner mehrsprachigen Fähigkeiten und der einfachen API-Integration gut…"
+  }
 }

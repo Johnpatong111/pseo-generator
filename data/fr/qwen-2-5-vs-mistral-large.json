@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-mistral-large",
   "meta": {
-    "title": "Qwen 2.5 vs Mistral Large (2026) : quelle solution choisir ?",
-    "description": "Comparatif Qwen 2.5 vs Mistral Large : contexte, benchmarks, tarifs API, latence, accès open-weight ou propriétaire et cas d'usage concrets pour choisir en 2026."
+    "title": "Qwen 2.5 vs Mistral Large: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qwen 2.5 et Mistral Large : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal d'inférence Qwen 2.5 avec Transformers (à adapter au modèle exact)\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Bonjour, écris un Hello World en Python.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=128)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "# Exemple minimal d'appel à Mistral Large via l'API Mistral\nimport os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, écris un Hello World en Python.\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Quelle option privilégier pour une entreprise européenne soucieuse de conformité ?",
       "a": "Mistral Large, édité par un acteur européen, simplifie souvent les discussions contractuelles et de conformité, mais il reste un service propriétaire à vérifier au regard de vos obligations. Qwen 2.5 ouvert permet un hébergement sur votre infrastructure, ce qui peut faciliter la maîtrise des données si vous disposez des compétences nécessaires. La décision doit s'appuyer sur une analyse juridique et technique conjointe."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qwen 2.5 et Mistral Large modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qwen 2.5 convient mieux lorsque votre projet privilégie accès au modèle et ouverture des poids : Qwen 2.5 est diffusé avec des variantes à poids ouverts sous licences spécifiques, ce qui autorise…. Mistral Large est préférable lorsque votre projet privilégie performance sur benchmarks publiés (mmlu, humaneval et autres) : Mistral Large fait l'objet de communications de benchmarks par Mistral, mais les scores dépendent….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et gestion des longues entrées",
+      "toolA": "En pratique, l'intérêt réside dans la possibilité de choisir une variante adaptée à des prompts longs, tout en gardant à l'esprit que la qualité sur les très longues entrées dépend aussi de l'implémentation du serving et du framework utilisé.",
+      "toolB": "Le contexte utile dépend également des paramètres d'appel et des quotas du compte, donc une vérification datée reste indispensable avant de dimensionner une application de retrieval ou d'analyse documentaire."
+    },
+    {
+      "category": "Performance sur benchmarks publiés (MMLU, HumanEval et autres)",
+      "toolA": "Ces scores donnent une indication de culture générale et de génération de code, mais ne préjugent pas des performances sur votre domaine métier ni de la robustesse en production.",
+      "toolB": "Une comparaison rigoureuse avec Qwen 2.5 exige donc de ne retenir que des résultats publiés pour des versions identifiables, et d'éviter d'extrapoler des chiffres non vérifiés."
+    },
+    {
+      "category": "Tarification API par million de jetons en entrée et en sortie",
+      "toolA": "Le coût réel dépend donc de l'infrastructure, du fournisseur choisi et du volume traité, avec des prix par million de jetons qu'il convient de vérifier dans la documentation officielle à la date de votre projet.",
+      "toolB": "Il faut consulter la page tarifaire officielle actuelle pour obtenir des montants exacts, car les prix et les paliers peuvent changer selon les offres et les contrats."
+    },
+    {
+      "category": "Latence et débit en production",
+      "toolA": "Un déploiement maîtrisé peut offrir un bon débit, mais il exige une configuration d'inférence adaptée et une surveillance continue pour tenir la charge.",
+      "toolB": "En pratique, il est prudent de réaliser vos propres tests de latence sur votre cas d'usage plutôt que de se fier à des chiffres génériques."
+    },
+    {
+      "category": "Accès au modèle et ouverture des poids",
+      "toolA": "Cette ouverture facilite la souveraineté des données et l'expérimentation, mais implique de gérer vous-même l'infrastructure et les mises à jour.",
+      "toolB": "Cela simplifie l'intégration et la maintenance, mais réduit la portabilité et impose de dépendre du fournisseur pour les évolutions et la disponibilité."
+    },
+    {
+      "category": "Cas d'usage pratiques et écosystème",
+      "toolA": "Son écosystème s'appuie sur des frameworks d'inférence courants, mais nécessite une expertise pour l'exploitation en production.",
+      "toolB": "Son écosystème est plus fermé mais généralement plus simple à mettre en œuvre pour une équipe produit qui veut livrer vite."
+    }
+  ],
+  "introduction": "Qwen 2.5 et Mistral Large répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et gestion des longues entrées. Qwen 2.5 : La famille Qwen 2.5 propose plusieurs variantes avec des fenêtres de contexte qui diffèrent selon la taille et le mode… Mistral Large : Mistral Large est proposé via l'API Mistral et ses limites de contexte sont précisées dans la documentation officielle… Le critère « Performance sur benchmarks publiés (MMLU, HumanEval et autres) » met en évidence une autre différence pratique : Les résultats de Qwen 2.5 sur des référentiels comme MMLU ou HumanEval varient selon la taille du modèle et la version… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie accès au modèle et ouverture des poids : Qwen 2.5 est diffusé avec des variantes à poids ouverts sous licences spécifiques, ce qui autorise…",
+    "toolB": "votre projet privilégie performance sur benchmarks publiés (mmlu, humaneval et autres) : Mistral Large fait l'objet de communications de benchmarks par Mistral, mais les scores dépendent…"
+  }
 }

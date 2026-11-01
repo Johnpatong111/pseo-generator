@@ -1,8 +1,8 @@
 {
   "slug": "nuxt-vs-astro",
   "meta": {
-    "title": "Nuxt vs Astro (2026): quelle solution choisir ?",
-    "description": "Nuxt ou Astro en 2026 : comparaison détaillée du rendu, des îlots d'interactivité, du routage, de l'écosystème et de la DX pour choisir le framework adapté à votre projet web."
+    "title": "Nuxt vs Astro: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Nuxt et Astro : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Nuxt"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// nuxt.config.ts\nexport default defineNuxtConfig({})\n\n// app.vue\n<template>\n  <h1>Hello, World!</h1>\n</template>",
-    "tech2Snippet": "---\n// src/pages/index.astro\n---\n<html lang=\"fr\">\n  <head><title>Hello</title></head>\n  <body><h1>Hello, World!</h1></body>\n</html>"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre Nuxt et Astro pour une équipe déjà familière avec Vue ?",
       "a": "Une équipe Vue sera naturellement productive avec Nuxt, qui réutilise ses compétences et ses bibliothèques. Astro accepte aussi des composants Vue, ce qui permet de conserver une partie du savoir-faire tout en profitant des îlots, mais l'architecture globale reste différente. Le choix dépend de la densité d'interactivité et du besoin d'une couche applicative complète."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Nuxt et Astro modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Nuxt convient mieux lorsque votre projet privilégie cas d'usage applicatif et logique serveur : Nuxt fournit des routes serveur, des middlewares et une organisation adaptée aux formulaires, à…. Astro est préférable lorsque votre projet privilégie interactivité et hydratation : Astro repose sur des îlots d'interactivité : seuls les composants explicitement marqués sont….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de rendu et stratégie de livraison",
+      "toolA": "Les résultats concrets dépendent de la configuration, de l'hébergement et de la charge.",
+      "toolB": "Le comportement final varie selon l'adaptateur et le mode de déploiement choisi."
+    },
+    {
+      "category": "Interactivité et hydratation",
+      "toolA": "Il peut toutefois envoyer plus de JavaScript que nécessaire sur des pages peu interactives.",
+      "toolB": "En contrepartie, partager un état global entre de nombreux îlots demande une organisation plus explicite."
+    },
+    {
+      "category": "Routage et structure du projet",
+      "toolA": "La structure est claire mais suppose d'adopter les conventions du framework.",
+      "toolB": "Les besoins applicatifs plus poussés reposent davantage sur des intégrations externes."
+    },
+    {
+      "category": "Écosystème et intégration de frameworks",
+      "toolA": "En revanche, mélanger plusieurs frameworks d'interface dans un même projet n'est pas l'objectif du framework.",
+      "toolB": "La compatibilité exacte dépend des intégrations maintenues et des versions utilisées."
+    },
+    {
+      "category": "Expérience développeur et courbe d'apprentissage",
+      "toolA": "La richesse des fonctionnalités implique néanmoins de comprendre les modes de rendu et les cycles d'exécution serveur/client.",
+      "toolB": "Les projets très applicatifs peuvent nécessiter d'ajouter davantage de briques."
+    },
+    {
+      "category": "Performance perçue et poids JavaScript",
+      "toolA": "Les gains réels varient selon la page, le réseau et la configuration.",
+      "toolB": "Les mesures doivent être faites sur le projet réel."
+    }
+  ],
+  "introduction": "Nuxt et Astro répondent à un besoin proche, mais diffèrent sur modèle de rendu et stratégie de livraison. Nuxt : Nuxt s'appuie sur Vue et propose plusieurs modes de rendu : génération statique, rendu côté serveur et rendu hybride… Astro : Astro privilégie par défaut la génération de pages statiques et l'envoi d'un HTML léger au navigateur. Le critère « Interactivité et hydratation » met en évidence une autre différence pratique : Nuxt hydrate l'application Vue dans son ensemble, ce qui facilite les états partagés, la navigation client et les… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie cas d'usage applicatif et logique serveur : Nuxt fournit des routes serveur, des middlewares et une organisation adaptée aux formulaires, à…",
+    "toolB": "votre projet privilégie interactivité et hydratation : Astro repose sur des îlots d'interactivité : seuls les composants explicitement marqués sont…"
+  }
 }

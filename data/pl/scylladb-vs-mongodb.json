@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie ScyllaDB i MongoDB w 2026: wydajność, model danych, skalowanie, spójność, ekosystem i koszty operacyjne. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "ScyllaDB vs MongoDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj ScyllaDB i MongoDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -94,5 +94,49 @@
       "q": "Czy ScyllaDB i MongoDB są kompatybilne z istniejącymi aplikacjami?",
       "a": "ScyllaDB jest kompatybilna z protokołem Cassandry, co ułatwia migrację części aplikacji korzystających z CQL i sterowników Cassandry, ale nie gwarantuje pełnej zgodności ze wszystkimi funkcjami. MongoDB ma szeroki ekosystem sterowników i bibliotek dla wielu języków, co zwykle upraszcza integrację z istniejącym oprogramowaniem. Przed migracją należy zweryfikować zgodność konkretnych funkcji i wersji, ponieważ zakres wsparcia może się różnić."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między ScyllaDB a MongoDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "ScyllaDB będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki…. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i elastyczność schematu",
+      "toolA": "Wersje i konfiguracja wpływają na dostępne funkcje, takie jak typy kolekcji czy materialized views.",
+      "toolB": "Zakres funkcji zależy od wersji oraz planu (Community vs Enterprise/Atlas), dlatego trzeba zweryfikować dostępność konkretnych operatorów i indeksów."
+    },
+    {
+      "category": "Wydajność i przewidywalność opóźnień",
+      "toolA": "Nie należy zakładać konkretnych liczb bez własnych testów w docelowym środowisku.",
+      "toolB": "Wyniki silnie zależą od wersji, konfiguracji sprzętowej i planu wdrożenia (self-hosted vs Atlas)."
+    },
+    {
+      "category": "Skalowanie poziome i rozproszenie",
+      "toolA": "Niektóre operacje, takie jak zmiana liczby replik czy naprawy, wymagają ostrożnego planowania i zależą od wersji.",
+      "toolB": "Dostępność i zachowanie funkcji zależą od wersji oraz edycji (Community/Enterprise/Atlas)."
+    },
+    {
+      "category": "Spójność i transakcje",
+      "toolA": "Należy zweryfikować dostępność konkretnych mechanizmów transakcyjnych w używanej wersji.",
+      "toolB": "Zakres wsparcia transakcji zależy od wersji oraz typu wdrożenia, dlatego trzeba sprawdzić dokumentację dla konkretnej instalacji."
+    },
+    {
+      "category": "Język zapytań i możliwości analityczne",
+      "toolA": "Możliwości zależą od wersji i konfiguracji, a nie każde zapytanie SQL jest bezpośrednio dostępne.",
+      "toolB": "Dostępność konkretnych operatorów i indeksów należy potwierdzić dla używanej wersji."
+    },
+    {
+      "category": "Ekosystem, narzędzia i wsparcie",
+      "toolA": "Wsparcie komercyjne i zakres funkcji zależą od planu oraz wersji.",
+      "toolB": "Należy zweryfikować, które funkcje są dostępne w wybranej edycji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "ScyllaDB i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu. ScyllaDB: ScyllaDB opiera się na modelu szerokich kolumn zgodnym z API Cassandry, z tabelami, partycjami i kluczami… MongoDB: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój i modelowanie… Kolejną istotną różnicę pokazuje kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki architekturze… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki…",
+    "toolB": "projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój…"
+  }
 }

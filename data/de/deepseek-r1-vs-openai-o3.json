@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-openai-o3",
   "meta": {
-    "title": "DeepSeek R1 vs OpenAI o3 (2026): welche Lösung passt besser?",
-    "description": "Vergleich von DeepSeek R1 und OpenAI o3: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Use Cases. Entscheidungshilfe für 2026."
+    "title": "DeepSeek R1 vs OpenAI o3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche DeepSeek R1 und OpenAI o3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import requests\n\nresponse = requests.post(\n    \"https://api.deepseek.com/v1/chat/completions\",\n    headers={\"Authorization\": \"Bearer DEIN_API_KEY\"},\n    json={\n        \"model\": \"deepseek-reasoner\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}]\n    }\n)\nprint(response.json()[\"choices\"][0][\"message\"][\"content\"])",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"DEIN_API_KEY\")\nresponse = client.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie wichtig ist das Kontextfenster für die Wahl zwischen DeepSeek R1 und OpenAI o3?",
       "a": "Das Kontextfenster bestimmt, wie viel Text oder Code das Modell in einer Anfrage verarbeiten kann, und ist damit für Aufgaben wie Dokumentenanalyse oder Code-Review relevant. Die genauen Limits sind versions- und anbieterabhängig und sollten in der offiziellen Dokumentation geprüft werden. Eine pauschale Empfehlung ist nicht möglich, da beide Modelle je nach Konfiguration unterschiedliche Größen bieten können."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen DeepSeek R1 und OpenAI o3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "DeepSeek R1 passt besser, wenn dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: Die Tarife sind versions-,: DeepSeek R1 ist über APIs verschiedener Anbieter sowie als offenes Modell verfügbar. OpenAI o3 ist geeigneter, wenn dein Projekt priorisiert Latenz: Antwortzeit und Durchsatz hängen von Modellversion, Infrastruktur,: OpenAI o3 läuft auf der Infrastruktur von OpenAI, wodurch die Latenz von der aktuellen Auslastung….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster: Maximale Eingabelänge und praktische Nutzung für lange",
+      "toolA": "In der Praxis eignet sich ein großes Kontextfenster für die Analyse umfangreicher Texte, sofern die jeweilige API oder das selbst gehostete Modell dies unterstützt.",
+      "toolB": "Für Anwendungen mit sehr langen Eingaben sollte die Kompatibilität mit dem gewählten Tarif und die tatsächliche Token-Grenze vorab geprüft werden."
+    },
+    {
+      "category": "Benchmark-Leistung: Vergleich veröffentlichter Ergebnisse für MMLU und",
+      "toolA": "Ohne identische Bedingungen sind die Zahlen nur eingeschränkt vergleichbar.",
+      "toolB": "Für eine belastbare Entscheidung sollten die offiziellen Modellkarten und Evaluierungsberichte beider Anbieter herangezogen werden."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token: Die Tarife sind versions-,",
+      "toolA": "Eine belastbare Kostenplanung erfordert die aktuellen Preislisten der jeweiligen Anbieter und die Berücksichtigung von Rabatten oder Kontingenten.",
+      "toolB": "Zusätzliche Kosten können für bestimmte Funktionen oder höhere Rate Limits anfallen."
+    },
+    {
+      "category": "Latenz: Antwortzeit und Durchsatz hängen von Modellversion, Infrastruktur,",
+      "toolA": "Bei API-Nutzung bestimmen Anbieter-Infrastruktur und Auslastung die Antwortzeit.",
+      "toolB": "Garantierte Latenzwerte sind ohne spezifische Vereinbarung nicht allgemein verfügbar."
+    },
+    {
+      "category": "Modellzugang und Offenheit: Verfügbarkeit als offenes Modell zum Selbsthosten",
+      "toolA": "Die konkreten Lizenzbedingungen und die Verfügbarkeit von Gewichten sollten vor dem Einsatz geprüft werden.",
+      "toolB": "Organisationen erhalten dafür integrierte Sicherheitsfunktionen und Support, jedoch keine Einsicht in die Modellgewichte."
+    },
+    {
+      "category": "Praktische Anwendungsfälle: Eignung für Aufgaben wie Codegenerierung, Analyse,",
+      "toolA": "Für produktionskritische Szenarien sind Betrieb und Monitoring selbst zu verantworten.",
+      "toolB": "Die Eignung für regulierte oder datensensible Szenarien ist anhand der OpenAI-Richtlinien und eigener Compliance-Anforderungen zu prüfen."
+    }
+  ],
+  "introduction": "DeepSeek R1 und OpenAI o3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster: maximale eingabelänge und praktische nutzung für lange. DeepSeek R1: DeepSeek R1 bietet ein Kontextfenster, das je nach bereitgestelltem Modell und Version variiert. OpenAI o3: OpenAI o3 wird mit einem Kontextfenster angeboten, dessen genaue Größe von der eingesetzten Modellversion und dem… Das Kriterium benchmark-leistung: vergleich veröffentlichter ergebnisse für mmlu und zeigt einen weiteren praktischen Unterschied: DeepSeek R1 ist ein Reasoning-Modell, für das DeepSeek in technischen Berichten Benchmark-Ergebnisse veröffentlicht hat. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: Die Tarife sind versions-,: DeepSeek R1 ist über APIs verschiedener Anbieter sowie als offenes Modell verfügbar.",
+    "toolB": "dein Projekt priorisiert Latenz: Antwortzeit und Durchsatz hängen von Modellversion, Infrastruktur,: OpenAI o3 läuft auf der Infrastruktur von OpenAI, wodurch die Latenz von der aktuellen Auslastung…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-kubernetes",
   "meta": {
-    "title": "Terraform vs Kubernetes (2026): quelle solution choisir ?",
-    "description": "Terraform et Kubernetes ne jouent pas le même rôle : infrastructure as code contre orchestration de conteneurs. Découvrez leurs différences, cas d'usage et comment les combiner en 2026."
+    "title": "Terraform vs Kubernetes: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Terraform et Kubernetes : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Terraform"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"eu-west-3\"\n}\n\nresource \"aws_s3_bucket\" \"hello\" {\n  bucket = \"mon-bucket-hello-world-2026\"\n}",
-    "tech2Snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: hello-world\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: hello-world\n  template:\n    metadata:\n      labels:\n        app: hello-world\n    spec:\n      containers:\n      - name: hello\n        image: nginx:alpine\n        ports:\n        - containerPort: 80"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles sont les limites respectives à connaître ?",
       "a": "Terraform peut devenir complexe à grande échelle, surtout avec de nombreux environnements et la gestion de l'état ; il ne gère pas l'orchestration en temps réel. Kubernetes a une courbe d'apprentissage élevée et une complexité opérationnelle importante, et il ne couvre pas le provisionnement d'infrastructure non conteneurisée. Les deux nécessitent une gouvernance et des pratiques de sécurité rigoureuses."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Terraform et Kubernetes modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Terraform convient mieux lorsque votre projet privilégie écosystème et intégration multi-cloud : Terraform dispose d'un large catalogue de providers officiels et communautaires pour AWS, Azure,…. Kubernetes est préférable lorsque votre projet privilégie sécurité et gestion des accès : Kubernetes intègre nativement un modèle de sécurité riche : RBAC pour les autorisations, Network….",
+  "tradeoffs": [
+    {
+      "category": "Rôle principal et modèle d'exécution",
+      "toolA": "Son exécution est généralement déclenchée par un pipeline ou un opérateur, pas en continu sur les charges applicatives.",
+      "toolB": "Il ne provisionne pas l'infrastructure sous-jacente (sauf via des extensions comme Cluster API, qui reste un cas particulier)."
+    },
+    {
+      "category": "Langage et approche de configuration",
+      "toolA": "La configuration décrit des ressources et leurs dépendances, et Terraform calcule un plan d'exécution.",
+      "toolB": "La syntaxe YAML est simple en apparence, mais la richesse des objets et des bonnes pratiques peut rendre la courbe d'apprentissage plus raide."
+    },
+    {
+      "category": "Gestion de l'état et idempotence",
+      "toolA": "Terraform peut importer des ressources existantes et propose des commandes comme plan et apply pour contrôler les modifications.",
+      "toolB": "Il n'y a pas de fichier d'état utilisateur à gérer, mais la compréhension des contrôleurs et des stratégies de déploiement (RollingUpdate, etc.) est nécessaire pour maîtriser les changements."
+    },
+    {
+      "category": "Écosystème et intégration multi-cloud",
+      "toolA": "La communauté fournit également des modules réutilisables, ce qui accélère la mise en place de bonnes pratiques.",
+      "toolB": "En revanche, Kubernetes ne vise pas à provisionner des ressources cloud non conteneurisées ; il faut des outils complémentaires pour cela."
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "Les versions récentes introduisent des améliorations, mais il convient de vérifier la documentation de la version utilisée.",
+      "toolB": "La sécurité d'un cluster dépend toutefois de la configuration, des mises à jour et des politiques appliquées ; les offres managées ajoutent des contrôles mais ne dispensent pas d'une bonne hygiène."
+    },
+    {
+      "category": "Courbe d'apprentissage et complexité opérationnelle",
+      "toolA": "La complexité augmente avec le nombre de ressources et la gestion multi-environnements, mais l'outil reste relativement ciblé sur le provisionnement.",
+      "toolB": "Les offres managées réduisent la charge, mais ne suppriment pas la complexité applicative."
+    }
+  ],
+  "introduction": "Terraform et Kubernetes répondent à un besoin proche, mais diffèrent sur rôle principal et modèle d'exécution. Terraform : Terraform est un outil d'infrastructure as code (IaC) qui permet de décrire et de provisionner des ressources… Kubernetes : Kubernetes est une plateforme d'orchestration de conteneurs qui gère le déploiement, la mise à l'échelle et la… Le critère « Langage et approche de configuration » met en évidence une autre différence pratique : Terraform utilise le langage HCL (HashiCorp Configuration Language), conçu pour être lisible et déclaratif, avec des… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et intégration multi-cloud : Terraform dispose d'un large catalogue de providers officiels et communautaires pour AWS, Azure,…",
+    "toolB": "votre projet privilégie sécurité et gestion des accès : Kubernetes intègre nativement un modèle de sécurité riche : RBAC pour les autorisations, Network…"
+  }
 }

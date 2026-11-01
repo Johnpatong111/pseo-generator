@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie SQLite i DuckDB w 2026: transakcje, analityka, współbieżność, integracje i ograniczenia. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "SQLite vs DuckDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj SQLite i DuckDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "SQLite"
@@ -94,5 +94,49 @@
       "q": "Jakie są ograniczenia SQLite przy dużych obciążeniach analitycznych?",
       "a": "SQLite korzysta z układu wierszowego, co jest korzystne dla transakcji, ale mniej efektywne przy skanowaniu dużych tabel i złożonych agregacjach. Indeksy i optymalizacja schematu mogą poprawić wydajność, jednak przy bardzo dużych zbiorach analitycznych silnik może wymagać więcej pracy niż rozwiązania kolumnowe. Rzeczywiste ograniczenia zależą od wersji, sprzętu i konstrukcji zapytań, dlatego warto testować na reprezentatywnych danych."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między SQLite a DuckDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "SQLite będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i dostęp wieloużytkownikowy”: SQLite obsługuje wielu czytających, a zapis jest serializowany; przy włączonym WAL odczyty nie…. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Profil obciążenia: transakcje a analityka”: DuckDB jest zoptymalizowany pod zapytania analityczne OLAP: agregacje, złączenia i skanowanie….",
+  "tradeoffs": [
+    {
+      "category": "Model przechowywania i architektura pliku",
+      "toolA": "Zachowanie i dostępne funkcje zależą od wersji biblioteki oraz flag kompilacji, dlatego warto sprawdzić konkretną dystrybucję.",
+      "toolB": "Zachowanie i funkcje zależą od wersji silnika oraz konfiguracji pamięci, więc wyniki należy weryfikować na własnym obciążeniu."
+    },
+    {
+      "category": "Profil obciążenia: transakcje a analityka",
+      "toolA": "Rzeczywista wydajność zależy od schematu, indeksów i konfiguracji.",
+      "toolB": "Wydajność zależy od rozmiaru danych, dostępnej pamięci i konstrukcji zapytań."
+    },
+    {
+      "category": "Współbieżność i dostęp wieloużytkownikowy",
+      "toolA": "SQLite obsługuje wielu czytających, a zapis jest serializowany; przy włączonym WAL odczyty nie blokują zapisu w typowych scenariuszach. Rozwiązanie sprawdza się w aplikacjach wbudowanych i lokalnych, ale przy intensywnym współdzieleniu zapisu może wymagać kolejek lub architektury z jednym procesem zapisującym. Zachowanie zależy od wersji i konfiguracji.",
+      "toolB": "Wydajność i ograniczenia zależą od wersji oraz konfiguracji."
+    },
+    {
+      "category": "Wydajność zapytań analitycznych i kompresja",
+      "toolA": "SQLite korzysta z układu wierszowego, co jest korzystne przy zapytaniach punktowych i transakcyjnych, ale mniej efektywne przy skanowaniu dużych tabel i agregacjach. Indeksy i dobrze zaprojektowany schemat mogą poprawić wydajność, jednak przy dużych zbiorach analitycznych silnik może wymagać więcej pracy. Wyniki zależą od wersji, sprzętu i zapytań.",
+      "toolB": "Rzeczywiste przyspieszenie zależy od zapytań, rozmiaru danych i konfiguracji pamięci."
+    },
+    {
+      "category": "Transakcje i integralność danych",
+      "toolA": "SQLite jest dojrzałym silnikiem transakcyjnym z obsługą transakcji, więzów i mechanizmów integralności, szeroko wykorzystywanym w aplikacjach produkcyjnych. Zapewnia atomowość i trwałość zgodnie z konfiguracją, a jego zachowanie jest dobrze udokumentowane. Szczegóły zależą od wersji i ustawień.",
+      "toolB": "Obsługa transakcji i współbieżności może się różnić między wersjami, dlatego przy zastosowaniach transakcyjnych należy zweryfikować dokumentację konkretnej wersji."
+    },
+    {
+      "category": "Ekosystem, dojrzałość i wsparcie społeczności",
+      "toolA": "Dojrzałość przekłada się na przewidywalność, choć warto sprawdzić konkretną dystrybucję.",
+      "toolB": "Przed wdrożeniem warto sprawdzić zgodność z posiadanymi narzędziami."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "SQLite i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model przechowywania i architektura pliku. SQLite: SQLite przechowuje całą bazę w jednym pliku na dysku, co upraszcza kopie zapasowe, przenoszenie i osadzanie w… DuckDB: DuckDB również działa na pojedynczym pliku bazy i nie wymaga serwera, ale jest zoptymalizowany pod układ kolumnowy i… Kolejną istotną różnicę pokazuje kryterium „Profil obciążenia: transakcje a analityka”: SQLite jest projektowany pod obciążenia transakcyjne OLTP: wiele krótkich zapytań, wstawianie, aktualizacje i odczyty… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Współbieżność i dostęp wieloużytkownikowy”: SQLite obsługuje wielu czytających, a zapis jest serializowany; przy włączonym WAL odczyty nie…",
+    "toolB": "projekt stawia na kryterium „Profil obciążenia: transakcje a analityka”: DuckDB jest zoptymalizowany pod zapytania analityczne OLAP: agregacje, złączenia i skanowanie…"
+  }
 }

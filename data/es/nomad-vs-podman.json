@@ -1,8 +1,8 @@
 {
   "slug": "nomad-vs-podman",
   "meta": {
-    "title": "Nomad vs Podman (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Nomad y Podman en 2026: orquestación de clústeres frente a gestión de contenedores sin daemon. Descubre sus diferencias, ventajas y cuál encaja mejor en tu caso."
+    "title": "Nomad vs Podman: cuál elegir en 2026 — despliegue, escalabilidad y costes",
+    "description": "Compara Nomad y Podman: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Nomad"
@@ -94,5 +94,49 @@
       "q": "¿Cómo afecta la versión y la configuración a esta comparación?",
       "a": "Tanto Nomad como Podman evolucionan con nuevas versiones, y funciones como el driver de Podman, las opciones de seguridad o el soporte de pods pueden variar según la versión instalada. También influyen la configuración del clúster, el sistema operativo y la carga de trabajo. Antes de decidir, conviene consultar la documentación oficial de la versión concreta que vayas a utilizar y probar en un entorno representativo."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Nomad y Podman cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Nomad encaja mejor cuando tu proyecto prioriza propósito y modelo de uso: Nomad es un orquestador de cargas de trabajo diseñado para programar tareas sobre un conjunto de…. Podman es preferible cuando tu proyecto prioriza arquitectura y dependencia de daemon: Podman funciona sin un daemon central: cada invocación se ejecuta como un proceso del usuario y….",
+  "tradeoffs": [
+    {
+      "category": "Propósito y modelo de uso",
+      "toolA": "Permite describir trabajos declarativos con bloques para servicios, lotes o trabajos efímeros y asignar recursos entre distintos tipos de ejecutables.",
+      "toolB": "Su modelo es más próximo al de Docker: se centra en el ciclo de vida del contenedor individual y en herramientas asociadas como Podman Compose o Quadlet."
+    },
+    {
+      "category": "Arquitectura y dependencia de daemon",
+      "toolA": "Su arquitectura está pensada para tolerancia a fallos y alta disponibilidad desde el diseño del plano de control.",
+      "toolB": "Esa ausencia de servicio permanente simplifica la seguridad y el uso en estaciones o servidores pequeños, aunque no ofrece por sí sola coordinación entre nodos."
+    },
+    {
+      "category": "Tipos de cargas de trabajo admitidas",
+      "toolA": "Esa versatilidad lo hace útil cuando la infraestructura no es homogénea o cuando conviven servicios persistentes y procesos puntuales.",
+      "toolB": "No está pensado para orquestar binarios que no se ejecuten como contenedores ni para programar trabajos distribuidos."
+    },
+    {
+      "category": "Curva de aprendizaje y herramientas",
+      "toolA": "Su curva de aprendizaje es mayor porque exige entender conceptos de clúster, asignación de recursos y políticas de trabajo.",
+      "toolB": "Además, herramientas como Podman Desktop o Compose facilitan el uso en desarrollo local sin necesidad de aprender un lenguaje de definición nuevo."
+    },
+    {
+      "category": "Alta disponibilidad y escalado",
+      "toolA": "Su enfoque permite escalar horizontalmente añadiendo clientes, aunque el dimensionamiento del plano de control requiere planificación.",
+      "toolB": "En un único host sí puede gestionar varios contenedores y pods, pero la alta disponibilidad queda fuera de su alcance directo."
+    },
+    {
+      "category": "Seguridad y aislamiento",
+      "toolA": "El aislamiento efectivo depende en gran medida del driver y del sistema operativo subyacente, por lo que conviene revisar la configuración de cada entorno.",
+      "toolB": "También admite opciones de aislamiento como namespaces y sellado de secciones del sistema, aunque la seguridad final depende de la configuración de cada contenedor."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Nomad y Podman responden a una necesidad similar, pero difieren en propósito y modelo de uso. Nomad: Nomad es un orquestador de cargas de trabajo diseñado para programar tareas sobre un conjunto de nodos gestionados por… Podman: Podman es una herramienta de gestión de contenedores orientada a ejecutar, construir y mantener contenedores e… El criterio de arquitectura y dependencia de daemon añade otra diferencia práctica: Nomad se apoya en un binario único que actúa como servidor o cliente según su configuración, y requiere un clúster de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza propósito y modelo de uso: Nomad es un orquestador de cargas de trabajo diseñado para programar tareas sobre un conjunto de…",
+    "toolB": "tu proyecto prioriza arquitectura y dependencia de daemon: Podman funciona sin un daemon central: cada invocación se ejecuta como un proceso del usuario y…"
+  }
 }

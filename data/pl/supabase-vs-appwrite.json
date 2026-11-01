@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-appwrite",
   "meta": {
-    "title": "Supabase vs Appwrite (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Supabase i Appwrite w 2026 roku: baza danych, uwierzytelnianie, hosting, ceny i bezpieczeństwo. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "Supabase vs Appwrite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj Supabase i Appwrite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Supabase"
@@ -94,5 +94,49 @@
       "q": "Kto powinien wybrać Supabase, a kto Appwrite?",
       "a": "Supabase będzie lepszy dla zespołów znających SQL, potrzebujących PostgreSQL, zaawansowanych polityk dostępu i funkcji analitycznych. Appwrite wybiorą osoby, które chcą szybko uruchomić backend z gotowym API, prostszą bazą dokumentową i wieloma SDK. Warto przetestować oba rozwiązania na reprezentatywnym prototypie przed wdrożeniem produkcyjnym."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Supabase a Appwrite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki,…. Appwrite sprawdzi się, gdy projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co….",
+  "tradeoffs": [
+    {
+      "category": "Model bazy danych i język zapytań",
+      "toolA": "Zachowanie i dostępność rozszerzeń zależą od planu i konfiguracji instancji.",
+      "toolB": "Możliwości zapytań i indeksowania zależą od wersji Appwrite i konfiguracji projektu."
+    },
+    {
+      "category": "Uwierzytelnianie i zarządzanie tożsamością",
+      "toolA": "Konkretni dostawcy i funkcje, takie jak MFA, zależą od wersji i planu.",
+      "toolB": "Zakres metod logowania i mechanizmów zabezpieczeń różni się między wersjami, więc warto sprawdzić macierz funkcji dla wybranej edycji."
+    },
+    {
+      "category": "Gotowość backendu i funkcje serverless",
+      "toolA": "Limity czasu wykonania i dostępne funkcje zależą od planu.",
+      "toolB": "Dostępne runtime'y i limity wykonania zależą od wersji i planu hostingu."
+    },
+    {
+      "category": "Hosting, self-hosting i przenośność",
+      "toolA": "Zakres wspieranych funkcji w trybie self-hosted bywa węższy niż w chmurze i zależy od wersji.",
+      "toolB": "Niektóre funkcje chmury, takie jak rozszerzone skanowanie czy określone integracje, mogą być niedostępne lub ograniczone w self-hostingu."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Szyfrowanie, kopie zapasowe i audyt zależą od planu oraz konfiguracji projektu.",
+      "toolB": "Szczegóły dotyczące szyfrowania i audytu zależą od wersji i planu."
+    },
+    {
+      "category": "Środowisko programisty i ekosystem",
+      "toolA": "Dostępność funkcji i wsparcie dla konkretnych frameworków zmieniają się wraz z wersjami.",
+      "toolB": "Zakres SDK i tempo wsparcia dla nowych frameworków zależą od wersji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\nconst db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);\nconst { data: products, error } = await db\n  .from(\"products\")\n  .select(\"id, name, price_cents\")\n  .eq(\"category_id\", categoryId)\n  .eq(\"active\", true)\n  .order(\"name\")\n  .limit(50);\n\nif (error) throw new Error(`Product query failed: ${error.message}`);",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Supabase i Appwrite odpowiadają na podobną potrzebę, ale różnią się w obszarze model bazy danych i język zapytań. Supabase: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki, funkcje i… Appwrite: Appwrite udostępnia warstwę abstrakcji nad bazą dokumentową z kolekcjami, atrybutami i zapytaniami w stylu API, co… Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie tożsamością”: Supabase Auth obsługuje logowanie hasłem, przez magiczny link, OAuth oraz dostawców zewnętrznych, a tożsamość… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki,…",
+    "toolB": "projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co…"
+  }
 }

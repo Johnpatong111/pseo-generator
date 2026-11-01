@@ -1,8 +1,8 @@
 {
   "slug": "phi-4-vs-gemma-3",
   "meta": {
-    "title": "Phi-4 vs Gemma 3 (2026): quelle solution choisir ?",
-    "description": "Comparaison 2026 de Phi-4 et Gemma 3 : contextes, benchmarks, tarifs API, latence, accès et cas d'usage. Découvrez quel modèle convient à votre projet."
+    "title": "Phi-4 vs Gemma 3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Phi-4 et Gemma 3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Phi-4"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Bonjour, comment vas-tu ?\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=50)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoProcessor, AutoModelForImageTextToText\nfrom PIL import Image\nimport requests\n\nmodel_id = \"google/gemma-3-4b-it\"\nprocessor = AutoProcessor.from_pretrained(model_id)\nmodel = AutoModelForImageTextToText.from_pretrained(model_id, device_map=\"auto\")\n\nimage = Image.open(requests.get(\"https://example.com/image.jpg\", stream=True).raw)\nmessages = [{\"role\": \"user\", \"content\": [{\"type\": \"image\"}, {\"type\": \"text\", \"text\": \"Décris cette image.\"}]}]\ninputs = processor.apply_chat_template(messages, add_generation_prompt=True, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=50)\nprint(processor.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "Quel impact sur la sécurité et la conformité ?",
       "a": "Phi-4 est distribué sous licence MIT, ce qui offre une grande liberté mais impose de mettre en place vos propres garde-fous. Gemma 3 est soumis à la licence Gemma, qui définit des usages acceptables et des restrictions. Dans les deux cas, une évaluation de sécurité et une conformité aux réglementations locales sont nécessaires avant tout déploiement en production."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Phi-4 et Gemma 3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Phi-4 convient mieux lorsque votre projet privilégie fenêtre de contexte : capacité à traiter de longs prompts et documents : Phi-4 est publié comme modèle textuel avec une fenêtre de contexte documentée par Microsoft,…. Gemma 3 est préférable lorsque votre projet privilégie fenêtre de contexte : capacité à traiter de longs prompts et documents : Gemma 3 est proposé en plusieurs tailles, avec une fenêtre de contexte pouvant atteindre 128 000….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte : capacité à traiter de longs prompts et documents",
+      "toolA": "Les valeurs exactes doivent être vérifiées dans la fiche modèle officielle, car des variantes ou mises à jour peuvent exister.",
+      "toolB": "Les limites précises dépendent de la version et de l'implémentation, à confirmer dans la documentation officielle."
+    },
+    {
+      "category": "Performances sur benchmarks publiés (MMLU, HumanEval) lorsque comparables",
+      "toolA": "Il convient de les considérer comme indicatifs et de vérifier la fiche officielle.",
+      "toolB": "Une évaluation sur vos propres données reste recommandée."
+    },
+    {
+      "category": "Tarification API par million de tokens d'entrée et de sortie",
+      "toolA": "À défaut, une comparaison qualitative s'impose.",
+      "toolB": "Il est indispensable de vérifier la grille tarifaire actuelle sur la documentation officielle."
+    },
+    {
+      "category": "Latence et débit en inférence",
+      "toolA": "Aucune valeur universelle ne peut être affirmée sans préciser la configuration.",
+      "toolB": "Une mesure sur votre environnement est nécessaire pour comparer équitablement."
+    },
+    {
+      "category": "Accès au modèle et caractère ouvert ou fermé",
+      "toolA": "Les conditions exactes doivent être vérifiées dans la licence.",
+      "toolB": "Il est recommandé de lire la licence pour connaître les obligations."
+    },
+    {
+      "category": "Modalités prises en charge (texte, image, etc.)",
+      "toolA": "La version de base ne prend pas en charge les images.",
+      "toolB": "Les modalités exactes dépendent de la taille du modèle."
+    }
+  ],
+  "introduction": "Phi-4 et Gemma 3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte : capacité à traiter de longs prompts et documents. Phi-4 : Phi-4 est publié comme modèle textuel avec une fenêtre de contexte documentée par Microsoft, généralement de 16 384… Gemma 3 : Gemma 3 est proposé en plusieurs tailles, avec une fenêtre de contexte pouvant atteindre 128 000 tokens selon la… Le critère « Performances sur benchmarks publiés (MMLU, HumanEval) lorsque comparables » met en évidence une autre différence pratique : Microsoft a publié des résultats pour Phi-4 sur des benchmarks comme MMLU et HumanEval, souvent mis en avant pour un… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : capacité à traiter de longs prompts et documents : Phi-4 est publié comme modèle textuel avec une fenêtre de contexte documentée par Microsoft,…",
+    "toolB": "votre projet privilégie fenêtre de contexte : capacité à traiter de longs prompts et documents : Gemma 3 est proposé en plusieurs tailles, avec une fenêtre de contexte pouvant atteindre 128 000…"
+  }
 }

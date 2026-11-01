@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-gemini-2-5-pro",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Gemini 2.5 Pro (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude 3.7 Sonnet i Gemini 2.5 Pro pod kątem okna kontekstu, wydajności, cen API, opóźnień i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude 3.7 Sonnet vs Gemini 2.5 Pro: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.7 Sonnet i Gemini 2.5 Pro: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"YOUR_API_KEY\")\nmodel = genai.GenerativeModel(\"gemini-2.5-pro\")\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest lepszy dla startupu z ograniczonym budżetem?",
       "a": "Oba modele oferują warunki cenowe dostosowane do różnych potrzeb, ale bez konkretnych stawek trudno wskazać tańszego. Gemini 2.5 Pro ma darmowy poziom w AI Studio, co może być atrakcyjne dla prototypowania. Claude 3.7 Sonnet jest dostępny w modelu pay-as-you-go, a przy dużym wolumenie można negocjować zniżki. Kluczowe jest oszacowanie zużycia tokenów i porównanie aktualnych cenników."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.7 Sonnet a Gemini 2.5 Pro zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.7 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Bezpieczeństwo i zgodność”: Anthropic kładzie duży nacisk na bezpieczeństwo, oferując mechanizmy takie jak Constitutional AI i…. Gemini 2.5 Pro sprawdzi się, gdy projekt stawia na kryterium „Okno kontekstu”: Gemini 2.5 Pro oferuje okno kontekstu do 1 miliona tokenów, a w niektórych wariantach nawet….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Rzeczywista dostępna długość może się różnić w zależności od planu i konfiguracji API, dlatego warto zweryfikować limity w oficjalnej dokumentacji Anthropic.",
+      "toolB": "Dokładny limit zależy od wersji modelu i sposobu dostępu (API, AI Studio, Vertex AI) i może się zmieniać, więc należy potwierdzić go u dostawcy."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "dla MMLU i HumanEval, ale należy pamiętać, że są one zależne od wersji modelu i sposobu ewaluacji; w 2026 roku mogą obowiązywać nowsze pomiary.",
+      "toolB": "Google publikuje szczegóły w kartach modeli, jednak ze względu na różnice w metodyce testów bezpośrednie porównania należy traktować ostrożnie i weryfikować aktualne dane."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Anthropic podaje stawki na swojej stronie, ale ze względu na zmienność cennika w czasie należy zweryfikować aktualne wartości przed wdrożeniem – nie podajemy konkretnych kwot, aby nie wprowadzać w błąd.",
+      "toolB": "Google regularnie aktualizuje cennik, dlatego zalecamy sprawdzenie oficjalnej strony z cenami; konkurencyjność cenowa może się różnić w zależności od wolumenu i regionu."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "Anthropic nie publikuje gwarantowanych wartości latencji, więc przed wdrożeniem produkcyjnym należy przeprowadzić własne testy w docelowym środowisku.",
+      "toolB": "Google udostępnia informacje o wydajności w dokumentacji, ale similarly nie gwarantuje stałych wartości – kluczowe jest testowanie w warunkach zbliżonych do produkcji."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Nie ma publicznie dostępnych wag ani możliwości uruchomienia lokalnego, co może być istotne dla organizacji wymagających pełnej kontroli nad danymi.",
+      "toolB": "Podobnie jak Claude, nie oferuje otwartych wag, ale integruje się z ekosystemem Google Cloud, co ułatwia wdrożenia w środowiskach już korzystających z usług Google."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Dzięki rozszerzonemu myśleniu (extended thinking) może być używany do złożonych problemów, choć należy liczyć się z wyższym kosztem i opóźnieniem.",
+      "toolB": "Sprawdzi się w projektach wymagających szerokiego kontekstu i przetwarzania różnorodnych formatów, ale może wymagać więcej pracy przy zapewnieniu bezpieczeństwa treści."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet i Gemini 2.5 Pro odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Claude 3.7 Sonnet: Claude 3.7 Sonnet obsługuje okno kontekstu o rozmiarze 200 tys. Gemini 2.5 Pro: Gemini 2.5 Pro oferuje okno kontekstu do 1 miliona tokenów, a w niektórych wariantach nawet większe, co umożliwia… Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Claude 3.7 Sonnet osiąga wysokie wyniki w publikowanych testach rozumowania i generowania kodu, często zbliżone do… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Bezpieczeństwo i zgodność”: Anthropic kładzie duży nacisk na bezpieczeństwo, oferując mechanizmy takie jak Constitutional AI i…",
+    "toolB": "projekt stawia na kryterium „Okno kontekstu”: Gemini 2.5 Pro oferuje okno kontekstu do 1 miliona tokenów, a w niektórych wariantach nawet…"
+  }
 }

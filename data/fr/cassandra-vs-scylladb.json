@@ -1,8 +1,8 @@
 {
   "slug": "cassandra-vs-scylladb",
   "meta": {
-    "title": "Apache Cassandra vs ScyllaDB (2026) : quelle solution choisir ?",
-    "description": "Comparatif 2026 Cassandra vs ScyllaDB : architecture, compatibilité CQL, latence de queue, exploitation, coûts, sécurité et critères de choix pour votre base NoSQL distribuée."
+    "title": "Apache Cassandra vs ScyllaDB: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez Apache Cassandra et ScyllaDB : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Apache Cassandra"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import com.datastax.oss.driver.api.core.CqlSession;\n\npublic class HelloCassandra {\n    public static void main(String[] args) {\n        try (CqlSession session = CqlSession.builder()\n                .withKeyspace(\"demo\")\n                .build()) {\n            session.execute(\"INSERT INTO hello (id, message) VALUES (1, 'Hello, World!')\");\n            var row = session.execute(\"SELECT message FROM hello WHERE id = 1\").one();\n            System.out.println(row.getString(\"message\"));\n        }\n    }\n}",
-    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster([\"127.0.0.1\"])\nsession = cluster.connect(\"demo\")\n\nsession.execute(\"INSERT INTO hello (id, message) VALUES (1, 'Hello, World!')\")\nrow = session.execute(\"SELECT message FROM hello WHERE id = 1\").one()\nprint(row.message)\n\ncluster.shutdown()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel choix pour une équipe qui débute sur une base distribuée ?",
       "a": "Cassandra offre une communauté large et de nombreuses ressources, ce qui facilite l'apprentissage malgré la complexité de l'exploitation. ScyllaDB demande d'apprendre ses propres outils et son support éditeur, ce qui peut être intéressant si votre charge est élevée ou si vous disposez d'un accompagnement commercial."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Apache Cassandra et ScyllaDB modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Apache Cassandra convient mieux lorsque votre projet privilégie écosystème, licences et hébergement : Cassandra est un projet Apache sous licence Apache 2.0, avec une gouvernance communautaire et une…. ScyllaDB est préférable lorsque votre projet privilégie architecture interne et performances sous charge : ScyllaDB utilise un modèle shard-per-core sans JVM, avec des mécanismes de contrôle de flux et….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et compatibilité CQL",
+      "toolA": "Les drivers officiels et l'écosystème d'outils sont nombreux, ce qui facilite l'intégration dans des stacks existantes.",
+      "toolB": "Il faut donc tester les requêtes et migrations réelles plutôt que supposer une équivalence totale."
+    },
+    {
+      "category": "Architecture interne et performances sous charge",
+      "toolA": "Les performances varient selon la version, le matériel, le schéma et les réglages, et les benchmark publiés ne préjugent pas de votre cas.",
+      "toolB": "Les gains observés dépendent du workload, du nombre de shards, du disque et de la configuration réseau, et doivent être mesurés sur votre propre banc d'essai."
+    },
+    {
+      "category": "Exploitation, réglages et journaux de compaction",
+      "toolA": "La communauté est vaste, les guides et retours d'expérience abondent, mais les incidents peuvent exiger une expertise pointue selon le volume de données.",
+      "toolB": "L'éditeur fournit un support commercial et une documentation ciblée, ce qui peut accélérer la mise en production pour une équipe prête à s'investir."
+    },
+    {
+      "category": "Écosystème, licences et hébergement",
+      "toolA": "Cette ouverture limite le verrouillage fournisseur, même si la qualité des services managés varie fortement.",
+      "toolB": "Les conditions exactes, fonctionnalités et niveaux de support dépendent de l'offre et de la version, à vérifier avant engagement."
+    },
+    {
+      "category": "Montée en charge et densité par nœud",
+      "toolA": "La densité par nœud est limitée par la JVM, la mémoire et le disque, avec des seuils à calibrer selon le débit.",
+      "toolB": "Cette densité accrue n'est pas systématique et dépend du schéma, des lectures, des écritures et de la taille des partitions."
+    },
+    {
+      "category": "Sécurité, authentification et chiffrement",
+      "toolA": "Les fonctionnalités précises et leur configuration dépendent de la version et des modules disponibles, avec des responsabilités d'exploitation à assumer.",
+      "toolB": "Il convient de vérifier dans la documentation de la version retenue la couverture exacte et les prérequis opérationnels, notamment pour la rotation des certificats."
+    }
+  ],
+  "introduction": "Apache Cassandra et ScyllaDB répondent à un besoin proche, mais diffèrent sur modèle de données et compatibilité cql. Apache Cassandra : Cassandra expose un modèle wide-column avec le langage CQL, des clés de partition et de clustering, et une… ScyllaDB : ScyllaDB reprend le modèle wide-column et une grande partie de CQL, avec des drivers compatibles, mais certains… Le critère « Architecture interne et performances sous charge » met en évidence une autre différence pratique : Cassandra repose sur une architecture sans maître, un gossip et des tables de hachage répliquées, avec une JVM et un… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème, licences et hébergement : Cassandra est un projet Apache sous licence Apache 2.0, avec une gouvernance communautaire et une…",
+    "toolB": "votre projet privilégie architecture interne et performances sous charge : ScyllaDB utilise un modèle shard-per-core sans JVM, avec des mécanismes de contrôle de flux et…"
+  }
 }

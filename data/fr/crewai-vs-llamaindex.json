@@ -1,8 +1,8 @@
 {
   "slug": "crewai-vs-llamaindex",
   "meta": {
-    "title": "CrewAI vs LlamaIndex (2026): quelle solution choisir ?",
-    "description": "CrewAI ou LlamaIndex en 2026 : comparaison des forces, limites, cas d’usage, exemples de code et conseils pour choisir l’outil adapté à votre projet d’IA."
+    "title": "CrewAI vs LlamaIndex: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez CrewAI et LlamaIndex : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "CrewAI"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Rédacteur\",\n    goal=\"Écrire un message d’accueil\",\n    backstory=\"Tu rédiges des messages courts et clairs.\",\n)\n\ntask = Task(\n    description=\"Écris un message d’accueil d’une phrase pour un site web.\",\n    expected_output=\"Une phrase d’accueil en français.\",\n    agent=agent,\n)\n\ncrew = Crew(agents=[agent], tasks=[task])\nresult = crew.kickoff()\nprint(result)",
-    "tech2Snippet": "from llama_index.core import Document, VectorStoreIndex\n\ndocuments = [Document(text=\"Hello, world ! Bienvenue sur notre site.\")]\nindex = VectorStoreIndex.from_documents(documents)\nquery_engine = index.as_query_engine()\nresponse = query_engine.query(\"Quel est le message d’accueil ?\")\nprint(response)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il privilégier une solution open source ou une offre commerciale ?",
       "a": "Le cœur des deux frameworks est disponible en open source, avec des services commerciaux autour selon les éditeurs. L’open source offre du contrôle et de la transparence, mais vous assumez l’exploitation, les mises à jour et la sécurité. Les offres commerciales peuvent simplifier l’observabilité ou le déploiement, au prix d’une dépendance fournisseur. Comparez la licence, les conditions de support et les coûts réels avant de trancher, en vérifiant la version concernée."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre CrewAI et LlamaIndex modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "CrewAI convient mieux lorsque votre projet privilégie orchestration multi-agents et gestion des tâches : CrewAI met l’accent sur la définition de rôles, d’objectifs et de tâches confiées à des agents,…. LlamaIndex est préférable lorsque votre projet privilégie récupération d’information, indexation et rag : LlamaIndex fournit des briques dédiées à l’ingestion, au découpage, à l’indexation et à la….",
+  "tradeoffs": [
+    {
+      "category": "Objectif principal et modèle conceptuel : ce que chaque framework cherche à",
+      "toolA": "La version, l’offre et les intégrations disponibles peuvent faire évoluer les détails de cette orchestration.",
+      "toolB": "Selon la version et les connecteurs choisis, les abstractions et les fonctionnalités varient."
+    },
+    {
+      "category": "Orchestration multi-agents et gestion des tâches",
+      "toolA": "Le comportement exact dépend de la version, du modèle utilisé et de la manière dont les tâches sont découpées.",
+      "toolB": "Les capacités agentiques dépendent de la version et des modules complémentaires installés."
+    },
+    {
+      "category": "Récupération d’information, indexation et RAG",
+      "toolA": "Les performances et la qualité dépendent fortement des outils et des sources branchés.",
+      "toolB": "La qualité finale dépend du découpage, du modèle d’embedding, du reranking et de la configuration retenue."
+    },
+    {
+      "category": "Courbe d’apprentissage et lisibilité du code",
+      "toolA": "La simplicité apparente peut masquer des comportements dépendant du modèle et de l’ordonnancement.",
+      "toolB": "La documentation et les exemples aident, mais il faut accepter un temps d’apprentissage réel."
+    },
+    {
+      "category": "Écosystème, intégrations et extensibilité",
+      "toolA": "Il faut vérifier la compatibilité des connecteurs dont vous dépendez avant de standardiser.",
+      "toolB": "Les intégrations et leur stabilité peuvent varier selon les versions et les fournisseurs."
+    },
+    {
+      "category": "Contrôle, observabilité et débogage",
+      "toolA": "Prévoyez des traces explicites et des tests ciblés plutôt que de supposer un comportement déterministe.",
+      "toolB": "La qualité de l’observabilité dépend néanmoins des modules et des intégrations activés."
+    }
+  ],
+  "introduction": "CrewAI et LlamaIndex répondent à un besoin proche, mais diffèrent sur objectif principal et modèle conceptuel : ce que chaque framework cherche à. CrewAI : CrewAI se présente comme un framework d’orchestration d’agents autonomes organisés en équipes (crews), avec des rôles,… LlamaIndex : LlamaIndex se concentre sur la connexion de modèles de langage à des données externes, avec des index, des moteurs de… Le critère « Orchestration multi-agents et gestion des tâches » met en évidence une autre différence pratique : CrewAI met l’accent sur la définition de rôles, d’objectifs et de tâches confiées à des agents, avec des modes… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie orchestration multi-agents et gestion des tâches : CrewAI met l’accent sur la définition de rôles, d’objectifs et de tâches confiées à des agents,…",
+    "toolB": "votre projet privilégie récupération d’information, indexation et rag : LlamaIndex fournit des briques dédiées à l’ingestion, au découpage, à l’indexation et à la…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "pulumi-vs-aws",
   "meta": {
-    "title": "Pulumi vs AWS (2026): quelle solution choisir ?",
-    "description": "Pulumi vs AWS en 2026 : comparatif des critères clés (langages, IaC, services managés, coûts, sécurité, verrouillage). Découvrez quelle option choisir selon votre équipe et votre projet cloud."
+    "title": "Pulumi vs AWS: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Pulumi et AWS : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Pulumi"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst bucket = new aws.s3.Bucket(\"hello-bucket\", {\n  bucket: \"mon-bucket-hello-pulumi\",\n});\n\nexport const bucketName = bucket.id;",
-    "tech2Snippet": "AWSTemplateFormatVersion: '2010-09-09'\nResources:\n  HelloBucket:\n    Type: AWS::S3::Bucket\n    Properties:\n      BucketName: mon-bucket-hello-aws\nOutputs:\n  BucketName:\n    Value: !Ref HelloBucket"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre Pulumi et AWS pour un nouveau projet en 2026 ?",
       "a": "Commencez par préciser si votre besoin porte sur l'hébergement et les services managés (AWS) ou sur l'automatisation de l'infrastructure (Pulumi), car les deux répondent à des questions différentes. Si vous déployez sur AWS, évaluez Pulumi comme couche d'IaC au-dessus de la plateforme, en tenant compte des compétences de l'équipe et de la couverture des services utilisés. Une preuve de concept limitée à un environnement de test aide à valider le choix sans engagement fort."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Pulumi et AWS modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Pulumi convient mieux lorsque votre projet privilégie langages et courbe d'apprentissage : Pulumi propose des SDK en TypeScript, JavaScript, Python, Go, C# et Java, ce qui permet de…. AWS est préférable lorsque votre projet privilégie couverture des services managés aws : AWS expose nativement tous ses services dès leur lancement via API, CLI, SDK et CloudFormation,….",
+  "tradeoffs": [
+    {
+      "category": "Positionnement et nature de l'outil",
+      "toolA": "Il s'utilise comme une couche d'automatisation posée au-dessus de fournisseurs comme AWS, Azure ou GCP, et ne remplace pas le cloud lui-même.",
+      "toolB": "Ce n'est pas un outil d'IaC comparable, mais l'environnement cible sur lequel un outil comme Pulumi agit."
+    },
+    {
+      "category": "Langages et courbe d'apprentissage",
+      "toolA": "La contrepartie est qu'il faut maîtriser à la fois le langage choisi et les concepts propres à Pulumi (projets, stacks, providers).",
+      "toolB": "La console abaisse la barrière d'entrée pour découvrir les services, tandis que CloudFormation impose d'apprendre son modèle déclaratif et ses limites."
+    },
+    {
+      "category": "Modèle de déclaration de l'infrastructure",
+      "toolA": "Le moteur calcule un plan de différentiel avant application, ce qui facilite les abstractions partagées entre équipes.",
+      "toolB": "Les templates peuvent devenir verbeux sur de grandes architectures, et les fonctions intrinsèques remplacent les opérations de programmation habituelles."
+    },
+    {
+      "category": "Couverture des services managés AWS",
+      "toolA": "Le rythme de disponibilité dépend de la mise à jour du provider, à vérifier pour chaque service sensible.",
+      "toolB": "C'est la voie la plus directe pour accéder aux fonctionnalités les plus récentes et aux intégrations natives."
+    },
+    {
+      "category": "Gestion d'état et collaboration",
+      "toolA": "Cette flexibilité permet d'aligner le stockage d'état sur vos politiques internes de sécurité et de résidence des données.",
+      "toolB": "La contrepartie est une moindre liberté sur le lieu et le mode de stockage de cet état, et une gestion de l'historique liée aux fonctionnalités du service."
+    },
+    {
+      "category": "Écosystème, extensibilité et intégrations",
+      "toolA": "Il s'intègre naturellement aux chaînes CI/CD et aux outils de test des langages supportés.",
+      "toolB": "L'extensibilité passe plutôt par des services et API qupar des plugins."
+    }
+  ],
+  "introduction": "Pulumi et AWS répondent à un besoin proche, mais diffèrent sur positionnement et nature de l'outil. Pulumi : Pulumi est un outil d'infrastructure as code (IaC) multi-cloud qui décrit des ressources via des langages de… AWS : AWS est une plateforme cloud qui fournit des services de calcul, stockage, réseau, base de données et sécurité,… Le critère « Langages et courbe d'apprentissage » met en évidence une autre différence pratique : Pulumi propose des SDK en TypeScript, JavaScript, Python, Go, C# et Java, ce qui permet de réutiliser les compétences… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie langages et courbe d'apprentissage : Pulumi propose des SDK en TypeScript, JavaScript, Python, Go, C# et Java, ce qui permet de…",
+    "toolB": "votre projet privilégie couverture des services managés aws : AWS expose nativement tous ses services dès leur lancement via API, CLI, SDK et CloudFormation,…"
+  }
 }

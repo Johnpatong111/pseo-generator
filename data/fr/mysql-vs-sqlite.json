@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite (2026): quelle solution choisir ?",
-    "description": "Comparez MySQL et SQLite en 2026 : performances, sécurité, cas d'usage. Découvrez quel SGBD choisir pour votre projet web, mobile ou embarqué. Guide complet et neutre."
+    "title": "MySQL vs SQLite: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez MySQL et SQLite : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "MySQL"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "CREATE DATABASE hello;\nUSE hello;\nCREATE TABLE message (id INT AUTO_INCREMENT PRIMARY KEY, content VARCHAR(255));\nINSERT INTO message (content) VALUES ('Hello, World!');\nSELECT * FROM message;",
-    "tech2Snippet": "CREATE TABLE message (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT);\nINSERT INTO message (content) VALUES ('Hello, World!');\nSELECT * FROM message;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Peut-on utiliser MySQL et SQLite dans le même projet ?",
       "a": "Oui, il est possible d'utiliser les deux dans un même projet, par exemple SQLite pour le stockage local sur mobile et MySQL pour la synchronisation côté serveur. Cela permet de bénéficier des avantages de chacun selon le contexte. Assurez-vous de gérer correctement la synchronisation des données."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre MySQL et SQLite modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "MySQL convient mieux lorsque votre projet privilégie performances et concurrence : MySQL est conçu pour gérer de nombreux accès concurrents et peut être configuré avec différents…. SQLite est préférable lorsque votre projet privilégie facilité d'installation et d'administration : SQLite ne nécessite aucune installation de serveur : il suffit d'intégrer la bibliothèque à….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle de déploiement",
+      "toolA": "Cette architecture permet de séparer les données des applications et de partager la base entre plusieurs utilisateurs ou services simultanément.",
+      "toolB": "L'application ouvre directement le fichier, ce qui simplifies le déploiement et ne nécessite aucune administration de serveur."
+    },
+    {
+      "category": "Performances et concurrence",
+      "toolA": "Les performances dépendent de la configuration, du matériel et de la charge, mais MySQL est généralement adapté aux applications multi-utilisateurs à fort trafic.",
+      "toolB": "Les lectures peuvent être concurrentes, mais les écritures sont sérialisées."
+    },
+    {
+      "category": "Sécurité et gestion des accès",
+      "toolA": "Il permet de définir des politiques de sécurité avancées et de séparer les responsabilités.",
+      "toolB": "La sécurité dépend donc de l'application hôte et des droits accordés au fichier."
+    },
+    {
+      "category": "Facilité d'installation et d'administration",
+      "toolA": "Des outils d'administration comme MySQL Workbench ou phpMyAdmin facilitent la gestion, mais une certaine expertise est requise.",
+      "toolB": "L'administration est minimale, ce qui réduit les coûts et la complexité, particulièrement pour les applications embarquées ou les prototypes."
+    },
+    {
+      "category": "Fonctionnalités SQL et intégrité",
+      "toolA": "Il offre également des fonctions avancées comme la réplication et le partitionnement.",
+      "toolB": "Il supporte également les types de données dynamiques et les requêtes complexes, mais ne propose pas de procédures stockées ni de réplication native."
+    },
+    {
+      "category": "Cas d'usage typiques et écosystème",
+      "toolA": "Son écosystème est vaste, avec de nombreux outils, bibliothèques et hébergeurs qui le supportent.",
+      "toolB": "Il est également prisé pour les tests et le prototypage rapide en raison de sa simplicité."
+    }
+  ],
+  "introduction": "MySQL et SQLite répondent à un besoin proche, mais diffèrent sur architecture et modèle de déploiement. MySQL : MySQL fonctionne selon un modèle client-serveur : un serveur centralisé gère les bases de données et les clients s'y… SQLite : SQLite est une bibliothèque intégrée qui stocke l'intégralité de la base dans un seul fichier sur disque, sans… Le critère « Performances et concurrence » met en évidence une autre différence pratique : MySQL est conçu pour gérer de nombreux accès concurrents et peut être configuré avec différents moteurs de stockage… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie performances et concurrence : MySQL est conçu pour gérer de nombreux accès concurrents et peut être configuré avec différents…",
+    "toolB": "votre projet privilégie facilité d'installation et d'administration : SQLite ne nécessite aucune installation de serveur : il suffit d'intégrer la bibliothèque à…"
+  }
 }

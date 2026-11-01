@@ -1,8 +1,8 @@
 {
   "slug": "react-vs-solidjs",
   "meta": {
-    "title": "React vs SolidJS (2026): quelle solution choisir ?",
-    "description": "Comparatif React vs SolidJS en 2026 : réactivité, écosystème, performance, courbe d'apprentissage, rendu serveur et cas d'usage pour choisir votre framework front-end."
+    "title": "React vs SolidJS: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez React et SolidJS : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "React"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { useState } from 'react';\nimport { createRoot } from 'react-dom/client';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n  return (\n    <main>\n      <h1>Hello, World!</h1>\n      <button onClick={() => setCount(count + 1)}>Compteur : {count}</button>\n    </main>\n  );\n}\n\ncreateRoot(document.getElementById('root')!).render(<App />);",
-    "tech2Snippet": "import { createSignal } from 'solid-js';\nimport { render } from 'solid-js/web';\n\nfunction App() {\n  const [count, setCount] = createSignal(0);\n  return (\n    <main>\n      <h1>Hello, World!</h1>\n      <button onClick={() => setCount(count() + 1)}>Compteur : {count()}</button>\n    </main>\n  );\n}\n\nrender(() => <App />, document.getElementById('root')!);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { ReactNode } from \"react\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\ntype ProductListProps = { products: Product[]; categoryId: string };\n\nexport function ProductList({ products, categoryId }: ProductListProps): ReactNode {\n  const visible = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n  return <ul>{visible.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Le choix entre React et SolidJS a-t-il un impact sur le recrutement ?",
       "a": "Oui, React reste l'une des compétences front-end les plus demandées, ce qui facilite le recrutement et la mobilité interne. SolidJS est moins répandu sur le marché, ce qui peut restreindre le vivier de candidats déjà formés et allonger l'onboarding. Si votre projet mise sur SolidJS, prévoyez un plan de formation interne et documentez vos conventions pour réduire la dépendance à des profils rares."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre React et SolidJS modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "React convient mieux lorsque votre projet privilégie écosystème, bibliothèques et composants tiers : React dispose de l'écosystème front-end le plus large : bibliothèques de composants, routeurs,…. SolidJS est préférable lorsque votre projet privilégie modèle de réactivité et gestion des mises à jour : SolidJS compile les composants en code impératif et s'appuie sur des signaux à granularité fine :….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de réactivité et gestion des mises à jour",
+      "toolA": "Les hooks comme useMemo et useCallback servent à limiter les recalculs, ce qui ajoute une charge mentale et des pièges de dépendances.",
+      "toolB": "En contrepartie, le modèle mental diffère nettement de React et les développeurs habitués aux re-rendus peuvent être déroutés au départ."
+    },
+    {
+      "category": "Écosystème, bibliothèques et composants tiers",
+      "toolA": "Cette profondeur réduit le risque de blocage technique sur un projet ambitieux ou de longue durée.",
+      "toolB": "Pour des intégrations pointues ou des composants tiers complexes, l'offre disponible reste plus limitée qu'avec React."
+    },
+    {
+      "category": "Performance et empreinte d'exécution",
+      "toolA": "Sur des interfaces très interactives et denses, une mémoïsation soignée reste nécessaire pour éviter des re-rendus coûteux.",
+      "toolB": "Il faut toutefois nuancer : les gains réels varient selon le type d'application, la charge, la complexité des composants et les optimisations déjà appliquées côté serveur ou réseau."
+    },
+    {
+      "category": "Courbe d'apprentissage et familiarité pour les équipes",
+      "toolA": "Les bonnes pratiques sont nombreuses mais parfois contradictoires, ce qui peut allonger l'apprentissage des patterns avancés.",
+      "toolB": "Les ressources pédagogiques, bien qu'en progression, restent moins nombreuses, ce qui peut ralentir une équipe junior."
+    },
+    {
+      "category": "Rendu serveur, métadonnées et intégration full-stack",
+      "toolA": "Ces fonctionnalités dépendent de la version de React et du framework choisi, et une configuration mal maîtrisée peut complexifier le débogage.",
+      "toolB": "La stabilité et la couverture de certains cas avancés peuvent varier selon la version de SolidStart et les plugins utilisés."
+    },
+    {
+      "category": "Outillage, débogage et support éditeur",
+      "toolA": "L'outillage est stable, mais la complexité peut augmenter avec les couches ajoutées par les frameworks et les bibliothèques.",
+      "toolB": "L'outillage progresse mais reste moins universellement supporté que celui de React, notamment dans certains environnements d'entreprise ou plugins IDE spécialisés."
+    }
+  ],
+  "introduction": "React et SolidJS répondent à un besoin proche, mais diffèrent sur modèle de réactivité et gestion des mises à jour. React : React repose sur un rendu par composants et une réconciliation du Virtual DOM : une mise à jour d'état provoque le… SolidJS : SolidJS compile les composants en code impératif et s'appuie sur des signaux à granularité fine : seuls les nœuds DOM… Le critère « Écosystème, bibliothèques et composants tiers » met en évidence une autre différence pratique : React dispose de l'écosystème front-end le plus large : bibliothèques de composants, routeurs, gestion d'état,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème, bibliothèques et composants tiers : React dispose de l'écosystème front-end le plus large : bibliothèques de composants, routeurs,…",
+    "toolB": "votre projet privilégie modèle de réactivité et gestion des mises à jour : SolidJS compile les composants en code impératif et s'appuie sur des signaux à granularité fine :…"
+  }
 }

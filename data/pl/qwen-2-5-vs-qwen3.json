@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen3",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Qwen 2.5 i Qwen3: wydajność, kontekst, ceny API, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Qwen 2.5 vs Qwen3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Qwen 2.5 i Qwen3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\nmodel_name = \"Qwen/Qwen3-8B\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jakie są ryzyka związane z wyborem nowszego modelu, takiego jak Qwen3?",
       "a": "Nowsze modele mogą mieć mniej ustabilizowane API, zmieniające się ceny i ograniczoną dostępność u niektórych dostawców. Ponadto społeczność i narzędzia integracyjne mogą być mniej rozwinięte niż w przypadku dojrzałego Qwen 2.5. Decydując się na Qwen3, należy zaplanować proces weryfikacji i monitorowania zmian w specyfikacji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Qwen 2.5 a Qwen3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Qwen 2.5 będzie lepszy, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Qwen 2.5 jest dostępny w wielu dostawcach chmurowych i platformach API, a ceny różnią się w…. Qwen3 sprawdzi się, gdy projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Qwen3 został zaprezentowany z wynikami na tych samych benchmarkach, często przewyższającymi Qwen….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce oznacza to możliwość przetwarzania długich dokumentów, ale przy bardzo dużych wejściach mogą rosnąć koszty i opóźnienia.",
+      "toolB": "Nowsza architektura może lepiej wykorzystywać długi kontekst, ale należy potwierdzić dokładne wartości w oficjalnej dokumentacji, ponieważ mogą się różnić między modelami i dostawcami."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Należy pamiętać, że są to dane z określonego momentu i mogą nie być w pełni porównywalne z nowszymi modelami ze względu na różnice w metodyce i wersjach.",
+      "toolB": "Jednak bezpośrednie porównania wymagają ostrożności, ponieważ wyniki zależą od wersji modelu, parametryzacji i sposobu ewaluacji; zaleca się sprawdzenie najnowszych raportów."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Przykładowo, niektóre publiczne cenniki wskazują stawki rzędu od kilkudziesięciu centów do kilku dolarów za milion tokenów, ale są to wartości zmienne i wymagają weryfikacji u konkretnego providera.",
+      "toolB": "Ze względu na dynamikę rynku należy sprawdzić aktualne cenniki officjalne, ponieważ podane wartości mogą się szybko zmieniać."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "W zależności od rozmiaru modelu i infrastruktury dostawcy, czasy odpowiedzi mogą być niskie dla mniejszych wariantów, ale większe modele mogą generować większe opóźnienia przy długich kontekstach.",
+      "toolB": "Rzeczywiste wartości należy mierzyć w docelowym środowisku."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "To daje elastyczność w zakresie samodzielnego hostowania i dostosowywania, przy zachowaniu licencji, które mogą się różnić w zależności od wariantu.",
+      "toolB": "Należy sprawdzić warunki licencji dla konkretnego modelu."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Dzięki dojrzałości i szerokiemu wsparciu społeczności jest dobrym wyborem dla projektów produkcyjnych wymagających stabilności.",
+      "toolB": "Może być jednak mniej opłacalny w prostych zastosowaniach, gdzie Qwen 2.5 wystarcza."
+    }
+  ],
+  "introduction": "Qwen 2.5 i Qwen3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Qwen 2.5: Qwen 2.5 występuje w wariantach o różnych rozmiarach okna kontekstu; według publikowanych informacji niektóre wersje… Qwen3: Qwen3 również oferuje zróżnicowane okna kontekstu w zależności od wariantu; dostępne informacje wskazują na obsługę co… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Dla Qwen 2.5 publikowano wyniki na benchmarkach takich jak MMLU i HumanEval, osiągające wysokie wartości w swojej… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Qwen 2.5 jest dostępny w wielu dostawcach chmurowych i platformach API, a ceny różnią się w…",
+    "toolB": "projekt stawia na kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Qwen3 został zaprezentowany z wynikami na tych samych benchmarkach, często przewyższającymi Qwen…"
+  }
 }

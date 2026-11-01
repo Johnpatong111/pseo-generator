@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB (2026): ¿Qué solución elegir?",
-    "description": "Comparamos SQLite y DuckDB en 2026: diferencias en rendimiento analítico, transacciones, concurrencia, ecosistema y casos de uso para elegir la base de datos embebida adecuada."
+    "title": "SQLite vs DuckDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara SQLite y DuckDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "SQLite"
@@ -94,5 +94,49 @@
       "q": "¿DuckDB es una base de datos segura para datos sensibles?",
       "a": "DuckDB, como SQLite, no incluye cifrado nativo en todas sus versiones; la seguridad depende de las extensiones o del cifrado a nivel de sistema de archivos. SQLite ofrece opciones como SQLCipher para cifrado, aunque no forma parte del núcleo estándar. En ambos casos, para datos sensibles conviene evaluar el cifrado en reposo y en tránsito, y consultar la documentación oficial de la versión que uses."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre SQLite y DuckDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones,…. DuckDB es preferible cuando tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de almacenamiento y diseño",
+      "toolA": "Su diseño prioriza la simplicidad, la portabilidad y la durabilidad transaccional en entornos con recursos limitados.",
+      "toolB": "Su arquitectura vectorizada y su motor de ejecución están orientados a cargas analíticas más que a transacciones individuales."
+    },
+    {
+      "category": "Rendimiento en cargas transaccionales (OLTP)",
+      "toolA": "Su motor relacional y su registro de escritura anticipada (WAL) ofrecen un rendimiento predecible en aplicaciones móviles, de escritorio y de borde.",
+      "toolB": "En escenarios transaccionales, su rendimiento suele ser inferior al de SQLite, aunque depende de la versión y la configuración."
+    },
+    {
+      "category": "Rendimiento en consultas analíticas (OLAP)",
+      "toolA": "Para análisis pesados sobre grandes volúmenes, su rendimiento puede quedar por debajo de alternativas columnar.",
+      "toolB": "Su rendimiento en OLAP suele ser notablemente superior, aunque depende del tamaño de los datos y del hardware."
+    },
+    {
+      "category": "Concurrencia y modelo de acceso",
+      "toolA": "Su modo WAL mejora la concurrencia de lectura, pero las escrituras siguen serializadas, lo que es adecuado para muchas aplicaciones embebidas.",
+      "toolB": "Aunque permite lecturas concurrentes en ciertos contextos, no está pensado para escenarios de alta concurrencia transaccional."
+    },
+    {
+      "category": "Ecosistema, compatibilidad e integraciones",
+      "toolA": "Es compatible con sistemas operativos móviles, navegadores y entornos embebidos, y su formato es leído por innumerables herramientas.",
+      "toolB": "Su ecosistema crece rápidamente, pero es menos ubicuo que el de SQLite, especialmente en dispositivos móviles y entornos muy restringidos."
+    },
+    {
+      "category": "Facilidad de uso y curva de aprendizaje",
+      "toolA": "Su documentación es extensa y permite empezar a trabajar con rapidez en la mayoría de los lenguajes.",
+      "toolB": "Sin embargo, su enfoque analítico y algunas diferencias en el manejo de transacciones y concurrencia pueden requerir un pequeño aprendizaje adicional."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "SQLite y DuckDB responden a una necesidad similar, pero difieren en modelo de almacenamiento y diseño. SQLite: SQLite utiliza un formato de archivo único en disco con almacenamiento orientado a filas, optimizado para lecturas y… DuckDB: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes volúmenes de datos de… El criterio de rendimiento en cargas transaccionales (oltp) añade otra diferencia práctica: SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones, actualizaciones y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones,…",
+    "toolB": "tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes…"
+  }
 }

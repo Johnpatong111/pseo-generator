@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-phi-4",
   "meta": {
-    "title": "Qwen 2.5 vs Phi-4 (2026): quelle solution choisir ?",
-    "description": "Qwen 2.5 contre Phi-4 en 2026 : contextes, performances, accès, coûts API, latence et cas d'usage. Analyse factuelle pour choisir le modèle adapté à votre projet."
+    "title": "Qwen 2.5 vs Phi-4: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qwen 2.5 et Phi-4 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-1.5B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Bonjour, comment vas-tu ?\"}]\ninputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(inputs, max_new_tokens=50)\nprint(tokenizer.decode(outputs[0][inputs.shape[1]:], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\", torch_dtype=\"auto\")\n\nprompt = \"<|user|>\\nBonjour, comment vas-tu ?<|end|>\\n<|assistant|>\\n\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(inputs.input_ids, max_new_tokens=50)\nprint(tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Ces modèles sont-ils disponibles via des API cloud ?",
       "a": "Oui, Qwen 2.5 est accessible via des API comme Alibaba Cloud Model Studio et d'autres fournisseurs, tandis que Phi-4 est disponible via Microsoft Azure AI Foundry et d'autres plateformes. Les prix et les conditions varient selon le fournisseur et la région ; consultez les documentations officielles pour les détails à jour."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qwen 2.5 et Phi-4 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qwen 2.5 convient mieux lorsque votre projet privilégie fenêtre de contexte : longueur maximale de séquence prise en charge par le : La famille Qwen 2.5 regroupe plusieurs tailles (dont des variantes instruct, coder et math) et…. Phi-4 est préférable lorsque votre projet privilégie latence et débit : rapidité de réponse et capacité à traiter des requêtes : Phi-4, plus compact, est conçu pour offrir un bon compromis entre performance et efficacité, ce….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte : longueur maximale de séquence prise en charge par le",
+      "toolA": "Les modèles ouverts peuvent aussi être configurés avec des extensions de contexte selon l'implémentation, sans garantie de qualité équivalente.",
+      "toolB": "Pour les traitements de très longs documents, il convient de vérifier la limite officielle et de considérer des stratégies de découpage."
+    },
+    {
+      "category": "Performances aux benchmarks (MMLU, HumanEval) : résultats publiés comparables",
+      "toolA": "Il est essentiel de comparer des modèles de taille équivalente et de se référer aux publications officielles, car les chiffres ne sont pas directement transposables d'une variante à l'autre.",
+      "toolB": "Comme pour tout modèle, ces résultats dépendent de la version et du protocole d'évaluation ; une comparaison directe avec Qwen 2.5 nécessite des modèles de taille comparable."
+    },
+    {
+      "category": "Tarification API (prix pour 1M de tokens en entrée/sortie) : coût",
+      "toolA": "Les prix pour 1M de tokens en entrée et en sortie ne sont pas universels et doivent être vérifiés sur la grille tarifaire actuelle du fournisseur choisi, car ils évoluent fréquemment.",
+      "toolB": "Comme pour Qwen 2.5, il n'existe pas de tarif unique : consultez la page officielle de tarification pour obtenir les prix exacts par million de tokens en entrée et en sortie."
+    },
+    {
+      "category": "Latence et débit : rapidité de réponse et capacité à traiter des requêtes",
+      "toolA": "Les petits modèles de la famille peuvent offrir des temps de réponse plus courts, tandis que les versions plus grandes nécessitent davantage de ressources ; aucune valeur universelle ne peut être annoncée sans test contextualisé.",
+      "toolB": "Toutefois, la latence réelle varie selon le déploiement (API cloud ou auto-hébergement), la quantification et la charge ; elle doit être mesurée dans votre environnement."
+    },
+    {
+      "category": "Accès et ouverture : disponibilité des poids, licence et modes de déploiement",
+      "toolA": "Les poids peuvent être téléchargés et exécutés localement, et le modèle est aussi accessible via des API cloud, ce qui offre une grande flexibilité de déploiement.",
+      "toolB": "Il est également disponible via des services cloud comme Azure AI Foundry, ce qui facilite l'accès sans infrastructure locale."
+    },
+    {
+      "category": "Cas d'usage pratiques : domaines d'application typiques et adéquation aux",
+      "toolA": "Son support multilingue étendu le rend pertinent pour des applications internationales.",
+      "toolB": "Il convient aux organisations souhaitant un modèle compact, open-weight et facilement intégrable dans des pipelines existants, notamment via Azure."
+    }
+  ],
+  "introduction": "Qwen 2.5 et Phi-4 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte : longueur maximale de séquence prise en charge par le. Qwen 2.5 : La famille Qwen 2.5 regroupe plusieurs tailles (dont des variantes instruct, coder et math) et certaines déclinent des… Phi-4 : Phi-4 est un modèle de taille intermédiaire dont la fenêtre de contexte annoncée est généralement inférieure à… Le critère « Performances aux benchmarks (MMLU, HumanEval) : résultats publiés comparables » met en évidence une autre différence pratique : Qwen 2.5 a publié des résultats sur MMLU et HumanEval pour plusieurs variantes, mais les scores varient selon la… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : longueur maximale de séquence prise en charge par le : La famille Qwen 2.5 regroupe plusieurs tailles (dont des variantes instruct, coder et math) et…",
+    "toolB": "votre projet privilégie latence et débit : rapidité de réponse et capacité à traiter des requêtes : Phi-4, plus compact, est conçu pour offrir un bon compromis entre performance et efficacité, ce…"
+  }
 }

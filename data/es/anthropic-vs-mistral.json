@@ -1,8 +1,8 @@
 {
   "slug": "anthropic-vs-mistral",
   "meta": {
-    "title": "Anthropic vs Mistral (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Anthropic y Mistral en 2026: modelos, contexto, despliegue, privacidad, precios y ecosistema para ayudarte a elegir la plataforma de IA adecuada."
+    "title": "Anthropic vs Mistral: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Anthropic y Mistral: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Anthropic"
@@ -94,5 +94,49 @@
       "q": "¿Qué debería evaluar antes de elegir una de las dos plataformas?",
       "a": "Evalúa la calidad en tus tareas reales, el contexto necesario, el coste por uso, las opciones de despliegue y las garantías de privacidad. Prueba ambas con un conjunto representativo de prompts y revisa la documentación vigente de cada proveedor. Una decisión informada combina pruebas propias con una revisión de cumplimiento y soporte."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Anthropic y Mistral cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Anthropic encaja mejor cuando tu proyecto prioriza ecosistema, herramientas y facilidad de integración: Anthropic ofrece SDKs, documentación y soporte para uso de herramientas y agentes, con integración…. Mistral es preferible cuando tu proyecto prioriza despliegue, modelos abiertos y soberanía de datos: Mistral publica algunos modelos con pesos abiertos y ofrece opciones de despliegue en la nube….",
+  "tradeoffs": [
+    {
+      "category": "Catálogo de modelos y capacidades de razonamiento",
+      "toolA": "Sus modelos suelen destacar en seguir instrucciones complejas y en flujos con uso de herramientas, aunque las capacidades concretas varían según el modelo y la versión contratada.",
+      "toolB": "Esta variedad permite elegir entre opciones optimizadas para coste o para capacidad, y conviene revisar la ficha de cada modelo para confirmar contexto y funciones."
+    },
+    {
+      "category": "Ventana de contexto y manejo de documentos extensos",
+      "toolA": "El límite exacto depende del modelo y del plan, por lo que debe confirmarse en la documentación vigente antes de diseñar un flujo de trabajo.",
+      "toolB": "Para cargas con documentos muy largos, conviene comparar el contexto efectivo y el coste por token del modelo elegido."
+    },
+    {
+      "category": "Despliegue, modelos abiertos y soberanía de datos",
+      "toolA": "No es la vía habitual para quienes necesitan ejecutar los modelos en infraestructura propia, así que revisa las condiciones de tratamiento de datos de cada plan.",
+      "toolB": "La disponibilidad y licencia de cada modelo varían, por lo que hay que verificar la ficha correspondiente antes de comprometerse."
+    },
+    {
+      "category": "Seguridad, alineación y uso responsable",
+      "toolA": "Estas prácticas resultan valiosas en entornos regulados, aunque no sustituyen una revisión propia de cumplimiento y protección de datos.",
+      "toolB": "Aun así, el nivel de garantías depende del servicio contratado y conviene verificar el tratamiento de datos y las certificaciones disponibles."
+    },
+    {
+      "category": "Ecosistema, herramientas y facilidad de integración",
+      "toolA": "Su ecosistema es sólido para equipos que construyen asistentes conversacionales y automatizaciones con Claude.",
+      "toolB": "La integración con herramientas de terceros puede requerir más trabajo propio según el caso."
+    },
+    {
+      "category": "Precios y previsibilidad del coste",
+      "toolA": "Para estimar el coste real conviene medir el consumo de entrada y salida en una carga representativa, ya que los precios pueden cambiar.",
+      "toolB": "El ahorro depende mucho del modelo, del proveedor de alojamiento y del volumen, así que compara con tus propias métricas."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Anthropic y Mistral responden a una necesidad similar, pero difieren en catálogo de modelos y capacidades de razonamiento. Anthropic: Anthropic ofrece la familia Claude, orientada a tareas de razonamiento, redacción extensa y análisis de documentos… Mistral: Mistral combina modelos comerciales con modelos de pesos abiertos, cubriendo desde tareas ligeras hasta razonamiento… El criterio de ventana de contexto y manejo de documentos extensos añade otra diferencia práctica: Claude se ha utilizado con ventanas de contexto amplias, útiles para analizar contratos, informes o bases de código de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ecosistema, herramientas y facilidad de integración: Anthropic ofrece SDKs, documentación y soporte para uso de herramientas y agentes, con integración…",
+    "toolB": "tu proyecto prioriza despliegue, modelos abiertos y soberanía de datos: Mistral publica algunos modelos con pesos abiertos y ofrece opciones de despliegue en la nube…"
+  }
 }

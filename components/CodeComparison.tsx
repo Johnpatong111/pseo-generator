@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 interface CodeComparisonProps {
   toolA: string;
   toolB: string;
+  scenario: string;
   tech1Snippet: string;
   tech2Snippet: string;
   labels: {
@@ -62,6 +63,7 @@ function highlightCode(source: string) {
 export default function CodeComparison({
   toolA,
   toolB,
+  scenario,
   tech1Snippet,
   tech2Snippet,
   labels,
@@ -122,6 +124,9 @@ export default function CodeComparison({
           {labels.copy}
         </button>
       </div>
+      <p className="border-b border-slate-800 px-4 py-3 text-sm leading-6 text-slate-300 sm:px-5">
+        {scenario}
+      </p>
 
       <div
         role="tablist"

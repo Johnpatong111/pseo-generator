@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-mistral-large",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs Mistral Large (2026): które rozwiązanie wybrać?",
-    "description": "Porównujemy Claude 3.5 Sonnet i Mistral Large pod kątem kontekstu, wydajności, ceny, dostępności i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude 3.5 Sonnet vs Mistral Large: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.5 Sonnet i Mistral Large: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TWOJ_KLUCZ\")\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20241022\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"TWOJ_KLUCZ\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest bardziej odpowiedni do obsługi klienta?",
       "a": "Claude 3.5 Sonnet sprawdza się w rozmowach wymagających empatii i zrozumienia kontekstu, co jest ważne w obsłudze klienta. Mistral Large również może być używany w chatbotach, zwłaszcza gdy liczy się koszt i zgodność z regulacjami. Ostateczny wybór zależy od charakteru zapytań, wymagań dotyczących czasu odpowiedzi i budżetu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.5 Sonnet a Mistral Large zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.5 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. Mistral Large sprawdzi się, gdy projekt stawia na kryterium „Dostępność modelu i otwartość (open/closed)”: Mistral Large jest dostępny jako model zamknięty przez API Mistral AI oraz w marketplace'ach….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Wartość tę należy potwierdzić w oficjalnej dokumentacji Anthropic, ponieważ może się zmieniać wraz z aktualizacjami.",
+      "toolB": "Dokładny limit należy zweryfikować u dostawcy, ponieważ różni się między wersjami i platformami chmurowymi."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych",
+      "toolA": "Aktualne, porównywalne wyniki warto sprawdzić w oficjalnych kartach modeli i niezależnych rankingach.",
+      "toolB": "Nie należy traktować pojedynczych liczb jako uniwersalnej miary jakości."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Przed wdrożeniem produkcyjnym zaleca się sprawdzenie aktualnego cennika na stronie Anthropic, ponieważ polityka cenowa może ulec zmianie.",
+      "toolB": "Porównując koszty, należy uwzględnić również ewentualne opłaty za dostęp i limity."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "W zastosowaniach czasu rzeczywistego warto przeprowadzić własne testy obciążeniowe, ponieważ deklaracje producenta mogą nie odzwierciedlać warunków produkcyjnych.",
+      "toolB": "Podobnie jak w przypadku Claude, zaleca się测试y w docelowym środowisku, aby ocenić wpływ na doświadczenie użytkownika."
+    },
+    {
+      "category": "Dostępność modelu i otwartość (open/closed)",
+      "toolA": "Dostępność jest globalna, ale podlega warunkom umowy i limitom dostawcy.",
+      "toolB": "Należy sprawdzić konkretną wersję i warunki licencji."
+    },
+    {
+      "category": "Zastosowania praktyczne: kod, analiza danych, obsługa klienta",
+      "toolA": "Jest często wybierany do zadań, gdzie jakość i bezpieczeństwo odpowiedzi są kluczowe.",
+      "toolB": "Wybór zależy od specyfiki projektu i wymagań prawnych."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet i Mistral Large odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Claude 3.5 Sonnet: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. Mistral Large: Mistral Large dostępny jest w wersjach o oknie kontekstu 32 tys. Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych”: Anthropic publikuje wyniki Claude 3.5 Sonnet m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Claude 3.5 Sonnet oferuje okno kontekstu o rozmiarze 200 tys.",
+    "toolB": "projekt stawia na kryterium „Dostępność modelu i otwartość (open/closed)”: Mistral Large jest dostępny jako model zamknięty przez API Mistral AI oraz w marketplace'ach…"
+  }
 }

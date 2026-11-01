@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-netlify",
   "meta": {
-    "title": "Cloudflare vs Netlify (2026) : quelle solution choisir ?",
-    "description": "Comparatif Cloudflare vs Netlify : hébergement, edge, fonctions, formulaires, tarifs et DX. Découvrez quelle plateforme convient à votre projet en 2026."
+    "title": "Cloudflare vs Netlify: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Cloudflare et Netlify : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// Cloudflare Worker minimal (à déployer avec Wrangler)\nexport default {\n  async fetch(request, env, ctx) {\n    return new Response('Hello, World!', {\n      headers: { 'content-type': 'text/plain; charset=utf-8' },\n    });\n  },\n};",
-    "tech2Snippet": "// Netlify Function minimale : netlify/functions/hello.mjs\nexport default async (req, context) => {\n  return new Response('Hello, World!', {\n    headers: { 'content-type': 'text/plain; charset=utf-8' },\n  });\n};\n\nexport const config = {\n  path: '/hello',\n};"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment choisir entre Cloudflare et Netlify en 2026 ?",
       "a": "Choisissez Cloudflare si vous voulez un contrôle fin sur le réseau, le cache et les services edge, avec une équipe prête à configurer. Choisissez Netlify si vous privilégiez la simplicité de déploiement, les prévisualisations Git et des services intégrés comme les formulaires. Évaluez aussi vos contraintes de coûts, de conformité et de compétences internes, car ces facteurs pèsent souvent plus que le comparatif brut."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Cloudflare et Netlify modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Cloudflare convient mieux lorsque votre projet privilégie réseau edge et performance de diffusion : Cloudflare s’appuie sur un réseau mondial très étendu, ce qui peut réduire la latence de diffusion…. Netlify est préférable lorsque votre projet privilégie déploiement et intégration git : Netlify s’est construit autour d’un flux Git très direct : import du dépôt, build détecté,….",
+  "tradeoffs": [
+    {
+      "category": "Déploiement et intégration Git",
+      "toolA": "Il faut donc vérifier l’offre et la documentation actuelles avant de bâtir une architecture complexe.",
+      "toolB": "Les fonctions serveur et les redirections s’ajoutent sans sortir du tableau de bord."
+    },
+    {
+      "category": "Réseau edge et performance de diffusion",
+      "toolA": "Il ne faut pas généraliser des gains sans mesurer son propre trafic.",
+      "toolB": "Les résultats varient selon la région, les assets et les règles de cache appliquées."
+    },
+    {
+      "category": "Fonctions serverless et edge",
+      "toolA": "La compatibilité avec les bibliothèques Node.js dépend du mode d’exécution et doit être testée.",
+      "toolB": "Les limites, les runtimes et les régions disponibles varient selon le plan et la configuration."
+    },
+    {
+      "category": "Formulaires, identité et services intégrés",
+      "toolA": "La gestion des formulaires ou de l’authentification applicative n’est pas un service clé en main équivalent à celui d’un hébergeur de sites.",
+      "toolB": "Les fonctionnalités disponibles et leurs quotas dépendent de l’offre souscrite."
+    },
+    {
+      "category": "Tarification et prévisibilité des coûts",
+      "toolA": "Il n’est pas possible de donner un prix unique sans connaître le trafic et les services activés.",
+      "toolB": "Les tarifs évoluent : consultez la grille officielle à jour."
+    },
+    {
+      "category": "Expérience développeur et courbe d’apprentissage",
+      "toolA": "Une équipe expérimentée y gagne en contrôle et en finesse.",
+      "toolB": "Les projets très spécifiques peuvent toutefois nécessiter des contournements."
+    }
+  ],
+  "introduction": "Cloudflare et Netlify répondent à un besoin proche, mais diffèrent sur déploiement et intégration git. Cloudflare : Cloudflare Pages se connecte à un dépôt Git et produit des déploiements automatiques, avec des préversions par branche… Netlify : Netlify s’est construit autour d’un flux Git très direct : import du dépôt, build détecté, déploiements de… Le critère « Réseau edge et performance de diffusion » met en évidence une autre différence pratique : Cloudflare s’appuie sur un réseau mondial très étendu, ce qui peut réduire la latence de diffusion et faciliter la… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie réseau edge et performance de diffusion : Cloudflare s’appuie sur un réseau mondial très étendu, ce qui peut réduire la latence de diffusion…",
+    "toolB": "votre projet privilégie déploiement et intégration git : Netlify s’est construit autour d’un flux Git très direct : import du dépôt, build détecté,…"
+  }
 }

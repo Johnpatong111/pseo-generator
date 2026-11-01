@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-fastify",
   "meta": {
-    "title": "Node.js vs Fastify (2026): welche Lösung passt besser?",
-    "description": "Node.js vs Fastify 2026 im Vergleich: Core-Runtime trifft auf schlankes Framework. Erfahre Unterschiede, Einsatzszenarien und eine klare Empfehlung."
+    "title": "Node.js vs Fastify: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Node.js und Fastify: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const http = require('node:http');\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end('Hello, World!');\n});\n\nserver.listen(3000, () => {\n  console.log('Server läuft auf http://localhost:3000');\n});",
-    "tech2Snippet": "const Fastify = require('fastify');\n\nconst app = Fastify();\n\napp.get('/', async () => 'Hello, World!');\n\napp.listen({ port: 3000 }, (err, address) => {\n  if (err) {\n    console.error(err);\n    process.exit(1);\n  }\n  console.log(`Server läuft auf ${address}`);\n});"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es Einschränkungen bei Fastify für Nicht-HTTP-Anwendungen?",
       "a": "Fastify ist auf HTTP- und Webservice-Anwendungen spezialisiert, sodass es für Aufgaben wie CLI-Tools oder reine Datenverarbeitung ohne Netzwerkkomponente weniger passend ist. Für solche Fälle ist Node.js als universelle Laufzeit die naheliegende Wahl. Fastify sollte dort eingesetzt werden, wo seine Routing- und Plugin-Funktionen tatsächlich gebraucht werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Node.js und Fastify verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Node.js passt besser, wenn dein Projekt priorisiert Ökosystem und Kompatibilität: Wie gut lässt sich die Technologie mit: Node.js verfügt über das größte Ökosystem an Paketen und Modulen und ist die Basis für nahezu alle…. Fastify ist geeigneter, wenn dein Projekt priorisiert Architektur und Abstraktionsgrad: Wie viel Struktur gibt die Technologie vor,: Fastify ist ein Web-Framework, das auf Node.js aufsetzt und mit Routing, Hooks, Dekoratoren,….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Abstraktionsgrad: Wie viel Struktur gibt die Technologie vor,",
+      "toolA": "Dadurch eignet sich Node.js besonders für individuelle Anforderungen oder bestehende Codebasen.",
+      "toolB": "Das reduziert Boilerplate, schränkt aber die Freiheit bei der Wahl alternativer Muster ein."
+    },
+    {
+      "category": "Einstieg und Lernkurve: Wie schnell lässt sich ein erster lauffähiger",
+      "toolA": "Die Lernkurve ist daher anfangs flach, wird bei wachsender Komplexität aber steiler.",
+      "toolB": "Insgesamt ist die Lernkurve moderat und wird durch Konventionen erleichtert."
+    },
+    {
+      "category": "HTTP-Performance und Overhead: Wie effizient verarbeitet die Technologie",
+      "toolA": "Pauschale Aussagen zur Überlegenheit sind daher ohne konkreten Kontext nicht belastbar.",
+      "toolB": "Fastify kann in bestimmten API-Szenarien Vorteile bieten, garantiert aber keine universelle Überlegenheit."
+    },
+    {
+      "category": "Validierung und Serialisierung: Wie werden Eingabedaten geprüft und Antworten",
+      "toolA": "Die Konsistenz liegt vollständig in der Verantwortung des Teams.",
+      "toolB": "Allerdings erfordert die Schema-Pflege zusätzlichen Aufwand und Disziplin."
+    },
+    {
+      "category": "Ökosystem und Kompatibilität: Wie gut lässt sich die Technologie mit",
+      "toolA": "Das macht Node.js zu einer robusten Wahl für vielfältige Integrationen.",
+      "toolB": "Bei speziellen Anforderungen kann jedoch zusätzlicher Integrationsaufwand entstehen."
+    },
+    {
+      "category": "Sicherheit und Wartung: Welche Sicherheitsmechanismen sind vorgesehen, und wie",
+      "toolA": "Langfristige Wartung ist gut planbar, da der Core stabil ist und Abhängigkeiten selbst kontrolliert werden.",
+      "toolB": "Die Wartung ist durch die Struktur erleichtert, erfordert aber Aufmerksamkeit für Plugin-Versionen."
+    }
+  ],
+  "introduction": "Node.js und Fastify lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und abstraktionsgrad: wie viel struktur gibt die technologie vor,. Node.js: Node.js ist eine Laufzeitumgebung und liefert mit dem Modul http einen sehr niedrigschwelligen HTTP-Server, aber keine… Fastify: Fastify ist ein Web-Framework, das auf Node.js aufsetzt und mit Routing, Hooks, Dekoratoren, Plugins und… Das Kriterium einstieg und lernkurve: wie schnell lässt sich ein erster lauffähiger zeigt einen weiteren praktischen Unterschied: Ein minimaler HTTP-Server in Node.js ist mit wenigen Zeilen und ohne zusätzliche Abhängigkeiten möglich, sodass der… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Ökosystem und Kompatibilität: Wie gut lässt sich die Technologie mit: Node.js verfügt über das größte Ökosystem an Paketen und Modulen und ist die Basis für nahezu alle…",
+    "toolB": "dein Projekt priorisiert Architektur und Abstraktionsgrad: Wie viel Struktur gibt die Technologie vor,: Fastify ist ein Web-Framework, das auf Node.js aufsetzt und mit Routing, Hooks, Dekoratoren,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-pinecone",
   "meta": {
-    "title": "LlamaIndex vs Pinecone (2026): welche Lösung passt besser?",
-    "description": "LlamaIndex und Pinecone im Vergleich 2026: Framework versus Vektordatenbank, Stärken, Grenzen, Codebeispiele und klare Empfehlungen für dein RAG-Projekt."
+    "title": "LlamaIndex vs Pinecone: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche LlamaIndex und Pinecone: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from llama_index.core import VectorStoreIndex, SimpleDirectoryReader\n\ndocuments = SimpleDirectoryReader(\"data\").load_data()\nindex = VectorStoreIndex.from_documents(documents)\nquery_engine = index.as_query_engine()\nprint(query_engine.query(\"Hallo, Welt!\"))",
-    "tech2Snippet": "from pinecone import Pinecone\n\npc = Pinecone(api_key=\"YOUR_API_KEY\")\nindex = pc.Index(\"hello-world\")\nindex.upsert(vectors=[(\"id-1\", [0.1, 0.2, 0.3], {\"text\": \"Hallo, Welt!\"})])\nprint(index.query(vector=[0.1, 0.2, 0.3], top_k=1, include_metadata=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Tool passt besser zu großen Produktionsdatenmengen?",
       "a": "Für große Datenmengen mit hohen Suchlasten ist Pinecone als Managed Service auf Skalierung ausgelegt, sofern Tarif und Region die Anforderungen erfüllen. LlamaIndex kann ebenfalls große Pipelines verwalten, verlagert Skalierung und Betrieb aber auf das gewählte Backend und das eigene Team."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen LlamaIndex und Pinecone verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "LlamaIndex passt besser, wenn dein Projekt priorisiert Datenaufnahme und Dokumentverarbeitung: LlamaIndex bietet zahlreiche Connectoren und Parser sowie Bausteine für Chunking,…. Pinecone ist geeigneter, wenn dein Projekt priorisiert Betrieb, Hosting und Skalierung: Pinecone wird als Managed Service betrieben und übernimmt Skalierung sowie….",
+  "tradeoffs": [
+    {
+      "category": "Produktkategorie und Grundfunktion",
+      "toolA": "Es enthält Module für Indexe, Retriever, Query Engines und Agenten, betreibt aber selbst keine dedizierte Vektordatenbank im Produktivbetrieb.",
+      "toolB": "Der Dienst übernimmt Skalierung, Replikation und Betrieb der Infrastruktur, bietet aber keine vollständige Orchestrierung von Datenaufnahme und LLM-Pipelines."
+    },
+    {
+      "category": "Datenaufnahme und Dokumentverarbeitung",
+      "toolA": "Die Verarbeitung lässt sich flexibel anpassen, erfordert aber eigene Konfiguration und Verantwortung für Qualität und Betrieb.",
+      "toolB": "Die Aufnahme erfolgt über SDKs und APIs, während Vorverarbeitung in eigener Anwendung oder in einem Framework erfolgen muss."
+    },
+    {
+      "category": "Betrieb, Hosting und Skalierung",
+      "toolA": "Der Betriebsaufwand hängt stark von Architektur, gewähltem Speicher-Backend und Arbeitslast ab.",
+      "toolB": "Dadurch entfällt eigener Betrieb der Vektordatenbank, dafür besteht eine Abhängigkeit vom Anbieter."
+    },
+    {
+      "category": "Flexibilität und Lock-in",
+      "toolA": "Das reduziert Lock-in, kann aber durch schnell wechselnde APIs und Versionen Migrationsaufwand erzeugen.",
+      "toolB": "Dafür ist die Schnittstelle vergleichsweise stabil und auf den Suchbetrieb fokussiert."
+    },
+    {
+      "category": "Suche und Retrieval-Qualität",
+      "toolA": "Es ermöglicht viele Retrieval-Strategien, liefert aber keine Garantie für Trefferqualität ohne passende Evaluierung.",
+      "toolB": "Als spezialisierter Suchdienst ist die Abfrage-API auf niedrige Latenz und Skalierung ausgelegt."
+    },
+    {
+      "category": "Integration und Ökosystem",
+      "toolA": "Das Ökosystem ist breit, aber die Kompatibilität einzelner Integrationen kann je nach Version variieren.",
+      "toolB": "Die Integrationstiefe in LLM-Orchestrierung ist geringer, weil Pinecone primär die Speicher- und Suchschicht abdeckt."
+    }
+  ],
+  "introduction": "LlamaIndex und Pinecone lösen ein ähnliches Problem, unterscheiden sich jedoch bei produktkategorie und grundfunktion. LlamaIndex: LlamaIndex ist ein Open-Source-Framework, das Datenquellen anbindet, Dokumente in Knoten zerlegt, Embeddings erzeugt… Pinecone: Pinecone ist ein verwalteter Vektordatenbank-Dienst, der Vektoren mit Metadaten speichert und Ähnlichkeitssuche über… Das Kriterium datenaufnahme und dokumentverarbeitung zeigt einen weiteren praktischen Unterschied: LlamaIndex bietet zahlreiche Connectoren und Parser sowie Bausteine für Chunking, Metadatenanreicherung und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenaufnahme und Dokumentverarbeitung: LlamaIndex bietet zahlreiche Connectoren und Parser sowie Bausteine für Chunking,…",
+    "toolB": "dein Projekt priorisiert Betrieb, Hosting und Skalierung: Pinecone wird als Managed Service betrieben und übernimmt Skalierung sowie…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-redis",
   "meta": {
-    "title": "MongoDB vs Redis (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MongoDB y Redis en 2026: modelo de datos, rendimiento, escalabilidad, persistencia, casos de uso y ecosistema para elegir la base de datos adecuada."
+    "title": "MongoDB vs Redis: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MongoDB y Redis: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MongoDB"
@@ -94,5 +94,49 @@
       "q": "¿Redis es seguro por defecto?",
       "a": "Redis no debe considerarse seguro por defecto; es necesario configurar autenticación, ACLs y TLS, y restringir el acceso de red. Algunas versiones y servicios gestionados incluyen controles adicionales, pero la responsabilidad recae en la configuración. MongoDB también requiere una configuración cuidadosa de autenticación y permisos para un despliegue seguro."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MongoDB y Redis cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MongoDB encaja mejor cuando tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas…. Redis es preferible cuando tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y flexibilidad",
+      "toolA": "Su flexibilidad no exime de diseñar un modelo coherente para evitar duplicaciones y problemas de rendimiento.",
+      "toolB": "La flexibilidad existe a nivel de estructuras, no de esquema relacional o documental."
+    },
+    {
+      "category": "Rendimiento y latencia",
+      "toolA": "El rendimiento mejora con un buen diseño de índices y sharding cuando se necesita escalar escrituras.",
+      "toolB": "El rendimiento real depende del tamaño del dataset, la red y el uso de clústeres."
+    },
+    {
+      "category": "Persistencia y durabilidad",
+      "toolA": "Está pensado como fuente de verdad para datos que deben sobrevivir a reinicios y fallos.",
+      "toolB": "Su diseño prioriza velocidad sobre durabilidad estricta."
+    },
+    {
+      "category": "Escalabilidad y alta disponibilidad",
+      "toolA": "La alta disponibilidad depende de una configuración correcta de replica sets y de la latencia entre nodos.",
+      "toolB": "La escalabilidad es buena para cargas en memoria, pero el tamaño del dataset está limitado por la RAM disponible."
+    },
+    {
+      "category": "Consultas y búsqueda",
+      "toolA": "Es adecuado para aplicaciones que necesitan explorar y combinar datos de forma flexible.",
+      "toolB": "Para patrones de acceso simples y predecibles, sus comandos son muy eficientes."
+    },
+    {
+      "category": "Casos de uso típicos",
+      "toolA": "No es la mejor opción para caché de latencia ultrabaja ni para colas de mensajes ligeras.",
+      "toolB": "No está pensado como base de datos principal para datos que requieren consultas complejas y durabilidad estricta."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MongoDB y Redis responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad. MongoDB: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin… Redis: Redis ofrece estructuras de datos especializadas como cadenas, listas, conjuntos, hashes, sorted sets, bitmaps,… El criterio de rendimiento y latencia añade otra diferencia práctica: MongoDB está diseñado para cargas transaccionales y analíticas moderadas, con latencias que dependen del… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas…",
+    "toolB": "tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un…"
+  }
 }

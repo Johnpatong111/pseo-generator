@@ -1,8 +1,8 @@
 {
   "slug": "vue-vs-angular",
   "meta": {
-    "title": "Vue vs Angular (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Vue i Angular w 2026 roku: wydajność, krzywa uczenia, ekosystem, bezpieczeństwo i koszty utrzymania. Sprawdź, które podejście pasuje do Twojego projektu."
+    "title": "Vue vs Angular: co wybrać w 2026 — funkcje, wydajność i ekosystem",
+    "description": "Porównaj Vue i Angular: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Vue"
@@ -94,5 +94,49 @@
       "q": "Które narzędzie wybrać, jeśli zespół zna tylko podstawy JavaScriptu?",
       "a": "Vue będzie zwykle łatwiejsze na start, ponieważ pozwala tworzyć komponenty bez znajomości zaawansowanych koncepcji typowania i wstrzykiwania zależności. Angular wymaga nauki TypeScriptu i architektury aplikacji, więc wybór warto poprzedzić oceną czasu na szkolenie oraz długoterminowych potrzeb projektu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Vue a Angular zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Vue będzie lepszy, gdy projekt stawia na kryterium „Krzywa uczenia i próg wejścia”: Vue oferuje łagodny start, ponieważ bazowy model opiera się na składnikach z szablonami zbliżonymi…. Angular sprawdzi się, gdy projekt stawia na kryterium „Architektura i spójność projektu”: Angular narzuca kompleksowy zestaw wzorców, w tym wstrzykiwanie zależności i podział na warstwy,….",
+  "tradeoffs": [
+    {
+      "category": "Krzywa uczenia i próg wejścia",
+      "toolA": "Osoba znająca HTML, CSS i podstawy JavaScriptu może utworzyć pierwszą działającą aplikację w krótkim czasie, choć zaawansowane wzorce wymagają zrozumienia systemu reaktywności.",
+      "toolB": "To podnosi próg wejścia, ale daje zespołom jednolity zestaw konwencji ułatwiający pracę w dużych repozytoriach, szczególnie po ustaleniu wersji i stylu architektury."
+    },
+    {
+      "category": "Architektura i spójność projektu",
+      "toolA": "Elastyczność ułatwia dopasowanie do istniejących systemów, lecz w większych zespołach trzeba świadomie ustalić reguły i narzędzia kontroli jakości.",
+      "toolB": "Cena tej spójności to większa liczba pojęć do opanowania oraz mniejsza swoboda w wyborze bibliotek podstawowych, co trzeba uwzględnić przy planowaniu zespołu."
+    },
+    {
+      "category": "Wydajność i rozmiar aplikacji",
+      "toolA": "Rzeczywisty wynik zależy jednak od rozmiaru aplikacji, konfiguracji budowania, liczby zależności i sposobu ładowania tras, więc nie da się podać jednej uniwersalnej liczby.",
+      "toolB": "Wynik nadal zależy od wersji, konfiguracji buildu, routingu i obciążenia, dlatego porównania wydajności należy prowadzić na własnym reprezentatywnym scenariuszu."
+    },
+    {
+      "category": "Ekosystem i biblioteki",
+      "toolA": "Przed wdrożeniem warto sprawdzić aktywność utrzymania, kompatybilność z używaną wersją i politykę bezpieczeństwa zależności.",
+      "toolB": "Ogranicza to jednak swobodę wyboru alternatyw i sprawia, że migracje między wersjami wymagają zaplanowania, zwłaszcza przy dużych zależnościach zewnętrznych."
+    },
+    {
+      "category": "Wsparcie korporacyjne i długoterminowe utrzymanie",
+      "toolA": "Długoterminowe utrzymanie zależy od aktywnego ekosystemu i polityki wybranych bibliotek, więc należy sprawdzać harmonogramy wsparcia dla używanej wersji.",
+      "toolB": "Nie oznacza to gwarancji biznesowej, ale ułatwia planowanie aktualizacji, o ile zespół uwzględni koszty regularnych migracji."
+    },
+    {
+      "category": "Narzędzia i doświadczenie programisty",
+      "toolA": "Dojrzałość wsparcia zależy od wtyczek edytora i wersji, dlatego warto sprawdzić konfigurację dla wybranego środowiska pracy.",
+      "toolB": "Jednocześnie konfiguracja bywa bardziej rozbudowana, a pełne wykorzystanie możliwości wymaga znajomości narzędzi budowania i cyklu życia komponentów."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "import { CommonModule } from \"@angular/common\";\nimport { Component, Input } from \"@angular/core\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\n@Component({\n  selector: \"app-product-list\",\n  standalone: true,\n  imports: [CommonModule],\n  template: `<ul><li *ngFor=\"let product of visibleProducts\">{{ product.name }}</li></ul>`,\n})\nexport class ProductListComponent {\n  @Input({ required: true }) products: Product[] = [];\n  @Input({ required: true }) categoryId = \"\";\n\n  get visibleProducts(): Product[] {\n    return this.products.filter(\n      (product) => product.active && product.categoryId === this.categoryId,\n    );\n  }\n}"
+  },
+  "introduction": "Vue i Angular odpowiadają na podobną potrzebę, ale różnią się w obszarze krzywa uczenia i próg wejścia. Vue: Vue oferuje łagodny start, ponieważ bazowy model opiera się na składnikach z szablonami zbliżonymi do HTML oraz… Angular: Angular wymaga znajomości TypeScriptu, wstrzykiwania zależności, modułów lub nowoczesnych samodzielnych komponentów… Kolejną istotną różnicę pokazuje kryterium „Architektura i spójność projektu”: Vue pozostawia więcej swobody w organizacji kodu, a oficjalne narzędzia sugerują strukturę bez wymuszania jednego… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Krzywa uczenia i próg wejścia”: Vue oferuje łagodny start, ponieważ bazowy model opiera się na składnikach z szablonami zbliżonymi…",
+    "toolB": "projekt stawia na kryterium „Architektura i spójność projektu”: Angular narzuca kompleksowy zestaw wzorców, w tym wstrzykiwanie zależności i podział na warstwy,…"
+  }
 }

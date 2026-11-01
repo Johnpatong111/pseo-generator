@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-aws",
   "meta": {
-    "title": "Terraform vs AWS (2026): quelle solution choisir ?",
-    "description": "Comparez Terraform et AWS en 2026 : infrastructure as code, gestion multi-cloud, écosystème, sécurité et cas d'usage. Découvrez nos recommandations concrètes."
+    "title": "Terraform vs AWS: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Terraform et AWS : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Terraform"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"eu-west-3\"\n}\n\nresource \"aws_s3_bucket\" \"hello\" {\n  bucket = \"hello-terraform-example\"\n}",
-    "tech2Snippet": "import boto3\n\ns3 = boto3.client('s3', region_name='eu-west-3')\ns3.create_bucket(\n    Bucket='hello-aws-example',\n    CreateBucketConfiguration={'LocationConstraint': 'eu-west-3'}\n)\nprint('Bucket créé')"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment débuter avec Terraform sur AWS sans expérience préalable ?",
       "a": "Commencez par installer Terraform, configurer un provider AWS avec des credentials adaptés et créer une ressource simple, comme un bucket S3, dans un environnement de test. Utilisez ensuite les commandes terraform init, plan et apply pour comprendre le cycle de vie, et stockez l'état dans un backend distant sécurisé. La documentation officielle et les modules publics sont des ressources utiles, mais les bonnes pratiques dépendent de votre contexte et de votre équipe."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Terraform et AWS modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Terraform convient mieux lorsque votre projet privilégie portée multi-cloud et indépendance vis-à-vis du fournisseur : ce critère : Terraform permet de déclarer des ressources chez plusieurs fournisseurs dans une même…. AWS est préférable lorsque votre projet privilégie écosystème, maturité et adoption : ce critère évalue la richesse de : AWS propose un catalogue de services très vaste, une documentation détaillée et un écosystème de….",
+  "tradeoffs": [
+    {
+      "category": "Nature et rôle de l'outil : comparer un outil d'infrastructure as code à un",
+      "toolA": "Son rôle est de planifier puis d'appliquer des changements de manière prévisible, avec un état local ou distant qui suit les ressources gérées.",
+      "toolB": "AWS n'est donc pas un concurrent direct de Terraform, mais la cible fréquente des configurations Terraform."
+    },
+    {
+      "category": "Portée multi-cloud et indépendance vis-à-vis du fournisseur : ce critère",
+      "toolA": "La qualité et la couverture de chaque provider dépendent toutefois de son mainteneur et de sa version, ce qui demande une vigilance sur les ressources critiques.",
+      "toolB": "Pour un périmètre strictement AWS, cette limitation n'est pas un problème."
+    },
+    {
+      "category": "Écosystème, maturité et adoption : ce critère évalue la richesse de",
+      "toolA": "Sa maturité est réelle, mais l'évolution de sa licence (BUSL depuis 2023) a conduit certains acteurs à évaluer des alternatives comme OpenTofu ; il convient donc de vérifier la version et la politique de l'éditeur avant adoption.",
+      "toolB": "La profondeur de l'écosystème AWS est un atout majeur pour les équipes déjà engagées sur ce cloud."
+    },
+    {
+      "category": "Courbe d'apprentissage et langage : ce critère compare l'effort nécessaire",
+      "toolA": "Les équipes habituées à un langage de programmation peuvent aussi utiliser des outils comme CDK for Terraform, mais cela ajoute une couche d'apprentissage.",
+      "toolB": "La documentation et les formations sont abondantes, ce qui facilite la montée en compétence."
+    },
+    {
+      "category": "Sécurité, gouvernance et gestion des accès : ce critère examine les mécanismes",
+      "toolA": "La sécurité dépend donc en grande partie des pratiques de l'équipe et de la configuration du backend.",
+      "toolB": "Comme pour tout cloud, une mauvaise configuration des accès reste la principale source de risque."
+    },
+    {
+      "category": "Gestion de l'état et cycle de vie des ressources : ce critère porte sur la",
+      "toolA": "La gestion de l'état est un point d'attention important, surtout sur des infrastructures étendues.",
+      "toolB": "Pour des besoins avancés, le CDK offre une abstraction supplémentaire, au prix d'une complexité accrue."
+    }
+  ],
+  "introduction": "Terraform et AWS répondent à un besoin proche, mais diffèrent sur nature et rôle de l'outil : comparer un outil d'infrastructure as code à un. Terraform : Terraform est un outil open source édité par HashiCorp, utilisé pour décrire l'infrastructure sous forme de code dans… AWS : AWS est une plateforme de cloud public qui propose des services managés et à la demande, facturés selon l'usage. Le critère « Portée multi-cloud et indépendance vis-à-vis du fournisseur : ce critère » met en évidence une autre différence pratique : Terraform permet de déclarer des ressources chez plusieurs fournisseurs dans une même configuration, avec des… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie portée multi-cloud et indépendance vis-à-vis du fournisseur : ce critère : Terraform permet de déclarer des ressources chez plusieurs fournisseurs dans une même…",
+    "toolB": "votre projet privilégie écosystème, maturité et adoption : ce critère évalue la richesse de : AWS propose un catalogue de services très vaste, une documentation détaillée et un écosystème de…"
+  }
 }

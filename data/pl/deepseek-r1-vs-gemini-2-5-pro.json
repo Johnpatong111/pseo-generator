@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-gemini-2-5-pro",
   "meta": {
-    "title": "DeepSeek R1 vs Gemini 2.5 Pro (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie DeepSeek R1 i Gemini 2.5 Pro w 2026 r.: kontekst, wydajność, ceny API, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twoich potrzeb."
+    "title": "DeepSeek R1 vs Gemini 2.5 Pro: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj DeepSeek R1 i Gemini 2.5 Pro: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import requests\n\napi_key = \"TWOJ_KLUCZ_API\"\nurl = \"https://api.deepseek.com/v1/chat/completions\"\nheaders = {\"Authorization\": f\"Bearer {api_key}\", \"Content-Type\": \"application/json\"}\ndata = {\n    \"model\": \"deepseek-r1\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n}\nresponse = requests.post(url, headers=headers, json=data)\nprint(response.json()[\"choices\"][0][\"message\"][\"content\"])",
-    "tech2Snippet": "from google import genai\n\nclient = genai.Client(api_key=\"TWOJ_KLUCZ_API\")\nresponse = client.models.generate_content(\n    model=\"gemini-2.5-pro\",\n    contents=\"Hello, World!\"\n)\nprint(response.text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jakie są główne ograniczenia Gemini 2.5 Pro?",
       "a": "Gemini 2.5 Pro jest modelem zamkniętym, więc użytkownik nie ma wpływu na jego rozwój ani możliwości dostrajania, a wszystkie dane są przetwarzane w infrastrukturze Google. Koszty API mogą być wyższe niż w przypadku modeli otwartych, szczególnie przy dużych wolumenach. Dodatkowo należy uwzględnić opóźnienia sieciowe i zależność od dostawcy usług chmurowych."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między DeepSeek R1 a Gemini 2.5 Pro zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "DeepSeek R1 będzie lepszy, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek R1 jest dostępny w API DeepSeek i u niektórych dostawców zewnętrznych; ceny są…. Gemini 2.5 Pro sprawdzi się, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Gemini 2.5 Pro oferuje znacznie większe okno kontekstu, sięgające setek tysięcy tokenów w….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Model nie jest multimodalny, więc analiza długich plików wymaga wcześniejszej ekstrakcji tekstu.",
+      "toolB": "Duży kontekst łączy się z obsługą multimodalną, co dodatkowo zwiększa elastyczność."
+    },
+    {
+      "category": "Wyniki na benchmarkach (MMLU, HumanEval) i jakość rozumowania",
+      "toolA": "Otwarty charakter modelu pozwala na własne testy i dostrajanie.",
+      "toolB": "W praktyce jakość odpowiedzi może się różnić w zależności od zadania i obciążenia systemu."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Model można też hostować samodzielnie, co wiąże się z kosztami infrastruktury, ale eliminuje opłaty za API.",
+      "toolB": "Dla dużych wolumenów warto rozważyć plany enterprise lub negocjacje."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "Brak oficjalnych, porównywalnych benchmarków latencji dla wszystkich dostawców, dlatego należy testować w docelowym środowisku.",
+      "toolB": "Model jest zarządzany, co upraszcza skalowanie."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość (open/closed)",
+      "toolA": "Dostępność przez API zależy od dostawcy i może podlegać ograniczeniom regionalnym.",
+      "toolB": "Zależność od dostawcy wiąże się z koniecznością akceptacji regulaminu i podlegania politykom Google."
+    },
+    {
+      "category": "Obsługa multimodalna (tekst, obraz, dźwięk, wideo)",
+      "toolA": "Model skupia się na rozumowaniu tekstowym i generowaniu kodu.",
+      "toolB": "Multimodalność zwiększa koszty i złożoność integracji."
+    }
+  ],
+  "introduction": "DeepSeek R1 i Gemini 2.5 Pro odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. DeepSeek R1: DeepSeek R1 według dostępnych informacji obsługuje okno kontekstu rzędu 64 tys. Gemini 2.5 Pro: Gemini 2.5 Pro oferuje znacznie większe okno kontekstu, sięgające setek tysięcy tokenów w zależności od wersji i… Kolejną istotną różnicę pokazuje kryterium „Wyniki na benchmarkach (MMLU, HumanEval) i jakość rozumowania”: DeepSeek R1 jest modelem rozumowania, który według publikowanych wyników osiąga konkurencyjne rezultaty na… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejściowych i wyjściowych”: DeepSeek R1 jest dostępny w API DeepSeek i u niektórych dostawców zewnętrznych; ceny są…",
+    "toolB": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Gemini 2.5 Pro oferuje znacznie większe okno kontekstu, sięgające setek tysięcy tokenów w…"
+  }
 }

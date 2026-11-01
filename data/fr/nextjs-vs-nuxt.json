@@ -1,8 +1,8 @@
 {
   "slug": "nextjs-vs-nuxt",
   "meta": {
-    "title": "Next.js vs Nuxt (2026): quelle solution choisir ?",
-    "description": "Comparatif Next.js vs Nuxt en 2026 : rendu, routage, écosystème, TypeScript, déploiement et courbe d'apprentissage, pour choisir le framework adapté à votre projet Vue ou React."
+    "title": "Next.js vs Nuxt: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Next.js et Nuxt : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Next.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// app/page.tsx (Next.js, App Router)\nexport default function Page() {\n  return <h1>Hello, World!</h1>;\n}",
-    "tech2Snippet": "<!-- app.vue (Nuxt) -->\n<template>\n  <h1>Hello, World!</h1>\n</template>"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
+    "tech2Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel impact sur le SEO faut-il anticiper ?",
       "a": "Les deux frameworks permettent de livrer du HTML rendu côté serveur ou généré statiquement, ce qui aide les moteurs de recherche à indexer le contenu, sans constituer une garantie de classement. Le SEO dépendra surtout de la qualité du contenu, de la structure des URL, des métadonnées et des performances réelles mesurées. Pour les contenus dynamiques fréquemment mis à jour, comparez le comportement de cache de chaque solution sur votre hébergement."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Next.js et Nuxt modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Next.js convient mieux lorsque votre projet privilégie écosystème et bibliothèques : évaluation détaillée de ce critère : L'écosystème React est vaste : composants, hooks, bibliothèques de formulaires, de données et…. Nuxt est préférable lorsque votre projet privilégie routage et conventions de projet : évaluation détaillée de ce critère : Nuxt applique un routage par fichiers dans le dossier pages, complété par des conventions pour les….",
+  "tradeoffs": [
+    {
+      "category": "Base technique et modèle de composants : évaluation détaillée de ce critère",
+      "toolA": "Ce choix convient aux équipes familières de l'écosystème React et de ses bibliothèques, mais impose de comprendre la frontière serveur/client, qui évolue selon la version de Next.js et la configuration du projet.",
+      "toolB": "L'approche est généralement jugée plus progressive pour qui vient de Vue, et les abstractions serveur restent cohérentes d'une version à l'autre, même si les détails d'API évoluent avec les versions majeures."
+    },
+    {
+      "category": "Routage et conventions de projet : évaluation détaillée de ce critère",
+      "toolA": "La structure est puissante mais quelques notions (layouts, route groups, parallélisme) demandent un temps d'adaptation, et le comportement exact dépend de la version majeure utilisée.",
+      "toolB": "La logique est très prévisible, ce qui facilite l'accueil de nouveaux développeurs Vue, même si les projets très personnalisés finissent par recourir à des modules ou à une configuration explicite."
+    },
+    {
+      "category": "Rendu et stratégies de rendu : évaluation détaillée de ce critère",
+      "toolA": "Ces mécanismes sont matures mais leur comportement précis dépend de la version, des options de cache et de la plateforme d'hébergement, ce qui invite à tester la configuration réelle plutôt qu'à se fier à des promesses génériques.",
+      "toolB": "La configuration reste lisible, mais les performances observées varient selon la charge, les composants utilisés et le mode d'hébergement choisi, notamment en serverless."
+    },
+    {
+      "category": "Écosystème et bibliothèques : évaluation détaillée de ce critère",
+      "toolA": "Cette richesse a un revers, la qualité et la maintenance des paquets étant inégales, et certaines bibliothèques React ne sont pas directement compatibles avec les composants serveur selon la configuration.",
+      "toolB": "On trouve moins de bibliothèques tierces que côté React, ce qui réduit parfois les options mais simplifie les décisions et limite les incompatibilités entre paquets."
+    },
+    {
+      "category": "TypeScript et qualité de développement : évaluation détaillée de ce critère",
+      "toolA": "L'expérience est bonne mais dépend de la rigueur du projet, car les bibliothèques React tierces n'offrent pas toutes des types complets, et les composants serveur ajoutent des cas limites à typer correctement.",
+      "toolB": "Le confort est réel, mais il faut accepter la génération de fichiers de types et vérifier que l'outillage de l'éditeur suit la version de Nuxt installée."
+    },
+    {
+      "category": "Déploiement et hébergement : évaluation détaillée de ce critère",
+      "toolA": "Les fonctions avancées (cache, régénération, middleware) peuvent nécessiter des services supplémentaires selon la plateforme, ce qui influence le coût et la complexité opérationnelle.",
+      "toolB": "La portabilité est appréciable, mais les performances et les limites dépendent fortement du fournisseur et de la configuration réseau retenue."
+    }
+  ],
+  "introduction": "Next.js et Nuxt répondent à un besoin proche, mais diffèrent sur base technique et modèle de composants : évaluation détaillée de ce critère. Next.js : Next.js repose sur React et suit un modèle de composants fondé sur JSX, avec des composants serveur et client… Nuxt : Nuxt repose sur Vue 3 et sa syntaxe de composants monofichiers, avec une séparation entre code serveur et client… Le critère « Routage et conventions de projet : évaluation détaillée de ce critère » met en évidence une autre différence pratique : Next.js propose un routage par fichiers, avec l'App Router comme modèle recommandé dans les versions récentes,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et bibliothèques : évaluation détaillée de ce critère : L'écosystème React est vaste : composants, hooks, bibliothèques de formulaires, de données et…",
+    "toolB": "votre projet privilégie routage et conventions de projet : évaluation détaillée de ce critère : Nuxt applique un routage par fichiers dans le dossier pages, complété par des conventions pour les…"
+  }
 }

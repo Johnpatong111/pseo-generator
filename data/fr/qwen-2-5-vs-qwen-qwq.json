@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen-qwq",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen QwQ (2026): quelle solution choisir ?",
-    "description": "Comparatif Qwen 2.5 vs QwQ en 2026. Fenêtre de contexte, performances, tarifs API, accès open source et cas d'usage. Conseils concrets pour choisir."
+    "title": "Qwen 2.5 vs Qwen QwQ: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qwen 2.5 et Qwen QwQ : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-1.5B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\n\nmessages = [{\"role\": \"user\", \"content\": \"Bonjour, présente-toi en une phrase.\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=64)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/QwQ-32B-Preview\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\n\nprompt = \"Résous : 2 + 2 * 3. Explique brièvement.\"\nmessages = [{\"role\": \"user\", \"content\": prompt}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=256)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment choisir entre Qwen 2.5 et QwQ en 2026 ?",
       "a": "Choisissez Qwen 2.5 si vous avez besoin de polyvalence, de faibles latences, de tailles multiples et d'un écosystème mature pour la production. Choisissez QwQ pour des expérimentations de raisonnement avancé ou des tâches logiques difficiles, en acceptant une latence plus élevée et une disponibilité plus restreinte. Dans tous les cas, vérifiez la version, la licence et les tarifs actuels sur la documentation officielle avant intégration."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qwen 2.5 et Qwen QwQ modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qwen 2.5 convient mieux lorsque votre projet privilégie fenêtre de contexte et gestion des longues entrées : Qwen 2.5 propose plusieurs tailles et variantes avec des fenêtres de contexte annoncées, y compris…. Qwen QwQ est préférable lorsque votre projet privilégie performances comparées aux benchmarks (mmlu, humaneval) lorsque publiées : QwQ vise le raisonnement et les tâches de type mathématiques/logique ; les comparaisons directes….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et gestion des longues entrées",
+      "toolA": "Il faut vérifier la fenêtre exacte selon le modèle précis (0.5B à 72B, Instruct, Coder, VL) sur la documentation officielle.",
+      "toolB": "La valeur exacte dépend de la version publiée et doit être confirmée sur la page officielle du modèle."
+    },
+    {
+      "category": "Performances comparées aux benchmarks (MMLU, HumanEval) lorsque publiées",
+      "toolA": "Ces chiffres varient selon la variante, le prompt et le matériel d'évaluation, et doivent être lus dans le rapport technique officiel.",
+      "toolB": "Les résultats publiés pour QwQ concernent surtout des benchmarks de raisonnement, et non toutes les tâches générales."
+    },
+    {
+      "category": "Tarification API par million de tokens (entrée/sortie)",
+      "toolA": "Les tarifs dépendent du modèle (taille), de la région et du palier ; ils évoluent fréquemment et doivent être vérifiés sur la grille tarifaire officielle.",
+      "toolB": "Selon les plateformes, le coût par million de tokens d'entrée/sortie est à confirmer sur la documentation du fournisseur ; ne pas se fier à des chiffres non vérifiés."
+    },
+    {
+      "category": "Latence et débit en usage réel",
+      "toolA": "La latence observée dépend de l'hébergement, du batch et de la charge.",
+      "toolB": "La latence exacte n'est pas garantie et varie selon l'infrastructure et la longueur de la chaîne de pensée."
+    },
+    {
+      "category": "Accès, licence et disponibilité open/closed",
+      "toolA": "Certaines variantes ou versions commerciales peuvent avoir des conditions différentes ; vérifier la licence de chaque checkpoint.",
+      "toolB": "Sa disponibilité en API et sa stabilité peuvent être moindres que celles d'une famille généraliste comme Qwen 2.5."
+    },
+    {
+      "category": "Cas d'usage pratiques : production généraliste vs raisonnement avancé",
+      "toolA": "Sa polyvalence et ses tailles multiples en font un choix pragmatique pour des pipelines de production.",
+      "toolB": "Il est moins indiqué pour des échanges à faible latence ou des traitements massifs et simples."
+    }
+  ],
+  "introduction": "Qwen 2.5 et Qwen QwQ répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et gestion des longues entrées. Qwen 2.5 : Qwen 2.5 propose plusieurs tailles et variantes avec des fenêtres de contexte annoncées, y compris des versions… Qwen QwQ : QwQ est conçu comme un modèle de raisonnement expérimental ; sa fenêtre de contexte est généralement plus limitée que… Le critère « Performances comparées aux benchmarks (MMLU, HumanEval) lorsque publiées » met en évidence une autre différence pratique : Les rapports Qwen 2.5 communiquent des scores MMLU et HumanEval pour plusieurs tailles, souvent compétitifs face aux… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte et gestion des longues entrées : Qwen 2.5 propose plusieurs tailles et variantes avec des fenêtres de contexte annoncées, y compris…",
+    "toolB": "votre projet privilégie performances comparées aux benchmarks (mmlu, humaneval) lorsque publiées : QwQ vise le raisonnement et les tâches de type mathématiques/logique ; les comparaisons directes…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nuxt-vs-gatsby",
   "meta": {
-    "title": "Nuxt vs Gatsby (2026): Which option should you choose?",
-    "description": "Nuxt vs Gatsby in 2026: compare rendering modes, data layer, ecosystem, performance, and learning curve to pick the right framework for your next web project."
+    "title": "Nuxt vs Gatsby: Which one to choose in 2026? (features, performance & ecosystem & code compared)",
+    "description": "Compare Nuxt and Gatsby architectural trade-offs, rendering, routing, and data loading, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "Nuxt"
@@ -94,5 +94,49 @@
       "q": "Which framework should a small team with limited resources pick?",
       "a": "For a small team, the decision usually comes down to existing skills and the desired hosting model. A Vue-focused team can use Nuxt to cover static pages, dynamic routes, and server endpoints in one project, potentially reducing infrastructure pieces to maintain. A React team with a simple static site and a CMS can use Gatsby and its plugins to minimize integration code. In both cases, confirm the long-term maintenance status of the plugins or modules you depend on before committing."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between Nuxt and Gatsby changes how a project handles interface rendering and data loading, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "Nuxt is the better fit when your project prioritizes rendering modes and output flexibility: Nuxt supports universal rendering, client-side rendering, static generation, and hybrid per-route…. Gatsby is a stronger fit when your project prioritizes data layer and content sourcing: Gatsby's GraphQL data layer is a defining strength: it aggregates sources from many CMSs, files,….",
+  "tradeoffs": [
+    {
+      "category": "Rendering modes and output flexibility",
+      "toolA": "The exact behavior depends on the preset and hosting target you select, so teams should confirm which presets their platform supports before committing.",
+      "toolB": "Some server-side capabilities require specific adapters or hosting configurations, so verify that your target host supports the features you need."
+    },
+    {
+      "category": "Data layer and content sourcing",
+      "toolA": "This gives teams freedom to call any REST or GraphQL API, but it also means you own more of the integration and caching logic.",
+      "toolB": "The plugin ecosystem covers a large number of sources, though plugin maintenance and compatibility can vary by source, so check current plugin activity for your specific CMS."
+    },
+    {
+      "category": "Framework and ecosystem",
+      "toolA": "The Nuxt ecosystem is active and includes first-party modules for common needs such as image optimization, content, and authentication, though the number of third-party modules can be smaller than what exists in React.",
+      "toolB": "Its own plugin ecosystem is large, but it is more tightly scoped around data sourcing and build-time tasks, and some plugins age without frequent updates."
+    },
+    {
+      "category": "Performance and build workflow",
+      "toolA": "Actual performance depends on configuration and hosting, so production measurements are essential.",
+      "toolB": "Build times on content-heavy projects can still be significant, and runtime performance depends heavily on how much JavaScript ends up in the client bundle."
+    },
+    {
+      "category": "Full-stack capabilities",
+      "toolA": "This makes it practical to build full-stack applications, though teams should review security and data-access patterns for their chosen runtime.",
+      "toolB": "For applications that need substantial backend logic, you will typically pair Gatsby with a separate API or serverless service."
+    },
+    {
+      "category": "Learning curve and developer experience",
+      "toolA": "Developers new to Vue or to server rendering concepts will still need time to learn the framework's rendering model and deployment options.",
+      "toolB": "The documentation has improved over time, but the build-time data model and plugin configuration can be confusing for developers coming from simpler React setups."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  },
+  "introduction": "Nuxt and Gatsby address a related need, but differ in rendering modes and output flexibility. Nuxt: Nuxt supports universal rendering, client-side rendering, static generation, and hybrid per-route rules, including… Gatsby: Gatsby is built around static site generation and produces pre-rendered HTML at build time, with client-side hydration… The data layer and content sourcing criterion adds another practical distinction: Nuxt does not impose a single data layer; it relies on composables and standard fetch patterns, with an official… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes rendering modes and output flexibility: Nuxt supports universal rendering, client-side rendering, static generation, and hybrid per-route…",
+    "toolB": "your project prioritizes data layer and content sourcing: Gatsby's GraphQL data layer is a defining strength: it aggregates sources from many CMSs, files,…"
+  }
 }

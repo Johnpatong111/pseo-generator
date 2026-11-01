@@ -1,8 +1,8 @@
 {
   "slug": "astra-db-vs-qdrant",
   "meta": {
-    "title": "Astra DB vs Qdrant (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Astra DB i Qdrant pod kątem wyszukiwania wektorowego, modelu danych, kosztów i zastosowań w RAG. Sprawdź, które narzędzie lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Astra DB vs Qdrant: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Astra DB i Qdrant: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Astra DB"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"TWOJ_TOKEN\")\ndb = client.get_database(\"TWOJ_ENDPOINT\")\ncollection = db.create_collection(\"przyklad\", dimension=3)\ncollection.insert_one({\"_id\": 1, \"tekst\": \"Witaj, świecie!\", \"wektor\": [0.1, 0.2, 0.3]})\nprint(collection.find_one({\"_id\": 1}))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.recreate_collection(collection_name=\"przyklad\", vectors_config={\"size\": 3, \"distance\": \"Cosine\"})\nclient.upsert(collection_name=\"przyklad\", points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3], payload={\"tekst\": \"Witaj, świecie!\"})])\nprint(client.retrieve(collection_name=\"przyklad\", ids=[1]))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Czy któreś z narzędzi jest bardziej odpowiednie dla małych projektów?",
       "a": "Qdrant w wersji open source może być atrakcyjny dla małych projektów ze względu na brak opłat licencyjnych i możliwość uruchomienia lokalnie, ale wymaga pewnej wiedzy operacyjnej. Astra DB jako usługa zarządzana może być wygodniejsza dla małych zespołów, które nie chcą zarządzać infrastrukturą, jednak jej model cenowy oparty na zużyciu może być mniej przewidywalny. Oba narzędzia oferują plany wystarczające dla małych projektów, ale należy zweryfikować limity i koszty w aktualnych cennikach."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Astra DB a Qdrant zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Astra DB będzie lepszy, gdy projekt stawia na kryterium „Model operacyjny i zarządzanie”: Astra DB jest w pełni zarządzaną usługą w chmurze, która automatycznie obsługuje provisioning,…. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: Qdrant to dedykowana baza wektorowa, która przechowuje punkty z wektorami i metadanymi (payload) w….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i elastyczność schematu",
+      "toolA": "Dostępność funkcji wektorowych może zależeć od wersji i planu usługi.",
+      "toolB": "Pozwala na elastyczne definiowanie schematu payloadu i indeksów."
+    },
+    {
+      "category": "Wyszukiwanie wektorowe i indeksowanie",
+      "toolA": "Wyszukiwanie wektorowe jest zintegrowane z zapytaniami CQL, co ułatwia łączenie z danymi relacyjnymi.",
+      "toolB": "Jest zoptymalizowany pod kątem czystego wyszukiwania wektorowego."
+    },
+    {
+      "category": "Model operacyjny i zarządzanie",
+      "toolA": "Dostępne są plany serverless i dedykowane, a szczegóły dotyczące dostępności funkcji należy sprawdzić w dokumentacji.",
+      "toolB": "Chmura oferuje zarządzanie, ale może mieć inne ograniczenia funkcji w zależności od planu."
+    },
+    {
+      "category": "Integracje i ekosystem",
+      "toolA": "Może również współpracować z narzędziami do przetwarzania strumieniowego, takimi jak Apache Kafka, ale dostępność konektorów może zależeć od planu.",
+      "toolB": "Jest często wybierany jako dedykowany magazyn wektorów w architekturach RAG, a lista integracji jest regularnie rozwijana."
+    },
+    {
+      "category": "Skalowalność i wydajność",
+      "toolA": "Astra DB jest projektowana do obsługi dużych obciążeń transakcyjnych i analitycznych.",
+      "toolB": "Qdrant publikuje niektóre wyniki benchmarków, ale należy je weryfikować dla konkretnego przypadku użycia."
+    },
+    {
+      "category": "Bezpieczeństwo i zgodność",
+      "toolA": "Należy zweryfikować aktualne certyfikaty w oficjalnej dokumentacji.",
+      "toolB": "W wersji open source odpowiedzialność za bezpieczeństwo spoczywa na operatorze."
+    }
+  ],
+  "introduction": "Astra DB i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu. Astra DB: Astra DB opiera się na modelu szerokich kolumn Apache Cassandra, oferując tabele z elastycznym schematem i możliwością… Qdrant: Qdrant to dedykowana baza wektorowa, która przechowuje punkty z wektorami i metadanymi (payload) w kolekcjach. Kolejną istotną różnicę pokazuje kryterium „Wyszukiwanie wektorowe i indeksowanie”: Astra DB udostępnia wyszukiwanie wektorowe z indeksami przybliżonymi (ANN) i możliwością łączenia filtrów na kolumnach. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model operacyjny i zarządzanie”: Astra DB jest w pełni zarządzaną usługą w chmurze, która automatycznie obsługuje provisioning,…",
+    "toolB": "projekt stawia na kryterium „Model danych i elastyczność schematu”: Qdrant to dedykowana baza wektorowa, która przechowuje punkty z wektorami i metadanymi (payload) w…"
+  }
 }

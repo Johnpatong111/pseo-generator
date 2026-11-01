@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-crewai",
   "meta": {
-    "title": "Claude Fable 5.1 vs CrewAI (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude Fable 5.1 i CrewAI: kontekst, wydajność, ceny API, latencja, dostępność i zastosowania. Sprawdź, które narzędzie lepiej pasuje do Twojego projektu."
+    "title": "Claude Fable 5.1 vs CrewAI: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude Fable 5.1 i CrewAI: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TWOJ_KLUCZ\")\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Pisarz\",\n    goal=\"Napisz powitanie\",\n    backstory=\"Jesteś doświadczonym autorem.\",\n    verbose=True\n)\ntask = Task(\n    description=\"Napisz 'Hello, World!' po polsku.\",\n    agent=agent\n)\ncrew = Crew(agents=[agent], tasks=[task])\nresult = crew.kickoff()\nprint(result)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Które narzędzie lepiej sprawdzi się w zadaniach wymagających wielu agentów?",
       "a": "CrewAI został stworzony specjalnie do orkiestracji wielu agentów, umożliwiając definiowanie ról, zadań i przepływów pracy. Claude Fable 5.1 to pojedynczy model, który może pełnić rolę agenta, ale nie oferuje natywnego wsparcia dla multi-agentowych struktur. Do złożonych systemów multi-agentowych lepszy będzie CrewAI."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude Fable 5.1 a CrewAI zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude Fable 5.1 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Claude Fable 5.1 oferuje okno kontekstu wynoszące 1 milion tokenów, co pozwala przetwarzać bardzo…. CrewAI sprawdzi się, gdy projekt stawia na kryterium „Ceny API (za 1 mln tokenów)”: CrewAI jest frameworkiem open-source i nie pobiera opłat za samo użycie.",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Maksymalna długość odpowiedzi to 128 tysięcy tokenów, co umożliwia generowanie obszernych treści bez dzielenia ich na części.",
+      "toolB": "Deweloper musi samodzielnie zadbać o to, aby nie przekroczyć limitów modelu."
+    },
+    {
+      "category": "Wydajność wzorcowa (benchmarki)",
+      "toolA": "Ewentualne oceny należy weryfikować w oficjalnej dokumentacji Anthropic, ponieważ mogą się zmieniać wraz z wersjami.",
+      "toolB": "Nie ma sensu porównywać go bezpośrednio pod tym względem."
+    },
+    {
+      "category": "Ceny API (za 1 mln tokenów)",
+      "toolA": "Claude Fable 5.1 ma bazową cenę 10 USD za 1 mln tokenów wejściowych i 50 USD za 1 mln tokenów wyjściowych. Odczyt z pamięci podręcznej (prompt-cache) kosztuje 0,25 USD za 1 mln tokenów, co stanowi 97,5% oszczędności w stosunku do ceny wejściowej. Ceny mogą ulec zmianie.",
+      "toolB": "CrewAI jest frameworkiem open-source i nie pobiera opłat za samo użycie. Koszty wiążą się z wywołaniami modeli językowych (np. Claude, GPT) oraz ewentualnymi opłatami za infrastrukturę i usługi chmurowe. Trzeba je oszacować indywidualnie."
+    },
+    {
+      "category": "Latencja",
+      "toolA": "W praktyce należy je zmierzyć w swoim środowisku.",
+      "toolB": "Rzeczywiste opóźnienia trzeba zweryfikować w testach."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Dostępność może się różnić w zależności od regionu i planu.",
+      "toolB": "Wymaga jednak samodzielnego skonfigurowania modeli bazowych, które mogą być otwarte lub zamknięte."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Sprawdza się tam, gdzie liczy się jakość i pojemność kontekstu.",
+      "toolB": "Umożliwia definiowanie ról, narzędzi i przepływów pracy."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 i CrewAI odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Claude Fable 5.1: Claude Fable 5.1 oferuje okno kontekstu wynoszące 1 milion tokenów, co pozwala przetwarzać bardzo długie dokumenty,… CrewAI: CrewAI nie jest modelem językowym, więc nie ma własnego okna kontekstu. Kolejną istotną różnicę pokazuje kryterium „Wydajność wzorcowa (benchmarki)”: Claude Fable 5.1 nie ma publicznie udostępnionych wyników na standardowych benchmarkach, takich jak MMLU czy… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Claude Fable 5.1 oferuje okno kontekstu wynoszące 1 milion tokenów, co pozwala przetwarzać bardzo…",
+    "toolB": "projekt stawia na kryterium „Ceny API (za 1 mln tokenów)”: CrewAI jest frameworkiem open-source i nie pobiera opłat za samo użycie."
+  }
 }

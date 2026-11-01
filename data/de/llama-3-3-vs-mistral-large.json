@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-mistral-large",
   "meta": {
-    "title": "Llama 3.3 vs Mistral Large (2026): welche Lösung passt besser?",
-    "description": "Llama 3.3 und Mistral Large im Vergleich: Lizenz, Kontext, Benchmarks, API-Preise und Latenz. Entscheidungshilfe für 2026 inklusive Codebeispielen."
+    "title": "Llama 3.3 vs Mistral Large: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Llama 3.3 und Mistral Large: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "Welches Modell ist besser für französischsprachige Anwendungen?",
       "a": "Mistral Large wurde von einem französischen Unternehmen entwickelt und legt einen besonderen Fokus auf die französische Sprache, was sich in der Qualität bei französischen Texten und kulturellen Nuancen niederschlagen kann. Llama 3.3 ist mehrsprachig und bietet ebenfalls solide Französischkenntnisse, jedoch ohne spezifischen regionalen Fokus. Für frankophone Zielmärkte kann Mistral Large daher im Vorteil sein, was jedoch durch eigene Tests bestätigt werden sollte."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Llama 3.3 und Mistral Large verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Llama 3.3 passt besser, wenn dein Projekt priorisiert Modellzugang und Lizenz: Llama 3.3 wird von Meta unter einer Llama-Lizenz veröffentlicht, die meist eine kommerzielle…. Mistral Large ist geeigneter, wenn dein Projekt priorisiert Kontextfenster: Mistral Large unterstützt laut Mistral je nach Version ein Kontextfenster von 32.000 bis 128.000….",
+  "tradeoffs": [
+    {
+      "category": "Modellzugang und Lizenz",
+      "toolA": "Der Zugang erfolgt über Hugging Face oder Cloud-Partner, und die Lizenz ist nicht mit OSI-konformen Open-Source-Lizenzen gleichzusetzen, was für Unternehmen eine rechtliche Prüfung erforderlich macht.",
+      "toolB": "Die kommerziellen Bedingungen und die Datenresidenz sind vertraglich geregelt und können je nach Tarif variieren."
+    },
+    {
+      "category": "Kontextfenster",
+      "toolA": "Für sehr große Kontexte sind jedoch weiterhin spezialisierte Modelle oder eine RAG-Architektur zu empfehlen, da die effektive Nutzung mit der Modellgröße und Quantisierung variiert.",
+      "toolB": "Für die meisten Unternehmensanwendungen reicht dieser Bereich aus, doch bei extrem langen Kontexten ist die tatsächliche Qualität der Verarbeitung entscheidend."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval)",
+      "toolA": "Für HumanEval sind die Werte oft gut dokumentiert, sollten aber immer mit der eigenen Aufgabe validiert werden.",
+      "toolB": "Die Werte sind in den offiziellen Ankündigungen zu finden, jedoch nicht immer mit den Llama-Zahlen unter identischen Bedingungen erhoben, weshalb ein qualitativer Vergleich sinnvoller ist als ein direkter Zahlenvergleich."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Token",
+      "toolA": "Konkrete Preise sind ohne aktuelle Anbieterdokumentation nicht belastbar und sollten vor der Entscheidung eingeholt werden.",
+      "toolB": "Eine belastbare Kostenkalkulation erfordert die aktuellen Preislisten von Mistral oder Azure, da die Kosten je nach Vertrag und Region variieren."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Es gibt keine allgemeingültigen Latenzangaben, da diese von Quantisierung, Batch-Größe und Netzwerk abhängen.",
+      "toolB": "Für latenzkritische Anwendungen sind eigene Messungen mit dem gewählten Tarif unerlässlich."
+    },
+    {
+      "category": "Praktische Einsatzszenarien",
+      "toolA": "Durch die offenen Gewichte sind Feinabstimmung und Quantisierung möglich, was jedoch entsprechendes ML-Know-how voraussetzt.",
+      "toolB": "Die Integration ist einfach, aber die Anpassungsmöglichkeiten sind gegenüber offenen Modellen eingeschränkt."
+    }
+  ],
+  "introduction": "Llama 3.3 und Mistral Large lösen ein ähnliches Problem, unterscheiden sich jedoch bei modellzugang und lizenz. Llama 3.3: Llama 3.3 wird von Meta unter einer Llama-Lizenz veröffentlicht, die meist eine kommerzielle Nutzung erlaubt, aber… Mistral Large: Mistral Large ist ein proprietäres Modell, das primär über die Mistral-API und ausgewählte Cloud-Partner (z. Das Kriterium kontextfenster zeigt einen weiteren praktischen Unterschied: Llama 3.3 bietet bei den meisten Bereitstellungen ein Kontextfenster von 128.000 Token, was für lange Dokumente und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Modellzugang und Lizenz: Llama 3.3 wird von Meta unter einer Llama-Lizenz veröffentlicht, die meist eine kommerzielle…",
+    "toolB": "dein Projekt priorisiert Kontextfenster: Mistral Large unterstützt laut Mistral je nach Version ein Kontextfenster von 32.000 bis 128.000…"
+  }
 }

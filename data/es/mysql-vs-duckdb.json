@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MySQL y DuckDB en 2026: rendimiento analítico, transacciones, despliegue, ecosistema y casos de uso para elegir la base de datos adecuada."
+    "title": "MySQL vs DuckDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MySQL y DuckDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "¿DuckDB soporta transacciones y garantías ACID?",
       "a": "Sí, DuckDB ofrece transacciones ACID, pero su modelo está pensado para un único proceso escritor y lecturas concurrentes, no para alta concurrencia de escritura como un servidor relacional. Si tu carga requiere muchas conexiones que escriben a la vez, MySQL está mejor preparado para ese escenario."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MySQL y DuckDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos…. DuckDB es preferible cuando tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de arquitectura y despliegue",
+      "toolA": "Su despliegue requiere configurar el servidor, usuarios, permisos y copias de seguridad, algo habitual en equipos con administración de bases de datos.",
+      "toolB": "Esto simplifica su uso en cuadernos, scripts y aplicaciones de escritorio, aunque no está pensado como servicio centralizado para muchos clientes concurrentes."
+    },
+    {
+      "category": "Rendimiento en consultas analíticas",
+      "toolA": "Sin embargo, los escaneos completos y las agregaciones sobre grandes volúmenes suelen ser menos eficientes que en motores columnares.",
+      "toolB": "Su diseño está orientado al análisis, por lo que es especialmente adecuado para consultas de exploración y transformación de datos."
+    },
+    {
+      "category": "Cargas transaccionales y concurrencia multiusuario",
+      "toolA": "Es una opción consolidada para aplicaciones web, comercio electrónico y sistemas con escrituras frecuentes y múltiples usuarios.",
+      "toolB": "No sustituye a un servidor relacional para cargas OLTP con alta concurrencia; su punto fuerte son análisis en lote o desde un número reducido de procesos."
+    },
+    {
+      "category": "Ecosistema, conectividad e integración",
+      "toolA": "Su integración con frameworks web, paneles y plataformas de terceros está muy documentada.",
+      "toolB": "Su ecosistema es más joven y orientado al análisis, con menos herramientas de administración y de operación en producción que un servidor tradicional."
+    },
+    {
+      "category": "Facilidad de uso y curva de aprendizaje",
+      "toolA": "Para desarrolladores con experiencia en SQL el lenguaje es familiar, pero el despliegue y la operación añaden complejidad.",
+      "toolB": "No obstante, exprimir su rendimiento y gestionar la memoria en cargas grandes requiere cierta planificación."
+    },
+    {
+      "category": "Coste y modelo de licencia",
+      "toolA": "El coste real depende del alojamiento, el soporte y la operación, que conviene valorar según el equipo y el volumen.",
+      "toolB": "Al ejecutarse en proceso, el coste se concentra en la máquina y el almacenamiento donde se ejecutan los análisis."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL y DuckDB responden a una necesidad similar, pero difieren en modelo de arquitectura y despliegue. MySQL: MySQL es un sistema gestor relacional cliente-servidor: se ejecuta como proceso o servicio independiente y los… DuckDB: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa desde la CLI, sin… El criterio de rendimiento en consultas analíticas añade otra diferencia práctica: MySQL está optimizado para cargas transaccionales OLTP y para consultas puntuales con índices, y ha mejorado el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos…",
+    "toolB": "tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa…"
+  }
 }

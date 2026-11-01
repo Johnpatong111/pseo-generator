@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB (2026): ¿Qué solución elegir?",
-    "description": "Comparamos ScyllaDB y MongoDB en 2026: modelos de datos, rendimiento, escalabilidad, consistencia, ecosistema y casos de uso para elegir la base de datos adecuada."
+    "title": "ScyllaDB vs MongoDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara ScyllaDB y MongoDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -94,5 +94,49 @@
       "q": "¿Cuál es la mejor opción para una aplicación con consultas analíticas complejas?",
       "a": "MongoDB ofrece un lenguaje de consultas rico y soporte para agregaciones, lo que puede facilitar consultas analíticas sobre documentos. ScyllaDB está optimizada para consultas por clave y patrones de acceso predecibles, no para analítica ad-hoc compleja. Para cargas analíticas, quizá convenga evaluar soluciones especializadas o complementar con herramientas de procesamiento, independientemente de la base de datos elegida."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre ScyllaDB y MongoDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "ScyllaDB encaja mejor cuando tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura…. MongoDB es preferible cuando tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y flexibilidad del esquema",
+      "toolA": "No está pensado para documentos anidados ni para cambios de esquema frecuentes sin planificación.",
+      "toolB": "Sin embargo, un esquema sin gobierno puede derivar en inconsistencias y consultas costosas si no se modela adecuadamente."
+    },
+    {
+      "category": "Rendimiento y latencia en cargas exigentes",
+      "toolA": "Su rendimiento depende en gran medida de un diseño de particiones correcto y de la configuración del clúster, por lo que no debe asumirse un rendimiento uniforme sin pruebas en el entorno objetivo.",
+      "toolB": "No hay un ganador absoluto sin considerar la carga concreta."
+    },
+    {
+      "category": "Escalabilidad horizontal y disponibilidad",
+      "toolA": "La escalabilidad es prácticamente lineal en ciertos escenarios, aunque requiere una buena planificación de la topología y del rebalanceo.",
+      "toolB": "En comparación, ScyllaDB está más orientada a la escalabilidad masiva desde su diseño, mientras que MongoDB ofrece un modelo más generalista."
+    },
+    {
+      "category": "Consistencia y modelo transaccional",
+      "toolA": "Para transacciones distribuidas se requieren patrones adicionales o sistemas complementarios.",
+      "toolB": "Esta capacidad transaccional es una ventaja para aplicaciones que necesitan integridad fuerte sin renunciar a un modelo de documentos."
+    },
+    {
+      "category": "Ecosistema, herramientas y soporte",
+      "toolA": "La comunidad es activa pero más reducida, y la documentación técnica es detallada para casos de alto rendimiento.",
+      "toolB": "Esta madurez facilita la adopción y la resolución de problemas, aunque algunas funciones avanzadas pueden depender del plan o de la versión."
+    },
+    {
+      "category": "Facilidad de operación y mantenimiento",
+      "toolA": "El soporte empresarial ayuda en despliegues críticos.",
+      "toolB": "Para equipos con menos especialización en sistemas distribuidos, MongoDB suele resultar más accesible."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "ScyllaDB y MongoDB responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad del esquema. ScyllaDB: ScyllaDB utiliza un modelo orientado a columnas amplias (wide-column) con tablas y familias de columnas, similar a… MongoDB: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar estructuras anidadas y… El criterio de rendimiento y latencia en cargas exigentes añade otra diferencia práctica: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura shared-nothing y un… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura…",
+    "toolB": "tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar…"
+  }
 }

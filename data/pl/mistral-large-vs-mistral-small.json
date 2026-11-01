@@ -1,8 +1,8 @@
 {
   "slug": "mistral-large-vs-mistral-small",
   "meta": {
-    "title": "Mistral Large vs Mistral Small (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Mistral Large i Mistral Small w 2026 r.: kontekst, wydajność, ceny API, opóźnienia, dostępność i zastosowania. Sprawdź, który model wybrać."
+    "title": "Mistral Large vs Mistral Small: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Mistral Large i Mistral Small: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Mistral Large"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "import os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-small-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Czy ceny API Mistral Large i Mistral Small są stałe?",
       "a": "Nie, ceny API mogą się zmieniać wraz z nowymi wersjami modeli, polityką dostawcy i planem rozliczeniowym. Należy zawsze sprawdzać aktualny cennik na oficjalnej stronie Mistral AI lub u wybranego dostawcy chmurowego. Nie należy opierać decyzji na niezweryfikowanych stawkach z第三方 źródeł."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Mistral Large a Mistral Small zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Mistral Large będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Mistral Large jest projektowany z myślą o długich kontekstach, ale dokładny limit zależy od wersji…. Mistral Small sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia i wyjścia”: Mistral Small jest pozycjonowany jako model o niższym koszcie jednostkowym, ale dokładne stawki za….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Przed wdrożeniem należy sprawdzić aktualny limit w oficjalnej dokumentacji Mistral AI.",
+      "toolB": "Przy dłuższych dokumentach warto rozważyć podział na fragmenty i osobne zapytania."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "trzeba sprawdzić aktualne karty modeli, ponieważ nowe wersje mogą zmieniać te wartości.",
+      "toolB": "Warto testować na własnym zbiorze walidacyjnym i weryfikować oficjalne dane dla wybranej wersji."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Należy sprawdzić aktualny cennik na stronie Mistral AI lub u wybranego dostawcy chmurowego.",
+      "toolB": "Nie należy zakładać stawek na podstawie niezweryfikowanych źródeł."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "W zastosowaniach czasu rzeczywistego należy rozważyć buforowanie lub asynchroniczne przetwarzanie.",
+      "toolB": "Przed wdrożeniem warto przeprowadzić testy wydajnościowe w docelowym środowisku."
+    },
+    {
+      "category": "Dostępność modelu i tryb open/closed",
+      "toolA": "Nie należy zakładać, że każda wersja Large jest w pełni otwarta.",
+      "toolB": "Wersje open-weight dają większą kontrolę nad danymi, ale wymagają własnej infrastruktury."
+    },
+    {
+      "category": "Zastosowania praktyczne i złożoność zadań",
+      "toolA": "Przy prostszych zadaniach może być nadmiarowy i droższy.",
+      "toolB": "Warto testować oba modele na reprezentatywnym zbiorze danych."
+    }
+  ],
+  "introduction": "Mistral Large i Mistral Small odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Mistral Large: Mistral Large jest projektowany z myślą o długich kontekstach, ale dokładny limit zależy od wersji modelu i platformy… Mistral Small: Mistral Small ma zwykle mniejsze okno kontekstu niż Large, co wystarcza do typowych zadań, ale może wymagać dzielenia… Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Mistral Large osiąga zazwyczaj wyższe wyniki w benchmarkach wiedzy ogólnej i rozumowania, takich jak MMLU, oraz w… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Mistral Large jest projektowany z myślą o długich kontekstach, ale dokładny limit zależy od wersji…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia i wyjścia”: Mistral Small jest pozycjonowany jako model o niższym koszcie jednostkowym, ale dokładne stawki za…"
+  }
 }

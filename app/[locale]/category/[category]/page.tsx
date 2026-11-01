@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getComparisons,
+  isIndexableComparison,
   isLocale,
   LOCALES,
   type Locale,
@@ -23,35 +24,30 @@ const pageCopy = {
   pl: {
     all: "Wszystkie kategorie",
     count: "porównań",
-    empty: "W tej kategorii nie ma jeszcze porównań.",
     label: "Porównanie technologii",
     view: "Zobacz porównanie",
   },
   en: {
     all: "All categories",
     count: "comparisons",
-    empty: "There are no comparisons in this category yet.",
     label: "Technology comparison",
     view: "View comparison",
   },
   es: {
     all: "Todas las categorías",
     count: "comparativas",
-    empty: "Todavía no hay comparativas en esta categoría.",
     label: "Comparativa de tecnología",
     view: "Ver comparativa",
   },
   de: {
     all: "Alle Kategorien",
     count: "Vergleiche",
-    empty: "In dieser Kategorie gibt es noch keine Vergleiche.",
     label: "Technologievergleich",
     view: "Vergleich ansehen",
   },
   fr: {
     all: "Toutes les catégories",
     count: "comparatifs",
-    empty: "Il n’y a pas encore de comparatifs dans cette catégorie.",
     label: "Comparatif de technologies",
     view: "Voir le comparatif",
   },
@@ -62,10 +58,15 @@ function isCategory(value: string): value is CategoryId {
 }
 
 export function generateStaticParams() {
-  return LOCALES.flatMap((locale) =>
-    CATEGORY_IDS.map((category) => ({ locale, category })),
-  );
+  return LOCALES.flatMap((locale) => {
+    const comparisons = getComparisons(locale).filter(isIndexableComparison);
+    return CATEGORY_IDS.filter((category) =>
+      comparisons.some(({ slug }) => getComparisonCategories(slug).includes(category)),
+    ).map((category) => ({ locale, category }));
+  });
 }
+
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,
@@ -117,8 +118,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const locale: Locale = localeParam;
   const category = categoryCopy[locale][categoryParam];
   const text = pageCopy[locale];
-  const comparisons = getComparisons(locale).filter((comparison) =>
-    getComparisonCategories(comparison.slug).includes(categoryParam),
+  const comparisons = getComparisons(locale).filter(
+    (comparison) =>
+      isIndexableComparison(comparison) &&
+      getComparisonCategories(comparison.slug).includes(categoryParam),
   );
 
   return (
@@ -175,11 +178,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             ))}
           </ul>
         </section>
-      ) : (
-        <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-          {text.empty}
-        </p>
-      )}
+      ) : notFound()}
     </main>
   );
 }

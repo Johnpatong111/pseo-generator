@@ -1,4 +1,4 @@
-export const LOCALES = ["pl", "en", "es", "de", "fr"] as const;
+export const LOCALES = ["en", "es", "de", "fr", "pl"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const BRAND_NAME = "SnippetsLibrary";

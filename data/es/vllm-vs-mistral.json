@@ -1,8 +1,8 @@
 {
   "slug": "vllm-vs-mistral",
   "meta": {
-    "title": "vLLM vs Mistral (2026): ¿Qué solución elegir?",
-    "description": "Comparamos vLLM, motor de inferencia de código abierto, con Mistral, familia de modelos y plataforma de IA. Analizamos rendimiento, despliegue, costes y casos de uso para elegir bien."
+    "title": "vLLM vs Mistral: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara vLLM y Mistral: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "vLLM"
@@ -94,5 +94,49 @@
       "q": "¿Qué criterios debería priorizar al elegir?",
       "a": "Prioriza el volumen y la variabilidad de la carga, el equipo disponible, los requisitos de privacidad y el presupuesto total. Si necesitas control y alto rendimiento con personal técnico, vLLM es una base sólida; si buscas rapidez de integración y modelos gestionados, Mistral encaja mejor. En muchos proyectos, la combinación de ambos es la opción más equilibrada."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre vLLM y Mistral cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "vLLM encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el…. Mistral es preferible cuando tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones….",
+  "tradeoffs": [
+    {
+      "category": "Naturaleza y propósito de la herramienta",
+      "toolA": "No incluye modelos propios: tú aportas los pesos y vLLM se encarga de la ejecución y el servicio.",
+      "toolB": "Su propuesta abarca tanto el acceso a modelos como herramientas para integrarlos en aplicaciones."
+    },
+    {
+      "category": "Rendimiento y eficiencia en inferencia",
+      "toolA": "El rendimiento real depende de la GPU, el modelo, la cuantización y la configuración, por lo que conviene medirlo en tu propio entorno.",
+      "toolB": "En la API, el rendimiento lo controla el proveedor y varía según la carga y el plan; en despliegues propios, depende de la infraestructura y del motor de inferencia que utilices."
+    },
+    {
+      "category": "Modelos disponibles y flexibilidad",
+      "toolA": "Esa neutralidad te da libertad para cambiar de modelo sin cambiar de motor, aunque debes verificar la compatibilidad concreta.",
+      "toolB": "La disponibilidad, licencias y condiciones de uso dependen de cada modelo y del canal (API, plataforma o pesos abiertos); no todos los modelos están disponibles en todos los canales."
+    },
+    {
+      "category": "Despliegue e infraestructura",
+      "toolA": "Requiere conocimientos de sistemas, contenedores y ajuste de parámetros, pero ofrece control total sobre versiones, datos y configuración.",
+      "toolB": "Para cargas que exigen control total, también es posible ejecutar modelos de Mistral por tu cuenta, aunque entonces la operación recae en tu equipo, igual que con cualquier motor."
+    },
+    {
+      "category": "Costes y modelo de precios",
+      "toolA": "El coste real proviene de la infraestructura (GPU, memoria, energía), del personal de operación y del tiempo de ingeniería; a mayor utilización, puede resultar más económico que una API por token.",
+      "toolB": "La opción gestionada simplifica la operación, pero el coste por token puede ser mayor que autohospedar con alta utilización; los modelos abiertos permiten autohospedaje."
+    },
+    {
+      "category": "Facilidad de uso y curva de aprendizaje",
+      "toolA": "La complejidad aumenta al escalar, monitorizar y garantizar disponibilidad.",
+      "toolB": "Las opciones empresariales y de despliegue dedicado añaden complejidad, pero la API gestionada es accesible para equipos sin especialistas en infraestructura."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:8000/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "vLLM y Mistral responden a una necesidad similar, pero difieren en naturaleza y propósito de la herramienta. vLLM: vLLM es un motor de inferencia de código abierto, centrado en servir modelos de lenguaje de forma eficiente mediante… Mistral: Mistral es una empresa que desarrolla familias de modelos (por ejemplo, Mistral, Mixtral o Ministral, según la gama… El criterio de rendimiento y eficiencia en inferencia añade otra diferencia práctica: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el servicio de modelos, con… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el…",
+    "toolB": "tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones…"
+  }
 }

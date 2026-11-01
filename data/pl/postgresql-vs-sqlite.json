@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie PostgreSQL i SQLite w 2026 r.: wydajność, współbieżność, skalowanie, bezpieczeństwo, kopie zapasowe i koszty wdrożenia. Praktyczna rekomendacja."
+    "title": "PostgreSQL vs SQLite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj PostgreSQL i SQLite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -88,5 +88,49 @@
       "q": "Czy migracja z SQLite do PostgreSQL jest trudna?",
       "a": "Migracja jest zwykle wykonalna, ponieważ oba systemy obsługują SQL, ale różnice w typach danych, funkcjach i zachowaniu transakcji wymagają dostosowania kodu i schematu. Trzeba też zaplanować przeniesienie danych oraz testy wydajności i poprawności po zmianie. Skala trudności zależy od złożoności aplikacji i od tego, jak bardzo kod korzysta z funkcji specyficznych dla SQLite."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między PostgreSQL a SQLite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać…. SQLite sprawdzi się, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą….",
+  "tradeoffs": [
+    {
+      "category": "Model architektury i sposób wdrożenia",
+      "toolA": "Szczegóły konfiguracji zależą od wersji, systemu operacyjnego i sposobu wdrożenia, na przykład kontenera lub usługi zarządzanej.",
+      "toolB": "Ograniczeniem jest to, że dostęp do pliku odbywa się lokalnie lub przez współdzielony system plików, co przy niektórych konfiguracjach sieciowych bywa ryzykowne i zależy od mechanizmów blokad systemu."
+    },
+    {
+      "category": "Współbieżność i obsługa wielu zapisów",
+      "toolA": "Mechanizmy izolacji transakcji są rozbudowane i pozwalają dostosować poziom spójności do wymagań aplikacji.",
+      "toolB": "Zachowanie zależy od wersji biblioteki, trybu dziennikowania i ustawień."
+    },
+    {
+      "category": "Skalowanie i wydajność pod obciążeniem",
+      "toolA": "Dojrzałe narzędzia monitoringu i planowania zapytań ułatwiają diagnostykę wąskich gardeł.",
+      "toolB": "Wyniki silnie zależą od rodzaju dysku, rozmiaru bazy, trybu synchronizacji i konfiguracji."
+    },
+    {
+      "category": "Zaawansowane funkcje SQL i typy danych",
+      "toolA": "To elastyczne środowisko dla złożonej logiki danych i analityki.",
+      "toolB": "Część funkcji zależy od wersji biblioteki i flag kompilacji, dlatego kompatybilność trzeba weryfikować w konkretnym środowisku."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Administracja uprawnieniami bywa bardziej złożona niż w rozwiązaniu osadzanym.",
+      "toolB": "W aplikacjach mobilnych i desktopowych to zwykle wystarcza, ale w scenariuszach wieloużytkownikowych wymaga dodatkowych warstw."
+    },
+    {
+      "category": "Kopie zapasowe, replikacja i odtwarzanie",
+      "toolA": "Realne możliwości zależą od wdrożenia i planu usługi zarządzanej.",
+      "toolB": "Prostota tej operacji jest zaletą, ale scenariusze odtwarzania wymagają starannego planowania."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób wdrożenia. PostgreSQL: PostgreSQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć, zwykle protokołem… SQLite: SQLite to biblioteka osadzana w aplikacji, a cała baza przechowywana jest zwykle w jednym pliku na dysku, bez… Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać…",
+    "toolB": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą…"
+  }
 }

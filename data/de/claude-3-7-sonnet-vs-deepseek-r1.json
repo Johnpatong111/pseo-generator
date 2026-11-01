@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-deepseek-r1",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs DeepSeek R1 (2026): welche Lösung passt besser?",
-    "description": "Vergleich von Claude 3.7 Sonnet und DeepSeek R1: Kontextfenster, Benchmarks, API-Kosten, Latenz, Zugang und Einsatzbereiche. Finden Sie das passende Modell für 2026."
+    "title": "Claude 3.7 Sonnet vs DeepSeek R1: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Claude 3.7 Sonnet und DeepSeek R1: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"deepseek-ai/DeepSeek-R1\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Gibt es Unterschiede bei der Verfügbarkeit der Modelle?",
       "a": "Claude 3.7 Sonnet ist über die Anthropic-API und ausgewählte Cloud-Partner verfügbar, was eine zuverlässige Verfügbarkeit bietet, aber einen Vertrag voraussetzt. DeepSeek R1 kann über verschiedene API-Anbieter oder selbst gehostet bezogen werden, was die Verfügbarkeit flexibler macht, aber auch mehr Eigenverantwortung erfordert. Die tatsächliche Verfügbarkeit kann je nach Region und Anbieter variieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Claude 3.7 Sonnet und DeepSeek R1 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Claude 3.7 Sonnet passt besser, wenn dein Projekt priorisiert Kontextfenster: Claude 3.7 Sonnet bietet ein großes Kontextfenster, das sich für lange Dokumente, Codebasen und…. DeepSeek R1 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1M Input-/Output-Token: DeepSeek R1 ist als Open-Weight-Modell verfügbar, sodass die Kosten stark vom Hosting-Anbieter….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Die genaue Token-Grenze kann je nach Version und Tarif variieren und sollte in der offiziellen Dokumentation von Anthropic überprüft werden.",
+      "toolB": "Die Verfügbarkeit und maximale Länge können je nach Bereitstellungsart (API oder selbst gehostet) unterschiedlich sein und sind zu verifizieren."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Zu MMLU und HumanEval liegen Berichte vor, die eine starke allgemeine und Programmierleistung zeigen, aber die genauen Werte sollten in der offiziellen Dokumentation nachgeschlagen werden.",
+      "toolB": "Die Werte sind in der Regel in den Modellkarten oder technischen Berichten zu finden und sollten vor einem Vergleich mit aktuellen Zahlen abgeglichen werden."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Token",
+      "toolA": "Genaue Zahlen sind der aktuellen Preisliste zu entnehmen, da sie versions- und datumsabhängig sind.",
+      "toolB": "Bei Self-Hosting fallen hardwarebedingte Kosten an, während API-Anbieter eigene Preise festlegen, die je nach Anbieter und Region variieren."
+    },
+    {
+      "category": "Latenz",
+      "toolA": "Anthropic optimiert die Infrastruktur kontinuierlich, aber genaue Latenzwerte sind nicht öffentlich garantiert und sollten bei Bedarf gemessen werden.",
+      "toolB": "Pauschale Aussagen sind daher nicht möglich, und Vergleichsmessungen sollten unter realen Bedingungen erfolgen."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Der Zugang erfordert einen Vertrag und unterliegt den Nutzungsbedingungen von Anthropic.",
+      "toolB": "Die Nutzung unterliegt der Lizenz, die je nach Version unterschiedlich sein kann und geprüft werden sollte."
+    },
+    {
+      "category": "Praktische Einsatzbereiche",
+      "toolA": "Die Stärken liegen in der konsistenten Ausgabe und der breiten Tool-Unterstützung.",
+      "toolB": "Es kann für ähnliche Aufgaben wie Claude eingesetzt werden, erfordert jedoch mehr Eigenverantwortung bei Betrieb und Sicherheit."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet und DeepSeek R1 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Claude 3.7 Sonnet: Claude 3.7 Sonnet bietet ein großes Kontextfenster, das sich für lange Dokumente, Codebasen und mehrstufige Dialoge… DeepSeek R1: DeepSeek R1 bietet ebenfalls ein umfangreiches Kontextfenster, das für viele Anwendungen ausreicht, aber… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für Claude 3.7 Sonnet veröffentlicht Anthropic Benchmarks, die je nach Version und Evaluierungsmethode variieren. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Claude 3.7 Sonnet bietet ein großes Kontextfenster, das sich für lange Dokumente, Codebasen und…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1M Input-/Output-Token: DeepSeek R1 ist als Open-Weight-Modell verfügbar, sodass die Kosten stark vom Hosting-Anbieter…"
+  }
 }

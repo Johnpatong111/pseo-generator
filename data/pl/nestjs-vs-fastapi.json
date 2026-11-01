@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-fastapi",
   "meta": {
-    "title": "NestJS vs FastAPI (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie NestJS i FastAPI w 2026 roku: architektura, wydajność, typowanie, ekosystem, bezpieczeństwo i koszty utrzymania. Sprawdź, które narzędzie pasuje do Twojego projektu."
+    "title": "NestJS vs FastAPI: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj NestJS i FastAPI: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "NestJS"
@@ -94,5 +94,49 @@
       "q": "Który framework wybrać, jeśli zespół zna tylko JavaScript?",
       "a": "W takiej sytuacji NestJS będzie łatwiejszy do wdrożenia, ponieważ wykorzystuje TypeScript i narzędzia znane z ekosystemu JavaScript. FastAPI wymaga znajomości Pythona, więc zespół musiałby ponieść koszt nauki języka i bibliotek. Wyjątkiem może być sytuacja, w której projekt silnie zależy od bibliotek Pythona i warto zainwestować w przekwalifikowanie zespołu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między NestJS a FastAPI zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "NestJS będzie lepszy, gdy projekt stawia na kryterium „Architektura aplikacji i organizacja kodu”: NestJS narzuca wyraźną strukturę modułów, kontrolerów, usług i providerów, a wstrzykiwanie…. FastAPI sprawdzi się, gdy projekt stawia na kryterium „Walidacja danych i dokumentacja API”: FastAPI ma wbudowaną walidację opartą na Pydantic oraz automatyczne generowanie interaktywnej….",
+  "tradeoffs": [
+    {
+      "category": "Język programowania i spójność z frontendem",
+      "toolA": "Wymaga to jednak sprawnej konfiguracji kompilacji i dyscypliny w utrzymaniu typów.",
+      "toolB": "Wada polega na tym, że współdzielenie typów z frontendem JavaScript wymaga dodatkowych narzędzi lub generowania schematów."
+    },
+    {
+      "category": "Architektura aplikacji i organizacja kodu",
+      "toolA": "Stopień rygoryzmu zależy od konfiguracji i przyjętych konwencji.",
+      "toolB": "Dostępne są opcjonalne wzorce i biblioteki pomocnicze, których zakres zależy od wersji."
+    },
+    {
+      "category": "Wydajność i model współbieżności",
+      "toolA": "Nie należy zakładać uniwersalnej przewagi wydajnościowej bez własnych pomiarów.",
+      "toolB": "Konkretne liczby są silnie uzależnione od wersji frameworka, serwera i charakteru ruchu, dlatego warto je weryfikować testami obciążeniowymi."
+    },
+    {
+      "category": "Walidacja danych i dokumentacja API",
+      "toolA": "Zespół musi zadbać o spójność schematów z rzeczywistymi modelami.",
+      "toolB": "Ograniczenia pojawiają się przy bardzo niestandardowych kontraktach, które wymagają ręcznych dostosowań."
+    },
+    {
+      "category": "Ekosystem, biblioteki i dojrzałość",
+      "toolA": "Przy wyborze warto sprawdzić zgodność konkretnej biblioteki z używaną wersją NestJS.",
+      "toolB": "To daje elastyczność, ale wymaga większej odpowiedzialności za spójność stosu i aktualizacje zależności."
+    },
+    {
+      "category": "Bezpieczeństwo i utrzymanie",
+      "toolA": "Warto regularnie audytować pakiety npm i stosować sprawdzone praktyki.",
+      "toolB": "Należy regularnie aktualizować zależności Pythona i weryfikować ustawienia wdrożenia."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "NestJS i FastAPI odpowiadają na podobną potrzebę, ale różnią się w obszarze język programowania i spójność z frontendem. NestJS: NestJS opiera się na TypeScripcie i silnie wykorzystuje jego system typów, dekoratory oraz programowanie obiektowe. FastAPI: FastAPI jest zbudowany wokół Pythona i wykorzystuje adnotacje typów oraz bibliotekę Pydantic do walidacji danych. Kolejną istotną różnicę pokazuje kryterium „Architektura aplikacji i organizacja kodu”: NestJS narzuca wyraźną strukturę modułów, kontrolerów, usług i providerów, a wstrzykiwanie zależności jest wbudowane w… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Architektura aplikacji i organizacja kodu”: NestJS narzuca wyraźną strukturę modułów, kontrolerów, usług i providerów, a wstrzykiwanie…",
+    "toolB": "projekt stawia na kryterium „Walidacja danych i dokumentacja API”: FastAPI ma wbudowaną walidację opartą na Pydantic oraz automatyczne generowanie interaktywnej…"
+  }
 }

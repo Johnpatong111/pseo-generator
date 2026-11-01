@@ -1,8 +1,8 @@
 {
   "slug": "claude-fable-5-1-vs-deepseek-r1",
   "meta": {
-    "title": "Claude Fable 5.1 vs DeepSeek R1 (2026): welche Lösung passt besser?",
-    "description": "Claude Fable 5.1 und DeepSeek R1 im Vergleich 2026: Kontextfenster, Preise, Zugang, Latenz, Benchmarks und Einsatzszenarien – sachlich eingeordnet für Ihre Entscheidung."
+    "title": "Claude Fable 5.1 vs DeepSeek R1: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Claude Fable 5.1 und DeepSeek R1: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Minimalbeispiel: Nachricht an Claude Fable 5.1 über die Anthropic-API senden\n# Benötigt: pip install anthropic, Umgebungsvariable ANTHROPIC_API_KEY\n\nimport os\nfrom anthropic import Anthropic\n\nclient = Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"])\n\nantwort = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt! Stelle dich kurz vor.\"}],\n)\n\nprint(antwort.content[0].text)",
-    "tech2Snippet": "# Minimalbeispiel: Chat-Completion gegen einen OpenAI-kompatiblen DeepSeek-R1-Endpunkt\n# Benötigt: pip install openai, Umgebungsvariable DEEPSEEK_API_KEY\n\nimport os\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=os.environ[\"DEEPSEEK_API_KEY\"],\n    base_url=\"https://api.deepseek.com\",\n)\n\nantwort = client.chat.completions.create(\n    model=\"deepseek-reasoner\",\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt! Stelle dich kurz vor.\"}],\n)\n\nprint(antwort.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Welche Punkte sollte ich vor dem Produktiveinsatz prüfen?",
       "a": "Prüfen Sie in jedem Fall die aktuelle offizielle Dokumentation zu Kontextlimits, Preisen, Rate-Limits und Datenverarbeitung, da sich diese Angaben versions- und datumsabhängig ändern können. Testen Sie beide Modelle mit repräsentativen Prompts und messen Sie Qualität, Latenz und Kosten in Ihrer eigenen Umgebung. Klären Sie außerdem vertraglich, welche Verfügbarkeiten und Support-Zusagen für Ihren Tarif gelten."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Claude Fable 5.1 und DeepSeek R1 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Claude Fable 5.1 passt besser, wenn dein Projekt priorisiert Kontextfenster und maximale Ausgabe: Wie viel Text kann ein Modell in einem: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1…. DeepSeek R1 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1M Input- und Output-Tokens: Welche Kosten entstehen im: DeepSeek R1 ist als Open-Weight-Modell über verschiedene Anbieter und Self-Hosting-Optionen….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und maximale Ausgabe: Wie viel Text kann ein Modell in einem",
+      "toolA": "Damit lassen sich sehr lange Dokumente, umfangreiche Codebasen oder mehrstufige Analysen in einem einzigen Aufruf bearbeiten, ohne Inhalte vorher aggressiv zu kürzen.",
+      "toolB": "Für viele Aufgaben reicht das Kontextfenster aus, erreicht aber nach derzeitigem Dokumentationsstand nicht die Größenordnung von Fable 5.1."
+    },
+    {
+      "category": "Benchmark-Leistung: Wie schneiden die Modelle bei veröffentlichten",
+      "toolA": "Da Benchmark-Ergebnisse stark von Prompt-Format, Version und Auswertungsmethode abhängen, ist ein direkter Zahlenvergleich nur bei identischen Bedingungen aussagekräftig.",
+      "toolB": "Ein fairer Vergleich setzt voraus, dass beide Modelle mit demselben Harness, denselben Prompts und denselben Decodierungseinstellungen getestet werden."
+    },
+    {
+      "category": "API-Preise pro 1M Input- und Output-Tokens: Welche Kosten entstehen im",
+      "toolA": "Diese Werte sind dokumentierte Listenpreise und können sich ändern.",
+      "toolB": "Beim Self-Hosting fallen statt Tokenpreisen Infrastruktur- und Betriebskosten an, die stark von Hardware und Auslastung abhängen."
+    },
+    {
+      "category": "Latenz und Antwortverhalten: Wie schnell liefern die Modelle Ergebnisse",
+      "toolA": "Durch das große Kontextfenster können sehr lange Eingaben die Zeit bis zum ersten Token erhöhen, während Prompt-Caching bei wiederkehrenden Präfixen die Verarbeitung beschleunigen kann.",
+      "toolB": "Bei gehosteten Anbietern kommen Netzwerk- und Warteschlangenzeiten hinzu; beim Self-Hosting bestimmt die eigene Hardware die Geschwindigkeit."
+    },
+    {
+      "category": "Modellzugang und Offenheit: Wie werden die Modelle bereitgestellt und",
+      "toolA": "Nutzer erhalten dafür dokumentierte Sicherheits- und Nutzungsbedingungen sowie einen kommerziell abgesicherten Zugang, der an Tarif und Vertrag gebunden ist.",
+      "toolB": "Das ermöglicht mehr Kontrolle und Datenhoheit, verlangt aber eigene Verantwortung für Betrieb, Sicherheit und Lizenzbedingungen."
+    },
+    {
+      "category": "Praktische Einsatzszenarien: Für welche Aufgaben passt welches Modell besser",
+      "toolA": "Auch wiederkehrende Prompts profitieren von der dokumentierten Cache-Preisgestaltung, sofern das Anwendungsmuster ein stabiles Präfix aufweist.",
+      "toolB": "Für latenzkritische Anwendungen sollte das ausführliche Reasoning-Verhalten eingeplant oder durch Prompt-Design gesteuert werden."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 und DeepSeek R1 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und maximale ausgabe: wie viel text kann ein modell in einem. Claude Fable 5.1: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1 Million Tokens und… DeepSeek R1: DeepSeek R1 ist als Reasoning-Modell mit öffentlich verfügbaren Gewichten bekannt; die genauen Kontext- und… Das Kriterium benchmark-leistung: wie schneiden die modelle bei veröffentlichten zeigt einen weiteren praktischen Unterschied: Für Claude Fable 5.1 sollten Benchmark-Werte ausschließlich den offiziellen Anthropic-Veröffentlichungen entnommen… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und maximale Ausgabe: Wie viel Text kann ein Modell in einem: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1M Input- und Output-Tokens: Welche Kosten entstehen im: DeepSeek R1 ist als Open-Weight-Modell über verschiedene Anbieter und Self-Hosting-Optionen…"
+  }
 }

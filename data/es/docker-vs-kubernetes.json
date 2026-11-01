@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Docker y Kubernetes en 2026: casos de uso, complejidad, escalado, seguridad y costes operativos para ayudarte a elegir la plataforma de contenedores adecuada."
+    "title": "Docker vs Kubernetes: cuál elegir en 2026 — despliegue, escalabilidad y costes",
+    "description": "Compara Docker y Kubernetes: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Docker"
@@ -88,5 +88,49 @@
       "q": "¿Kubernetes puede ejecutar cualquier imagen de Docker?",
       "a": "Kubernetes ejecuta imágenes compatibles con OCI a través de la interfaz CRI, y la mayoría de imágenes publicadas para Docker son compatibles. Aun así, pueden aparecer diferencias por el runtime, los permisos, la arquitectura o las dependencias del host, por lo que es recomendable probar las imágenes en el entorno real antes de desplegarlas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Docker y Kubernetes cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Docker encaja mejor cuando tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un…. Kubernetes es preferible cuando tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler….",
+  "tradeoffs": [
+    {
+      "category": "Propósito principal y modelo de uso",
+      "toolA": "Docker Compose permite describir pilas de varios servicios y orquestar su ciclo de vida localmente o en un servidor individual, sin necesidad de un plano de control distribuido.",
+      "toolB": "No sustituye a una herramienta de construcción de imágenes: normalmente consume imágenes creadas con Docker u otros constructores compatibles con OCI y se encarga de programarlas, replicarlas y actualizarlas."
+    },
+    {
+      "category": "Curva de aprendizaje y complejidad operativa",
+      "toolA": "La gestión de redes, volúmenes y permisos añade complejidad, pero el modelo mental es acotado y las herramientas gráficas como Docker Desktop facilitan el inicio.",
+      "toolB": "Su operación continua requiere experiencia en observabilidad, actualizaciones de versión y gestión del plano de control, y por eso muchas organizaciones optan por servicios gestionados; el esfuerzo depende mucho del entorno elegido."
+    },
+    {
+      "category": "Escalado y alta disponibilidad",
+      "toolA": "El escalado horizontal más allá de un servidor requiere herramientas adicionales o servicios gestionados externos, y la tolerancia a fallos depende de la infraestructura subyacente.",
+      "toolB": "También distribuye réplicas entre nodos y permite estrategias de despliegue progresivo, aunque el comportamiento real depende de la configuración de sondas, recursos y políticas de disponibilidad."
+    },
+    {
+      "category": "Ecosistema de imágenes y compatibilidad",
+      "toolA": "Muchas imágenes públicas se publican pensando en compatibilidad con Docker, y la integración con flujos de integración continua es muy directa.",
+      "toolB": "Funciona bien con imágenes creadas con Docker, Buildpacks o herramientas como kaniko o Buildah, lo que lo hace interoperable, aunque la construcción de imágenes queda fuera de su alcance."
+    },
+    {
+      "category": "Seguridad y aislamiento",
+      "toolA": "La seguridad efectiva depende de configurar correctamente el daemon, limitar capacidades y escanear imágenes; Docker Desktop añade capas propias de virtualización en macOS y Windows.",
+      "toolB": "Su superficie de ataque es mayor por la complejidad del plano de control y la red, por lo que exige endurecer el clúster, gestionar secretos adecuadamente y aplicar políticas de red según el proveedor o la distribución."
+    },
+    {
+      "category": "Observabilidad y resolución de problemas",
+      "toolA": "Para métricas históricas y alertas suele ser necesario integrar herramientas externas, y la depuración dentro de un contenedor es directa con docker exec.",
+      "toolB": "La depuración distribuida es más compleja, aunque kubectl describe y kubectl logs concentran mucha información útil."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Docker y Kubernetes responden a una necesidad similar, pero difieren en propósito principal y modelo de uso. Docker: Docker es una plataforma de contenedores centrada en construir imágenes, empaquetar dependencias y ejecutar procesos… Kubernetes: Kubernetes es un orquestador de contenedores diseñado para gestionar cargas de trabajo distribuidas en clústeres de… El criterio de curva de aprendizaje y complejidad operativa añade otra diferencia práctica: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un…",
+    "toolB": "tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler…"
+  }
 }

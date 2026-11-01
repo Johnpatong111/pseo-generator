@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-openai-o3",
   "meta": {
-    "title": "Gemini 2.5 Pro vs OpenAI o3 (2026): welche Lösung passt besser?",
-    "description": "Gemini 2.5 Pro und OpenAI o3 im Vergleich: Kontextfenster, Reasoning, Preise, Latenz und Zugang. Eine sachliche Entscheidungshilfe für 2026 mit klaren Empfehlungen."
+    "title": "Gemini 2.5 Pro vs OpenAI o3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Gemini 2.5 Pro und OpenAI o3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom google import genai\n\nclient = genai.Client(api_key=os.environ[\"GEMINI_API_KEY\"])\n\nresponse = client.models.generate_content(\n    model=\"gemini-2.5-pro\",\n    contents=\"Sag kurz Hallo Welt.\",\n)\nprint(response.text)",
-    "tech2Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nresponse = client.responses.create(\n    model=\"o3\",\n    input=\"Sag kurz Hallo Welt.\",\n)\nprint(response.output_text)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Sind die genannten Benchmark-Werte belastbar?",
       "a": "Benchmark-Ergebnisse für MMLU oder HumanEval sind nur vergleichbar, wenn Version, Prompt-Format und Auswertungsmethode identisch sind. Veröffentlichte Werte sollten als Orientierung dienen und durch eigene Tests mit realistischen Aufgaben ergänzt werden, bevor Sie eine Produktionsentscheidung treffen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Gemini 2.5 Pro und OpenAI o3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Gemini 2.5 Pro passt besser, wenn dein Projekt priorisiert Kontextfenster und Verarbeitung langer Dokumente: Gemini 2.5 Pro ist auf sehr große Kontextfenster ausgelegt und eignet sich damit für umfangreiche…. OpenAI o3 ist geeigneter, wenn dein Projekt priorisiert Reasoning- und Benchmark-Leistung: OpenAI o3 ist gezielt als Reasoning-Modell konzipiert und zeigt in offiziellen Veröffentlichungen….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Verarbeitung langer Dokumente",
+      "toolA": "Die exakte Obergrenze sowie mögliche Einschränkungen bei der Ausgabe hängen von Version, Tarif und API-Konfiguration ab und sollten in der offiziellen Dokumentation geprüft werden.",
+      "toolB": "Auch hier sind die genauen Zahlen versions- und tarifabhängig und müssen gegen die aktuelle OpenAI-Dokumentation verifiziert werden."
+    },
+    {
+      "category": "Reasoning- und Benchmark-Leistung",
+      "toolA": "Da sich Benchmark-Versionen und Auswertungsmethoden unterscheiden, sollten MMLU- oder HumanEval-Werte nur verglichen werden, wenn sie aus derselben Quelle und zum selben Zeitpunkt stammen.",
+      "toolB": "Ein direkter Zahlenvergleich ist nur bei identischen Benchmark-Versionen sinnvoll; ansonsten bleibt die Bewertung qualitativ."
+    },
+    {
+      "category": "API-Preise pro 1 Mio",
+      "toolA": "Pauschale Zahlen sollten hier nicht genannt werden, da sie sich kurzfristig ändern können.",
+      "toolB": "Token sind versions- und tarifabhängig und müssen in der offiziellen OpenAI-Preisliste geprüft werden."
+    },
+    {
+      "category": "Latenz und Antwortzeit",
+      "toolA": "Die tatsächliche Antwortzeit hängt stark von Prompt-Länge, Region und Auslastung ab und ist ohne Messung nicht seriös vergleichbar.",
+      "toolB": "Hohe Qualität bei komplexen Aufgaben geht häufig mit höherer Latenz einher; konkrete Zahlen sollten nicht als allgemeingültig angenommen werden."
+    },
+    {
+      "category": "Modellzugang und offene bzw",
+      "toolA": "Ein offener Quellcode oder lokales Hosting ist für dieses Modell nicht vorgesehen.",
+      "toolB": "Ein lokales Selbsthosting ist nicht möglich; der Zugang hängt vom jeweiligen Tarif und den Nutzungsrichtlinien ab."
+    },
+    {
+      "category": "Multimodale Fähigkeiten",
+      "toolA": "Die verfügbaren Modalitäten und Grenzen können je nach API-Version und Tarif variieren.",
+      "toolB": "Wer breite Medienverarbeitung benötigt, sollte die aktuellen Fähigkeiten der konkreten Version prüfen."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro und OpenAI o3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und verarbeitung langer dokumente. Gemini 2.5 Pro: Gemini 2.5 Pro ist auf sehr große Kontextfenster ausgelegt und eignet sich damit für umfangreiche Dokumente, Codebasen… OpenAI o3: OpenAI o3 bietet ebenfalls ein großes Kontextfenster, das für viele professionelle Reasoning-Aufgaben ausreicht, liegt… Das Kriterium reasoning- und benchmark-leistung zeigt einen weiteren praktischen Unterschied: Gemini 2.5 Pro erzielt in veröffentlichten Benchmarks starke Ergebnisse bei Mathematik, Coding und multimodalem… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und Verarbeitung langer Dokumente: Gemini 2.5 Pro ist auf sehr große Kontextfenster ausgelegt und eignet sich damit für umfangreiche…",
+    "toolB": "dein Projekt priorisiert Reasoning- und Benchmark-Leistung: OpenAI o3 ist gezielt als Reasoning-Modell konzipiert und zeigt in offiziellen Veröffentlichungen…"
+  }
 }

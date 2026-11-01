@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-crewai",
   "meta": {
-    "title": "Claude Fable 5.1 vs CrewAI (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Claude Fable 5.1 y CrewAI en contexto, rendimiento, precios de API, latencia, acceso y casos de uso para ayudarte a elegir la mejor opción en 2026."
+    "title": "Claude Fable 5.1 vs CrewAI: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Claude Fable 5.1 y CrewAI: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TU_API_KEY\")\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=128000,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagente = Agent(\n    role=\"Saludador\",\n    goal=\"Saludar al mundo\",\n    backstory=\"Eres un asistente amable.\",\n    verbose=True\n)\ntarea = Task(\n    description=\"Di 'Hello, World!'\",\n    expected_output=\"Un saludo\",\n    agent=agente\n)\ncrew = Crew(agents=[agente], tasks=[tarea])\nresultado = crew.kickoff()\nprint(resultado)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "¿Los precios de Claude Fable 5.1 pueden cambiar?",
       "a": "Sí, los precios de los servicios en la nube pueden variar con el tiempo. Los valores indicados (10 USD por millón de tokens de entrada y 50 USD por millón de salida) son los documentados actualmente por Anthropic, pero conviene consultar la página oficial de precios para confirmar las tarifas vigentes antes de presupuestar."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Claude Fable 5.1 y CrewAI cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Claude Fable 5.1 encaja mejor cuando tu proyecto prioriza ventana de contexto y capacidad de entrada: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens, según la documentación…. CrewAI es preferible cuando tu proyecto prioriza acceso al modelo y disponibilidad (abierto vs: CrewAI es un framework de código abierto (licencia MIT) que se puede instalar y ejecutar….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y capacidad de entrada",
+      "toolA": "Esto permite procesar documentos extensos, como libros completos o bases de código grandes, en una sola llamada a la API, lo que resulta útil para tareas de análisis y resumen de información masiva.",
+      "toolB": "La capacidad de contexto efectiva dependerá del modelo elegido y de la arquitectura del flujo de agentes, pudiendo fragmentar la información en múltiples pasos para manejar volúmenes grandes."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "Cualquier cifra que circule debe contrastarse con la documentación oficial actualizada, ya que el rendimiento puede variar según la versión y la configuración.",
+      "toolB": "Su rendimiento dependerá de los modelos que utilice en cada agente; no es posible asignarle una métrica de benchmark de modelo base."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida)",
+      "toolA": "Estos precios son los indicados actualmente por Anthropic y pueden cambiar.",
+      "toolB": "Al no tener precios propios de API, la comparación directa no aplica y el gasto dependerá de los proveedores de modelos seleccionados."
+    },
+    {
+      "category": "Latencia y rendimiento en tiempo de ejecución",
+      "toolA": "Se recomienda medir la latencia en el entorno concreto de uso y consultar las guías de optimización de Anthropic.",
+      "toolB": "El tiempo de respuesta final dependerá de la complejidad del flujo, el número de agentes y los modelos subyacentes, por lo que no es posible dar una cifra única sin evaluar cada caso."
+    },
+    {
+      "category": "Acceso al modelo y disponibilidad (abierto vs",
+      "toolA": "No se distribuyen pesos ni código fuente, y su disponibilidad está sujeta a los términos de servicio y a las regiones admitidas por el proveedor.",
+      "toolB": "Permite integrar modelos abiertos o cerrados, lo que brinda mayor control sobre la infraestructura subyacente y la posibilidad de personalizar el código según las necesidades."
+    },
+    {
+      "category": "Casos de uso prácticos y flexibilidad",
+      "toolA": "Su uso típico es mediante llamadas directas a la API, sin una capa de orquestación integrada para múltiples agentes.",
+      "toolB": "Es adecuado para automatizar flujos de trabajo complejos, como investigación, generación de informes o atención al cliente con múltiples pasos, y permite combinar distintos modelos según la tarea."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 y CrewAI responden a una necesidad similar, pero difieren en ventana de contexto y capacidad de entrada. Claude Fable 5.1: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens, según la documentación oficial de Anthropic. CrewAI: CrewAI no impone un límite de contexto propio, ya que delega en los modelos subyacentes que se configuren (por… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: Anthropic no publica de forma oficial resultados de MMLU o HumanEval para Claude Fable 5.1 en su documentación de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y capacidad de entrada: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens, según la documentación…",
+    "toolB": "tu proyecto prioriza acceso al modelo y disponibilidad (abierto vs: CrewAI es un framework de código abierto (licencia MIT) que se puede instalar y ejecutar…"
+  }
 }

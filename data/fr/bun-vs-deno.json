@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-deno",
   "meta": {
-    "title": "Bun vs Deno (2026): quelle solution choisir ?",
-    "description": "Comparez Bun et Deno en 2026 : performances, compatibilité npm, sécurité, écosystème et cas d’usage. Découvrez lequel choisir pour vos projets JavaScript et TypeScript."
+    "title": "Bun vs Deno: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Bun et Deno : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Bun"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// hello.ts\nconst message: string = \"Hello, World!\";\nconsole.log(message);\n\n// Exécution : bun run hello.ts",
-    "tech2Snippet": "// hello.ts\nconst message: string = \"Hello, World!\";\nconsole.log(message);\n\n// Exécution : deno run hello.ts"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment gérer les dépendances avec Deno par rapport à Bun ?",
       "a": "Deno privilégie les imports via URL et un cache local, avec un fichier de configuration pour les import maps, ce qui peut améliorer la reproductibilité sans node_modules. Bun utilise un gestionnaire de paquets compatible npm avec un fichier lock, ce qui est plus familier aux développeurs Node.js. Le choix dépend de votre préférence pour la gestion explicite des dépendances ou pour l’écosystème npm traditionnel."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Bun et Deno modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Bun convient mieux lorsque votre projet privilégie performance d’exécution : Bun est conçu pour offrir des performances élevées grâce à son moteur JavaScriptCore et son…. Deno est préférable lorsque votre projet privilégie sécurité et permissions : Deno applique un modèle de sécurité par défaut : l’exécution de code n’a pas accès au réseau, au….",
+  "tradeoffs": [
+    {
+      "category": "Performance d’exécution",
+      "toolA": "Il est recommandé de mesurer dans votre contexte plutôt que de se fier à des chiffres génériques.",
+      "toolB": "Comme pour tout runtime, les performances dépendent de la version, de la configuration et de la nature de l’application."
+    },
+    {
+      "category": "Compatibilité avec l’écosystème npm et Node.js",
+      "toolA": "La documentation officielle précise le niveau de compatibilité et les limitations connues.",
+      "toolB": "Il est conseillé de tester les dépendances critiques avant migration."
+    },
+    {
+      "category": "Sécurité et permissions",
+      "toolA": "Des options de configuration peuvent restreindre certains accès, mais elles ne sont pas activées par défaut.",
+      "toolB": "Les permissions peuvent être accordées finement via des drapeaux ou des configurations."
+    },
+    {
+      "category": "Expérience de développement et outillage intégré",
+      "toolA": "L’expérience dépend de la version et des fonctionnalités utilisées.",
+      "toolB": "L’outillage est cohérent et vise à réduire les dépendances externes, ce qui peut simplifier les projets."
+    },
+    {
+      "category": "Gestion des dépendances et des modules",
+      "toolA": "La gestion des dépendances est familière pour les développeurs Node.js, mais certaines fonctionnalités avancées peuvent différer.",
+      "toolB": "Cela peut améliorer la reproductibilité, mais dérouter les habitués de npm."
+    },
+    {
+      "category": "Support de TypeScript",
+      "toolA": "La documentation officielle détaille les limitations.",
+      "toolB": "Les types sont vérifiés par défaut lors de l’exécution, ce qui peut impacter les performances mais renforce la fiabilité."
+    }
+  ],
+  "introduction": "Bun et Deno répondent à un besoin proche, mais diffèrent sur performance d’exécution. Bun : Bun est conçu pour offrir des performances élevées grâce à son moteur JavaScriptCore et son intégration native de… Deno : Deno repose sur le moteur V8 et bénéficie des optimisations continues de ce dernier. Le critère « Compatibilité avec l’écosystème npm et Node.js » met en évidence une autre différence pratique : Bun intègre un gestionnaire de paquets compatible avec npm et vise une compatibilité élevée avec les modules Node.js. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie performance d’exécution : Bun est conçu pour offrir des performances élevées grâce à son moteur JavaScriptCore et son…",
+    "toolB": "votre projet privilégie sécurité et permissions : Deno applique un modèle de sécurité par défaut : l’exécution de code n’a pas accès au réseau, au…"
+  }
 }

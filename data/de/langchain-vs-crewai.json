@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-crewai",
   "meta": {
-    "title": "LangChain vs CrewAI (2026): welche Lösung passt besser?",
-    "description": "LangChain vs CrewAI im Vergleich 2026: Architektur, Multi-Agenten-Orchestrierung, Lernkurve, Ökosystem, Kontrolle und Betrieb – mit klarer Empfehlung für Ihr Projekt."
+    "title": "LangChain vs CrewAI: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche LangChain und CrewAI: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_openai import ChatOpenAI\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.output_parsers import StrOutputParser\n\nmodel = ChatOpenAI(model=\"gpt-4o-mini\")\nprompt = ChatPromptTemplate.from_template(\"Antworte kurz auf: {frage}\")\nchain = prompt | model | StrOutputParser()\n\nprint(chain.invoke({\"frage\": \"Hallo, Welt!\"}))",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nautor = Agent(\n    role=\"Autor\",\n    goal=\"Kurze Begrüßungen formulieren\",\n    backstory=\"Du schreibst prägnante deutsche Texte.\",\n)\n\ntask = Task(\n    description=\"Schreibe eine kurze Begrüßung auf Deutsch.\",\n    expected_output=\"Ein einzelner deutscher Satz.\",\n    agent=autor,\n)\n\ncrew = Crew(agents=[autor], tasks=[task])\nprint(crew.kickoff())"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie wichtig ist die Wahl des Modellanbieters?",
       "a": "Die Modellwahl beeinflusst Qualität, Latenz und Kosten oft stärker als das Framework selbst. Beide Tools unterstützen mehrere Anbieter, wobei die verfügbaren Integrationen und Details von Version und Konfiguration abhängen; prüfen Sie daher früh, ob Ihr Wunschmodell sauber unterstützt wird."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen LangChain und CrewAI verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "LangChain passt besser, wenn dein Projekt priorisiert Ökosystem und Integrationen: LangChain verfügt über ein sehr breites Ökosystem an Integrationen für Modelle, Vektordatenbanken,…. CrewAI ist geeigneter, wenn dein Projekt priorisiert Multi-Agenten-Orchestrierung: CrewAI ist von Haus aus auf Zusammenarbeit mehrerer Agenten ausgelegt und ordnet Aufgaben samt….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Grundmodell",
+      "toolA": "Dadurch lässt sich die Kontrolllogik sehr fein selbst gestalten, was jedoch eigene Architekturentscheidungen erfordert.",
+      "toolB": "Das Modell ist stärker meinungsgebunden und dadurch schneller startklar, lässt aber weniger Freiheit bei der grundlegenden Orchestrierung."
+    },
+    {
+      "category": "Multi-Agenten-Orchestrierung",
+      "toolA": "Für komplexe Zusammenarbeit ist das sehr flexibel, verlangt aber mehr Konzeptionsaufwand.",
+      "toolB": "Das erleichtert typische Team-Szenarien, während sehr spezielle Kontrollflüsse an Grenzen stoßen können."
+    },
+    {
+      "category": "Lernkurve und Entwicklerfreundlichkeit",
+      "toolA": "Einsteiger müssen jedoch mehrere Abstraktionen und Versionen verstehen, bevor produktive Anwendungen stabil laufen.",
+      "toolB": "Wer klare Standardmuster sucht, kommt schneller voran, stößt bei Sonderfällen aber eher an die Grenzen des Frameworks."
+    },
+    {
+      "category": "Ökosystem und Integrationen",
+      "toolA": "Die Vielfalt ist ein Vorteil, kann aber durch wechselnde APIs und Abhängigkeiten auch Pflegeaufwand bedeuten.",
+      "toolB": "Die Abdeckung ist kleiner als bei LangChain, deckt aber viele gängige Anwendungsfälle ab."
+    },
+    {
+      "category": "Kontrolle, Debugging und Nachvollziehbarkeit",
+      "toolA": "Das erleichtert gezieltes Debugging, erfordert jedoch Disziplin bei der Strukturierung.",
+      "toolB": "Bei tiefgreifenden Fehleranalysen ist die Einsicht in interne Abläufe jedoch weniger granular als bei einer selbstgebauten Graph-Logik."
+    },
+    {
+      "category": "Flexibilität bei individueller Logik",
+      "toolA": "Das macht es zur passenden Basis für ungewöhnliche Anforderungen, verlangt aber mehr Eigenverantwortung für Qualität und Wartbarkeit.",
+      "toolB": "Sobald Anforderungen stark vom Team-Muster abweichen, sind Umwege oder Ergänzungen nötig."
+    }
+  ],
+  "introduction": "LangChain und CrewAI lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und grundmodell. LangChain: LangChain ist ein modulares Framework, das Bausteine wie Modelle, Prompts, Tools und Speicher zu Chains oder Agenten… CrewAI: CrewAI strukturiert Anwendungen um Agenten mit Rolle, Ziel und Werkzeugen, die als Crew über Tasks zusammenarbeiten. Das Kriterium multi-agenten-orchestrierung zeigt einen weiteren praktischen Unterschied: LangChain bietet mit LangGraph einen graphentbasierten Ansatz, mit dem sich zustandsbehaftete, verzweigte und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Ökosystem und Integrationen: LangChain verfügt über ein sehr breites Ökosystem an Integrationen für Modelle, Vektordatenbanken,…",
+    "toolB": "dein Projekt priorisiert Multi-Agenten-Orchestrierung: CrewAI ist von Haus aus auf Zusammenarbeit mehrerer Agenten ausgelegt und ordnet Aufgaben samt…"
+  }
 }

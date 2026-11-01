@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-fastapi",
   "meta": {
-    "title": "Gin vs FastAPI (2026): welche Lösung passt besser?",
-    "description": "Gin und FastAPI im Vergleich 2026: Performance, Typsicherheit, Ökosystem, Lernkurve und Einsatzgebiete – mit klarer Empfehlung für Go- und Python-Teams."
+    "title": "Gin vs FastAPI: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Gin und FastAPI: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Gin"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "package main\n\nimport (\n\t\"net/http\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\nfunc main() {\n\tr := gin.Default()\n\tr.GET(\"/\", func(c *gin.Context) {\n\t\tc.String(http.StatusOK, \"Hello, World!\")\n\t})\n\tr.Run(\":8080\")\n}",
-    "tech2Snippet": "from fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello, World!\"}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Kann ich die Entscheidung später revidieren?",
       "a": "Ein Wechsel des Frameworks ist grundsätzlich mit Aufwand verbunden, besonders wenn Geschäftslogik, Middleware und Tests eng an die jeweilige Sprache gebunden sind. Deshalb lohnt es sich, die Kernanforderungen an Durchsatz, Teamkompetenz, Dokumentation und Betrieb früh zu klären. Eine saubere Trennung von Domänenlogik und HTTP-Schicht erleichtert spätere Anpassungen in beiden Fällen erheblich."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Gin und FastAPI verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Gin passt besser, wenn dein Projekt priorisiert Leistung und Nebenläufigkeit: Gin läuft auf der Go-Laufzeit und nutzt Goroutinen für leichtgewichtige Nebenläufigkeit, wodurch…. FastAPI ist geeigneter, wenn dein Projekt priorisiert Automatische API-Dokumentation und Validierung: FastAPI erzeugt aus Typannotationen und Pydantic-Modellen automatisch eine OpenAPI-Spezifikation….",
+  "tradeoffs": [
+    {
+      "category": "Programmiersprache und Typsystem",
+      "toolA": "Die explizite Fehlerbehandlung in Go erhöht den Schreibaufwand, macht aber Kontrollflüsse sehr nachvollziehbar.",
+      "toolB": "Für datennahe Aufgaben und Prototypen ist diese Dynamik ein klarer Produktivitätsvorteil."
+    },
+    {
+      "category": "Leistung und Nebenläufigkeit",
+      "toolA": "Gin selbst ist bewusst schlank und fügt nur wenig Overhead hinzu.",
+      "toolB": "Konkrete Leistungsvergleiche sind ohne reproduzierbare Benchmarks nicht belastbar."
+    },
+    {
+      "category": "Automatische API-Dokumentation und Validierung",
+      "toolA": "Wer eine vollständige API-Spezifikation möchte, muss sie aktiv pflegen.",
+      "toolB": "Diese Funktion ist ein zentraler Bestandteil des Frameworks und nicht bloß ein Add-on."
+    },
+    {
+      "category": "Lernkurve und Entwicklerproduktivität",
+      "toolA": "Einsteiger ohne Go-Erfahrung müssen zunächst Sprache und Nebenläufigkeitsmodell lernen.",
+      "toolB": "Die asynchrone Programmierung und das Verständnis von Pydantic-Modellen erfordern dennoch Einarbeitung, besonders beim Wechsel zwischen synchronen und asynchronen Endpunkten."
+    },
+    {
+      "category": "Ökosystem und Bibliotheken",
+      "toolA": "Für Kubernetes, gRPC und Infrastruktur-Tooling ist Go eine etablierte Wahl.",
+      "toolB": "Bei Bibliotheken mit blockierenden Aufrufen ist jedoch darauf zu achten, sie nicht den Event-Loop blockieren zu lassen."
+    },
+    {
+      "category": "Betrieb, Deployment und Ressourcenverbrauch",
+      "toolA": "Die geringe Anzahl beweglicher Teile erleichtert den Betrieb.",
+      "toolB": "In containerisierten Umgebungen sind Images meist größer als ein kompiliertes Go-Binary, was sich auf Startzeiten und Registry-Größe auswirken kann."
+    }
+  ],
+  "introduction": "Gin und FastAPI lösen ein ähnliches Problem, unterscheiden sich jedoch bei programmiersprache und typsystem. Gin: Gin basiert auf Go, einer statisch typisierten, kompilierten Sprache mit strenger Prüfung zur Übersetzungszeit. FastAPI: FastAPI basiert auf Python und nutzt dessen Typannotationen zusammen mit Pydantic zur Laufzeitvalidierung. Das Kriterium leistung und nebenläufigkeit zeigt einen weiteren praktischen Unterschied: Gin läuft auf der Go-Laufzeit und nutzt Goroutinen für leichtgewichtige Nebenläufigkeit, wodurch viele gleichzeitige… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Leistung und Nebenläufigkeit: Gin läuft auf der Go-Laufzeit und nutzt Goroutinen für leichtgewichtige Nebenläufigkeit, wodurch…",
+    "toolB": "dein Projekt priorisiert Automatische API-Dokumentation und Validierung: FastAPI erzeugt aus Typannotationen und Pydantic-Modellen automatisch eine OpenAPI-Spezifikation…"
+  }
 }

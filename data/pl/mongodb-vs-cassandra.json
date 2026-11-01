@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-cassandra",
   "meta": {
-    "title": "MongoDB vs Apache Cassandra (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie MongoDB i Apache Cassandra w 2026 roku: model danych, skalowanie, spójność, wydajność zapisu, koszty operacyjne i kryteria wyboru bazy."
+    "title": "MongoDB vs Apache Cassandra: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj MongoDB i Apache Cassandra: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "MongoDB"
@@ -94,5 +94,49 @@
       "q": "Czy ceny MongoDB i Apache Cassandra są porównywalne?",
       "a": "Trudno je bezpośrednio porównać, ponieważ MongoDB ma wersję społecznościową oraz płatne wersje enterprise i usługi zarządzane, a Apache Cassandra jest otwartoźródłowa, ale generuje koszty operacyjne i wsparcia. Ostateczny koszt zależy od skali, regionu, planu i modelu utrzymania, dlatego trzeba oszacować go dla konkretnego wdrożenia."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między MongoDB a Apache Cassandra zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "MongoDB będzie lepszy, gdy projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych…. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i sposób modelowania",
+      "toolA": "Modelowanie jest elastyczne, ale nadal wymaga przemyślenia wzorców odczytu i indeksów, aby uniknąć nieefektywnych zapytań.",
+      "toolB": "Schemat jest zwykle sztywny, a złe zaprojektowanie klucza partycji może prowadzić do hotspotów i problemów z wydajnością."
+    },
+    {
+      "category": "Skalowanie i rozproszenie geograficzne",
+      "toolA": "Konfiguracja shardingu jest jednak złożona i zależy od wersji, wyboru klucza shardowego oraz topologii.",
+      "toolB": "Skalowanie poziome jest naturalne, ale wymaga dyscypliny operacyjnej i świadomego doboru współczynnika replikacji oraz poziomów spójności."
+    },
+    {
+      "category": "Spójność i model transakcyjny",
+      "toolA": "Poziomy read/write concern pozwalają dostosować kompromis między trwałością a opóźnieniem.",
+      "toolB": "Zapewnia wysoką dostępność, ale aplikacja musi akceptować ewentualne niespójności i konflikty rozwiązywane przez last-write-wins."
+    },
+    {
+      "category": "Język zapytań i możliwości analityczne",
+      "toolA": "Umożliwia to realizację złożonej logiki zapytań bezpośrednio w bazie.",
+      "toolB": "Możliwości agregacji i analityki są ograniczone, a cięższe analizy zwykle przenosi się do zewnętrznych systemów."
+    },
+    {
+      "category": "Wydajność zapisu i przepustowość",
+      "toolA": "Zapisy są trwałe i uporządkowane, ale przy bardzo dużym wolumenie wymagają starannego shardingu.",
+      "toolB": "Model append-only i brak aktualizacji w miejscu sprzyjają dużym strumieniom danych, choć kosztem złożoności i ograniczeń zapytań."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i narzędzia",
+      "toolA": "Dostępność funkcji różni się między wersją społecznościową, enterprise i planami chmurowymi.",
+      "toolB": "Narzędzia administracyjne i integracyjne są liczne, ale często wymagają większej wiedzy specjalistycznej niż w przypadku MongoDB."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MongoDB i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i sposób modelowania. MongoDB: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych struktur… Apache Cassandra: Apache Cassandra opiera się na szerokich wierszach w tabelach z kluczem partycjonowania i kluczami klastrowania, co… Kolejną istotną różnicę pokazuje kryterium „Skalowanie i rozproszenie geograficzne”: MongoDB obsługuje replikację przez replica sety oraz sharding poziomy, co pozwala skalować odczyty i zapisy w klastrze. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych…",
+    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu…"
+  }
 }

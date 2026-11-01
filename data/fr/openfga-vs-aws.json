@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS (2026): quelle solution choisir ?",
-    "description": "Comparatif OpenFGA vs AWS en 2026 : autorisation fine-grained, IAM et Cedar, coûts d'exploitation, portabilité, sécurité et intégration. Critères détaillés, exemples de code et FAQ pour choisir."
+    "title": "OpenFGA vs AWS: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez OpenFGA et AWS : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# docker-compose minimal pour lancer OpenFGA (développement local)\nservices:\n  openfga:\n    image: openfga/openfga:latest\n    command: run\n    environment:\n      - OPENFGA_DATASTORE_ENGINE=memory\n    ports:\n      - \"8080:8080\"\n      - \"8081:8081\"\n\n# Après démarrage, vérifier que l'API répond :\n# curl http://localhost:8080/healthz",
-    "tech2Snippet": "// Exemple minimal avec AWS SDK for JavaScript v3 : lister les buckets S3\n// (nécessite des identifiants AWS valides avec les droits adéquats)\nimport { S3Client, ListBucketsCommand } from \"@aws-sdk/client-s3\";\n\nconst client = new S3Client({ region: \"eu-west-3\" });\nconst result = await client.send(new ListBucketsCommand({}));\nconsole.log((result.Buckets ?? []).map((b) => b.Name));"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment démarrer un comparatif fiable entre OpenFGA et AWS ?",
       "a": "Commencez par formaliser vos besoins d'autorisation : relations entre objets, attributs, contexte, volume de tuples et exigences de latence. Ensuite, testez chaque option sur un périmètre restreint avec vos propres scénarios, en vérifiant la documentation officielle de la version utilisée. Enfin, comparez le coût total de possession et la charge d'exploitation, en gardant à l'esprit que les fonctionnalités et tarifs évoluent et doivent être vérifiés à la date de votre décision."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre OpenFGA et AWS modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "OpenFGA convient mieux lorsque votre projet privilégie modèle d'autorisation et expressivité : évaluation détaillée de ce critère : OpenFGA s'appuie sur un langage de modélisation déclaratif (DSL) pour décrire les types, les…. AWS est préférable lorsque votre projet privilégie intégration à l'écosystème et portabilité : évaluation détaillée de ce critère : AWS est évidemment très intégré à l'écosystème AWS : IAM, Cognito, Verified Permissions, Lambda,….",
+  "tradeoffs": [
+    {
+      "category": "Nature du service et positionnement : évaluation détaillée de ce critère",
+      "toolA": "Son périmètre est volontairement centré sur l'autorisation fine-grained, pas sur la gestion d'identités ou de ressources cloud.",
+      "toolB": "Le périmètre est donc très large, mais chaque besoin suppose de choisir le bon service et de comprendre leur articulation."
+    },
+    {
+      "category": "Modèle d'autorisation et expressivité : évaluation détaillée de ce critère",
+      "toolA": "En revanche, les cas très spécifiques ou les décisions non liées à des relations peuvent demander des contournements.",
+      "toolB": "Ces approches sont puissantes pour des règles fondées sur des attributs et des contextes, mais l'expression de relations profondes entre objets peut être moins directe qu'avec un modèle ReBAC dédié."
+    },
+    {
+      "category": "Intégration à l'écosystème et portabilité : évaluation détaillée de ce critère",
+      "toolA": "En contrepartie, l'exploitation, la mise à l'échelle et la supervision restent à la charge de l'équipe, sauf recours à une offre managée tierce.",
+      "toolB": "En revanche, la portabilité hors AWS est limitée pour ces services, et une migration ultérieure demanderait une réécriture des politiques et des flux d'authentification."
+    },
+    {
+      "category": "Exploitation, hébergement et charge opérationnelle : évaluation détaillée de",
+      "toolA": "La complexité réelle dépend fortement du volume de requêtes, du nombre de tuples et du mode de déploiement choisi.",
+      "toolB": "La contrepartie est une dépendance aux spécificités d'AWS et à sa tarification à l'usage."
+    },
+    {
+      "category": "Sécurité, gouvernance et journalisation : évaluation détaillée de ce critère",
+      "toolA": "La transparence du code ouvert facilite les revues de sécurité, mais elle ne remplace pas une configuration soignée.",
+      "toolB": "En contrepartie, la surface de configuration est vaste et une mauvaise politique IAM ou un rôle trop permissif peut créer des failles, d'où l'importance des contrôles et des outils d'analyse."
+    },
+    {
+      "category": "Coûts et modèle économique : évaluation détaillée de ce critère",
+      "toolA": "Il est donc prudent de raisonner en coût total de possession plutôt qu'en simple licence logicielle.",
+      "toolB": "La prévisibilité budgétaire demande de la surveillance et parfois des optimisations d'architecture."
+    }
+  ],
+  "introduction": "OpenFGA et AWS répondent à un besoin proche, mais diffèrent sur nature du service et positionnement : évaluation détaillée de ce critère. OpenFGA : OpenFGA est un moteur d'autorisation open source (projet CNCF, en incubation à ma connaissance) qui met en œuvre le… AWS : AWS n'est pas un produit unique mais un ensemble de services : IAM, IAM Identity Center, AWS Verified Permissions… Le critère « Modèle d'autorisation et expressivité : évaluation détaillée de ce critère » met en évidence une autre différence pratique : OpenFGA s'appuie sur un langage de modélisation déclaratif (DSL) pour décrire les types, les relations et les… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle d'autorisation et expressivité : évaluation détaillée de ce critère : OpenFGA s'appuie sur un langage de modélisation déclaratif (DSL) pour décrire les types, les…",
+    "toolB": "votre projet privilégie intégration à l'écosystème et portabilité : évaluation détaillée de ce critère : AWS est évidemment très intégré à l'écosystème AWS : IAM, Cognito, Verified Permissions, Lambda,…"
+  }
 }

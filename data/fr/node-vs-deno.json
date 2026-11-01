@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-deno",
   "meta": {
-    "title": "Node.js vs Deno (2026) : quelle solution choisir ?",
-    "description": "Comparatif Node.js vs Deno en 2026 : sécurité, TypeScript, gestion des dépendances, écosystème, performances et compatibilité. Conseils pratiques pour choisir son runtime JavaScript."
+    "title": "Node.js vs Deno: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Node.js et Deno : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createServer } from 'node:http';\n\nconst server = createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });\n  res.end('Hello, World!');\n});\n\nserver.listen(3000, () => {\n  console.log('Serveur Node.js sur http://localhost:3000');\n});",
-    "tech2Snippet": "Deno.serve({ port: 3000 }, () => {\n  return new Response('Hello, World!', {\n    headers: { 'Content-Type': 'text/plain; charset=utf-8' },\n  });\n});\n\nconsole.log('Serveur Deno sur http://localhost:3000');"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel runtime choisir pour une équipe déjà familière avec npm ?",
       "a": "Une équipe déjà familière avec npm et Node.js gagnera souvent à rester sur Node.js pour éviter une courbe d'apprentissage et des adaptations de dépendances. Deno peut être testé sur des projets annexes afin d'évaluer son modèle de permissions et ses outils intégrés sans perturber la production. Le choix final doit tenir compte des compétences, des délais et du niveau de compatibilité requis."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Node.js et Deno modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Node.js convient mieux lorsque votre projet privilégie maturité de l'écosystème et disponibilité des bibliothèques : Node.js s'appuie sur npm, le plus grand registre de paquets JavaScript, avec des bibliothèques…. Deno est préférable lorsque votre projet privilégie sécurité par défaut : Deno exécute le code avec un modèle de permissions explicites : accès réseau, fichiers et….",
+  "tradeoffs": [
+    {
+      "category": "Maturité de l'écosystème et disponibilité des bibliothèques",
+      "toolA": "Cette maturité signifie aussi plus de maintenance active, de documentation et de réponses aux questions courantes, même si la qualité des paquets varie fortement et exige une vérification.",
+      "toolB": "Le catalogue reste plus restreint que npm, ce qui peut obliger à adapter ou remplacer certaines dépendances, mais l'intégration JSR progresse."
+    },
+    {
+      "category": "Sécurité par défaut",
+      "toolA": "La sécurité repose donc sur le code, la configuration du système d'exploitation, des conteneurs et des outils externes, ce qui demande de la rigueur.",
+      "toolB": "Ce modèle réduit la surface d'attaque par défaut, même s'il ne remplace pas une politique de sécurité globale et dépend de la façon dont les permissions sont configurées."
+    },
+    {
+      "category": "Support de TypeScript",
+      "toolA": "La prise en charge native du typage s'améliore progressivement, mais elle dépend des versions et reste à vérifier pour les fonctionnalités avancées.",
+      "toolB": "Cela simplifie la configuration initiale, même si les performances et le comportement exact dépendent de la version et du mode de vérification choisi."
+    },
+    {
+      "category": "Gestion des dépendances et outillage intégré",
+      "toolA": "Les outils comme le formateur, le linter ou le test runner sont généralement ajoutés séparément, ce qui offre de la flexibilité au prix de plus de configuration.",
+      "toolB": "Cette approche réduit la configuration, mais peut dérouter les équipes habituées à npm et demande d'adapter certains scripts."
+    },
+    {
+      "category": "Compatibilité et réutilisation de l'existant",
+      "toolA": "La migration d'un projet Node.js vers un autre runtime n'est donc pas nécessaire pour bénéficier d'un écosystème vaste et stable.",
+      "toolB": "Le support dépend des bibliothèques, des versions et de l'usage d'APIs natives, ce qui exige des tests de compatibilité avant adoption."
+    },
+    {
+      "category": "Performances et modèle d'exécution",
+      "toolA": "Les performances réelles varient selon la version, la charge, le code et l'infrastructure, et ne peuvent pas être résumées par un simple classement général.",
+      "toolB": "Il ne faut pas supposer une supériorité systématique : des benchmarks contextualisés sont nécessaires pour chaque cas d'usage."
+    }
+  ],
+  "introduction": "Node.js et Deno répondent à un besoin proche, mais diffèrent sur maturité de l'écosystème et disponibilité des bibliothèques. Node.js : Node.js s'appuie sur npm, le plus grand registre de paquets JavaScript, avec des bibliothèques couvrant quasiment tous… Deno : Deno propose un registre moderne (JSR) et accepte des modules importés par URL, avec une compatibilité npm partielle… Le critère « Sécurité par défaut » met en évidence une autre différence pratique : Node.js n'applique pas de modèle de permissions intégré au runtime : un processus a par défaut accès au système de… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie maturité de l'écosystème et disponibilité des bibliothèques : Node.js s'appuie sur npm, le plus grand registre de paquets JavaScript, avec des bibliothèques…",
+    "toolB": "votre projet privilégie sécurité par défaut : Deno exécute le code avec un modèle de permissions explicites : accès réseau, fichiers et…"
+  }
 }

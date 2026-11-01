@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-node",
   "meta": {
-    "title": "Bun vs Node (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Bun y Node.js en 2026: rendimiento, compatibilidad, ecosistema, seguridad y madurez. Descubre cuál conviene a tu proyecto y por qué."
+    "title": "Bun vs Node: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Bun y Node: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "¿Bun o Node.js para desplegar en serverless?",
       "a": "Node.js está soportado de forma nativa por la mayoría de proveedores serverless y servicios gestionados, lo que reduce fricciones de despliegue. Bun puede funcionar en varias plataformas, pero el soporte depende del proveedor y del plan, así que conviene comprobarlo. Si la portabilidad y el soporte oficial son prioritarios, Node.js suele ser la opción más segura."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Bun y Node cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente…. Node es preferible cuando tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento de ejecución y arranque",
+      "toolA": "En muchos proyectos ofrece tiempos de inicio y de instalación de dependencias notablemente bajos.",
+      "toolB": "El rendimiento real depende de la versión, las dependencias y la configuración del servidor."
+    },
+    {
+      "category": "Compatibilidad con el ecosistema de Node y npm",
+      "toolA": "Es recomendable verificar las dependencias críticas de tu proyecto antes de migrar.",
+      "toolB": "Esto reduce sorpresas en proyectos existentes o con dependencias complejas."
+    },
+    {
+      "category": "Gestor de paquetes e instalación de dependencias",
+      "toolA": "La velocidad concreta depende de la red, la caché y el tamaño del proyecto.",
+      "toolB": "La elección de gestor influye más que el propio Node en la velocidad de instalación."
+    },
+    {
+      "category": "Herramientas integradas y experiencia de desarrollo",
+      "toolA": "Conviene revisar el soporte de las características que uses en tu flujo de trabajo.",
+      "toolB": "La experiencia de desarrollo es muy sólida gracias a la madurez y documentación de esas herramientas."
+    },
+    {
+      "category": "Madurez, estabilidad y soporte a largo plazo",
+      "toolA": "Para sistemas críticos conviene evaluar la estabilidad de la versión concreta que se vaya a usar.",
+      "toolB": "La contrapartida es una evolución más conservadora en comparación con Bun."
+    },
+    {
+      "category": "Seguridad y superficie de exposición",
+      "toolA": "La seguridad efectiva depende de la configuración, de la versión y de las dependencias que se usen.",
+      "toolB": "Mantener Node actualizado y auditar dependencias sigue siendo imprescindible."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Bun y Node responden a una necesidad similar, pero difieren en rendimiento de ejecución y arranque. Bun: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente en cargas típicas de… Node: Node.js se apoya en V8 y ha incorporado mejoras continuas de rendimiento en sus versiones recientes. El criterio de compatibilidad con el ecosistema de node y npm añade otra diferencia práctica: Bun busca ser compatible con una gran parte del ecosistema de Node, incluyendo paquetes de npm y APIs habituales,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente…",
+    "toolB": "tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas…"
+  }
 }

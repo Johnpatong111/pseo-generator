@@ -1,8 +1,8 @@
 {
   "slug": "hono-vs-fastapi",
   "meta": {
-    "title": "Hono vs FastAPI (2026): ¿Qué solución elegir?",
-    "description": "Hono y FastAPI comparados en 2026: rendimiento, tipado, ecosistema, despliegue y seguridad. Descubre qué framework encaja mejor con tu proyecto y tu equipo."
+    "title": "Hono vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Hono y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Hono"
@@ -94,5 +94,49 @@
       "q": "¿Cuál es mejor para aplicaciones de inteligencia artificial?",
       "a": "FastAPI suele ser la opción más directa si necesitas integrar modelos de Python, librerías de ciencia de datos o herramientas de IA del ecosistema Python. Hono puede exponer una API ligera que consuma servicios de IA externos, pero no ofrece las mismas integraciones nativas. La decisión depende de dónde resida la lógica de IA y del lenguaje en el que esté implementada."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Hono y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Hono encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo…. FastAPI es preferible cuando tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento y modelo de ejecución",
+      "toolA": "El rendimiento real depende del runtime, de la carga, del middleware activo y de la versión, y Hono no garantiza por sí solo cifras concretas sin medir el caso de uso.",
+      "toolB": "Su rendimiento está condicionado por el servidor, el número de workers, el uso de Pydantic y la lógica de negocio, por lo que conviene validarlo con pruebas de carga propias antes de decidir."
+    },
+    {
+      "category": "Lenguaje, tipado y experiencia de desarrollo",
+      "toolA": "La experiencia es muy fluida para equipos con base en JavaScript o TypeScript, aunque el ecosistema de tipado depende de las librerías de validación que se elijan.",
+      "toolB": "El tipado es maduro y muy legible para equipos de Python, pero no ofrece la misma comprobación estática que TypeScript salvo que se complemente con herramientas como mypy o pyright."
+    },
+    {
+      "category": "Ecosistema y librerías disponibles",
+      "toolA": "Su comunidad es más joven y algunas integraciones de nicho pueden requerir trabajo adicional, por lo que conviene revisar la madurez de las librerías concretas antes de adoptarlo.",
+      "toolB": "Esa amplitud facilita encontrar soluciones probadas, aunque la calidad y el mantenimiento de cada paquete varían y deben evaluarse caso por caso."
+    },
+    {
+      "category": "Documentación y validación de API",
+      "toolA": "Esto ofrece flexibilidad, pero exige configurar y mantener la documentación como parte del proyecto.",
+      "toolB": "Esta integración reduce el trabajo manual y mejora la colaboración con equipos de frontend y consumidores de la API, aunque conviene revisar que los modelos reflejen con precisión el contrato real."
+    },
+    {
+      "category": "Despliegue y portabilidad entre runtimes",
+      "toolA": "Esa portabilidad depende de que las APIs utilizadas estén disponibles en cada runtime y de revisar los adaptadores oficiales.",
+      "toolB": "La portabilidad es buena dentro del ecosistema Python, pero no está pensada para ejecutarse en runtimes de edge basados en JavaScript."
+    },
+    {
+      "category": "Seguridad y autenticación",
+      "toolA": "La seguridad efectiva depende de configurar correctamente el middleware y de las prácticas del equipo, no solo del framework.",
+      "toolB": "No obstante, la seguridad final depende de la configuración, de las dependencias y de las decisiones del equipo, por lo que conviene revisar las dependencias y aplicar buenas prácticas."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Hono y FastAPI responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Hono: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo que suele traducirse… FastAPI: FastAPI se ejecuta sobre ASGI con servidores como Uvicorn o Hypercorn y puede combinar rutas síncronas y asíncronas;… El criterio de lenguaje, tipado y experiencia de desarrollo añade otra diferencia práctica: Hono está escrito en TypeScript y aprovecha el tipado estructural para definir rutas, middleware y validadores con… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo…",
+    "toolB": "tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de…"
+  }
 }

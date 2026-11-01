@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-podman",
   "meta": {
-    "title": "Docker vs Podman (2026): welche Lösung passt besser?",
-    "description": "Docker vs Podman im Vergleich 2026: rootless Betrieb, Kompatibilität, Compose, Pods, Ökosystem und Security – mit klarer Empfehlung für dein Setup."
+    "title": "Docker vs Podman: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Docker und Podman: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Docker"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Dockerfile\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Bauen und starten:\n# docker build -t hello-docker .\n# docker run --rm hello-docker",
-    "tech2Snippet": "# Containerfile (Docker-kompatibel)\nFROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Bauen und starten:\n# podman build -t hello-podman .\n# podman run --rm hello-podman"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Tool passt besser zu einem kleinen Entwicklerteam ohne dedizierte Plattform-Teams?",
       "a": "Ein kleines Team profitiert meist von der ausgereiften Dokumentation, dem breiten Ökosystem und der einfachen Compose-Erfahrung von Docker. Podman ist eine gute Wahl, wenn rootless Betrieb und Daemon-Freiheit Priorität haben und das Team bereit ist, sich in kleinere Unterschiede einzuarbeiten. Die Entscheidung sollte sich an den wichtigsten Workflows und nicht an einzelnen Features orientieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Docker und Podman verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Docker passt besser, wenn dein Projekt priorisiert Kompatibilität mit Docker-CLI und Images: Docker definiert die Referenz-CLI und das Image-Format, die viele Tools und CI-Systeme erwarten. Podman ist geeigneter, wenn dein Projekt priorisiert Architektur: Daemon-basiert versus daemonlos: Podman arbeitet daemonlos: Befehle wie podman run starten Prozesse direkt über Fork/Exec und….",
+  "tradeoffs": [
+    {
+      "category": "Architektur: Daemon-basiert versus daemonlos",
+      "toolA": "Das erleichtert zentrale Verwaltung, bedeutet aber, dass der Daemon als Dienst läuft und – je nach Konfiguration – weitreichende Rechte auf dem Host haben kann.",
+      "toolB": "Dadurch entfällt ein dauerhaft laufender privilegierter Dienst, was das Angriffsprofil reduziert; für übergreifende Verwaltung kann optional podman system service im Socket-Modus genutzt werden."
+    },
+    {
+      "category": "Rootless-Betrieb und Sicherheitsmodell",
+      "toolA": "Im Standardbetrieb läuft der Daemon als root, sodass Container-Rechte und Host-Angriffsfläche sorgfältig konfiguriert werden müssen.",
+      "toolB": "Das ist ein Sicherheitsvorteil, wobei Funktionalität und Performance von Kernel-Version, cgroup-Konfiguration und Storage-Treiber abhängen und nicht pauschal garantiert werden können."
+    },
+    {
+      "category": "Kompatibilität mit Docker-CLI und Images",
+      "toolA": "Bestehende Skripte, Dockerfiles und Registries funktionieren ohne Anpassung, was die Einführung in bestehenden Umgebungen erheblich vereinfacht.",
+      "toolB": "In Randfällen können sich Verhalten, Standardwerte und Netzwerkdetails unterscheiden, sodass vor einer Migration Tests mit den eigenen Workloads sinnvoll sind."
+    },
+    {
+      "category": "Container-Orchestrierung und Pods",
+      "toolA": "Eine native Pod-Abstraktion wie in Kubernetes bietet Docker selbst nicht.",
+      "toolB": "Das erleichtert den Übergang zwischen lokaler Entwicklung und Kubernetes-Betrieb, ohne einen separaten Cluster starten zu müssen."
+    },
+    {
+      "category": "Docker Compose und Multi-Container-Workflows",
+      "toolA": "Gerade für lokale Entwicklung und kleine Deployments ist der Workflow etabliert und stabil.",
+      "toolB": "Für einfache Compose-Setups funktioniert das gut, komplexe Dateien sollten vor dem Umstieg getestet werden."
+    },
+    {
+      "category": "Ökosystem, Tooling und Dokumentation",
+      "toolA": "Das senkt den Einführungsaufwand und erleichtert die Fehlersuche, weil Lösungen für die meisten Probleme dokumentiert sind.",
+      "toolB": "Die Community wächst, und für viele Standardaufgaben existieren bereits gute Anleitungen; bei Nischenproblemen ist die Trefferquote jedoch oft geringer als bei Docker."
+    }
+  ],
+  "introduction": "Docker und Podman lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur: daemon-basiert versus daemonlos. Docker: Docker nutzt mit dockerd einen zentralen Daemon, der Container, Images und Netzwerke verwaltet; der Client spricht… Podman: Podman arbeitet daemonlos: Befehle wie podman run starten Prozesse direkt über Fork/Exec und verwalten Container ohne… Das Kriterium rootless-betrieb und sicherheitsmodell zeigt einen weiteren praktischen Unterschied: Docker unterstützt seit geraumer Zeit Rootless-Modus, der jedoch zusätzliche Einrichtung benötigt und je nach Kernel,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kompatibilität mit Docker-CLI und Images: Docker definiert die Referenz-CLI und das Image-Format, die viele Tools und CI-Systeme erwarten.",
+    "toolB": "dein Projekt priorisiert Architektur: Daemon-basiert versus daemonlos: Podman arbeitet daemonlos: Befehle wie podman run starten Prozesse direkt über Fork/Exec und…"
+  }
 }

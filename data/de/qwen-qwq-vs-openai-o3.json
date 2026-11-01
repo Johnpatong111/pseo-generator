@@ -1,8 +1,8 @@
 {
   "slug": "qwen-qwq-vs-openai-o3",
   "meta": {
-    "title": "Qwen QwQ vs OpenAI o3 (2026): welche Lösung passt besser?",
-    "description": "Vergleich 2026: Qwen QwQ (offenes Reasoning-Modell) vs. OpenAI o3 (proprietäres Reasoning-Modell). Kriterien, Code, FAQ und klare Empfehlung."
+    "title": "Qwen QwQ vs OpenAI o3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Qwen QwQ und OpenAI o3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Qwen QwQ"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"Qwen/QwQ-32B-Preview\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"YOUR_API_KEY\")\n\nresponse = client.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Wie zuverlässig sind die veröffentlichten Benchmark-Zahlen?",
       "a": "Benchmark-Zahlen sind immer versions- und methodikabhängig und sollten nicht als absolute Leistungsgarantie verstanden werden. Bei Qwen QwQ beziehen sich die Werte auf die jeweilige Modellversion und können von Dritten unabhängig überprüft werden. Bei OpenAI o3 stammen die Werte von OpenAI selbst; ein direkter Vergleich erfordert identische Testbedingungen. Für Ihre Entscheidung sind eigene Tests mit realen Aufgaben aussagekräftiger."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Qwen QwQ und OpenAI o3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Qwen QwQ passt besser, wenn dein Projekt priorisiert Modellzugang und Offenheit: Verfügbarkeit als Open-Weight- oder: Qwen QwQ ist ein Open-Weight-Modell, dessen Gewichte öffentlich zugänglich sind. OpenAI o3 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: OpenAI o3 wird über die OpenAI-API zu Preisen angeboten, die pro 1 Million Input- und Output-Token….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster: Maximale Anzahl an Token, die das Modell in einer Anfrage",
+      "toolA": "Da die Gewichte öffentlich sind, können Sie das Modell lokal mit eigenen Konfigurationen betreiben, was jedoch zusätzliche Spezifikationen erfordert.",
+      "toolB": "Eine genaue Zahl sollte direkt bei OpenAI verifiziert werden, da sie sich mit Updates ändern kann."
+    },
+    {
+      "category": "Benchmark-Leistung: Vergleich veröffentlichter Ergebnisse für MMLU und",
+      "toolA": "Da es sich um ein offenes Modell handelt, können Dritte unabhängige Tests durchführen, deren Ergebnisse jedoch nicht automatisch mit offiziellen Zahlen vergleichbar sind.",
+      "toolB": "Ein direkter Vergleich mit Qwen QwQ ist nur zulässig, wenn identische Testbedingungen und Versionen vorliegen; andernfalls sind die Zahlen nicht direkt vergleichbar."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token",
+      "toolA": "Konkrete Preise sollten Sie bei dem jeweiligen Hosting-Anbieter oder in der offiziellen Qwen-Dokumentation prüfen.",
+      "toolB": "Ein direkter Preisvergleich mit Qwen QwQ ist schwierig, da bei Qwen QwQ die Hosting-Kosten selbst getragen werden müssen."
+    },
+    {
+      "category": "Latenz: Antwortzeit des Modells unter realen Bedingungen",
+      "toolA": "Da es sich um ein Reasoning-Modell handelt, können die Antwortzeiten bei komplexen Aufgaben länger sein; genaue Werte sollten Sie in Ihrer eigenen Umgebung messen.",
+      "toolB": "FürAnwendungen mit hohen Anforderungen an die Antwortzeit sollten Sie die tatsächliche Latenz in Ihrer Umgebung testen."
+    },
+    {
+      "category": "Modellzugang und Offenheit: Verfügbarkeit als Open-Weight- oder",
+      "toolA": "Dies ermöglicht volle Kontrolle über Daten und Deployment, erfordert jedoch technisches Know-how und eigene Infrastruktur.",
+      "toolB": "Dafür bietet OpenAI verwaltete Infrastruktur, Support und integrierte Sicherheitsfunktionen."
+    },
+    {
+      "category": "Praktische Anwendungsfälle: Typische Einsatzszenarien für Entwickler und",
+      "toolA": "Allerdings müssen sie Betrieb und Wartung selbst übernehmen.",
+      "toolB": "Die Nutzung ist jedoch an die Bedingungen von OpenAI gebunden."
+    }
+  ],
+  "introduction": "Qwen QwQ und OpenAI o3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster: maximale anzahl an token, die das modell in einer anfrage. Qwen QwQ: Qwen QwQ ist ein offenes Reasoning-Modell aus der Qwen-Reihe. OpenAI o3: OpenAI o3 ist ein proprietäres Reasoning-Modell von OpenAI. Das Kriterium benchmark-leistung: vergleich veröffentlichter ergebnisse für mmlu und zeigt einen weiteren praktischen Unterschied: Für Qwen QwQ liegen veröffentlichte Benchmark-Ergebnisse vor, die sich auf die spezifische Modellversion beziehen. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Modellzugang und Offenheit: Verfügbarkeit als Open-Weight- oder: Qwen QwQ ist ein Open-Weight-Modell, dessen Gewichte öffentlich zugänglich sind.",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: OpenAI o3 wird über die OpenAI-API zu Preisen angeboten, die pro 1 Million Input- und Output-Token…"
+  }
 }

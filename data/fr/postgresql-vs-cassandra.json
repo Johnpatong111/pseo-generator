@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra (2026): quelle solution choisir ?",
-    "description": "Comparez PostgreSQL et Apache Cassandra en 2026 : modèle de données, cohérence, scalabilité, écosystème et cas d'usage. Découvrez lequel choisir pour votre projet."
+    "title": "PostgreSQL vs Apache Cassandra: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez PostgreSQL et Apache Cassandra : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import psycopg2\n\nconn = psycopg2.connect(\n    dbname=\"postgres\",\n    user=\"postgres\",\n    password=\"password\",\n    host=\"localhost\"\n)\ncur = conn.cursor()\ncur.execute(\"SELECT 'Hello, World!'\")\nprint(cur.fetchone()[0])\ncur.close()\nconn.close()",
-    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\nrow = session.execute(\"SELECT 'Hello, World!' FROM system.local\").one()\nprint(row[0])\ncluster.shutdown()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelle solution offre la meilleure compatibilité avec les outils de BI et de reporting ?",
       "a": "PostgreSQL est largement compatible avec les outils de BI et de reporting grâce à son support SQL complet et ses connecteurs standards (JDBC/ODBC). Apache Cassandra offre une compatibilité plus limitée avec ces outils, car elle ne supporte pas les jointures ni les agrégations complexes, et nécessite souvent des connecteurs spécifiques ou des exports vers des entrepôts de données."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre PostgreSQL et Apache Cassandra modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "PostgreSQL convient mieux lorsque votre projet privilégie modèle de données et flexibilité : PostgreSQL est une base relationnelle qui prend en charge les tables, les clés étrangères, les…. Apache Cassandra est préférable lorsque votre projet privilégie scalabilité et performances en écriture : Apache Cassandra est conçue pour la scalabilité horizontale linéaire et les écritures massives….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et flexibilité",
+      "toolA": "Son modèle strict favorise l'intégrité et la normalisation, mais peut nécessiter des migrations de schéma pour évoluer.",
+      "toolB": "Elle utilise un modèle de clé primaire composée (partition et clustering) conçu pour des requêtes prédéfinies, ce qui offre une grande flexibilité de colonnes mais impose une modélisation rigoureuse dès le départ."
+    },
+    {
+      "category": "Cohérence et transactions",
+      "toolA": "Cela le rend adapté aux applications financières ou critiques où l'exactitude des données est primordiale.",
+      "toolB": "Elle ne prend pas en charge les transactions multi-lignes classiques, ce qui limite son usage pour des opérations nécessitant une atomicité stricte."
+    },
+    {
+      "category": "Scalabilité et performances en écriture",
+      "toolA": "Ses performances en écriture sont bonnes pour des charges modérées à élevées, mais peuvent devenir un goulot d'étranglement sur des volumes extrêmes.",
+      "toolB": "Elle excelle dans les scénarios d'ingestion de données à très haut débit et de disponibilité continue, avec des performances qui augmentent avec le nombre de nœuds."
+    },
+    {
+      "category": "Requêtes et analyse",
+      "toolA": "Il permet des requêtes ad hoc complexes et de l'analyse intégrée, ce qui en fait un outil polyvalent pour le reporting et l'exploration.",
+      "toolB": "Elle est optimisée pour des accès simples et rapides par clé, et nécessite souvent des outils externes pour l'analyse approfondie."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "Il est largement supporté par les fournisseurs cloud et les frameworks applicatifs.",
+      "toolB": "Cependant, l'offre est moins diversifiée que celle de PostgreSQL, et certaines fonctionnalités avancées sont liées à des distributions commerciales."
+    },
+    {
+      "category": "Administration et exploitation",
+      "toolA": "La gestion des performances demande une attention aux index et aux requêtes, mais reste accessible.",
+      "toolB": "Son exploitation est plus complexe, notamment en raison de la modélisation des données et de la maintenance des nœuds, ce qui peut augmenter le coût opérationnel."
+    }
+  ],
+  "introduction": "PostgreSQL et Apache Cassandra répondent à un besoin proche, mais diffèrent sur modèle de données et flexibilité. PostgreSQL : PostgreSQL est une base relationnelle qui prend en charge les tables, les clés étrangères, les jointures et un large… Apache Cassandra : Apache Cassandra est une base de données orientée colonnes partitionnée, sans jointures ni schéma relationnel… Le critère « Cohérence et transactions » met en évidence une autre différence pratique : PostgreSQL assure par défaut une cohérence forte et prend en charge les transactions ACID complètes, y compris les… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de données et flexibilité : PostgreSQL est une base relationnelle qui prend en charge les tables, les clés étrangères, les…",
+    "toolB": "votre projet privilégie scalabilité et performances en écriture : Apache Cassandra est conçue pour la scalabilité horizontale linéaire et les écritures massives…"
+  }
 }

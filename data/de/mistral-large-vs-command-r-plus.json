@@ -1,8 +1,8 @@
 {
   "slug": "mistral-large-vs-command-r-plus",
   "meta": {
-    "title": "Mistral Large vs Command R+ (2026): welche Lösung passt besser?",
-    "description": "Mistral Large gegen Command R+ im Vergleich 2026: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Einsatzszenarien – sachlich eingeordnet für Ihre Entscheidung."
+    "title": "Mistral Large vs Command R+: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Mistral Large und Command R+: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Mistral Large"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Minimalbeispiel: Aufruf von Mistral Large über die Mistral-API\nimport os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Minimalbeispiel: Aufruf von Command R+ über die Cohere-API\nimport os\nimport cohere\n\nco = cohere.Client(api_key=os.environ[\"COHERE_API_KEY\"])\nresponse = co.chat(\n    model=\"command-r-plus\",\n    message=\"Hallo, Welt!\",\n)\nprint(response.text)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche praktischen Kriterien sollten den Ausschlag geben?",
       "a": "Neben Preis und Kontextfenster zählen vor allem die Qualität bei Ihren konkreten Aufgaben, die Zuverlässigkeit der Tool- und RAG-Funktionen sowie der Anbieterzugang mit Blick auf Regionen und Verträge. Erstellen Sie einen kleinen, repräsentativen Testkatalog mit deutschen Fachtexten und messen Sie Qualität, Latenz und Kosten unter gleichen Bedingungen. Erst diese eigene Evidenz sollte die endgültige Entscheidung tragen, da veröffentlichte Benchmarks Ihre Arbeitslast nur begrenzt abbilden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Mistral Large und Command R+ verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Mistral Large passt besser, wenn dein Projekt priorisiert Modellzugang und offene bzw: Mistral verfolgt eine gemischte Strategie: Mistral Large ist als kommerziell gehostetes Modell…. Command R+ ist geeigneter, wenn dein Projekt priorisiert Kontextfenster und Verarbeitung langer Dokumente: Command R+ wurde von Cohere ausdrücklich für den Umgang mit langen Kontexten und umfangreichen….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Verarbeitung langer Dokumente",
+      "toolA": "Für sehr lange Eingaben empfiehlt sich zusätzlich eine Chunking-Strategie oder ein Retrieval-Vorfilter, weil die Qualität bei maximaler Auslastung des Fensters je nach Aufgabe variieren kann.",
+      "toolB": "Die konkret verfügbare Kontextlänge ist versionsabhängig und sollte stets gegen die aktuelle API-Referenz verifiziert werden, bevor man sich auf feste Grenzwerte festlegt."
+    },
+    {
+      "category": "Veröffentlichte Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Ein direkter Vergleich mit Command R+ ist nur zulässig, wenn beide Werte aus vergleichbaren, öffentlich dokumentierten Läufen stammen; andernfalls ist eine rein qualitative Einordnung sinnvoller.",
+      "toolB": "Ob MMLU- und HumanEval-Werte unmittelbar mit Mistral Large vergleichbar sind, hängt von Prompt-Format, Few-Shot-Setting und Evaluierungsharness ab und sollte nicht als absolute Rangfolge interpretiert werden."
+    },
+    {
+      "category": "API-Preise pro 1 Mio",
+      "toolA": "Konkrete Beträge sollten nicht als fest angenommen, sondern in der aktuellen Preisliste des jeweiligen Anbieters geprüft werden, da Rabatte und Staffelungen die effektiven Kosten deutlich verändern können.",
+      "toolB": "Für eine belastbare Kostenkalkulation sollten Sie die offiziellen, tagesaktuellen Preise sowie mögliche Mindestabnahmen heranziehen und die Kosten modellhaft auf Ihr Tokenvolumen hochrechnen."
+    },
+    {
+      "category": "Latenz und Durchsatz im Betrieb",
+      "toolA": "Für latenzkritische Anwendungen empfiehlt sich eine eigene Messung mit realistischen Prompts, Streaming und Caching, bevor man Produktions-SLAs festlegt.",
+      "toolB": "Auch hier gilt: Ohne eigene Messung unter Produktionsbedingungen sind allgemeine Latenzangaben nur als Orientierung zu verstehen."
+    },
+    {
+      "category": "Modellzugang und offene bzw",
+      "toolA": "Wer volle Kontrolle über das Deployment benötigt, sollte prüfen, ob das konkrete Large-Modell unter einer geeigneten Lizenz selbst gehostet oder ausschließlich über API bezogen werden kann.",
+      "toolB": "Das erleichtert den Betrieb, schränkt aber die Kontrolle über Gewichte, Infrastruktur und Datenverarbeitung ein, was bei strengen Compliance-Vorgaben relevant ist."
+    },
+    {
+      "category": "Retrieval-Augmented Generation und Tool-Nutzung",
+      "toolA": "Die Qualität hängt stark von der Prompt-Gestaltung, der Chunking-Strategie und der Retrieval-Genauigkeit ab, nicht allein vom Sprachmodell.",
+      "toolB": "Ob die eingebauten Funktionen Ihre Anforderungen erfüllen, sollten Sie anhand der offiziellen Dokumentation und eigener Testfälle prüfen."
+    }
+  ],
+  "introduction": "Mistral Large und Command R+ lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und verarbeitung langer dokumente. Mistral Large: Mistral Large bietet ein großes Kontextfenster, das für längere Analysen und mehrteilige Aufgaben ausgelegt ist; die… Command R+: Command R+ wurde von Cohere ausdrücklich für den Umgang mit langen Kontexten und umfangreichen Dokumenten… Das Kriterium veröffentlichte benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für Mistral Large werden vom Anbieter und in Modellkarten Benchmark-Werte unter anderem zu MMLU und HumanEval… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Modellzugang und offene bzw: Mistral verfolgt eine gemischte Strategie: Mistral Large ist als kommerziell gehostetes Modell…",
+    "toolB": "dein Projekt priorisiert Kontextfenster und Verarbeitung langer Dokumente: Command R+ wurde von Cohere ausdrücklich für den Umgang mit langen Kontexten und umfangreichen…"
+  }
 }

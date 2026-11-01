@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-pinecone",
   "meta": {
-    "title": "LlamaIndex vs Pinecone (2026): quelle solution choisir ?",
-    "description": "Comparez LlamaIndex et Pinecone en 2026 : framework RAG contre base vectorielle managée. Découvrez leurs forces, limites et cas d'usage pour bien choisir."
+    "title": "LlamaIndex vs Pinecone: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez LlamaIndex et Pinecone : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from llama_index.core import VectorStoreIndex, SimpleDirectoryReader\n\ndocuments = SimpleDirectoryReader(\"data\").load_data()\nindex = VectorStoreIndex.from_documents(documents)\nquery_engine = index.as_query_engine()\nresponse = query_engine.query(\"Quel est le sujet principal ?\")\nprint(response)",
-    "tech2Snippet": "import os\nfrom pinecone import Pinecone\n\npc = Pinecone(api_key=os.environ[\"PINECONE_API_KEY\"])\nindex = pc.Index(\"mon-index\")\nindex.upsert(vectors=[(\"id1\", [0.1, 0.2, 0.3], {\"texte\": \"bonjour\"})])\nresultats = index.query(vector=[0.1, 0.2, 0.3], top_k=1, include_metadata=True)\nprint(resultats)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles sont les limites respectives de LlamaIndex et Pinecone ?",
       "a": "LlamaIndex n'est pas une base vectorielle managée : il délègue le stockage et la recherche à un backend, ce qui ajoute une dépendance et une couche d'orchestration. Pinecone, de son côté, ne fournit pas d'orchestration RAG ni de gestion de documents : il se limite à la recherche vectorielle. Ainsi, LlamaIndex est plus complet pour le pipeline applicatif, tandis que Pinecone est plus spécialisé et scalable pour la brique vectorielle."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre LlamaIndex et Pinecone modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "LlamaIndex convient mieux lorsque votre projet privilégie fonctionnalités et abstraction : LlamaIndex propose des abstractions de haut niveau comme les index, les retrievers, les query…. Pinecone est préférable lorsque votre projet privilégie facilité de mise en œuvre : Pinecone s'utilise via une API REST ou des SDK officiels, avec une création d'index et des….",
+  "tradeoffs": [
+    {
+      "category": "Rôle et positionnement",
+      "toolA": "Son objectif est d'accélérer le développement d'applications LLM sans réinventer la plomberie.",
+      "toolB": "Son objectif est de fournir une brique de recherche vectorielle fiable et scalable."
+    },
+    {
+      "category": "Fonctionnalités et abstraction",
+      "toolA": "La richesse fonctionnelle dépend toutefois de la version et des intégrations disponibles.",
+      "toolB": "Les fonctionnalités exactes peuvent varier selon l'offre et la région."
+    },
+    {
+      "category": "Facilité de mise en œuvre",
+      "toolA": "La complexité augmente avec la personnalisation des workflows et des agents.",
+      "toolB": "La courbe d'apprentissage est donc faible côté base vectorielle, mais l'outil ne couvre pas tout le pipeline RAG."
+    },
+    {
+      "category": "Performance et scalabilité",
+      "toolA": "Il n'y a pas de garantie de performance universelle : les résultats varient selon la configuration et l'usage.",
+      "toolB": "Comme pour tout service managé, les caractéristiques et les limites peuvent évoluer selon l'offre et la région."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "La couverture et la stabilité des intégrations peuvent varier selon les versions.",
+      "toolB": "Les intégrations disponibles peuvent dépendre de l'offre et des partenariats."
+    },
+    {
+      "category": "Coût et modèle économique",
+      "toolA": "Il n'existe pas de tarification unique universelle.",
+      "toolB": "Il convient de consulter la grille tarifaire officielle pour une estimation précise."
+    }
+  ],
+  "introduction": "LlamaIndex et Pinecone répondent à un besoin proche, mais diffèrent sur rôle et positionnement. LlamaIndex : LlamaIndex est un framework open source (avec des composants managés optionnels) destiné à l'orchestration de… Pinecone : Pinecone est une base de données vectorielle entièrement managée, spécialisée dans la recherche de similarité à grande… Le critère « Fonctionnalités et abstraction » met en évidence une autre différence pratique : LlamaIndex propose des abstractions de haut niveau comme les index, les retrievers, les query engines et les agents,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fonctionnalités et abstraction : LlamaIndex propose des abstractions de haut niveau comme les index, les retrievers, les query…",
+    "toolB": "votre projet privilégie facilité de mise en œuvre : Pinecone s'utilise via une API REST ou des SDK officiels, avec une création d'index et des…"
+  }
 }

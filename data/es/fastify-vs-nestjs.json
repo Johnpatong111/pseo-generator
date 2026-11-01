@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-nestjs",
   "meta": {
-    "title": "Fastify vs NestJS (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Fastify y NestJS en 2026: rendimiento, estructura, TypeScript, ecosistema, curva de aprendizaje y casos de uso para elegir el framework Node.js adecuado."
+    "title": "Fastify vs NestJS: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Fastify y NestJS: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Fastify"
@@ -94,5 +94,49 @@
       "q": "¿Qué debería valorar un equipo que prioriza el rendimiento pero necesita orden?",
       "a": "Fastify puede ser la base si el equipo define convenciones claras y asume la organización por su cuenta, obteniendo un servidor ligero y controlable. NestJS con el adaptador de Fastify permite combinar estructura e inyección de dependencias con una capa HTTP eficiente, a cambio de más conceptos y configuración. La decisión debería apoyarse en una prueba de carga representativa y en la madurez del equipo, no solo en comparativas generales."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Fastify y NestJS cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Fastify encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia en el manejo de peticiones: Fastify se diseñó con la eficiencia como objetivo y suele mostrar un rendimiento alto en pruebas…. NestJS es preferible cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura inspirada en Angular, con módulos, controladores, servicios e….",
+  "tradeoffs": [
+    {
+      "category": "Rendimiento y eficiencia en el manejo de peticiones",
+      "toolA": "No obstante, conviene validar el rendimiento real en el entorno concreto antes de asumir cifras absolutas.",
+      "toolB": "En cargas exigentes, usar el adaptador de Fastify y revisar la configuración puede mejorar los resultados, pero no conviene generalizar sin medir."
+    },
+    {
+      "category": "Arquitectura y estructura del proyecto",
+      "toolA": "En proyectos pequeños o muy controlados, esa simplicidad suele jugar a favor.",
+      "toolB": "A cambio, introduce más conceptos iniciales y puede resultar pesada para servicios muy pequeños."
+    },
+    {
+      "category": "Compatibilidad con TypeScript y experiencia de desarrollo",
+      "toolA": "En general, permite un desarrollo ágil si el equipo ya domina Node.js y TypeScript.",
+      "toolB": "Sin embargo, la dependencia de decoradores y de la configuración de compilación puede complicar ajustes concretos si el equipo no está familiarizado."
+    },
+    {
+      "category": "Curva de aprendizaje y productividad inicial",
+      "toolA": "La productividad inicial suele ser alta en equipos con experiencia en APIs.",
+      "toolB": "Para alguien sin experiencia previa, conviene contar con documentación y ejemplos, y no subestimar la fase de aprendizaje."
+    },
+    {
+      "category": "Ecosistema, plugins y compatibilidad con librerías",
+      "toolA": "Antes de adoptar un plugin, es recomendable revisar su mantenimiento y su compatibilidad con la versión de Fastify utilizada.",
+      "toolB": "La disponibilidad y el estado de mantenimiento de cada integración pueden variar según la versión."
+    },
+    {
+      "category": "Validación de datos y seguridad por configuración",
+      "toolA": "La seguridad final no viene garantizada por el framework: requiere revisar autenticación, autorización y dependencias.",
+      "toolB": "Al igual que en Fastify, no debe asumirse seguridad por defecto sin auditar el flujo completo."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
+  },
+  "introduction": "Fastify y NestJS responden a una necesidad similar, pero difieren en rendimiento y eficiencia en el manejo de peticiones. Fastify: Fastify se diseñó con la eficiencia como objetivo y suele mostrar un rendimiento alto en pruebas comparativas de… NestJS: NestJS se apoya por defecto en Express, aunque permite usar Fastify como adaptador HTTP, por lo que su rendimiento… El criterio de arquitectura y estructura del proyecto añade otra diferencia práctica: Fastify es un framework deliberadamente ligero que ofrece enrutado, hooks y validación de esquemas sin imponer una… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia en el manejo de peticiones: Fastify se diseñó con la eficiencia como objetivo y suele mostrar un rendimiento alto en pruebas…",
+    "toolB": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura inspirada en Angular, con módulos, controladores, servicios e…"
+  }
 }

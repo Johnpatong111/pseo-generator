@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-postgresql",
   "meta": {
-    "title": "MongoDB vs PostgreSQL (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie MongoDB i PostgreSQL w 2026 roku: model danych, zapytania, skalowanie, spójność, ekosystem i bezpieczeństwo. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "MongoDB vs PostgreSQL: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj MongoDB i PostgreSQL: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "MongoDB"
@@ -94,5 +94,49 @@
       "q": "Które narzędzie wybrać dla małego zespołu bez doświadczenia w administracji bazami?",
       "a": "PostgreSQL bywa łatwiejszy w uczeniu się dzięki powszechnej znajomości SQL i dużej liczbie materiałów edukacyjnych, a zarządzane usługi chmurowe ograniczają obowiązki administracyjne. MongoDB również oferuje usługi zarządzane, a model dokumentowy bywa intuicyjny dla zespołów aplikacyjnych, ale wymaga dyscypliny w walidacji danych. W obu przypadkach kluczowe jest korzystanie z zarządzanej usługi lub doświadczonego administratora oraz regularne kopie zapasowe."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między MongoDB a PostgreSQL zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "MongoDB będzie lepszy, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co pozwala na zagnieżdżanie struktur i…. PostgreSQL sprawdzi się, gdy projekt stawia na kryterium „Język zapytań i możliwości analityczne”: PostgreSQL oferuje pełny standard SQL z rozbudowanymi funkcjami okna, wspólnymi wyrażeniami….",
+  "tradeoffs": [
+    {
+      "category": "Model danych i elastyczność schematu",
+      "toolA": "Elastyczny schemat ułatwia iteracyjne prototypowanie i modelowanie danych hierarchicznych, ale wymaga dyscypliny walidacji po stronie aplikacji lub konfiguracji reguł walidacji schematu.",
+      "toolB": "Zmiany schematu wymagają migracji, co bywa kosztowne przy dużych zbiorach, lecz samo wymuszenie struktury ogranicza błędy i ułatwia utrzymanie danych."
+    },
+    {
+      "category": "Język zapytań i możliwości analityczne",
+      "toolA": "Od wersji z serii 5.x dostępne jest także złączenie w ramach agregacji, jednak jego wydajność zależy od konfiguracji i indeksów.",
+      "toolB": "Możliwości analityczne można dodatkowo rozszerzać o funkcje procedur i rozszerzenia."
+    },
+    {
+      "category": "Spójność i transakcje",
+      "toolA": "Domyślne ustawienia wcześniejszych wersji i różnych sterowników bywały mniej restrykcyjne, dlatego trzeba je jawnie weryfikować.",
+      "toolB": "Zachowanie przy dużym obciążeniu zależy od konfiguracji, indeksów i rodzaju obciążenia."
+    },
+    {
+      "category": "Skalowanie i wydajność przy dużym obciążeniu",
+      "toolA": "Rzeczywista wydajność zależy od wersji, sprzętu, indeksów i wzorca dostępu.",
+      "toolB": "Z drugiej strony dojrzały optymalizator i bogate indeksowanie pozwalają uzyskiwać wysoką wydajność na pojedynczym węźle przy odpowiedniej konfiguracji."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Bezpieczeństwo w dużej mierze zależy od poprawnej konfiguracji sieci i zarządzania poświadczeniami.",
+      "toolB": "Zakres funkcji bezpieczeństwa zależy od wersji i konfiguracji serwera."
+    },
+    {
+      "category": "Ekosystem, narzędzia i wsparcie społeczności",
+      "toolA": "Wsparcie komercyjne jest dostępne, a społeczność aktywnie rozwija biblioteki i integracje.",
+      "toolB": "Bogactwo rozszerzeń bywa atutem, ale zwiększa też złożoność utrzymania."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MongoDB i PostgreSQL odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu. MongoDB: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co pozwala na zagnieżdżanie struktur i różne kształty… PostgreSQL: PostgreSQL opiera się na relacyjnym modelu tabel z jawnie zdefiniowanym schematem, a dodatkowo oferuje typy JSONB,… Kolejną istotną różnicę pokazuje kryterium „Język zapytań i możliwości analityczne”: MongoDB udostępnia język zapytań oparty na dokumentach oraz framework agregacji z etapami przetwarzania, a także… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co pozwala na zagnieżdżanie struktur i…",
+    "toolB": "projekt stawia na kryterium „Język zapytań i możliwości analityczne”: PostgreSQL oferuje pełny standard SQL z rozbudowanymi funkcjami okna, wspólnymi wyrażeniami…"
+  }
 }

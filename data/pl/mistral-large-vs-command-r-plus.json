@@ -1,8 +1,8 @@
 {
   "slug": "mistral-large-vs-command-r-plus",
   "meta": {
-    "title": "Mistral Large vs Command R+ (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Mistral Large i Command R+ pod kątem okna kontekstu, wydajności, cen API, opóźnień i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Mistral Large vs Command R+: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Mistral Large i Command R+: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Mistral Large"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom mistralai import Mistral\n\napi_key = os.environ[\"MISTRAL_API_KEY\"]\nclient = Mistral(api_key=api_key)\n\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[\n        {\"role\": \"user\", \"content\": \"Hello, World!\"}\n    ]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "import os\nimport cohere\n\nco = cohere.Client(api_key=os.environ[\"COHERE_API_KEY\"])\n\nresponse = co.chat(\n    model=\"command-r-plus\",\n    message=\"Hello, World!\"\n)\nprint(response.text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Czy wyniki benchmarków są aktualne i porównywalne?",
       "a": "Wyniki benchmarków takie jak MMLU i HumanEval są publikowane przez dostawców, ale mogą dotyczyć różnych wersji modeli i metodologii. Bezpośrednie porównywanie liczb z różnych okresów może być mylące. Zawsze należy sprawdzić, dla jakiej wersji modelu i w jakich warunkach uzyskano dane wyniki."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Mistral Large a Command R+ zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Mistral Large będzie lepszy, gdy projekt stawia na kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Mistral Large osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdza jego…. Command R+ sprawdzi się, gdy projekt stawia na kryterium „Zastosowania praktyczne”: Command R+ jest projektowany z myślą o zaawansowanym RAG, integracji z narzędziami i….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Duże okno pozwala analizować długie dokumenty, ale przy pełnym wypełnieniu kontekstu mogą rosnąć opóźnienia i koszty.",
+      "toolB": "Model jest zoptymalizowany pod pracę z długimi dokumentami i cytowaniem źródeł, co jest przydatne w zastosowaniach RAG."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "Nie należy zakładać, że wyniki z jednej wersji przełożą się bezpośrednio na inne.",
+      "toolB": "Bezpośrednie porównywanie liczb z różnych okresów może być mylące."
+    },
+    {
+      "category": "Cena API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Zazwyczaj koszt zależy od długości promptu i generowanej odpowiedzi.",
+      "toolB": "Nie należy porównywać cen bez uwzględnienia aktualnej wersji modelu i ewentualnych progów cenowych."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "Dostawca nie publikuje gwarantowanych wartości opóźnień, więc trzeba je mierzyć we własnym środowisku.",
+      "toolB": "W praktyce należy przeprowadzić testy obciążeniowe, aby ocenić przydatność do zastosowań interaktywnych."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostępność i warunki licencji należy sprawdzić u dostawcy.",
+      "toolB": "Należy zweryfikować aktualną ofertę i ograniczenia licencyjne."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Ze względu na europejskie pochodzenie dostawcy może być preferowany w projektach z wymogami zgodności.",
+      "toolB": "Może być mniej uniwersalny w zadaniach czysto generatywnych, ale w typowych scenariuszach biznesowych wypada dobrze."
+    }
+  ],
+  "introduction": "Mistral Large i Command R+ odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Mistral Large: Mistral Large oferuje okno kontekstu o długości 128 tysięcy tokenów w wersji udostępnianej przez API. Command R+: Command R+ dysponuje oknem kontekstu wynoszącym 128 tysięcy tokenów, co jest wartością porównywalną z Mistral Large. Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Mistral Large osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdza jego zdolności… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Mistral Large osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co potwierdza jego…",
+    "toolB": "projekt stawia na kryterium „Zastosowania praktyczne”: Command R+ jest projektowany z myślą o zaawansowanym RAG, integracji z narzędziami i…"
+  }
 }

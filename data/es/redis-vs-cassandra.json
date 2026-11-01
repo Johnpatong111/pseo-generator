@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-cassandra",
   "meta": {
-    "title": "Redis vs Apache Cassandra (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Redis y Apache Cassandra en 2026: modelos de datos, escalabilidad, latencia, persistencia, operación y casos de uso para elegir la base de datos adecuada."
+    "title": "Redis vs Apache Cassandra: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Redis y Apache Cassandra: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Redis"
@@ -94,5 +94,49 @@
       "q": "¿Cuál encaja mejor en 2026 para inteligencia artificial y datos en tiempo real?",
       "a": "Redis es frecuente en caché de inferencia, sesiones, colas ligeras y búsquedas vectoriales en determinadas distribuciones, aunque las capacidades exactas dependen de la versión y el módulo utilizado. Cassandra puede servir para almacenar eventos y datos históricos a gran escala que alimenten procesos analíticos o de aprendizaje automático, a menudo junto con otros motores."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Redis y Apache Cassandra cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Redis encaja mejor cuando tu proyecto prioriza rendimiento y latencia típica: Redis suele ofrecer latencias muy bajas por operación al trabajar principalmente en memoria, lo…. Apache Cassandra es preferible cuando tu proyecto prioriza escalabilidad y distribución: Cassandra se diseñó para escalado horizontal y distribución geográfica, con replicación….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y paradigma de almacenamiento",
+      "toolA": "Su modelo favorece operaciones rápidas sobre datos calientes, pero no está pensado como sustituto directo de un motor relacional ni de una base columnar a gran escala.",
+      "toolB": "Su modelo requiere modelar según las consultas y no ofrece la flexibilidad de un esquema relacional con uniones arbitrarias, lo que exige disciplina de diseño."
+    },
+    {
+      "category": "Rendimiento y latencia típica",
+      "toolA": "El rendimiento real depende de la carga, el tamaño de los valores, las operaciones atómicas, la red y si se activa persistencia; no conviene asumir cifras fijas sin medir en el entorno propio.",
+      "toolB": "Puede sostener cargas muy grandes, pero no es habitual usarla como caché de latencia ultrabaja; su rendimiento debe validarse con pruebas de carga representativas."
+    },
+    {
+      "category": "Escalabilidad y distribución",
+      "toolA": "La gestión de clústeres, el reequilibrio y los límites de memoria por nodo requieren planificación; no es un sistema diseñado para escritura multi-región activa-activa sin consideraciones adicionales.",
+      "toolB": "Su arquitectura peer-to-peer evita un punto único de fallo y permite crecer añadiendo nodos, aunque el coste operativo y el ajuste fino de la topología son relevantes."
+    },
+    {
+      "category": "Persistencia, durabilidad y consistencia",
+      "toolA": "Además, admite replicación y mecanismos de consistencia ajustables, pero no debe tratarse como una base de datos transaccional durable por defecto sin revisar el compromiso entre latencia y seguridad de los datos.",
+      "toolB": "Su modelo prioriza disponibilidad y tolerancia a particiones, por lo que la consistencia fuerte exige configuraciones y quórums adecuados, con impacto en latencia y disponibilidad."
+    },
+    {
+      "category": "Lenguajes de consulta y ecosistema",
+      "toolA": "Su ecosistema es amplio en caché, colas ligeras, sesiones y contadores, aunque la complejidad de consultas analíticas es limitada frente a motores especializados.",
+      "toolB": "No implementa uniones generales ni subconsultas complejas, y muchas operaciones analíticas requieren motores complementarios como Spark o herramientas de integración."
+    },
+    {
+      "category": "Operación, mantenimiento y madurez",
+      "toolA": "En clústeres grandes y con alta disponibilidad, la supervisión de memoria, la evacuación de claves y la gestión de failover exigen experiencia; la versión, la licencia y el soporte dependen de la distribución elegida.",
+      "toolB": "A cambio, está probada en entornos de gran escala y dispone de servicios gestionados; la experiencia del equipo y el soporte del proveedor influyen mucho en el coste total de propiedad."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Redis y Apache Cassandra responden a una necesidad similar, pero difieren en modelo de datos y paradigma de almacenamiento. Redis: Redis es un almacén clave-valor en memoria con estructuras ricas como cadenas, listas, conjuntos, hashes, sorted sets,… Apache Cassandra: Apache Cassandra es una base de datos distribuida de tipo columnar, organizada por tablas con claves de partición y… El criterio de rendimiento y latencia típica añade otra diferencia práctica: Redis suele ofrecer latencias muy bajas por operación al trabajar principalmente en memoria, lo que lo hace popular… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y latencia típica: Redis suele ofrecer latencias muy bajas por operación al trabajar principalmente en memoria, lo…",
+    "toolB": "tu proyecto prioriza escalabilidad y distribución: Cassandra se diseñó para escalado horizontal y distribución geográfica, con replicación…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-qwen-2-5",
   "meta": {
-    "title": "Llama 3.3 vs Qwen 2.5 (2026): welche Lösung passt besser?",
-    "description": "Llama 3.3 und Qwen 2.5 im Vergleich: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Einsatzgebiete. So wählen Sie 2026 das passende Modell."
+    "title": "Llama 3.3 vs Qwen 2.5: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Llama 3.3 und Qwen 2.5: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hallo, Welt!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hallo, Welt!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Lizenzbedingungen gelten für die kommerzielle Nutzung?",
       "a": "Llama 3.3 unterliegt der Llama-Lizenz von Meta, die bestimmte Bedingungen für die kommerzielle Nutzung und Weitergabe enthält. Qwen 2.5 wird unter verschiedenen Lizenzen veröffentlicht, die je nach Modellvariante unterschiedlich sein können. In beiden Fällen ist eine rechtliche Prüfung der konkreten Lizenzversion vor dem kommerziellen Einsatz unerlässlich, da die Bedingungen aktualisiert werden können."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Llama 3.3 und Qwen 2.5 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Llama 3.3 passt besser, wenn dein Projekt priorisiert Kontextfenster und Eingabelänge: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Token angegeben; diese Angabe bezieht…. Qwen 2.5 ist geeigneter, wenn dein Projekt priorisiert Mehrsprachigkeit und Sprachabdeckung: Qwen 2.5 legt einen Schwerpunkt auf Mehrsprachigkeit und deckt neben Englisch und Chinesisch….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Eingabelänge",
+      "toolA": "Für lange Dokumente, Codebasen oder mehrstufige Dialoge ist das Fenster großzügig, sollte aber vor dem Produktiveinsatz mit der tatsächlich genutzten API verifiziert werden.",
+      "toolB": "Die genaue Obergrenze hängt vom gewählten Modell und vom Anbieter ab und muss für den konkreten Einsatzfall geprüft werden."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval)",
+      "toolA": "Diese Zahlen sind veröffentlichte Ergebnisse und keine eigenen Messungen; sie dienen als Orientierung, ersetzen aber keine aufgabenspezifische Evaluierung.",
+      "toolB": "Die Werte sind nicht immer direkt mit denen von Llama 3.3 vergleichbar, weil Evaluierungs-Setups und Modellvarianten abweichen können; ein fairer Vergleich erfordert daher identische Testbedingungen."
+    },
+    {
+      "category": "API-Preise pro 1 Mio",
+      "toolA": "Da die Preise zeitabhängig sind und sich ändern können, sollten sie vor der Kalkulation direkt bei der gewählten Plattform eingesehen werden.",
+      "toolB": "Token sind versions- und anbieterabhängig und müssen in der offiziellen Preisliste des jeweiligen Anbieters überprüft werden."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Öffentlich verfügbare Latenzangaben sind oft nicht standardisiert und sollten nicht als allgemeingültige Kennzahl betrachtet werden; für Produktionsentscheidungen sind eigene Messungen unter realen Bedingungen empfehlenswert.",
+      "toolB": "Kleinere Varianten können auf geeigneter Hardware schneller antworten, während größere Modelle höheren Rechenaufwand erfordern; belastbare Aussagen erfordern daher eine Messung im Zielsystem."
+    },
+    {
+      "category": "Modellzugang und offene Verfügbarkeit",
+      "toolA": "Die Lizenzbedingungen sollten vor kommerzieller Nutzung geprüft werden, da sie bestimmte Anforderungen und Einschränkungen enthalten können.",
+      "toolB": "Die Lizenzmodelle können je nach Variante unterschiedlich sein; für den produktiven Einsatz ist eine Prüfung der jeweiligen Lizenzbedingungen erforderlich."
+    },
+    {
+      "category": "Mehrsprachigkeit und Sprachabdeckung",
+      "toolA": "Für deutschsprachige Anwendungen sind eigene Tests sinnvoll, da die Trainingsdatenverteilung die Qualität beeinflusst.",
+      "toolB": "Die Qualität kann je nach Sprache und Modellgröße variieren; für spezifische Sprachen sollten Evaluierungen mit repräsentativen Daten durchgeführt werden."
+    }
+  ],
+  "introduction": "Llama 3.3 und Qwen 2.5 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und eingabelänge. Llama 3.3: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Token angegeben; diese Angabe bezieht sich auf die… Qwen 2.5: Qwen 2.5 umfasst mehrere Modellgrößen mit unterschiedlichen Kontextfenstern; viele Varianten unterstützen laut… Das Kriterium benchmark-leistung (mmlu und humaneval) zeigt einen weiteren praktischen Unterschied: Meta veröffentlicht für Llama 3.3 70B Instruct unter anderem MMLU- und HumanEval-Werte, die je nach… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und Eingabelänge: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Token angegeben; diese Angabe bezieht…",
+    "toolB": "dein Projekt priorisiert Mehrsprachigkeit und Sprachabdeckung: Qwen 2.5 legt einen Schwerpunkt auf Mehrsprachigkeit und deckt neben Englisch und Chinesisch…"
+  }
 }

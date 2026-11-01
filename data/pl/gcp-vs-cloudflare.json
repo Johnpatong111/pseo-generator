@@ -1,8 +1,8 @@
 {
   "slug": "gcp-vs-cloudflare",
   "meta": {
-    "title": "Google Cloud vs Cloudflare (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Google Cloud i Cloudflare w 2026 r.: obliczenia, sieć brzegowa, bezpieczeństwo, bazy danych, ceny i scenariusze wdrożeń. Sprawdź, które rozwiązanie pasuje do projektu."
+    "title": "Google Cloud vs Cloudflare: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
+    "description": "Porównaj Google Cloud i Cloudflare: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Google Cloud"
@@ -94,5 +94,49 @@
       "q": "Od czego zacząć wybór między Google Cloud a Cloudflare?",
       "a": "Najpierw warto określić, czy projekt potrzebuje pełnej platformy chmurowej z bazami danych i Kubernetes, czy przede wszystkim szybkiego dostarczania treści i ochrony na brzegu. Następnie należy sprawdzić wymagania dotyczące zgodności, regionów i budżetu oraz przeanalizować aktualne plany i cenniki. Dopiero potem warto podejmować decyzję, ewentualnie łącząc oba rozwiązania."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Google Cloud a Cloudflare zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Google Cloud będzie lepszy, gdy projekt stawia na kryterium „Zakres usług i model chmury obliczeniowej”: Google Cloud oferuje szeroki zestaw usług IaaS i PaaS: Compute Engine, Google Kubernetes Engine,…. Cloudflare sprawdzi się, gdy projekt stawia na kryterium „Wydajność i rozmieszczenie geograficzne”: Cloudflare opiera się na rozległej sieci brzegowej z punktami obecności w wielu lokalizacjach, co….",
+  "tradeoffs": [
+    {
+      "category": "Zakres usług i model chmury obliczeniowej",
+      "toolA": "Dostępność konkretnych funkcji i regionów zależy od wersji usługi, planu oraz konfiguracji projektu.",
+      "toolB": "Zakres funkcji zależy od planu (darmowego, Pro, Business, Enterprise) i konfiguracji strefy."
+    },
+    {
+      "category": "Wydajność i rozmieszczenie geograficzne",
+      "toolA": "Rzeczywiste wyniki zależą od obciążenia i architektury, więc nie należy zakładać stałych parametrów bez własnych pomiarów.",
+      "toolB": "Rzeczywista poprawa wydajności zależy od konfiguracji cache, planu i charakteru ruchu."
+    },
+    {
+      "category": "Bezpieczeństwo i ochrona przed atakami",
+      "toolA": "Skuteczność wymaga poprawnego wdrożenia zasad IAM i monitoringu.",
+      "toolB": "Konfiguracja reguł i proxy ma kluczowe znaczenie dla skuteczności."
+    },
+    {
+      "category": "Bazy danych i przechowywanie stanu",
+      "toolA": "Wybór usługi i koszty zależą od modelu danych, regionu i konfiguracji.",
+      "toolB": "Cloudflare udostępnia R2 do przechowywania obiektów oraz D1 i KV dla Workers, ale nie jest pełnoprawnym dostawcą zarządzanych relacyjnych baz danych klasy enterprise. Nadaje się do lżejszych zastosowań na brzegu, jednak złożone aplikacje transakcyjne zwykle wymagają zewnętrznej bazy. Dostępność i limity zależą od planu."
+    },
+    {
+      "category": "Model rozliczeń i przewidywalność kosztów",
+      "toolA": "Ostateczny koszt zależy od wybranych usług, regionów i planu.",
+      "toolB": "Nie należy zakładać stałych cen bez sprawdzenia aktualnego cennika."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i integracje",
+      "toolA": "Zakres integracji i dostępność funkcji zależą od planu oraz regionu.",
+      "toolB": "Konkretne integracje i funkcje zależą od planu oraz konfiguracji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Google Cloud i Cloudflare odpowiadają na podobną potrzebę, ale różnią się w obszarze zakres usług i model chmury obliczeniowej. Google Cloud: Google Cloud oferuje szeroki zestaw usług IaaS i PaaS: Compute Engine, Google Kubernetes Engine, Cloud Run, Cloud… Cloudflare: Cloudflare koncentruje się na sieci brzegowej i usługach okołoaplikacyjnych: CDN, DNS, WAF, ochronie DDoS, Workers i… Kolejną istotną różnicę pokazuje kryterium „Wydajność i rozmieszczenie geograficzne”: Google Cloud udostępnia centra danych w wielu regionach świata, a wydajność zależy od wybranego regionu, typu maszyny… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Zakres usług i model chmury obliczeniowej”: Google Cloud oferuje szeroki zestaw usług IaaS i PaaS: Compute Engine, Google Kubernetes Engine,…",
+    "toolB": "projekt stawia na kryterium „Wydajność i rozmieszczenie geograficzne”: Cloudflare opiera się na rozległej sieci brzegowej z punktami obecności w wielu lokalizacjach, co…"
+  }
 }

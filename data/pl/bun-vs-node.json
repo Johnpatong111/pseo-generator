@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-node",
   "meta": {
-    "title": "Bun vs Node (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Bun i Node w 2026 roku: wydajność, zgodność z ekosystemem, narzędzia wbudowane, dojrzałość i bezpieczeństwo. Sprawdź, które środowisko wybrać."
+    "title": "Bun vs Node: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Bun i Node: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "Czy warto używać wbudowanego menedżera pakietów Bun zamiast npm?",
       "a": "Wbudowany menedżer pakietów Bun bywa atrakcyjny ze względu na szybkość instalacji i prostotę konfiguracji, szczególnie w nowych projektach i monorepo. Npm ma jednak dłuższą historię i sprawdzone mechanizmy obsługi konfliktów wersji, peer dependencies oraz nietypowych scenariuszy. W projektach o złożonym drzewie zależności warto porównać oba podejścia na kopii repozytorium i w pipeline CI."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Bun a Node zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada…. Node sprawdzi się, gdy projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego….",
+  "tradeoffs": [
+    {
+      "category": "Zgodność z ekosystemem i istniejącym kodem",
+      "toolA": "Stopień zgodności zmienia się z każdą wersją, więc przed migracją trzeba sprawdzić konkretne zależności projektu na docelowej wersji Bun.",
+      "toolB": "Ekosystem narzędzi, dokumentacji i gotowych rozwiązań jest najszerszy, co przekłada się na szybsze rozwiązywanie nietypowych problemów."
+    },
+    {
+      "category": "Wydajność uruchamiania i czasu startu",
+      "toolA": "Rzeczywiste wyniki zależą jednak od wersji, platformy i charakteru obciążenia, a proste benchmarki nie zawsze oddają zachowanie realnej aplikacji.",
+      "toolB": "W aplikacjach długo działających różnice wydajnościowe względem Bun bywają niewielkie, a wąskim gardłem częściej okazuje się baza danych, sieć lub logika aplikacji niż sam runtime."
+    },
+    {
+      "category": "Narzędzia wbudowane w środowisko",
+      "toolA": "Zintegrowane podejście bywa wygodne, ale oznacza mniejszą elastyczność w wyborze alternatywnych narzędzi i mniejszą liczbę rozwiązań zastępczych.",
+      "toolB": "Z drugiej strony trzeba utrzymywać więcej konfiguracji i pilnować zgodności wersji poszczególnych narzędzi."
+    },
+    {
+      "category": "Menedżer pakietów i szybkość instalacji zależności",
+      "toolA": "W praktyce czas instalacji zależy od sieci, rozmiaru drzewa zależności i konfiguracji, a nie każdy nietypowy scenariusz monorepo działa identycznie jak w sprawdzonych menedżerach.",
+      "toolB": "Instalacje bywają wolniejsze niż w Bun, ale przewidywalność i wsparcie dla złożonych przypadków są zwykle wyższe."
+    },
+    {
+      "category": "Dojrzałość, stabilność i długoterminowe utrzymanie",
+      "toolA": "Przed wdrożeniem warto przypiąć wersję i przetestować aktualizacje w środowisku zbliżonym do produkcyjnego.",
+      "toolB": "Zmiany w kolejnych wersjach są zwykle dobrze udokumentowane, a migracje mają ustalone ścieżki."
+    },
+    {
+      "category": "Bezpieczeństwo i zarządzanie podatnościami",
+      "toolA": "Poziom bezpieczeństwa zależy od wersji i konfiguracji, dlatego nie należy zakładać, że domyślne ustawienia wystarczą w środowisku produkcyjnym.",
+      "toolB": "Nie oznacza to automatycznego bezpieczeństwa — kluczowe pozostają aktualizacje, kontrola zależności i konfiguracja, ale zaplecze narzędziowe jest szersze."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Bun i Node odpowiadają na podobną potrzebę, ale różnią się w obszarze zgodność z ekosystemem i istniejącym kodem. Bun: Bun dąży do zgodności z Node API i potrafi uruchamiać wiele popularnych pakietów z rejestru npm, ale część niszowych… Node: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego istniejący kod zwykle działa… Kolejną istotną różnicę pokazuje kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada się na krótki czas… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada…",
+    "toolB": "projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego…"
+  }
 }

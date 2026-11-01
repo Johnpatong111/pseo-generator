@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-memcached",
   "meta": {
-    "title": "SQLite vs Memcached (2026): welche Lösung passt besser?",
-    "description": "SQLite und Memcached im Vergleich 2026: Einsatzgebiete, Persistenz, Skalierung, Sicherheit und Performance – mit klarer Empfehlung für Ihr Projekt."
+    "title": "SQLite vs Memcached: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche SQLite und Memcached: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "SQLite"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"CREATE TABLE greeting (message TEXT)\")\ncur.execute(\"INSERT INTO greeting (message) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\nfor (message,) in cur.execute(\"SELECT message FROM greeting\"):\n    print(message)\nconn.close()",
-    "tech2Snippet": "import socket\n\nsock = socket.create_connection((\"127.0.0.1\", 11211))\nsock.sendall(b\"set greeting 0 0 12\\r\\nHallo, Welt!\\r\\n\")\nprint(sock.recv(1024).decode())\nsock.sendall(b\"get greeting\\r\\n\")\nprint(sock.recv(1024).decode())\nsock.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Können SQLite und Memcached gemeinsam in einer Architektur genutzt werden?",
       "a": "Ja, eine häufige Kombination ist SQLite als persistente Datenbank und Memcached als vorgelagerter Cache für häufig gelesene Daten. Die Anwendung muss dabei Invalidierung und Konsistenz selbst regeln, da Memcached keine Kenntnis von SQLite-Daten hat. Ob sich diese Architektur lohnt, hängt von Zugriffsmustern, Datenmenge und Betriebsaufwand ab."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen SQLite und Memcached verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "SQLite passt besser, wenn dein Projekt priorisiert Grundlegende Architektur und Datenmodell: SQLite ist eine serverlose, eingebettete relationale Datenbank, die als Bibliothek direkt im…. Memcached ist geeigneter, wenn dein Projekt priorisiert Leistung und Latenz: Memcached ist auf extrem niedrige Latenz bei einfachen Get- und Set-Operationen über das Netzwerk….",
+  "tradeoffs": [
+    {
+      "category": "Grundlegende Architektur und Datenmodell",
+      "toolA": "Sie unterstützt SQL, Tabellen, Indizes, Views, Trigger und Transaktionen mit ACID-Eigenschaften.",
+      "toolB": "Damit adressiert es fundamental andere Anwendungsfälle als eine Datenbank: temporäres Caching statt persistenter Datenhaltung."
+    },
+    {
+      "category": "Persistenz und Datenverlust",
+      "toolA": "Ein Neustart des Prozesses oder Systems führt nicht automatisch zu Datenverlust.",
+      "toolB": "Für Daten, die einen Neustart überleben müssen, ist Memcached daher nicht geeignet."
+    },
+    {
+      "category": "Leistung und Latenz",
+      "toolA": "Die tatsächliche Leistung hängt stark von Schema, Indizes, WAL-Modus und Arbeitslast ab.",
+      "toolB": "Für reine Cache-Abfragen ist Memcached in der Regel schneller, während SQLite bei komplexen Abfragen und Joins die passendere Wahl ist."
+    },
+    {
+      "category": "Skalierung und Betrieb",
+      "toolA": "Der Betrieb ist einfach, weil keine Serverprozesse verwaltet werden müssen.",
+      "toolB": "Allerdings muss die Cache-Infrastruktur separat betrieben und überwacht werden."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Eine optionale Verschlüsselung ist nicht im Kern enthalten, sondern nur über Erweiterungen wie SQLCipher verfügbar.",
+      "toolB": "In beiden Fällen sollte der Zugriff auf vertrauenswürdige Netze beschränkt und die Konfiguration sorgfältig geprüft werden."
+    },
+    {
+      "category": "Abfragemöglichkeiten und Datenstrukturen",
+      "toolA": "Das erlaubt eine flexible Modellierung ohne zusätzliche Anwendungsschicht.",
+      "toolB": "Für strukturierte Auswertungen ist SQLite deutlich mächtiger, während Memcached bewusst minimalistisch bleibt."
+    }
+  ],
+  "introduction": "SQLite und Memcached lösen ein ähnliches Problem, unterscheiden sich jedoch bei grundlegende architektur und datenmodell. SQLite: SQLite ist eine serverlose, eingebettete relationale Datenbank, die als Bibliothek direkt im Prozess der Anwendung… Memcached: Memcached ist ein eigenständiger Netzwerkdienst, der Schlüssel-Wert-Paare ausschließlich im Arbeitsspeicher hält und… Das Kriterium persistenz und datenverlust zeigt einen weiteren praktischen Unterschied: SQLite schreibt Änderungen dauerhaft in eine Datei und bietet über das Write-Ahead-Logging und Transaktionen Schutz… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Grundlegende Architektur und Datenmodell: SQLite ist eine serverlose, eingebettete relationale Datenbank, die als Bibliothek direkt im…",
+    "toolB": "dein Projekt priorisiert Leistung und Latenz: Memcached ist auf extrem niedrige Latenz bei einfachen Get- und Set-Operationen über das Netzwerk…"
+  }
 }

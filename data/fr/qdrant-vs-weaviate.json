@@ -1,8 +1,8 @@
 {
   "slug": "qdrant-vs-weaviate",
   "meta": {
-    "title": "Qdrant vs Weaviate (2026) : quelle solution choisir ?",
-    "description": "Comparatif 2026 Qdrant vs Weaviate : architecture, recherche vectorielle, filtrage, écosystème, exploitation et coûts. Critères détaillés et conseils pour choisir sa base vectorielle."
+    "title": "Qdrant vs Weaviate: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Qdrant et Weaviate : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Qdrant"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.create_collection(\n    collection_name=\"hello\",\n    vectors_config=VectorParams(size=4, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"hello\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"message\": \"Hello, World!\"})],\n)\nprint(client.search(collection_name=\"hello\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))",
-    "tech2Snippet": "import weaviate\nfrom weaviate.classes.config import Configure, Property, DataType\n\nclient = weaviate.connect_to_local()\ntry:\n    client.collections.create(\n        name=\"Hello\",\n        vector_config=Configure.Vectors.self_provided(),\n        properties=[Property(name=\"message\", data_type=DataType.TEXT)],\n    )\n    hello = client.collections.get(\"Hello\")\n    hello.data.insert(properties={\"message\": \"Hello, World!\"}, vector=[0.1, 0.2, 0.3, 0.4])\n    result = hello.query.near_vector(near_vector=[0.1, 0.2, 0.3, 0.4], limit=1)\n    print(result.objects)\nfinally:\n    client.close()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel choix pour une équipe soumise à des contraintes de conformité et de sécurité ?",
       "a": "Weaviate propose une gestion des rôles, l'authentification par clé d'API ou OIDC et des options de chiffrement selon l'édition, tandis que Qdrant s'appuie sur des clés d'API et TLS avec des fonctions de gouvernance qui varient selon l'offre. Aucun des deux ne se substitue à une architecture de sécurité complète : chiffrement au repos et en transit, cloisonnement réseau, journalisation et sauvegardes testées. Vérifiez dans la documentation de votre version les fonctions réellement incluses avant de vous engager."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Qdrant et Weaviate modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Qdrant convient mieux lorsque votre projet privilégie exploitation, déploiement et montée en charge : Qdrant peut s'exécuter en local via Docker, en binaire ou en mode distribué, avec un ensemble de…. Weaviate est préférable lorsque votre projet privilégie recherche et filtrage : Weaviate propose une recherche vectorielle, une recherche par mot-clé BM25 et une recherche….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et moteur de recherche vectorielle",
+      "toolA": "Les détails de disponibilité, de dimensionnement et de réglage des index évoluent selon la version : vérifiez la documentation au moment de l'adoption.",
+      "toolB": "Sa conception met l'accent sur une plateforme RAG en relative autonomie plutôt que sur un moteur vectoriel minimaliste, ce qui se traduit par une surface fonctionnelle plus large mais aussi plus de composants à comprendre."
+    },
+    {
+      "category": "Recherche et filtrage",
+      "toolA": "La qualité effective du rappel sous filtres dépend de la sélectivité du filtre, de la configuration de l'index et de la charge, donc les gains doivent être mesurés sur vos propres jeux de données.",
+      "toolB": "La pertinence de l'hybridation et des pondérations reste dépendante des données, du modèle de vectorisation et du réglage ; une évaluation empirique est recommandée."
+    },
+    {
+      "category": "Modules intégrés de vectorisation et d'IA générative",
+      "toolA": "Des intégrations tierces existent, sans que le cœur du produit ne dépende d'un catalogue de modules.",
+      "toolB": "L'intérêt réel dépend de la disponibilité du module pour votre fournisseur de modèles et du support en production."
+    },
+    {
+      "category": "Exploitation, déploiement et montée en charge",
+      "toolA": "En pratique, l'équipe doit dimensionner la mémoire et les index, surveiller les latences et tester les scénarios de reprise.",
+      "toolB": "Les fonctionnalités de sécurité, de sauvegarde et de montée en charge varient selon l'offre : vérifiez les engagements de support et de disponibilité."
+    },
+    {
+      "category": "Écosystème, langages et intégrations",
+      "toolA": "Cette approche convient aux équipes qui préfèrent assembler leur pile plutôt que dépendre d'un framework tout-en-un.",
+      "toolB": "La richesse de l'écosystème est un atout pour aller vite, à condition d'accepter l'abstraction supplémentaire."
+    },
+    {
+      "category": "Modèle de licence et coûts",
+      "toolA": "Comme les tarifs évoluent, comparez les grilles officielles au moment du projet et intégrez les coûts d'exploitation et de supervision.",
+      "toolB": "Les prix et les limites des offres managées varient dans le temps : une comparaison sur devis ou sur la grille publique actuelle est indispensable avant de décider."
+    }
+  ],
+  "introduction": "Qdrant et Weaviate répondent à un besoin proche, mais diffèrent sur architecture et moteur de recherche vectorielle. Qdrant : Qdrant est une base vectorielle écrite en Rust, distribuée sous licence Apache 2.0, organisée autour de collections et… Weaviate : Weaviate est une base vectorielle écrite en Go, également open source (licence BSD-3), organisée autour de… Le critère « Recherche et filtrage » met en évidence une autre différence pratique : Qdrant met en avant un filtrage associé à la recherche vectorielle, avec une prise en charge native de conditions sur… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie exploitation, déploiement et montée en charge : Qdrant peut s'exécuter en local via Docker, en binaire ou en mode distribué, avec un ensemble de…",
+    "toolB": "votre projet privilégie recherche et filtrage : Weaviate propose une recherche vectorielle, une recherche par mot-clé BM25 et une recherche…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-svelte",
   "meta": {
-    "title": "SolidJS vs Svelte (2026): ¿Qué solución elegir?",
-    "description": "Comparamos SolidJS y Svelte en 2026: reactividad, rendimiento, ecosistema, curva de aprendizaje, SSR y equipo. Descubre cuál encaja mejor en tu próximo proyecto web."
+    "title": "SolidJS vs Svelte: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
+    "description": "Compara SolidJS y Svelte: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "SolidJS"
@@ -88,5 +88,49 @@
       "q": "¿Qué opción conviene para un equipo pequeño con recursos limitados?",
       "a": "Un equipo pequeño suele beneficiarse de una curva de aprendizaje suave, buena documentación y un ecosistema amplio, y en ese sentido Svelte y SvelteKit parten con ventaja. SolidJS puede ser una gran elección si el equipo ya conoce React y valora un modelo de reactividad granular, siempre que asuma un ecosistema más pequeño y planifique la formación interna."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre SolidJS y Svelte cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola…. Svelte es preferible cuando tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de reactividad y gestión del estado",
+      "toolA": "Este enfoque resulta muy predecible y favorece el rendimiento en interfaces con mucho estado, aunque exige comprender bien señales, memorias y efectos para evitar dependencias inesperadas.",
+      "toolB": "La sintaxis sigue siendo muy concisa y el resultado suele ser intuitivo, si bien los equipos deben adaptarse al cambio de modelo que supone la llegada de las runas frente a la reactividad implícita clásica."
+    },
+    {
+      "category": "Rendimiento y tamaño del paquete en producción",
+      "toolA": "El tamaño final depende del enrutador, las librerías auxiliares y el nivel de división de código que configure el proyecto, por lo que conviene medirlo en cada caso real y no generalizar.",
+      "toolB": "Al igual que en SolidJS, el resultado final varía según SvelteKit, las dependencias y la configuración del build, de modo que las comparaciones deben hacerse con la misma carga de trabajo y medir en el navegador objetivo."
+    },
+    {
+      "category": "Curva de aprendizaje y experiencia de desarrollo",
+      "toolA": "Sin embargo, entender la ejecución única de componentes y el uso correcto de efectos y memorias requiere práctica, y la documentación disponible, aunque buena, es más reducida que la de alternativas consolidadas.",
+      "toolB": "SvelteKit añade convenciones claras para rutas y obtención de datos, aunque las runas de Svelte 5 implican que los materiales antiguos y nuevos convivan durante un tiempo y conviene revisar que la documentación consultada corresponda a la versión usada."
+    },
+    {
+      "category": "Ecosistema, comunidad y librerías",
+      "toolA": "La comunidad es activa y cercana, aunque para necesidades muy específicas puede requerir integrar código propio o adaptar bibliotecas genéricas de JavaScript.",
+      "toolB": "Aun así, el volumen de librerías sigue siendo inferior al de React o Vue en algunos nichos, y debe verificarse la compatibilidad de cada dependencia con la versión de Svelte que use el proyecto."
+    },
+    {
+      "category": "SSR, metaframeworks y despliegue",
+      "toolA": "Su madurez y variedad de integraciones suelen ser menores que las de SvelteKit, así que conviene validar el adaptador concreto y la estrategia de SSR o prerenderizado que necesite el producto.",
+      "toolB": "Es una opción muy completa para aplicaciones de producción, aunque el comportamiento exacto del despliegue depende del adaptador elegido y de la plataforma, por lo que conviene probar el flujo completo antes de comprometerse."
+    },
+    {
+      "category": "Integración con TypeScript y herramientas de desarrollo",
+      "toolA": "La calidad de la experiencia depende de las extensiones y de la configuración del proyecto, y algunos patrones avanzados pueden requerir tipos explícitos para mantener la claridad.",
+      "toolB": "La incorporación de runas y el lenguaje de componentes han mejorado la inferencia de tipos, aunque los proyectos que mezclan sintaxis antigua y nueva deben revisar sus herramientas de análisis para evitar advertencias."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>"
+  },
+  "introduction": "SolidJS y Svelte responden a una necesidad similar, pero difieren en modelo de reactividad y gestión del estado. SolidJS: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola vez: las… Svelte: Svelte compila los componentes y genera código reactivo optimizado; en sus versiones recientes (Svelte 5) introduce… El criterio de rendimiento y tamaño del paquete en producción añade otra diferencia práctica: SolidJS suele producir paquetes pequeños y un rendimiento notable porque evita el trabajo de reconciliación de un DOM… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola…",
+    "toolB": "tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su…"
+  }
 }

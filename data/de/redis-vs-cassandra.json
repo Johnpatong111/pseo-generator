@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-cassandra",
   "meta": {
-    "title": "Redis vs Apache Cassandra (2026): welche Lösung passt besser?",
-    "description": "Ein fundierter Vergleich von Redis und Apache Cassandra für 2026: Datenmodell, Skalierung, Latenz, Konsistenz, Betrieb und Anwendungsfälle. So treffen Sie die richtige Wahl."
+    "title": "Redis vs Apache Cassandra: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche Redis und Apache Cassandra: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Redis"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import redis\n\nr = redis.Redis(host='localhost', port=6379, db=0)\nr.set('hello', 'world')\nprint(r.get('hello').decode())",
-    "tech2Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.execute(\"CREATE TABLE IF NOT EXISTS demo.hello (id int PRIMARY KEY, message text)\")\nsession.execute(\"INSERT INTO demo.hello (id, message) VALUES (1, 'Hello, World!')\")\nrow = session.execute(\"SELECT message FROM demo.hello WHERE id = 1\").one()\nprint(row.message)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Können Redis und Cassandra gemeinsam in einer Architektur eingesetzt werden?",
       "a": "Ja, Redis und Cassandra ergänzen sich häufig: Redis dient als Cache oder für Echtzeitfunktionen, während Cassandra als persistente, skalierbare Datenbank für große Datenmengen fungiert. Diese Kombination kann Latenz und Skalierbarkeit verbessern, erfordert jedoch zusätzliche Komplexität im Betrieb. Die Entscheidung sollte auf den konkreten Anforderungen und Ressourcen basieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Redis und Apache Cassandra verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Redis passt besser, wenn dein Projekt priorisiert Datenmodell und Abfragemöglichkeiten: Redis ist ein In-Memory-Datenspeicher mit vielfältigen Datenstrukturen wie Strings, Hashes,…. Apache Cassandra ist geeigneter, wenn dein Projekt priorisiert Skalierung und Architektur: Cassandra wurde für horizontale Skalierung über viele Knoten und Rechenzentren hinweg entwickelt.",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Abfragemöglichkeiten",
+      "toolA": "Die effiziente Modellierung erfordert die Kenntnis der Zugriffsmuster.",
+      "toolB": "Das Datenmodell muss vorab an die Abfragemuster angepasst werden."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Der Durchsatz ist hoch, kann aber durch Einzelthread-Verarbeitung pro Instanz und große Datenmengen im Speicher begrenzt werden.",
+      "toolB": "Die tatsächliche Performance hängt stark von Konsistenzlevel, Kompaktierung und Arbeitslast ab."
+    },
+    {
+      "category": "Skalierung und Architektur",
+      "toolA": "Für sehr große Datensätze können Speicherkosten und Verwaltungsaufwand steigen.",
+      "toolB": "Die Skalierung ist weitgehend linear, sofern das Datenmodell die Partitionierung unterstützt."
+    },
+    {
+      "category": "Konsistenz und Verfügbarkeit",
+      "toolA": "Redis ist kein vollständig ACID-transaktionales System über mehrere Schlüssel hinweg.",
+      "toolB": "Die Wahl des Levels beeinflusst Konsistenz, Latenz und Fehlertoleranz."
+    },
+    {
+      "category": "Persistenz und Datensicherheit",
+      "toolA": "Die Persistenz ist optional und kann die Performance beeinflussen; für kritische Daten sind geeignete Backup- und Replikationsstrategien erforderlich.",
+      "toolB": "Backups und Reparaturen sind Teil des regulären Betriebs und erfordern Planung."
+    },
+    {
+      "category": "Betrieb, Wartung und Ökosystem",
+      "toolA": "Das Ökosystem umfasst Client-Bibliotheken, Module und Managed-Services; der Betrieb eines Redis-Clusters mit hoher Verfügbarkeit erfordert jedoch Fachkenntnisse.",
+      "toolB": "Das Ökosystem ist reif, aber spezialisierter."
+    }
+  ],
+  "introduction": "Redis und Apache Cassandra lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und abfragemöglichkeiten. Redis: Redis ist ein In-Memory-Datenspeicher mit vielfältigen Datenstrukturen wie Strings, Hashes, Listen, Sets, Sorted Sets,… Apache Cassandra: Cassandra ist eine verteilte, spaltenorientierte NoSQL-Datenbank mit einem partitionierten Tabellenmodell. Das Kriterium latenz und durchsatz zeigt einen weiteren praktischen Unterschied: Redis hält Daten typischerweise im Arbeitsspeicher und erreicht dadurch sehr niedrige Latenzen, oft im… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Abfragemöglichkeiten: Redis ist ein In-Memory-Datenspeicher mit vielfältigen Datenstrukturen wie Strings, Hashes,…",
+    "toolB": "dein Projekt priorisiert Skalierung und Architektur: Cassandra wurde für horizontale Skalierung über viele Knoten und Rechenzentren hinweg entwickelt."
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-phi-4",
   "meta": {
-    "title": "Qwen 2.5 vs Phi-4 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Qwen 2.5 i Phi-4 w 2026 roku: kontekst, benchmarki, ceny API, dostępność i zastosowania. Poznaj różnice i wybierz model dla swojego projektu."
+    "title": "Qwen 2.5 vs Phi-4: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Qwen 2.5 i Phi-4: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nprompt = \"Hello, World!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest bardziej odpowiedni do zastosowań edge?",
       "a": "Phi-4 ze względu na mniejszy rozmiar i nacisk na wydajność często lepiej nadaje się do urządzeń o ograniczonych zasobach. Qwen 2.5 oferuje mniejsze warianty, które również mogą działać na edge, ale wymagają starannego doboru. W obu przypadkach należy zweryfikować wymagania sprzętowe i licencyjne."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Qwen 2.5 a Phi-4 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Qwen 2.5 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Qwen 2.5 występuje w wielu wariantach, a maksymalna długość kontekstu zależy od konkretnego…. Phi-4 sprawdzi się, gdy projekt stawia na kryterium „Opóźnienia (latencja) i wydajność wnioskowania”: Phi-4 jest zaprojektowany jako stosunkowo niewielki model, co potencjalnie przekłada się na niższe….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce większy kontekst ułatwia analizę długich dokumentów i rozmów, jednak może zwiększać zużycie pamięci i koszty obliczeń.",
+      "toolB": "Mniejszy kontekst może wystarczyć do typowych zadań dialogowych i analizy średniej długości tekstów, ale może ograniczać zastosowania wymagające bardzo długich wejść."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych",
+      "toolA": "Qwen 2.5 wypada konkurencyjnie w wielu zadaniach, jednak nie należy traktować pojedynczych liczb jako uniwersalnej miary jakości.",
+      "toolB": "Phi-4 jest często chwalony za stosunek jakości do rozmiaru, ale bezpośrednie porównania liczbowe mogą być mylące, jeśli modele różnią się liczbą parametrów i sposobem trenowania."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Ceny mogą się różnić w zależności od rozmiaru modelu i wolumenu, a some warianty mogą być dostępne w modelu pay-as-you-go lub z zniżkami za przepustowość.",
+      "toolB": "Ze względu na mniejszy rozmiar Phi-4 może być tańszy w przeliczeniu na token, ale nie jest to regułą i wymaga sprawdzenia aktualnych stawek."
+    },
+    {
+      "category": "Opóźnienia (latencja) i wydajność wnioskowania",
+      "toolA": "Wdrożenia lokalne pozwalają dostosować sprzęt i optymalizacje, ale wymagają własnego zarządzania wydajnością.",
+      "toolB": "W zastosowaniach czasu rzeczywistego Phi-4 może być atrakcyjny, ale wymaga testów w docelowym środowisku."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość (open/closed)",
+      "toolA": "Dostępność API zależy od zewnętrznych dostawców.",
+      "toolB": "Należy sprawdzić warunki licencji i dostępność w wybranym kanale."
+    },
+    {
+      "category": "Zastosowania praktyczne i ekosystem",
+      "toolA": "Model jest popularny w społeczności open-source, co przekłada się na dostępność przykładów i fine-tunów.",
+      "toolB": "Model sprawdza się w zastosowaniach, gdzie liczy się zwięzłość i jakość rozumowania."
+    }
+  ],
+  "introduction": "Qwen 2.5 i Phi-4 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Qwen 2.5: Qwen 2.5 występuje w wielu wariantach, a maksymalna długość kontekstu zależy od konkretnego rozmiaru modelu i sposobu… Phi-4: Phi-4 został zaprojektowany z myślą o wydajnym rozumowaniu, a jego okno kontekstu jest zwykle mniejsze niż w… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval) – porównywalność i dostępność danych”: Dla Qwen 2.5 publikowane są wyniki na popularnych benchmarkach, takich jak MMLU i HumanEval, ale dotyczą one… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Qwen 2.5 występuje w wielu wariantach, a maksymalna długość kontekstu zależy od konkretnego…",
+    "toolB": "projekt stawia na kryterium „Opóźnienia (latencja) i wydajność wnioskowania”: Phi-4 jest zaprojektowany jako stosunkowo niewielki model, co potencjalnie przekłada się na niższe…"
+  }
 }

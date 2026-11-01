@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite (2026): welche Lösung passt besser?",
-    "description": "PostgreSQL und SQLite im Vergleich 2026: Architektur, Skalierung, Betrieb, Sicherheit und Einsatzgebiete – mit klarer Empfehlung, wann sich welche Datenbank eignet."
+    "title": "PostgreSQL vs SQLite: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche PostgreSQL und SQLite: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Voraussetzung: laufender PostgreSQL-Server, psql oder Python-Treiber\n# Beispiel mit psql:\npsql -h localhost -U postgres -c \"CREATE DATABASE hello;\"\npsql -h localhost -U postgres -d hello -c \"CREATE TABLE gruss (text TEXT); INSERT INTO gruss (text) VALUES ('Hallo, Welt!'); SELECT * FROM gruss;\"",
-    "tech2Snippet": "import sqlite3\n\nconn = sqlite3.connect(\"hello.db\")\nconn.execute(\"CREATE TABLE IF NOT EXISTS gruss (text TEXT)\")\nconn.execute(\"INSERT INTO gruss (text) VALUES (?)\", (\"Hallo, Welt!\",))\nconn.commit()\nfor row in conn.execute(\"SELECT text FROM gruss\"):\n    print(row[0])\nconn.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Beeinflusst die Wahl die Performance meiner Anwendung?",
       "a": "Die Performance hängt stark von Arbeitslast, Schema, Indizes, Hardware und Konfiguration ab und lässt sich nicht pauschal einer der beiden Datenbanken zuschreiben. SQLite kann bei lokalen Zugriffen sehr effizient sein, während PostgreSQL bei paralleler Nutzung und großen Datenbeständen seine Stärken ausspielt. Belastbare Aussagen erfordern eigene Messungen im konkreten Szenario statt allgemeiner Annahmen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen PostgreSQL und SQLite verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "PostgreSQL passt besser, wenn dein Projekt priorisiert Nebenläufigkeit und Schreibzugriffe: PostgreSQL ist auf viele gleichzeitige Verbindungen und parallele Schreibtransaktionen ausgelegt…. SQLite ist geeigneter, wenn dein Projekt priorisiert Architektur und Betriebsmodell: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die Daten in einer einzigen….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "Dadurch lassen sich Datenbank, Anwendung und mehrere Nutzer sauber trennen; der Betrieb erfordert jedoch Installation, Konfiguration, Backups und Überwachung eines Dienstes.",
+      "toolB": "Die Anwendung öffnet die Datei direkt, was den Betrieb stark vereinfacht, aber die Datenbank an den Rechner und den Dateizugriff bindet."
+    },
+    {
+      "category": "Nebenläufigkeit und Schreibzugriffe",
+      "toolA": "Das macht es für Webanwendungen, APIs und Mehrbenutzerszenarien geeignet, wobei der Grad der Skalierung von Konfiguration und Arbeitslast abhängt.",
+      "toolB": "Für Anwendungen mit vielen gleichzeitigen Schreibern ist das ein begrenzender Faktor, während es für lokale oder schreibarme Szenarien meist unproblematisch ist."
+    },
+    {
+      "category": "Skalierung und Datenmenge",
+      "toolA": "Konkrete Grenzen hängen stark von Hardware, Schema, Indizes und Arbeitslast ab und lassen sich nicht pauschal beziffern.",
+      "toolB": "Die praktische Obergrenze wird vor allem durch Dateisystem, Speicher und Zugriffsmuster bestimmt."
+    },
+    {
+      "category": "Einrichtung und Entwicklerkomfort",
+      "toolA": "Im Gegenzug gibt es ausgereifte Werkzeuge, eine umfangreiche SQL-Implementierung und ein stabiles Ökosystem für Migrationen und Administration.",
+      "toolB": "Das macht es besonders attraktiv für Prototypen, Tests, kleine Tools und Anwendungen, die ohne Administration auskommen sollen."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Sicherheit muss jedoch korrekt konfiguriert werden, etwa durch Authentifizierung, Netzbeschränkungen und aktuelle Versionen – die konkrete Härtung ist installationsabhängig.",
+      "toolB": "Verschlüsselung ist nicht in der Standardbibliothek enthalten, sondern erfordert Erweiterungen oder ein verschlüsseltes Dateisystem, was je nach Umgebung zusätzlichen Aufwand bedeutet."
+    },
+    {
+      "category": "SQL-Funktionsumfang und Kompatibilität",
+      "toolA": "Erweiterungen wie PostGIS oder Volltextsuche erweitern die Einsatzmöglichkeiten, wobei einzelne Features versionsabhängig sind.",
+      "toolB": "Für typische CRUD-Anwendungen reicht der Umfang meist aus; komplexe analytische Abfragen oder spezielle Datentypen können an Grenzen stoßen."
+    }
+  ],
+  "introduction": "PostgreSQL und SQLite lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell. PostgreSQL: PostgreSQL arbeitet als eigenständiger Serverprozess, mit dem Clients über das Netzwerk per TCP oder über lokale… SQLite: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die Daten in einer einzigen Datei auf dem… Das Kriterium nebenläufigkeit und schreibzugriffe zeigt einen weiteren praktischen Unterschied: PostgreSQL ist auf viele gleichzeitige Verbindungen und parallele Schreibtransaktionen ausgelegt und nutzt MVCC,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Nebenläufigkeit und Schreibzugriffe: PostgreSQL ist auf viele gleichzeitige Verbindungen und parallele Schreibtransaktionen ausgelegt…",
+    "toolB": "dein Projekt priorisiert Architektur und Betriebsmodell: SQLite ist eine eingebettete Bibliothek ohne eigenen Serverprozess, die Daten in einer einzigen…"
+  }
 }

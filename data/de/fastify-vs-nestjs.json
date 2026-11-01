@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-nestjs",
   "meta": {
-    "title": "Fastify vs NestJS (2026): welche Lösung passt besser?",
-    "description": "Fastify vs NestJS im Vergleich 2026: Performance, Architektur, Typsicherheit, Ökosystem und mehr. Erfahren Sie, welches Node.js-Framework zu Ihrem Projekt passt."
+    "title": "Fastify vs NestJS: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Fastify und NestJS: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Fastify"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const fastify = require('fastify')();\nfastify.get('/', async () => ({ hello: 'world' }));\nfastify.listen({ port: 3000 }, (err, address) => {\n  if (err) throw err;\n  console.log(`Server listening on ${address}`);\n});",
-    "tech2Snippet": "import { NestFactory } from '@nestjs/core';\nimport { AppModule } from './app.module';\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\nbootstrap();"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Framework hat die bessere Dokumentation und Community-Unterstützung?",
       "a": "NestJS verfügt über eine sehr umfangreiche und gut gepflegte Dokumentation mit vielen Beispielen und Tutorials. Die Community ist groß und aktiv, mit zahlreichen Ressourcen und einem breiten Angebot an Drittanbieter-Modulen. Fastify hat ebenfalls eine gute Dokumentation, aber die Community ist kleiner und die Anzahl der verfügbaren Ressourcen geringer, was die Lösungssuche bei speziellen Problemen erschweren kann."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Fastify und NestJS verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Fastify passt besser, wenn dein Projekt priorisiert Performance und Durchsatz: Fastify ist für hohe Geschwindigkeit optimiert und nutzt einen schema-basierten Ansatz zur…. NestJS ist geeigneter, wenn dein Projekt priorisiert Architektur und Struktur: NestJS bietet eine stark meinungsbasierte Architektur mit Modulen, Controllern, Services und….",
+  "tradeoffs": [
+    {
+      "category": "Performance und Durchsatz",
+      "toolA": "In der Praxis hängt der tatsächliche Durchsatz stark von der Arbeitslast, der Konfiguration und den verwendeten Plugins ab; Benchmarks sollten nicht pauschal als Garantie gelten.",
+      "toolB": "Die zusätzliche Abstraktionsschicht durch Dependency Injection und Module kann den Overhead erhöhen, was sich bei sehr hohen Lasten bemerkbar machen kann."
+    },
+    {
+      "category": "Architektur und Struktur",
+      "toolA": "Das ermöglicht große Freiheit, erfordert aber Disziplin, um bei größeren Projekten eine konsistente Architektur zu wahren.",
+      "toolB": "Diese Struktur erleichtert die Skalierung und Wartung großer Teams, kann aber für kleine Projekte überdimensioniert wirken."
+    },
+    {
+      "category": "Typsicherheit und TypeScript-Integration",
+      "toolA": "Die Typinferenz ist jedoch weniger automatisiert als bei NestJS und erfordert oft manuelle Typdefinitionen.",
+      "toolB": "Die Integration von DTOs und Validierungspipes ermöglicht eine hohe Typsicherheit über die gesamte Anwendung hinweg."
+    },
+    {
+      "category": "Ökosystem und Plugins",
+      "toolA": "Die Anzahl der Plugins ist jedoch geringer als bei Express-basierten Lösungen, und nicht jedes Plugin ist aktiv gepflegt.",
+      "toolB": "Die offizielle Dokumentation und die Community stellen viele Module bereit, was die Auswahl erleichtert."
+    },
+    {
+      "category": "Lernkurve und Entwicklererfahrung",
+      "toolA": "Die API ist schlank und die Dokumentation klar, sodass einfache Anwendungen in kurzer Zeit umgesetzt werden können.",
+      "toolB": "Entwickler mit Angular- oder Spring-Erfahrung finden sich schneller zurecht, während Neueinsteiger mehr Zeit investieren müssen."
+    },
+    {
+      "category": "Testbarkeit",
+      "toolA": "Das erleichtert Unit- und Integrationstests erheblich und fördert eine testgetriebene Entwicklung.",
+      "toolB": "Die strukturierte Architektur macht es einfach, Komponenten isoliert zu testen."
+    }
+  ],
+  "introduction": "Fastify und NestJS lösen ein ähnliches Problem, unterscheiden sich jedoch bei performance und durchsatz. Fastify: Fastify ist für hohe Geschwindigkeit optimiert und nutzt einen schema-basierten Ansatz zur Serialisierung und… NestJS: NestJS setzt standardmäßig auf Express, unterstützt aber auch Fastify als Adapter, wodurch die Performance je nach… Das Kriterium architektur und struktur zeigt einen weiteren praktischen Unterschied: Fastify verfolgt einen minimalistischen, plugin-basierten Ansatz und überlässt die Struktur weitgehend dem Entwickler. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Performance und Durchsatz: Fastify ist für hohe Geschwindigkeit optimiert und nutzt einen schema-basierten Ansatz zur…",
+    "toolB": "dein Projekt priorisiert Architektur und Struktur: NestJS bietet eine stark meinungsbasierte Architektur mit Modulen, Controllern, Services und…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "gcp-vs-azure",
   "meta": {
-    "title": "Google Cloud vs Microsoft Azure (2026): welche Lösung passt besser?",
-    "description": "Google Cloud vs Microsoft Azure im Vergleich 2026: Compute, Kubernetes, Daten, KI, Hybrid-Cloud, Preislogik und Sicherheit – mit klarer Empfehlung für Ihr Szenario."
+    "title": "Google Cloud vs Microsoft Azure: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Google Cloud und Microsoft Azure: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Google Cloud"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Voraussetzung: gcloud CLI installiert und angemeldet\n# Minimalbeispiel für einen Cloud-Run-Hello-World-Dienst\ngcloud run deploy hello-world \\\n  --image=us-docker.pkg.dev/cloudrun/container/hello \\\n  --region=europe-west3 \\\n  --allow-unauthenticated\n\ngcloud run services describe hello-world --region=europe-west3 --format='value(status.url)'",
-    "tech2Snippet": "# Voraussetzung: Azure CLI installiert und angemeldet (az login)\n# Minimalbeispiel: Ressourcengruppe anlegen und Container-App bereitstellen\naz group create --name rg-hello --location germanywestcentral\n\naz containerapp create \\\n  --name hello-world \\\n  --resource-group rg-hello \\\n  --image mcr.microsoft.com/azuredocs/containerapps-helloworld:latest \\\n  --target-port 80 \\\n  --ingress external \\\n  --query properties.configuration.ingress.fqdn -o tsv"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as azure from \"@pulumi/azure-native\";\n\nconst productsStorage = new azure.storage.StorageAccount(\"products\", {\n  resourceGroupName: resourceGroup.name,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n});\n\nexport const productStorageId = productsStorage.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich beide Plattformen parallel in einem Unternehmen einsetzen?",
       "a": "Ja, ein Multi-Cloud-Betrieb ist grundsätzlich möglich und in vielen Unternehmen Realität, etwa wenn einzelne Teams unterschiedliche Dienste bevorzugen. Der Aufwand für Identität, Netzwerk, Observability und Kostenkontrolle steigt dadurch jedoch deutlich, weshalb klare Governance-Regeln und ein einheitliches Sicherheitsmodell wichtig sind. Prüfen Sie vorab, welche Dienste in beiden Umgebungen konsistent verfügbar sind und wie Sie Daten souverän zwischen den Plattformen austauschen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Google Cloud und Microsoft Azure verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Google Cloud passt besser, wenn dein Projekt priorisiert Kubernetes und Container-Orchestrierung: Google Cloud hat Kubernetes ursprünglich maßgeblich mitentwickelt und bietet mit Google Kubernetes…. Microsoft Azure ist geeigneter, wenn dein Projekt priorisiert Globale Regionen und Hybrid-Cloud-Integration: Microsoft Azure verfügt über ein sehr breites Regionennetz und ist besonders stark in….",
+  "tradeoffs": [
+    {
+      "category": "Globale Regionen und Hybrid-Cloud-Integration",
+      "toolA": "Für hybride Szenarien bietet Google Cloud unter anderem Anthos und eine dedizierte Konnektivität über Interconnect, wobei der Funktionsumfang je nach Tarif und Konfiguration variiert.",
+      "toolB": "Welche Hybrid-Dienste in welchem Umfang verfügbar sind, hängt von Region, Lizenzmodell und Tarif ab."
+    },
+    {
+      "category": "Kubernetes und Container-Orchestrierung",
+      "toolA": "Details wie Autoscaling, Netzwerkfunktionen und Preisgestaltung sind an Region, Konfiguration und Tarif gebunden und sollten vor dem Einsatz geprüft werden.",
+      "toolB": "Die Steuerungsebene ist in vielen Varianten stark verwaltet, während die eigentlichen Knoten und Add-ons konfigurationsabhängig Kosten und Komplexität bestimmen."
+    },
+    {
+      "category": "KI- und Machine-Learning-Plattform",
+      "toolA": "Die verfügbaren Modelle, Kontingente und Funktionen ändern sich häufig und sollten stets anhand der aktuellen Dokumentation und des gewählten Tarifs bewertet werden.",
+      "toolB": "Welche Modelle, Regionen und Funktionen verfügbar sind, ist tarif-, regions- und modellabhängig und kann sich kurzfristig ändern."
+    },
+    {
+      "category": "Datenanalyse und Data Warehousing",
+      "toolA": "Die Kosten ergeben sich unter anderem aus verarbeiteten Datenmengen und Speicher, sodass das Preisniveau stark von Abfrageverhalten und Tarif abhängt.",
+      "toolB": "Die jeweils empfohlene Architektur und die Kostenmodelle unterscheiden sich je nach gewähltem Dienst, Kapazität und Nutzungsmuster."
+    },
+    {
+      "category": "Identität, Sicherheit und Compliance",
+      "toolA": "Die genauen Funktionen und Compliance-Nachweise sind abhängig vom Tarif und sollten im jeweils aktuellen Trust Center geprüft werden.",
+      "toolB": "Welche Sicherheitsfunktionen und Compliance-Standards verfügbar sind, hängt von Lizenz, Tarif und Region ab und muss individuell verifiziert werden."
+    },
+    {
+      "category": "Serverless und verwaltete Compute-Dienste",
+      "toolA": "Kaltstart-Verhalten, Limits und Preise sind konfigurations- und regionsabhängig und sollten für den konkreten Anwendungsfall überprüft werden.",
+      "toolB": "Die Funktionsweise von Skalierung, Hosting-Plänen und Abrechnung unterscheidet sich je nach Plan und sollte vor Produktivbetrieb geprüft werden."
+    }
+  ],
+  "introduction": "Google Cloud und Microsoft Azure lösen ein ähnliches Problem, unterscheiden sich jedoch bei globale regionen und hybrid-cloud-integration. Google Cloud: Google Cloud betreibt ein weltweites Netz eigener Regionen mit Schwerpunkt auf leistungsfähiger Vernetzung und einem… Microsoft Azure: Microsoft Azure verfügt über ein sehr breites Regionennetz und ist besonders stark in Hybrid-Szenarien, weil Azure… Das Kriterium kubernetes und container-orchestrierung zeigt einen weiteren praktischen Unterschied: Google Cloud hat Kubernetes ursprünglich maßgeblich mitentwickelt und bietet mit Google Kubernetes Engine (GKE) einen… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kubernetes und Container-Orchestrierung: Google Cloud hat Kubernetes ursprünglich maßgeblich mitentwickelt und bietet mit Google Kubernetes…",
+    "toolB": "dein Projekt priorisiert Globale Regionen und Hybrid-Cloud-Integration: Microsoft Azure verfügt über ein sehr breites Regionennetz und ist besonders stark in…"
+  }
 }

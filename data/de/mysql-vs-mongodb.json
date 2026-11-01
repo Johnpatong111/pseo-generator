@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB (2026): welche Lösung passt besser?",
-    "description": "MySQL vs MongoDB im Vergleich 2026: Datenmodell, Schema, Skalierung, Konsistenz, Abfragen, Betrieb und Sicherheit – mit klarer Empfehlung für Ihr Projekt."
+    "title": "MySQL vs MongoDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche MySQL und MongoDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "MySQL"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "CREATE DATABASE IF NOT EXISTS demo;\nUSE demo;\nCREATE TABLE IF NOT EXISTS greetings (id INT PRIMARY KEY AUTO_INCREMENT, message VARCHAR(100) NOT NULL);\nINSERT INTO greetings (message) VALUES ('Hallo, Welt!');\nSELECT message FROM greetings;",
-    "tech2Snippet": "import { MongoClient } from \"mongodb\";\n\nconst client = new MongoClient(process.env.MONGODB_URI ?? \"mongodb://127.0.0.1:27017\");\nawait client.connect();\nconst collection = client.db(\"demo\").collection(\"greetings\");\nawait collection.insertOne({ message: \"Hallo, Welt!\" });\nconsole.log(await collection.findOne({ message: \"Hallo, Welt!\" }));\nawait client.close();"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Rolle spielen Version und Betriebsform bei der Entscheidung?",
       "a": "Funktionen wie Fensterfunktionen in MySQL oder Transaktionen und Feldebene-Verschlüsselung in MongoDB hängen von der eingesetzten Version und Edition ab. Ebenso unterscheiden sich Managed-Angebote, Lizenzmodelle und Hochverfügbarkeitsoptionen je nach Anbieter und Tarif. Prüfen Sie daher die konkrete Version, den Betriebsmodus und die vertraglichen Bedingungen, bevor Sie eine Empfehlung pauschal übernehmen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen MySQL und MongoDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "MySQL passt besser, wenn dein Projekt priorisiert Abfragen und Ausdrucksstärke: MySQL nutzt SQL als deklarative Abfragesprache und unterstützt Joins, Unterabfragen, Aggregationen…. MongoDB ist geeigneter, wenn dein Projekt priorisiert Skalierung und Hochverfügbarkeit: MongoDB wurde mit Blick auf horizontale Skalierung entworfen und bietet Sharding als integriertes….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Schema",
+      "toolA": "Für klar modellierbare Domänen mit Beziehungen sorgt das Schema für Struktur und frühe Fehlererkennung.",
+      "toolB": "Das erleichtert iterative Entwicklung und heterogene Datensätze, verlagert Konsistenzprüfungen jedoch stärker in die Anwendung."
+    },
+    {
+      "category": "Abfragen und Ausdrucksstärke",
+      "toolA": "Die verfügbaren Funktionen hängen von der eingesetzten Version und Konfiguration ab.",
+      "toolB": "Ob diese Modellierung praktikabel ist, hängt stark vom Datenmodell und der Arbeitslast ab."
+    },
+    {
+      "category": "Transaktionen und Konsistenz",
+      "toolA": "Für Anwendungen mit knappen Kontoständen, Bestellungen oder mehrteiligen Änderungen ist das ein eingespieltes Modell, sofern Isolation und Sperrverhalten zur Arbeitslast passen.",
+      "toolB": "Konsistenz- und Latenzverhalten hängen von Read- und Write-Concern sowie der Replikationskonfiguration ab, weshalb pauschale Aussagen ungeeignet sind."
+    },
+    {
+      "category": "Skalierung und Hochverfügbarkeit",
+      "toolA": "Hochverfügbarkeit wird typischerweise mit Replica-Sets oder gruppenbasierter Replikation realisiert; die konkreten Möglichkeiten hängen von Version, Edition und Betriebsmodell ab.",
+      "toolB": "Die tatsächliche Eignung hängt von Datenmodell, Shard-Key-Wahl und Arbeitslast ab."
+    },
+    {
+      "category": "Betrieb, Ökosystem und Werkzeuge",
+      "toolA": "Das reduziert Einstiegshürden, doch die Qualität von Backups, Monitoring und Updates hängt von der gewählten Betriebsform und Version ab.",
+      "toolB": "Die proprietäre Lizenzierung neuerer Server-Versionen und die Bindung an bestimmte Cloud-Dienste sollten je nach Einsatzszenario geprüft werden, da sie organisatorische und rechtliche Auswirkungen haben können."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Sicherheit entsteht jedoch erst durch korrekte Konfiguration, restriktive Grants, aktuelle Patches und getrennte Service-Konten, nicht allein durch das Produkt.",
+      "toolB": "Wie bei MySQL entscheidet die konkrete Konfiguration über das Sicherheitsniveau, weshalb Standardeinstellungen und offene Netzwerke unbedingt vermieden werden sollten."
+    }
+  ],
+  "introduction": "MySQL und MongoDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und schema. MySQL: MySQL ist ein relationales Datenbanksystem und speichert Daten in Tabellen mit Zeilen und Spalten sowie festen,… MongoDB: MongoDB ist eine dokumentenorientierte Datenbank und speichert Daten als BSON-Dokumente in Collections, häufig mit… Das Kriterium abfragen und ausdrucksstärke zeigt einen weiteren praktischen Unterschied: MySQL nutzt SQL als deklarative Abfragesprache und unterstützt Joins, Unterabfragen, Aggregationen sowie… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Abfragen und Ausdrucksstärke: MySQL nutzt SQL als deklarative Abfragesprache und unterstützt Joins, Unterabfragen, Aggregationen…",
+    "toolB": "dein Projekt priorisiert Skalierung und Hochverfügbarkeit: MongoDB wurde mit Blick auf horizontale Skalierung entworfen und bietet Sharding als integriertes…"
+  }
 }

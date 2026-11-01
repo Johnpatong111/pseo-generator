@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite (2026): quelle solution choisir ?",
-    "description": "Comparatif PostgreSQL vs SQLite en 2026 : architecture, concurrence, types de données, déploiement, sécurité et cas d'usage pour choisir la base de données adaptée à votre projet."
+    "title": "PostgreSQL vs SQLite: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez PostgreSQL et SQLite : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal illustratif avec psycopg (PostgreSQL)\nimport psycopg\n\nwith psycopg.connect(\"host=localhost dbname=postgres user=postgres password=postgres\") as conn:\n    with conn.cursor() as cur:\n        cur.execute(\"CREATE TABLE IF NOT EXISTS hello (id serial PRIMARY KEY, message text)\")\n        cur.execute(\"INSERT INTO hello (message) VALUES (%s)\", (\"Hello, World!\",))\n        cur.execute(\"SELECT message FROM hello ORDER BY id DESC LIMIT 1\")\n        print(cur.fetchone()[0])\n    conn.commit()",
-    "tech2Snippet": "# Exemple minimal illustratif avec le module sqlite3 (SQLite)\nimport sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"CREATE TABLE hello (id INTEGER PRIMARY KEY, message TEXT)\")\ncur.execute(\"INSERT INTO hello (message) VALUES (?)\", (\"Hello, World!\",))\ncur.execute(\"SELECT message FROM hello ORDER BY id DESC LIMIT 1\")\nprint(cur.fetchone()[0])\nconn.commit()\nconn.close()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Existe-t-il des alternatives à considérer en 2026 ?",
       "a": "Oui, selon le besoin, des bases serveur comme MySQL ou MariaDB, des bases orientées documents comme MongoDB, ou des moteurs embarqués comme DuckDB pour l'analyse peuvent être envisagés. Le choix doit être guidé par les contraintes de déploiement, de concurrence et de compétences de l'équipe, évaluées sur votre propre contexte."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre PostgreSQL et SQLite modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "PostgreSQL convient mieux lorsque votre projet privilégie concurrence et montée en charge : PostgreSQL gère nativement de nombreuses connexions simultanées avec un contrôle de concurrence…. SQLite est préférable lorsque votre projet privilégie architecture et modèle de déploiement : SQLite est une bibliothèque embarquée qui stocke l'ensemble de la base dans un fichier unique,….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle de déploiement",
+      "toolA": "Cette séparation permet de partager une base entre plusieurs applications et de la placer derrière un pare-feu ou un pooler de connexions.",
+      "toolB": "L'intégration se fait directement dans l'application, ce qui simplifie le déploiement, la sauvegarde par simple copie de fichier et la portabilité entre systèmes."
+    },
+    {
+      "category": "Concurrence et montée en charge",
+      "toolA": "Les performances réelles dépendent fortement du dimensionnement, du matériel, du schéma et de la charge, et des outils de réplication existent pour la disponibilité.",
+      "toolB": "Cela convient très bien à des charges majoritairement en lecture ou à faible concurrence d'écriture, mais devient un goulot d'étranglement si les écritures concurrentes sont nombreuses."
+    },
+    {
+      "category": "Types de données et fonctionnalités SQL",
+      "toolA": "Ces capacités en font un choix courant pour des besoins analytiques ou métier complexes.",
+      "toolB": "Il ne dispose pas du même catalogue de types avancés ni de tous les index spécialisés, ce qui limite certains usages analytiques ou géospatiaux."
+    },
+    {
+      "category": "Installation, exploitation et coût opérationnel",
+      "toolA": "Ce coût d'exploitation est justifié dans un contexte serveur, mais il reste plus élevé qu'une bibliothèque embarquée, indépendamment du coût des logiciels eux-mêmes.",
+      "toolB": "Cela réduit fortement les opérations d'exploitation, notamment pour les applications de bureau, mobiles, les tests ou les prototypes, même s'il faut tout de même gérer les sauvegardes et les migrations de schéma."
+    },
+    {
+      "category": "Sécurité et contrôle d'accès",
+      "toolA": "La sécurité dépend toutefois d'un durcissement rigoureux du serveur, des mots de passe et des règles réseau, et non d'un réglage par défaut.",
+      "toolB": "Des extensions comme SQLCipher permettent de chiffrer le fichier, mais la sécurité des accès applicatifs doit être assurée par l'application elle-même."
+    },
+    {
+      "category": "Écosystème, outils et support des langages",
+      "toolA": "Sa documentation officielle est abondante et la communauté active, ce qui facilite le diagnostic des problèmes rencontrés.",
+      "toolB": "Son API est stable et sa documentation officielle concise, mais les outils de supervision et d'exploitation à grande échelle sont moins nombreux que ceux de PostgreSQL."
+    }
+  ],
+  "introduction": "PostgreSQL et SQLite répondent à un besoin proche, mais diffèrent sur architecture et modèle de déploiement. PostgreSQL : PostgreSQL fonctionne comme un serveur de bases de données séparé auquel les clients se connectent via le réseau, ce… SQLite : SQLite est une bibliothèque embarquée qui stocke l'ensemble de la base dans un fichier unique, sans processus serveur… Le critère « Concurrence et montée en charge » met en évidence une autre différence pratique : PostgreSQL gère nativement de nombreuses connexions simultanées avec un contrôle de concurrence multiversion (MVCC),… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie concurrence et montée en charge : PostgreSQL gère nativement de nombreuses connexions simultanées avec un contrôle de concurrence…",
+    "toolB": "votre projet privilégie architecture et modèle de déploiement : SQLite est une bibliothèque embarquée qui stocke l'ensemble de la base dans un fichier unique,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-phi-4",
   "meta": {
-    "title": "Llama 3.3 vs Phi-4 (2026): quelle solution choisir ?",
-    "description": "Comparatif Llama 3.3 vs Phi-4 en 2026 : performances, contexte, accès, tarifs API, cas d’usage et sécurité. Conseils pratiques pour choisir le modèle adapté à votre projet."
+    "title": "Llama 3.3 vs Phi-4: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Llama 3.3 et Phi-4 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import pipeline\n\npipe = pipeline(\"text-generation\", model=\"meta-llama/Llama-3.3-70B-Instruct\")\nprint(pipe(\"Bonjour, comment allez-vous ?\", max_new_tokens=20)[0][\"generated_text\"])",
-    "tech2Snippet": "from transformers import pipeline\n\npipe = pipeline(\"text-generation\", model=\"microsoft/phi-4\")\nprint(pipe(\"Bonjour, comment allez-vous ?\", max_new_tokens=20)[0][\"generated_text\"])"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment évaluer la sécurité des modèles pour un usage en production ?",
       "a": "Les deux modèles intègrent des mesures d’alignement, mais aucune garantie absolue n’existe. Il est conseillé de mettre en place une couche de modération externe, de tester la robustesse aux injections de prompt et de surveiller les biais. La licence MIT de Phi-4 peut faciliter l’audit, tandis que Llama 3.3 offre un écosystème d’outils de sécurité. Une évaluation continue est nécessaire."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Llama 3.3 et Phi-4 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Llama 3.3 convient mieux lorsque votre projet privilégie fenêtre de contexte : capacité et implications : Llama 3.3 est proposé avec une fenêtre de contexte allant jusqu’à 128 000 tokens pour la variante…. Phi-4 est préférable lorsque votre projet privilégie latence et débit en conditions réelles : Phi-4, avec 14 milliards de paramètres, est conçu pour être plus léger et peut offrir une latence….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte : capacité et implications",
+      "toolA": "Cette capacité reste dépendante de l’implémentation (serveur d’inférence, quantification, fournisseur) et des stratégies d’échantillonnage ; il faut vérifier la limite effective auprès de l’API ou du runtime utilisé.",
+      "toolB": "Comme pour tout modèle, la limite exacte dépend de l’implémentation et doit être confirmée dans la documentation officielle."
+    },
+    {
+      "category": "Performances aux benchmarks (MMLU, HumanEval) et interprétation",
+      "toolA": "Il convient de ne pas les considérer comme des mesures absolues et de vérifier les scores officiels les plus récents.",
+      "toolB": "Toutefois, les évaluations ne sont pas toujours strictement comparables (formats de prompts, jeux de test, versions) ; une vérification des résultats officiels et des conditions de test est indispensable avant toute décision."
+    },
+    {
+      "category": "Tarification API par million de tokens (entrée/sortie)",
+      "toolA": "Il est recommandé de comparer les offres actuelles des fournisseurs et de vérifier les conditions de facturation.",
+      "toolB": "Une comparaison qualitative des grilles tarifaires publiées par les fournisseurs est nécessaire, en tenant compte des éventuels coûts supplémentaires (stockage, requêtes)."
+    },
+    {
+      "category": "Latence et débit en conditions réelles",
+      "toolA": "Des mesures réelles sont nécessaires pour évaluer la latence dans votre environnement.",
+      "toolB": "Cependant, la latence effective dépend aussi de l’implémentation, de la quantification et de la charge ; aucune conclusion définitive ne peut être tirée sans tests dans les conditions cibles."
+    },
+    {
+      "category": "Accès au modèle, licence et disponibilité",
+      "toolA": "Cette ouverture favorise la flexibilité mais implique de respecter la licence et de gérer soi-même l’infrastructure en cas d’auto-hébergement.",
+      "toolB": "Cette licence permissive est un atout pour l’intégration dans des produits propriétaires, sous réserve de vérifier les conditions exactes et les éventuelles restrictions tierces."
+    },
+    {
+      "category": "Cas d’usage pratiques et polyvalence",
+      "toolA": "Son écosystème mature facilite l’intégration dans des pipelines existants.",
+      "toolB": "Une évaluation sur vos cas d’usage spécifiques est recommandée."
+    }
+  ],
+  "introduction": "Llama 3.3 et Phi-4 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte : capacité et implications. Llama 3.3 : Llama 3.3 est proposé avec une fenêtre de contexte allant jusqu’à 128 000 tokens pour la variante 70B, ce qui permet… Phi-4 : Phi-4 est un modèle de 14 milliards de paramètres dont la fenêtre de contexte est généralement de 16 000 tokens selon… Le critère « Performances aux benchmarks (MMLU, HumanEval) et interprétation » met en évidence une autre différence pratique : Les résultats publiés pour Llama 3.3 70B font état de performances élevées sur MMLU et HumanEval, souvent comparables… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : capacité et implications : Llama 3.3 est proposé avec une fenêtre de contexte allant jusqu’à 128 000 tokens pour la variante…",
+    "toolB": "votre projet privilégie latence et débit en conditions réelles : Phi-4, avec 14 milliards de paramètres, est conçu pour être plus léger et peut offrir une latence…"
+  }
 }

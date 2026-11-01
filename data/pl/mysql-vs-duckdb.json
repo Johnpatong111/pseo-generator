@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie MySQL i DuckDB w 2026 roku: zastosowania OLTP i OLAP, wydajność analityczna, ekosystem, koszty utrzymania i wskazówki wyboru."
+    "title": "MySQL vs DuckDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj MySQL i DuckDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "Jakie ograniczenia trzeba wziąć pod uwagę przy wyborze DuckDB?",
       "a": "DuckDB nie jest uniwersalnym serwerem bazodanowym dla wielu aplikacji sieciowych i intensywnych transakcji zapisu. Jego siła tkwi w analityce, przetwarzaniu plików i integracji z narzędziami danych, a nie w zastępowaniu klasycznego OLTP. Przed wdrożeniem warto zweryfikować ograniczenia współbieżności oraz wsparcie dla planowanych formatów i integracji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między MySQL a DuckDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach…. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i….",
+  "tradeoffs": [
+    {
+      "category": "Model pracy i architektura",
+      "toolA": "Architektura serwerowa wiąże się z koniecznością administracji, konfiguracji i zabezpieczenia instancji, ale daje trwałe, wielodostępne środowisko produkcyjne.",
+      "toolB": "Taki model upraszcza wdrożenie i uruchomienie, lecz nie jest przeznaczony do równoczesnej pracy wielu niezależnych klientów sieciowych w stylu klasycznego serwera."
+    },
+    {
+      "category": "Profil obciążenia: OLTP vs OLAP",
+      "toolA": "Jest dobrym wyborem dla systemów operacyjnych aplikacji, sklepów i paneli administracyjnych, choć zapytania analityczne na dużych zbiorach mogą wymagać indeksów i optymalizacji.",
+      "toolB": "Świetnie radzi sobie z agregacjami i skanowaniem dużych tabel w plikach, ale nie jest typowym wyborem dla intensywnych transakcji zapisu prowadzonych przez wielu użytkowników."
+    },
+    {
+      "category": "Wydajność zapytań analitycznych",
+      "toolA": "Rzeczywiste wyniki zależą od wersji, konfiguracji, sprzętu i charakteru danych, dlatego nie należy ich uogólniać bez własnych pomiarów.",
+      "toolB": "Ostateczna wydajność nadal zależy od wersji, rozmiaru danych, dostępnej pamięci i złożoności zapytania, więc porównania wymagają testów w konkretnym scenariuszu."
+    },
+    {
+      "category": "Współbieżność i scenariusze wielu użytkowników",
+      "toolA": "Zapewnia mechanizmy izolacji transakcji i kontroli dostępu, choć ich zachowanie zależy od wybranego silnika tabel i konfiguracji.",
+      "toolB": "Współbieżność zapisu jest ograniczona, więc należy sprawdzić aktualną dokumentację, jeśli planowane jest współdzielenie bazy przez wiele procesów."
+    },
+    {
+      "category": "Ekosystem i integracje",
+      "toolA": "Jest szeroko wspierany przez frameworki aplikacyjne, co ułatwia zatrudnianie specjalistów i utrzymanie starszych systemów.",
+      "toolB": "Ekosystem jest młodszy niż w przypadku MySQL, a dostępność konkretnych rozszerzeń i integracji zależy od wersji oraz aktualnej dokumentacji."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Bezpieczeństwo produkcyjne wymaga jednak świadomego utwardzenia instancji i regularnych aktualizacji.",
+      "toolB": "Dla danych wrażliwych należy zabezpieczyć pliki bazy i środowisko uruchomieniowe, zgodnie z aktualnymi zaleceniami dokumentacji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model pracy i architektura. MySQL: MySQL działa jako samodzielny serwer bazy danych, do którego łączą się klienci przez sieć, co pozwala współdzielić… DuckDB: DuckDB działa jako wbudowana baza danych uruchamiana w procesie aplikacji, bez odrębnego serwera. Kolejną istotną różnicę pokazuje kryterium „Profil obciążenia: OLTP vs OLAP”: MySQL jest projektowany przede wszystkim pod obciążenia transakcyjne OLTP: krótkie zapytania, częste wstawianie i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach…",
+    "toolB": "projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "deno-vs-hono",
   "meta": {
-    "title": "Deno vs Hono (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Deno y Hono en 2026: runtime frente a framework web. Diferencias en rendimiento, tipado, despliegue, ecosistema y casos de uso para elegir bien."
+    "title": "Deno vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Deno y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Deno"
@@ -94,5 +94,49 @@
       "q": "¿Qué debo evaluar antes de elegir entre Deno y Hono?",
       "a": "Primero define si necesitas un runtime o un framework web, porque la comparación no es simétrica. Después evalúa el ecosistema de dependencias, los requisitos de seguridad, el destino de despliegue y la experiencia del equipo. Una prueba de concepto con tu carga real suele aclarar más que cualquier comparativa genérica."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Deno y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Deno encaja mejor cuando tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de…. Hono es preferible cuando tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en….",
+  "tradeoffs": [
+    {
+      "category": "Naturaleza y propósito de cada herramienta: no compiten en la misma capa del",
+      "toolA": "No es un framework web: para construir una API necesitas elegir un enrutador o framework adicional.",
+      "toolB": "Su propuesta es ofrecer una API sencilla y portable con un tamaño reducido."
+    },
+    {
+      "category": "Rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas",
+      "toolA": "Las cifras varían según la configuración, el sistema operativo y el tipo de tráfico.",
+      "toolB": "En cargas típicas de APIs, la diferencia frente a otros frameworks ligeros puede ser modesta y estar condicionada por el middleware utilizado."
+    },
+    {
+      "category": "Tipado y experiencia de desarrollo con TypeScript",
+      "toolA": "La experiencia es sólida para scripts, servicios y utilidades, aunque el ecosistema de tipos de terceros es menor que el de Node.js.",
+      "toolB": "Para equipos que valoran el tipado extremo a extremo en la capa HTTP, es una opción muy atractiva."
+    },
+    {
+      "category": "Seguridad y modelo de permisos",
+      "toolA": "No obstante, la seguridad efectiva depende de configurar bien los permisos y de otras prácticas como la validación de entradas.",
+      "toolB": "La responsabilidad de la configuración segura recae en el desarrollador y en el entorno elegido."
+    },
+    {
+      "category": "Ecosistema, compatibilidad y portabilidad",
+      "toolA": "La disponibilidad de paquetes y de herramientas es menor que la de Node.js, pero suficiente para muchos proyectos.",
+      "toolB": "La portabilidad es uno de sus argumentos más fuertes, aunque el comportamiento final depende de las capacidades del runtime elegido."
+    },
+    {
+      "category": "Despliegue, hosting y operación",
+      "toolA": "En entornos empresariales, la operación depende de la infraestructura elegida y de la compatibilidad con los procesos existentes.",
+      "toolB": "Para equipos que priorizan despliegues distribuidos, suele ser una opción muy práctica."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Deno y Hono responden a una necesidad similar, pero difieren en naturaleza y propósito de cada herramienta: no compiten en la misma capa del. Deno: Deno es un runtime de JavaScript y TypeScript, comparable a Node.js, que incluye gestor de dependencias, formateador,… Hono: Hono es un framework web ligero, con un enrutador basado en patrones de rutas y middleware, diseñado para ejecutarse… El criterio de rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas añade otra diferencia práctica: El rendimiento de Deno depende de la versión, del motor V8 subyacente y de la carga de trabajo concreta; el proyecto… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de…",
+    "toolB": "tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en…"
+  }
 }

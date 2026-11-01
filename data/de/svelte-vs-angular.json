@@ -1,8 +1,8 @@
 {
   "slug": "svelte-vs-angular",
   "meta": {
-    "title": "Svelte vs Angular (2026): welche Lösung passt besser?",
-    "description": "Svelte vs Angular 2026 im Vergleich: Reaktivität, Lernkurve, TypeScript, Ökosystem, Performance und Struktur – mit klarer Empfehlung für beide Frameworks."
+    "title": "Svelte vs Angular: welches 2026 wählen — Funktionen, Leistung und Ökosystem",
+    "description": "Vergleiche Svelte und Angular: Bewerte Architekturkompromisse bei Rendering, Routing und Datenladen und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Svelte"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "<script>\n  let name = $state('Welt');\n</script>\n\n<h1>Hallo, {name}!</h1>\n<input bind:value={name} />",
-    "tech2Snippet": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  template: `<h1>Hallo, {{ name }}!</h1>\n    <input [value]=\"name\" (input)=\"name = $any($event.target).value\" />`\n})\nexport class AppComponent {\n  name = 'Welt';\n}\n\nbootstrapApplication(AppComponent);"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>",
+    "tech2Snippet": "import { CommonModule } from \"@angular/common\";\nimport { Component, Input } from \"@angular/core\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\n@Component({\n  selector: \"app-product-list\",\n  standalone: true,\n  imports: [CommonModule],\n  template: `<ul><li *ngFor=\"let product of visibleProducts\">{{ product.name }}</li></ul>`,\n})\nexport class ProductListComponent {\n  @Input({ required: true }) products: Product[] = [];\n  @Input({ required: true }) categoryId = \"\";\n\n  get visibleProducts(): Product[] {\n    return this.products.filter(\n      (product) => product.active && product.categoryId === this.categoryId,\n    );\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Eignet sich Svelte auch für formularintensive Anwendungen?",
       "a": "Svelte deckt einfache Formulare elegant mit Zwei-Wege-Bindung und lokaler Reaktivität ab, für komplexe Validierung sind jedoch häufig externe Bibliotheken oder eigene Logik nötig. Angular bietet mit Reactive Forms und Template-driven Forms zwei ausgereifte, testbare Ansätze inklusive Validierung. Bei vielen komplexen Formularen ist Angular daher oft die komfortablere Wahl, während Svelte mit zusätzlichen Bibliotheken ebenfalls tragfähig ist."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Svelte und Angular verändert den Umgang mit Rendering der Oberfläche und Datenladen; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Svelte passt besser, wenn dein Projekt priorisiert Reaktivitätsmodell und Programmiermodell: Svelte setzt auf einen Compiler, der Komponenten zur Build-Zeit in effizienten Imperativcode…. Angular ist geeigneter, wenn dein Projekt priorisiert TypeScript-Unterstützung: Angular ist von Grund auf TypeScript-zentriert; nahezu jede API, DI-Token und Komponente ist….",
+  "tradeoffs": [
+    {
+      "category": "Reaktivitätsmodell und Programmiermodell",
+      "toolA": "Das Modell ist direkt und require wenig Framework-Code im Browser.",
+      "toolB": "Für Teams mit RxJS-Erfahrung ist das Modell sehr leistungsfähig."
+    },
+    {
+      "category": "Einstieg und Lernkurve",
+      "toolA": "Wer bereits mit modernem JavaScript vertraut ist, kann rasch erste Komponenten bauen.",
+      "toolB": "Angulars offizielle Lernpfade sind umfangreich und gut dokumentiert."
+    },
+    {
+      "category": "TypeScript-Unterstützung",
+      "toolA": "Die Typinferenz innerhalb von Komponenten ist solide, wenn auch weniger eng an ein Framework-Schema gebunden.",
+      "toolB": "Für Teams, die durchgängige Typsicherheit priorisieren, ist das ein klarer Vorteil."
+    },
+    {
+      "category": "Projektstruktur und Skalierbarkeit",
+      "toolA": "Svelte selbst gibt keine starre Struktur vor; SvelteKit ergänzt Routing, serverseitiges Rendering und Build-Konventionen. In großen Projekten müssen Teams Architektur und Konventionen eigenständig definieren. Das ist flexibel, verlangt aber Disziplin.",
+      "toolB": "Für sehr große Anwendungen ist das ein struktureller Vorteil."
+    },
+    {
+      "category": "Ökosystem und Tooling",
+      "toolA": "Die Community wächst und die Dokumentation ist gut zugänglich.",
+      "toolB": "Für Enterprise-Anforderungen ist die Verfügbarkeit unterstützender Bibliotheken ein Vorteil."
+    },
+    {
+      "category": "Performance und Laufzeitgröße",
+      "toolA": "Die tatsächliche Performance hängt jedoch stark von Arbeitslast, Renderingstrategie und Bundle-Konfiguration ab.",
+      "toolB": "Pauschale Aussagen zur Überlegenheit sind ohne konkrete Messungen nicht belastbar."
+    }
+  ],
+  "introduction": "Svelte und Angular lösen ein ähnliches Problem, unterscheiden sich jedoch bei reaktivitätsmodell und programmiermodell. Svelte: Svelte setzt auf einen Compiler, der Komponenten zur Build-Zeit in effizienten Imperativcode überführt. Angular: Angular nutzt ab Version 17 Signals als reaktives Primitiv, ergänzt durch RxJS für asynchrone Streams und… Das Kriterium einstieg und lernkurve zeigt einen weiteren praktischen Unterschied: Svelte hat eine vergleichsweise niedrige Einstiegshürde: HTML, CSS und JavaScript werden in einer einzigen… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Reaktivitätsmodell und Programmiermodell: Svelte setzt auf einen Compiler, der Komponenten zur Build-Zeit in effizienten Imperativcode…",
+    "toolB": "dein Projekt priorisiert TypeScript-Unterstützung: Angular ist von Grund auf TypeScript-zentriert; nahezu jede API, DI-Token und Komponente ist…"
+  }
 }

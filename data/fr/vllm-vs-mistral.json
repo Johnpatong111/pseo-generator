@@ -1,8 +1,8 @@
 {
   "slug": "vllm-vs-mistral",
   "meta": {
-    "title": "vLLM vs Mistral (2026): quelle solution choisir ?",
-    "description": "vLLM est un moteur de serving LLM open source, Mistral un fournisseur de modèles et d'API. Comparez-les en 2026 pour choisir la bonne brique selon vos besoins."
+    "title": "vLLM vs Mistral: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez vLLM et Mistral : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "vLLM"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Installation : pip install vllm\n# Lancement d'un serveur compatible API OpenAI\n# vllm serve mistralai/Mistral-7B-Instruct-v0.3 --port 8000\n\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"http://localhost:8000/v1\", api_key=\"EMPTY\")\nresponse = client.chat.completions.create(\n    model=\"mistralai/Mistral-7B-Instruct-v0.3\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour !\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Installation : pip install mistralai\nimport os\nfrom mistralai import Mistral\n\nclient = Mistral(api_key=os.environ[\"MISTRAL_API_KEY\"])\nresponse = client.chat.complete(\n    model=\"mistral-small-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour !\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:8000/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on combiner vLLM et Mistral dans une même architecture ?",
       "a": "Oui, une architecture hybride est possible : utiliser l'API Mistral pour des besoins ponctuels ou des modèles propriétaires, et vLLM pour des modèles à poids ouverts hébergés en interne. Cette approche permet de répartir les charges et de limiter la dépendance à un seul fournisseur. Elle ajoute toutefois de la complexité opérationnelle et demande une gestion cohérente des accès et des coûts."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre vLLM et Mistral modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "vLLM convient mieux lorsque votre projet privilégie confidentialité, sécurité et conformité : Avec vLLM, les données restent sur votre infrastructure, ce qui facilite certaines exigences de…. Mistral est préférable lorsque votre projet privilégie mode de déploiement et infrastructure : Mistral peut s'utiliser via une API hébergée, ce qui évite de provisionner des GPU et de gérer….",
+  "tradeoffs": [
+    {
+      "category": "Nature de l'outil et rôle dans la pile technique",
+      "toolA": "Il s'installe sur votre propre infrastructure et sert des poids de modèles que vous chargez, ce qui en fait une brique d'exécution plutôt qu'un fournisseur de modèles.",
+      "toolB": "Selon l'offre, vous consommez ses modèles via API ou vous téléchargez certains poids pour les héberger vous-même."
+    },
+    {
+      "category": "Modèles disponibles et liberté de choix",
+      "toolA": "Cette liberté est grande mais dépend de la compatibilité effective de chaque modèle avec la version de vLLM utilisée.",
+      "toolB": "Le choix reste limité à son écosystème, ce qui simplifie les décisions mais réduit la variété par rapport à un moteur agnostique."
+    },
+    {
+      "category": "Mode de déploiement et infrastructure",
+      "toolA": "Il offre un contrôle fin, au prix d'une charge d'exploitation réelle.",
+      "toolB": "L'hébergement de poids ouverts reste possible mais dépend alors de votre propre moteur et de vos moyens."
+    },
+    {
+      "category": "Performances et efficacité d'inférence",
+      "toolA": "Les résultats concrets dépendent fortement du modèle, du matériel, de la version et de la charge.",
+      "toolB": "Mistral communique sur l'efficacité de ses modèles, mais les chiffres varient selon les versions et les conditions d'usage."
+    },
+    {
+      "category": "Coûts et modèle économique",
+      "toolA": "L'économie devient intéressante surtout à volume élevé et avec une utilisation soutenue des GPU.",
+      "toolB": "Ce modèle est prévisible pour de petits volumes mais peut devenir coûteux à très grande échelle, selon les tarifs publiés."
+    },
+    {
+      "category": "Facilité de prise en main et intégration",
+      "toolA": "La configuration initiale, notamment GPU et mémoire, demande toutefois des compétences en ops.",
+      "toolB": "La prise en main est plus simple pour une équipe applicative, mais crée une dépendance au fournisseur et à ses conditions."
+    }
+  ],
+  "introduction": "vLLM et Mistral répondent à un besoin proche, mais diffèrent sur nature de l'outil et rôle dans la pile technique. vLLM : vLLM est un moteur de serving et d'inférence pour modèles de langage, distribué en open source. Mistral : Mistral est un fournisseur de modèles (poids ouverts et modèles propriétaires) qui propose aussi une plateforme d'API… Le critère « Modèles disponibles et liberté de choix » met en évidence une autre différence pratique : vLLM ne fournit pas de modèles : il charge des poids compatibles avec les architectures prises en charge, souvent… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie confidentialité, sécurité et conformité : Avec vLLM, les données restent sur votre infrastructure, ce qui facilite certaines exigences de…",
+    "toolB": "votre projet privilégie mode de déploiement et infrastructure : Mistral peut s'utiliser via une API hébergée, ce qui évite de provisionner des GPU et de gérer…"
+  }
 }

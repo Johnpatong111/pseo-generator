@@ -1,8 +1,8 @@
 {
   "slug": "gpt-4o-vs-mistral-large",
   "meta": {
-    "title": "GPT-4o vs Mistral Large (2026): welche Lösung passt besser?",
-    "description": "Vergleich GPT-4o vs Mistral Large: Kontextfenster, Leistung, Preise, Latenz, Zugang und Einsatzgebiete. Entscheidungshilfe für 2026 mit Hinweisen zu Versionsabhängigkeiten."
+    "title": "GPT-4o vs Mistral Large: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche GPT-4o und Mistral Large: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "GPT-4o"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"IHR_OPENAI_API_KEY\")\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"IHR_MISTRAL_API_KEY\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Wie zuverlässig sind die veröffentlichten Latenzangaben?",
       "a": "Öffentlich verfügbare Latenzangaben sind oft Durchschnittswerte oder beziehen sich auf bestimmte Bedingungen und sind nicht als Garantie zu verstehen. Die tatsächliche Latenz hängt von Region, Auslastung, Prompt-Länge und Modellversion ab. Für eine belastbare Entscheidung sollten Sie Messungen in Ihrer Zielumgebung durchführen und gegebenenfalls mehrere Regionen vergleichen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen GPT-4o und Mistral Large verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "GPT-4o passt besser, wenn dein Projekt priorisiert Multimodale Fähigkeiten: GPT-4o ist multimodal ausgerichtet und kann Text, Bild- und Audio-Eingaben verarbeiten, wobei der…. Mistral Large ist geeigneter, wenn dein Projekt priorisiert Modellzugang und Offenheit (Open vs: Mistral Large ist als kommerzielles Modell über die Mistral-API und verschiedene Cloud-Partner….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Verarbeitung langer Eingaben",
+      "toolA": "Für Anwendungen mit langen Dokumenten, mehrstufigen Dialogen oder umfangreichen Codebasen ist das Window großzügig bemessen, sollte aber vor Produktivbetrieb anhand der offiziellen Modellbeschreibung verifiziert werden.",
+      "toolB": "Für lange Kontexte ist damit ebenfalls eine solide Grundlage gegeben, jedoch nicht pauschal mit GPT-4o gleichzusetzen."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval, sofern vergleichbar)",
+      "toolA": "Für allgemeine Wissensfragen und Code-Aufgaben zeigen die veröffentlichten Zahlen eine starke Leistung, ohne dass hier eigene Messungen vorliegen.",
+      "toolB": "Eine belastbare Aussage erfordert daher die Prüfung der jeweils aktuellen Modellkarten und idealerweise eigene Tests mit der Ziel-Workload."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token",
+      "toolA": "Eine genaue Bezifferung ist ohne aktuellen Stand der offiziellen Preisseite nicht seriös möglich.",
+      "toolB": "Ein pauschaler Preisvergleich ist daher nur qualitativ möglich und von der konkreten Vertrags- und Nutzungssituation abhängig."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Qualitative Berichte deuten auf eine für interaktive Anwendungen geeignete Performance hin, ohne dass dies hier als gemessener Wert behauptet wird.",
+      "toolB": "Konkrete Latenzwerte sollten daher nicht als allgemeingültig angenommen, sondern für den eigenen Einsatzfall erhoben werden."
+    },
+    {
+      "category": "Modellzugang und Offenheit (Open vs",
+      "toolA": "Das erleichtert die Integration, schränkt aber die Kontrolle über das Modell und die Datenverarbeitung ein.",
+      "toolB": "Für Szenarien mit lokaler Bereitstellung oder europäischer Datenhaltung kann Mistral Large daher attraktiver sein, sofern die konkrete Lizenz dies zulässt."
+    },
+    {
+      "category": "Multimodale Fähigkeiten",
+      "toolA": "Die Verfügbarkeit einzelner Modalitäten sollte in der aktuellen OpenAI-Dokumentation geprüft werden.",
+      "toolB": "Ein direkter Vergleich der Multimodalität fällt daher zugunsten von GPT-4o aus."
+    }
+  ],
+  "introduction": "GPT-4o und Mistral Large lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und verarbeitung langer eingaben. GPT-4o: GPT-4o unterstützt laut OpenAI ein Kontextfenster von 128.000 Token, wobei die effektiv nutzbare Länge je nach… Mistral Large: Mistral Large bietet je nach Version unterschiedliche Kontextfenster; neuere Varianten wie Mistral Large 2… Das Kriterium benchmark-leistung (mmlu und humaneval, sofern vergleichbar) zeigt einen weiteren praktischen Unterschied: OpenAI veröffentlicht für GPT-4o Benchmark-Ergebnisse, darunter MMLU und HumanEval, die je nach Modell-Snapshot und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Multimodale Fähigkeiten: GPT-4o ist multimodal ausgerichtet und kann Text, Bild- und Audio-Eingaben verarbeiten, wobei der…",
+    "toolB": "dein Projekt priorisiert Modellzugang und Offenheit (Open vs: Mistral Large ist als kommerzielles Modell über die Mistral-API und verschiedene Cloud-Partner…"
+  }
 }

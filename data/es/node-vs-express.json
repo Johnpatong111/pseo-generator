@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-express",
   "meta": {
-    "title": "Node.js vs Express (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Node.js y Express en 2026: diferencias reales, rendimiento, seguridad, ecosistema y casos de uso para elegir la base tecnológica adecuada."
+    "title": "Node.js vs Express: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Node.js y Express: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Node.js"
@@ -88,5 +88,49 @@
       "q": "¿Cuál es la forma coherente de combinar Node.js y Express?",
       "a": "La combinación habitual es usar Node.js como runtime y Express como capa de enrutado y middleware sobre él. Node.js aporta el modelo asíncrono y los módulos base; Express aporta rutas, respuestas y utilidades web. En muchos casos no hay que elegir entre ambos, sino decidir si Express aporta valor a tu proyecto. Revisa las versiones compatibles y mantén actualizadas ambas piezas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Node.js y Express cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad…. Express es preferible cuando tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y….",
+  "tradeoffs": [
+    {
+      "category": "Naturaleza y propósito: ¿son herramientas del mismo tipo",
+      "toolA": "Su función es proporcionar el runtime, la gestión de eventos, la E/S asíncrona y los módulos principales.",
+      "toolB": "Su enfoque es poner convenciones sencillas para construir API y aplicaciones web sin imponer una arquitectura de proyecto completa."
+    },
+    {
+      "category": "Facilidad de uso y curva de aprendizaje",
+      "toolA": "La curva depende del lenguaje JavaScript y de la experiencia previa en backend.",
+      "toolB": "La dificultad aparece al diseñar aplicaciones grandes, donde la libertad del framework requiere disciplina propia."
+    },
+    {
+      "category": "Rendimiento y modelo de concurrencia",
+      "toolA": "No conviene asumir cifras concretas sin medir el caso real.",
+      "toolB": "En una comparación justa, Express no es más rápido ni más lento que Node.js por sí mismo; el resultado depende de la configuración."
+    },
+    {
+      "category": "Ecosistema y ecosistema de middleware",
+      "toolA": "La calidad y el mantenimiento de los paquetes varían, por lo que conviene revisar su actividad antes de adoptarlos.",
+      "toolB": "Su popularidad facilita encontrar ejemplos y documentación adicional."
+    },
+    {
+      "category": "Seguridad y mantenimiento a largo plazo",
+      "toolA": "Mantener Node.js actualizado es una medida básica para recibir correcciones.",
+      "toolB": "No debe atribuirse a Express una protección automática frente a vulnerabilidades comunes."
+    },
+    {
+      "category": "Estructura y escalabilidad del proyecto",
+      "toolA": "Para proyectos pequeños o servicios muy específicos puede ser suficiente, mientras que en equipos grandes el orden debe construirse deliberadamente.",
+      "toolB": "Su flexibilidad es una ventaja y un riesgo si no se disciplina el proyecto."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Node.js y Express responden a una necesidad similar, pero difieren en naturaleza y propósito: ¿son herramientas del mismo tipo. Node.js: Node.js es un entorno de ejecución de JavaScript basado en el motor V8 que permite ejecutar código fuera del navegador. Express: Express es una biblioteca de aplicación web minimalista que se ejecuta sobre Node.js y añade abstracciones para rutas,… El criterio de facilidad de uso y curva de aprendizaje añade otra diferencia práctica: Node.js exige comprender su modelo asíncrono, los módulos nativos, la gestión de dependencias con npm y el manejo de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad…",
+    "toolB": "tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y…"
+  }
 }

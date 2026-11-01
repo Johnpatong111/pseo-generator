@@ -1,8 +1,8 @@
 {
   "slug": "openai-vs-mistral",
   "meta": {
-    "title": "OpenAI vs Mistral (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie OpenAI i Mistral w 2026: modele, API, koszty, prywatność, zgodność ze standardami i wsparcie. Sprawdź, które rozwiązanie lepiej pasuje do Twojego projektu."
+    "title": "OpenAI vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj OpenAI i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "OpenAI"
@@ -94,5 +94,49 @@
       "q": "Który dostawca ma lepsze wsparcie i ekosystem integracji?",
       "a": "OpenAI ma szerszy ekosystem bibliotek, integracji i materiałów edukacyjnych, co ułatwia szybkie prototypowanie i zatrudnianie specjalistów. Mistral rozwija ekosystem wokół modeli otwartych i społeczności, ale liczba gotowych integracji jest mniejsza, więc część pracy może wymagać własnych zasobów."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między OpenAI a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "OpenAI będzie lepszy, gdy projekt stawia na kryterium „Zakres i dostępność modeli”: OpenAI utrzymuje rodzinę modeli ogólnego przeznaczenia, w tym warianty do rozumowania, szybkie…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Sposób wdrożenia i elastyczność infrastruktury”: Mistral pozwala korzystać z modeli przez API w chmurze, a wybrane modele otwarte można hostować we….",
+  "tradeoffs": [
+    {
+      "category": "Zakres i dostępność modeli",
+      "toolA": "Konkretna dostępność zależy od planu, regionu i wersji API, dlatego przed wdrożeniem trzeba sprawdzić aktualną dokumentację.",
+      "toolB": "Dostępność poszczególnych modeli i ich wersji różni się w zależności od kanału udostępniania oraz planu, więc wybór warto potwierdzić w dokumentacji dostawcy."
+    },
+    {
+      "category": "Sposób wdrożenia i elastyczność infrastruktury",
+      "toolA": "To upraszcza uruchomienie, ale ogranicza kontrolę nad infrastrukturą i wymusza zależność od dostępności usługi.",
+      "toolB": "Daje to większą elastyczność w zakresie suwerenności danych i strojenia, choć wdrożenia lokalne wymagają kompetencji operacyjnych i sprzętu."
+    },
+    {
+      "category": "Koszty i przewidywalność wydatków",
+      "toolA": "Przy dużym wolumenie warto rozważyć limity, monitoring zużycia i optymalizację promptów.",
+      "toolB": "Ostateczny koszt zależy od wybranego modelu, planu i skali, a w przypadku hostingu własnego trzeba doliczyć wydatki na sprzęt, utrzymanie i zespół."
+    },
+    {
+      "category": "Prywatność, zgodność i lokalizacja danych",
+      "toolA": "Organizacje objęte RODO powinny zweryfikować umowy powierzenia, regiony przetwarzania i konfigurację retencji danych.",
+      "toolB": "Szczegóły dotyczące regionów, retencji i podprocesorów trzeba jednak potwierdzić w dokumentacji i umowie dla konkretnego planu."
+    },
+    {
+      "category": "Jakość odpowiedzi i obsługa języka polskiego",
+      "toolA": "Rzeczywiste wyniki zależą od wersji modelu, sposobu formułowania promptów i parametrów generowania.",
+      "toolB": "Przy zadaniach specjalistycznych warto przeprowadzić własną ocenę na próbce danych, ponieważ wyniki różnią się między modelami i wersjami."
+    },
+    {
+      "category": "Ekosystem, integracje i wsparcie społeczności",
+      "toolA": "Dostępność narzędzi i partnerów zależy od regionu oraz planu, ale baza integracji jest szeroka.",
+      "toolB": "Społeczność i liczba gotowych integracji są mniejsze niż w przypadku OpenAI, więc część pracy integracyjnej może wymagać własnych zasobów."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "OpenAI i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze zakres i dostępność modeli. OpenAI: OpenAI utrzymuje rodzinę modeli ogólnego przeznaczenia, w tym warianty do rozumowania, szybkie modele do codziennych… Mistral: Mistral oferujeModele otwarte i komercyjne, w tym warianty zoptymalizowane pod szybkość, rozumowanie i pracę z kodem,… Kolejną istotną różnicę pokazuje kryterium „Sposób wdrożenia i elastyczność infrastruktury”: OpenAI jest przede wszystkim usługą chmurową dostępną przez API i aplikacje partnerskie; nie oferuje publicznie… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Zakres i dostępność modeli”: OpenAI utrzymuje rodzinę modeli ogólnego przeznaczenia, w tym warianty do rozumowania, szybkie…",
+    "toolB": "projekt stawia na kryterium „Sposób wdrożenia i elastyczność infrastruktury”: Mistral pozwala korzystać z modeli przez API w chmurze, a wybrane modele otwarte można hostować we…"
+  }
 }

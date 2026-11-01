@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-command-r-plus",
   "meta": {
-    "title": "Llama 3.3 vs Command R+ (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Llama 3.3 i Command R+ pod kątem kontekstu, wydajności, cen API, dostępu i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Llama 3.3 vs Command R+: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Llama 3.3 i Command R+: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom llama_cpp import Llama\n\n# Wymaga pobrania wag modelu Llama 3.3 (np. w formacie GGUF) i biblioteki llama-cpp-python\nllm = Llama(model_path=\"Llama-3.3-70B-Instruct.Q4_K_M.gguf\", n_ctx=4096)\nresponse = llm(\"Hello, world! Odpowiedz krótko.\", max_tokens=32)\nprint(response[\"choices\"][0][\"text\"])",
-    "tech2Snippet": "import cohere\n\nco = cohere.Client(api_key=\"TWOJ_KLUCZ_API\")\nresponse = co.chat(\n    message=\"Hello, world! Odpowiedz krótko.\",\n    model=\"command-r-plus\",\n    max_tokens=32\n)\nprint(response.text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Który model lepiej wypada w generowaniu kodu?",
       "a": "Llama 3.3 osiąga konkurencyjne wyniki na benchmarku HumanEval, co sugeruje dobrą jakość generowania kodu, ale rzeczywista wydajność zależy od języka i kontekstu. Command R+ również może generować kod, ale jest bardziej ukierunkowany na zadania RAG i konwersacyjne. Warto przeprowadzić własne testy na reprezentatywnych przykładach."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Llama 3.3 a Command R+ zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Llama 3.3 będzie lepszy, gdy projekt stawia na kryterium „Dostęp do modelu i otwartość”: Llama 3.3 jest modelem otwartym na licencji Meta Llama 3.3, co pozwala na pobranie wag i…. Command R+ sprawdzi się, gdy projekt stawia na kryterium „Zastosowania praktyczne (RAG, agenci, kod)”: Command R+ został zaprojektowany z myślą o RAG i zastosowaniach agentowych – oferuje natywne….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Warto sprawdzić, czy wybrany dostawca udostępnia pełne okno bez dodatkowych ograniczeń.",
+      "toolB": "Nowsze wersje Command R+ mogą mieć inne parametry, dlatego należy zweryfikować aktualną specyfikację u dostawcy."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "Należy pamiętać, że benchmarki nie odzwierciedlają w pełni wydajności w rzeczywistych zastosowaniach.",
+      "toolB": "Nie należy zakładać przewagi na podstawie pojedynczych liczb bez weryfikacji kontekstu pomiaru."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Konieczne jest sprawdzenie cennika wybranego dostawcy.",
+      "toolB": "W 2026 roku należy zweryfikować aktualny cennik na oficjalnej stronie Cohere, ponieważ stawki mogą zależeć od wolumenu i planu."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "Wersje kwantyzowane lub hostowane na słabszym sprzęcie mogą mieć wyższe opóźnienia, dlatego przed wdrożeniem produkcyjnym warto przeprowadzić testy obciążeniowe.",
+      "toolB": "Cohere nie publikuje szczegółowych wskaźników latencji dla wszystkich regionów, więc należy je zweryfikować w dokumentacji lub testach."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostępność zależy od akceptacji licencji i możliwości infrastrukturalnych.",
+      "toolB": "To ogranicza możliwość samodzielnego hostowania i modyfikacji, ale upraszcza wdrożenie i utrzymanie."
+    },
+    {
+      "category": "Zastosowania praktyczne (RAG, agenci, kod)",
+      "toolA": "W zastosowaniach RAG wymaga zewnętrznego orkiestratora i integracji z bazą wektorową.",
+      "toolB": "Sprawdza się też w zadaniach wymagających wielojęzyczności, ale może wymagać dostosowania do specyficznych potrzeb."
+    }
+  ],
+  "introduction": "Llama 3.3 i Command R+ odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Llama 3.3: Llama 3.3 w wersji 70B oferuje okno kontekstu do 128 tysięcy tokenów, co pozwala przetwarzać długie dokumenty, rozmowy… Command R+: Command R+ w wersji z 2024 roku ma okno kontekstu 128 tysięcy tokenów, podobnie jak Llama 3.3, i jest projektowany z… Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Meta publikowała wyniki Llama 3.3 70B na benchmarkach takich jak MMLU i HumanEval, osiągając wartości konkurencyjne… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dostęp do modelu i otwartość”: Llama 3.3 jest modelem otwartym na licencji Meta Llama 3.3, co pozwala na pobranie wag i…",
+    "toolB": "projekt stawia na kryterium „Zastosowania praktyczne (RAG, agenci, kod)”: Command R+ został zaprojektowany z myślą o RAG i zastosowaniach agentowych – oferuje natywne…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-podman",
   "meta": {
-    "title": "Docker vs Podman (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Docker y Podman en 2026: arquitectura sin demonio, seguridad, Kubernetes, rendimiento, ecosistema y flujos de trabajo para elegir la mejor opción."
+    "title": "Docker vs Podman: cuál elegir en 2026 — despliegue, escalabilidad y costes",
+    "description": "Compara Docker y Podman: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Docker"
@@ -100,5 +100,49 @@
       "q": "¿Qué debo valorar si mi equipo es pequeño y empieza ahora?",
       "a": "Si el equipo busca una curva de aprendizaje suave, abundante documentación y una experiencia integrada en Windows o macOS, Docker suele ser la opción más directa. Si el trabajo se centra en Linux, se valora la ejecución rootless, la integración con systemd y los pods, Podman puede encajar mejor. En ambos casos, conviene definir desde el inicio cómo se gestionarán imágenes, secretos, redes y actualizaciones."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Docker y Podman cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Docker encaja mejor cuando tu proyecto prioriza construcción de imágenes: Docker integra BuildKit como motor de construcción moderno, con caché avanzada, montajes secretos,…. Podman es preferible cuando tu proyecto prioriza arquitectura: demonio frente a modelo sin demonio: Podman funciona sin un demonio persistente: cada comando lanza procesos que gestionan el ciclo de….",
+  "tradeoffs": [
+    {
+      "category": "Arquitectura: demonio frente a modelo sin demonio",
+      "toolA": "En configuraciones rootless, Docker también puede ejecutarse sin privilegios de root, aunque el modelo sigue girando en torno al demonio.",
+      "toolB": "La ausencia de demonio no elimina la necesidad de configurar correctamente permisos y almacenamiento."
+    },
+    {
+      "category": "Compatibilidad con la CLI y migración",
+      "toolA": "No obstante, algunas diferencias de versión y de plugins pueden afectar a comandos concretos.",
+      "toolB": "La compatibilidad es alta, pero no absoluta: ciertos flags, comportamientos de redes o funciones específicas de Docker pueden requerir ajustes."
+    },
+    {
+      "category": "Construcción de imágenes",
+      "toolA": "El rendimiento real depende de la carga, la caché y el hardware disponible.",
+      "toolB": "Para equipos que ya usan Buildah, la integración resulta especialmente coherente."
+    },
+    {
+      "category": "Seguridad y ejecución sin privilegios",
+      "toolA": "La seguridad efectiva depende mucho de la configuración y del entorno.",
+      "toolB": "No obstante, rootless no es sinónimo de seguridad automática: siguen siendo necesarias buenas prácticas de imágenes, redes y permisos."
+    },
+    {
+      "category": "Orquestación, pods y Kubernetes",
+      "toolA": "La orquestación a gran escala no es el objetivo principal de Docker por sí solo, sino de plataformas como Kubernetes o Swarm.",
+      "toolB": "La generación de manifiestos ayuda, aunque no sustituye una revisión completa de recursos, políticas y almacenamiento."
+    },
+    {
+      "category": "Ecosistema, herramientas y soporte empresarial",
+      "toolA": "El soporte empresarial y las funciones de Docker Desktop dependen del plan contratado y de las condiciones vigentes.",
+      "toolB": "El soporte comercial depende del proveedor y de la suscripción elegida."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Docker y Podman responden a una necesidad similar, pero difieren en arquitectura: demonio frente a modelo sin demonio. Docker: Docker utiliza un demonio central (dockerd) que gestiona contenedores, imágenes, redes y volúmenes, y los clientes se… Podman: Podman funciona sin un demonio persistente: cada comando lanza procesos que gestionan el ciclo de vida de los… El criterio de compatibilidad con la cli y migración añade otra diferencia práctica: Docker ofrece la CLI de referencia del sector, con subcomandos muy conocidos como docker run, docker build, docker ps… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza construcción de imágenes: Docker integra BuildKit como motor de construcción moderno, con caché avanzada, montajes secretos,…",
+    "toolB": "tu proyecto prioriza arquitectura: demonio frente a modelo sin demonio: Podman funciona sin un demonio persistente: cada comando lanza procesos que gestionan el ciclo de…"
+  }
 }

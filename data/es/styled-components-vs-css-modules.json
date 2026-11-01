@@ -1,8 +1,8 @@
 {
   "slug": "styled-components-vs-css-modules",
   "meta": {
-    "title": "styled-components vs CSS Modules (2026): ¿Qué solución elegir?",
-    "description": "Comparamos styled-components y CSS Modules en 2026: rendimiento, tipado, mantenimiento, ecosistema y encaje en distintos tipos de proyecto para elegir bien."
+    "title": "styled-components vs CSS Modules: cuál elegir en 2026 — estilos, componentes y flujo de desarrollo",
+    "description": "Compara styled-components y CSS Modules: evalúa sus compromisos arquitectónicos en API de componentes, aislamiento de estilos y mantenimiento y revisa ejemplos TypeScript para elegir el stack…"
   },
   "toolA": {
     "name": "styled-components"
@@ -88,5 +88,49 @@
       "q": "¿Cuál es más segura desde el punto de vista de dependencias?",
       "a": "CSS Modules no añade una biblioteca de estilos al runtime, pero depende de la cadena de compilación, por lo que hay que mantener actualizados bundlers y plugins. styled-components añade una dependencia directa que debe revisarse por compatibilidad y avisos de seguridad. En ambos casos, la práctica recomendada es auditar dependencias, fijar versiones y revisar las notas de cada actualización."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre styled-components y CSS Modules cambia cómo se aborda la gestión de estilos y la composición de interfaces; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "styled-components encaja mejor cuando tu proyecto prioriza estilos dinámicos basados en props y estado: Permite derivar estilos directamente de props, temas y estado del componente con una ergonomía…. CSS Modules es preferible cuando tu proyecto prioriza modelo de autoría y ubicación de los estilos: Mantiene hojas .css reales junto al componente y usa nombres de clase locales con hashes generados….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de autoría y ubicación de los estilos",
+      "toolA": "Esta colocalización facilita razonar sobre un componente aislado, pero introduce sintaxis CSS dentro de JS que algunas herramientas de edición y revisión tratan con menor madurez.",
+      "toolB": "Esto favorece la familiaridad, el uso de preprocesadores y el trabajo de perfiles centrados en CSS, aunque exige gestionar dos archivos por componente y mantener la coherencia de nombres."
+    },
+    {
+      "category": "Rendimiento y coste en tiempo de ejecución",
+      "toolA": "Su impacto real depende de la versión, del tamaño de la aplicación y del soporte de compilación que se use, por lo que no conviene generalizar sin medir.",
+      "toolB": "El coste en ejecución del propio sistema es mínimo, aunque el CSS resultante puede crecer y conviene vigilar duplicaciones y el tamaño final de la hoja."
+    },
+    {
+      "category": "Estilos dinámicos basados en props y estado",
+      "toolA": "Esa comodidad puede aumentar la cantidad de clases generadas y conviene valorar el rendimiento en componentes muy reutilizados o con muchos estados.",
+      "toolB": "Requiere algo más de disciplina para nombrar variantes y puede resultar menos directo cuando los estilos dependen de valores arbitrarios de JavaScript."
+    },
+    {
+      "category": "Compatibilidad con React Server Components y frameworks modernos",
+      "toolA": "Antes de adoptarlo en arquitecturas nuevas, conviene revisar la documentación oficial vigente y probar el flujo de renderizado concreto.",
+      "toolB": "No obstante, el soporte exacto depende de la herramienta de build o del framework elegido, así que conviene validarlo en una prueba pequeña."
+    },
+    {
+      "category": "Tipado, autocompletado y experiencia en TypeScript",
+      "toolA": "Algunas construcciones con template literals pueden perder precisión o resultar más difíciles de analizar estáticamente que CSS puro.",
+      "toolB": "Con una configuración cuidada funciona bien, pero el flujo no es tan inmediato como en una biblioteca con tipos propios."
+    },
+    {
+      "category": "Mantenimiento, refactorización y trabajo en equipo",
+      "toolA": "A cambio, mezclar estilos y lógica puede dificultar revisiones centradas solo en presentación y aumentar la complejidad de archivos grandes.",
+      "toolB": "La contrapartida es que eliminar un componente exige revisar también su hoja asociada, y que los nombres locales deben gestionarse con convenciones consistentes."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import styled from \"styled-components\";\n\nconst ProductCardShell = styled.article`\n  display: grid;\n  gap: 0.75rem;\n  padding: 1rem;\n  border: 1px solid #cbd5e1;\n  border-radius: 0.75rem;\n`;\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <ProductCardShell aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </ProductCardShell>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
+  },
+  "introduction": "styled-components y CSS Modules responden a una necesidad similar, pero difieren en modelo de autoría y ubicación de los estilos. styled-components: Define los estilos en archivos JavaScript o TypeScript mediante template literals o funciones, de modo que cada… CSS Modules: Mantiene hojas .css reales junto al componente y usa nombres de clase locales con hashes generados en build,… El criterio de rendimiento y coste en tiempo de ejecución añade otra diferencia práctica: Genera y aplica estilos en el cliente o en el servidor según el framework y la configuración, lo que puede añadir… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza estilos dinámicos basados en props y estado: Permite derivar estilos directamente de props, temas y estado del componente con una ergonomía…",
+    "toolB": "tu proyecto prioriza modelo de autoría y ubicación de los estilos: Mantiene hojas .css reales junto al componente y usa nombres de clase locales con hashes generados…"
+  }
 }

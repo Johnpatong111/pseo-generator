@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-v3-vs-qwen-2-5",
   "meta": {
-    "title": "DeepSeek V3 vs Qwen 2.5 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie DeepSeek V3 i Qwen 2.5 pod kątem kontekstu, wydajności, cen API, opóźnień i dostępności. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "DeepSeek V3 vs Qwen 2.5: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj DeepSeek V3 i Qwen 2.5: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "DeepSeek V3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import requests\n\nresponse = requests.post(\n    \"https://api.deepseek.com/v1/chat/completions\",\n    headers={\"Authorization\": \"Bearer YOUR_API_KEY\"},\n    json={\n        \"model\": \"deepseek-chat\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n    }\n)\nprint(response.json()[\"choices\"][0][\"message\"][\"content\"])",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Jakie są ograniczenia tych modeli?",
       "a": "Oba modele mogą generować nieprawidłowe lub nieaktualne informacje, więc w zastosowaniach krytycznych należy weryfikować odpowiedzi. DeepSeek V3 może wymagać znacznych zasobów przy wdrożeniu lokalnym, a Qwen 2.5 w większych wariantach również potrzebuje wydajnego sprzętu. Ponadto dostępność funkcji, limity i ceny zależą od dostawcy i mogą się zmieniać, dlatego przed wdrożeniem trzeba zapoznać się z aktualną dokumentacją. Nie należy zakładać, że wyniki benchmarków przełożą się bezpośrednio na jakość w konkretnym zastosowaniu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między DeepSeek V3 a Qwen 2.5 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "DeepSeek V3 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: DeepSeek V3 w wersji z 2024/2025 roku jest udostępniany z oknem kontekstu rzędu 64 tys. Qwen 2.5 sprawdzi się, gdy projekt stawia na kryterium „Okno kontekstu”: Qwen 2.5 występuje w wielu rozmiarach (od 0,5B do 72B) i niektóre warianty oferują kontekst do 128….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce duży kontekst pozwala przetwarzać długie dokumenty i rozmowy, jednak przy bardzo długich wejściach mogą rosnąć koszty i opóźnienia, więc warto testować zachowanie modelu przy zbliżaniu się do limitu.",
+      "toolB": "W aplikacjach wymagających długich wejść warto preferować warianty z jawnie deklarowanym dużym oknem."
+    },
+    {
+      "category": "Wydajność na benchmarkach (MMLU, HumanEval)",
+      "toolA": "Nie należy traktować ich jako gwarancji wydajności w konkretnym zastosowaniu.",
+      "toolB": "Publikowane wyniki są punktem wyjścia, a nie dowodem przewagi w każdym scenariuszu."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Ze względu na zmienność cen nie podajemy tu konkretnych kwot.",
+      "toolB": "Podobnie jak w przypadku DeepSeek V3, aktualne stawki należy weryfikować w oficjalnych cennikach, ponieważ zmieniają się wraz z promocjami i wersjami."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "Nie publikujemy tu konkretnych liczb, bo są one zmienne.",
+      "toolB": "Rzeczywiste opóźnienia należy mierzyć w kontekście własnego obciążenia i konfiguracji."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Dostępność API i warunki licencji mogą się różnić w zależności od regionu i dostawcy.",
+      "toolB": "Należy jednak zweryfikować licencję konkretnego wariantu, bo mogą występować wyjątki."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Warto testować go na własnych danych, ponieważ jakość zależy od promptów i konfiguracji.",
+      "toolB": "Mniejsze warianty sprawdzają się w środowiskach o ograniczonych zasobach, a większe w aplikacjach wymagających wyższej jakości."
+    }
+  ],
+  "introduction": "DeepSeek V3 i Qwen 2.5 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. DeepSeek V3: DeepSeek V3 w wersji z 2024/2025 roku jest udostępniany z oknem kontekstu rzędu 64 tys. Qwen 2.5: Qwen 2.5 występuje w wielu rozmiarach (od 0,5B do 72B) i niektóre warianty oferują kontekst do 128 tys. Kolejną istotną różnicę pokazuje kryterium „Wydajność na benchmarkach (MMLU, HumanEval)”: DeepSeek V3 osiąga wysokie wyniki w publikowanych benchmarkach, w tym MMLU i HumanEval, co sugeruje dobrą ogólną… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: DeepSeek V3 w wersji z 2024/2025 roku jest udostępniany z oknem kontekstu rzędu 64 tys.",
+    "toolB": "projekt stawia na kryterium „Okno kontekstu”: Qwen 2.5 występuje w wielu rozmiarach (od 0,5B do 72B) i niektóre warianty oferują kontekst do 128…"
+  }
 }

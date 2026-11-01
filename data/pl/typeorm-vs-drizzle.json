@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-drizzle",
   "meta": {
-    "title": "TypeORM vs Drizzle ORM (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie TypeORM i Drizzle ORM w 2026: typowanie, migracje, wydajność, ekosystem i wsparcie dla PostgreSQL, MySQL oraz SQLite. Sprawdź, co wybrać."
+    "title": "TypeORM vs Drizzle ORM: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj TypeORM i Drizzle ORM: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "TypeORM"
@@ -94,5 +94,49 @@
       "q": "Na co uważać przy wyborze między TypeORM a Drizzle ORM?",
       "a": "Najważniejsze są realne wymagania projektu: złożoność relacji, sposób modelowania schematu, preferencje zespołu i konieczność migracji istniejącego kodu. Warto sprawdzić aktualną dokumentację, kompatybilność z wybraną bazą i wersją oraz zachowanie przy typowych zapytaniach. Nie należy opierać decyzji wyłącznie na pojedynczych opiniach o wydajności."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między TypeORM a Drizzle ORM zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "TypeORM będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i stabilność API”: TypeORM to projekt o długiej historii, szeroko stosowany w aplikacjach Node.js i TypeScript, z…. Drizzle ORM sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo typów i wnioskowanie typów w TypeScript”: Drizzle ORM projektuje schemat jako kod TypeScript, z którego wnioskowane są typy tabel, kolumn i….",
+  "tradeoffs": [
+    {
+      "category": "Dojrzałość ekosystemu i stabilność API",
+      "toolA": "Stabilność zachowania zależy od wersji oraz używanego sterownika bazy danych.",
+      "toolB": "Przed wdrożeniem warto sprawdzić aktualną dokumentację i kompatybilność z wybranym sterownikiem."
+    },
+    {
+      "category": "Bezpieczeństwo typów i wnioskowanie typów w TypeScript",
+      "toolA": "Jakość wnioskowania zależy od konfiguracji TypeScript oraz wersji biblioteki.",
+      "toolB": "Nadal istnieją miejsca wymagające ręcznego typowania, na przykład przy dynamicznym SQL i funkcjach bazy."
+    },
+    {
+      "category": "Sposób definiowania schematu i czytelność kodu",
+      "toolA": "Czytelność zależy od konwencji przyjętych w projekcie.",
+      "toolB": "Cena tej prostoty to mniejsza liczba gotowych wzorców obiektowych niż w TypeORM."
+    },
+    {
+      "category": "Migracje i zarządzanie schematem bazy danych",
+      "toolA": "Zachowanie zależy od wersji, sterownika i konfiguracji synchronizacji schematu.",
+      "toolB": "Dostępność funkcji zależy od wersji Drizzle Kit i wybranej bazy."
+    },
+    {
+      "category": "Wydajność i przewidywalność zapytań",
+      "toolA": "QueryBuilder daje kontrolę, ale wymaga zrozumienia generowanego SQL.",
+      "toolB": "Przy złożonych relacjach i tak trzeba świadomie projektować zapytania."
+    },
+    {
+      "category": "Wsparcie dla relacji i złożonych modeli domenowych",
+      "toolA": "Część zachowań zależy od wersji i sterownika.",
+      "toolB": "Zakres wsparcia zależy od wersji i używanych funkcji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
+  },
+  "introduction": "TypeORM i Drizzle ORM odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i stabilność api. TypeORM: TypeORM to projekt o długiej historii, szeroko stosowany w aplikacjach Node.js i TypeScript, z bogatą dokumentacją… Drizzle ORM: Drizzle ORM to młodsze narzędzie, które szybko zdobyło popularność dzięki prostemu modelowi typów i składni zbliżonej… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo typów i wnioskowanie typów w TypeScript”: TypeORM generuje typy na podstawie dekoratorów i metadanych encji, co zapewnia typowanie encji, repozytoriów i relacji. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i stabilność API”: TypeORM to projekt o długiej historii, szeroko stosowany w aplikacjach Node.js i TypeScript, z…",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo typów i wnioskowanie typów w TypeScript”: Drizzle ORM projektuje schemat jako kod TypeScript, z którego wnioskowane są typy tabel, kolumn i…"
+  }
 }

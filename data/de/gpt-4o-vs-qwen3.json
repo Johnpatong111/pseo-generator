@@ -1,8 +1,8 @@
 {
   "slug": "gpt-4o-vs-qwen3",
   "meta": {
-    "title": "GPT-4o vs Qwen3 (2026): welche Lösung passt besser?",
-    "description": "GPT-4o von OpenAI gegen Qwen3 von Alibaba: Vergleich zu Kontextfenster, Benchmarks, API-Preisen, Latenz, Zugang und Einsatzszenarien für die Entscheidung 2026."
+    "title": "GPT-4o vs Qwen3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche GPT-4o und Qwen3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "GPT-4o"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[\n        {\"role\": \"user\", \"content\": \"Hello, World!\"}\n    ],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodell_name = \"Qwen/Qwen3-8B\"\ntokenizer = AutoTokenizer.from_pretrained(modell_name)\nmodel = AutoModelForCausalLM.from_pretrained(modell_name)\n\neingabe = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\nausgabe = model.generate(**eingabe, max_new_tokens=20)\nprint(tokenizer.decode(ausgabe[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Gibt es Unterstützung für multimodale Eingaben bei beiden Modellen?",
       "a": "GPT-4o ist multimodal ausgerichtet und kann Text und Bilder verarbeiten, was es für kombinierte Aufgaben geeignet macht. Qwen3 ist primär ein Sprachmodell; multimodale Fähigkeiten sind nicht bei allen Varianten vorhanden und müssen für die konkrete Version geprüft werden. Wenn Bildverarbeitung ein zentrales Kriterium ist, sollten Sie die aktuellen Fähigkeiten der jeweiligen Modellvariante genau vergleichen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen GPT-4o und Qwen3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "GPT-4o passt besser, wenn dein Projekt priorisiert Multimodale Fähigkeiten: GPT-4o ist multimodal ausgerichtet und kann Text- und Bildinformationen verarbeiten, was es für…. Qwen3 ist geeigneter, wenn dein Projekt priorisiert Modellzugang und offene bzw: Qwen3 umfasst offene Modellvarianten, deren Gewichte unter den jeweiligen Lizenzbedingungen….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Verarbeitung langer Eingaben",
+      "toolA": "Die effektive Nutzbarkeit langer Kontexte kann je nach Aufgabe und Prompt-Struktur variieren.",
+      "toolB": "Die tatsächliche Grenze hängt daher stark von der gewählten Variante und dem Deployment ab."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval)",
+      "toolA": "Da sich Modellversionen ändern, sind ältere Zahlen nicht ohne Weiteres auf den aktuellen Stand übertragbar.",
+      "toolB": "Die Werte sind daher stets zusammen mit der genauen Modellbezeichnung und dem Veröffentlichungsdatum zu prüfen."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token",
+      "toolA": "Für Kostenkalkulationen sollten Sie immer die aktuell gültigen Preise und die eigene Token-Nutzung heranziehen.",
+      "toolB": "Pauschale Preisangaben wären ohne diese Angaben nicht verlässlich."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Konkrete Latenzwerte sollten Sie für Ihren Anwendungsfall selbst messen oder den aktuellen Statusseiten entnehmen.",
+      "toolB": "Bei Nutzung über einen Cloud-Anbieter gelten dessen Latenz- und Durchsatzeigenschaften, die Sie anhand der aktuellen Anbieterdokumentation prüfen sollten."
+    },
+    {
+      "category": "Modellzugang und offene bzw",
+      "toolA": "Updates werden vom Anbieter gesteuert, was Planbarkeit erleichtert, aber die Kontrolle über die Modellversion einschränkt.",
+      "toolB": "Ob eine bestimmte Variante offen oder nur über einen Dienst verfügbar ist, sollten Sie in der offiziellen Dokumentation prüfen."
+    },
+    {
+      "category": "Multimodale Fähigkeiten",
+      "toolA": "Für viele multimodale Standardfälle bietet es eine integrierte Lösung.",
+      "toolB": "Die Eignung für multimodale Aufgaben hängt daher stark von der gewählten Qwen3-Variante und dem Deployment ab."
+    }
+  ],
+  "introduction": "GPT-4o und Qwen3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und verarbeitung langer eingaben. GPT-4o: GPT-4o unterstützt ein großes Kontextfenster, dessen genaue Obergrenze von der eingesetzten Modellversion und dem… Qwen3: Qwen3 wird in verschiedenen Varianten angeboten, deren Kontextfenster sich unterscheiden kann; die konkreten Werte… Das Kriterium benchmark-leistung (mmlu und humaneval) zeigt einen weiteren praktischen Unterschied: Für GPT-4o veröffentlicht OpenAI Benchmark-Ergebnisse, die je nach Modell-Snapshot und Bewertungsmethode variieren… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Multimodale Fähigkeiten: GPT-4o ist multimodal ausgerichtet und kann Text- und Bildinformationen verarbeiten, was es für…",
+    "toolB": "dein Projekt priorisiert Modellzugang und offene bzw: Qwen3 umfasst offene Modellvarianten, deren Gewichte unter den jeweiligen Lizenzbedingungen…"
+  }
 }

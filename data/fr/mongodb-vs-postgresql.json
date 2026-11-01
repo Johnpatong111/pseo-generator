@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-postgresql",
   "meta": {
-    "title": "MongoDB vs PostgreSQL (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 MongoDB vs PostgreSQL : modèle de données, requêtes, transactions, scalabilité et coûts. Critères détaillés et conseils pour bien choisir sa base de données."
+    "title": "MongoDB vs PostgreSQL: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez MongoDB et PostgreSQL : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "MongoDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// MongoDB : exemple minimal avec le pilote officiel Node.js\n// npm install mongodb\nconst { MongoClient } = require('mongodb');\n\n(async () => {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('messages');\n  await collection.insertOne({ texte: 'Hello, World!', creeLe: new Date() });\n  const doc = await collection.findOne({ texte: 'Hello, World!' });\n  console.log(doc);\n  await client.close();\n})();",
-    "tech2Snippet": "-- PostgreSQL : exemple minimal avec psql\nCREATE TABLE messages (\n  id SERIAL PRIMARY KEY,\n  texte TEXT NOT NULL,\n  cree_le TIMESTAMPTZ DEFAULT now()\n);\n\nINSERT INTO messages (texte) VALUES ('Hello, World!');\n\nSELECT id, texte, cree_le FROM messages ORDER BY id DESC LIMIT 1;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Faut-il forcément choisir une seule base pour tout le projet ?",
       "a": "Non, de nombreuses architectures combinent PostgreSQL comme source de vérité transactionnelle et MongoDB pour des besoins documentaires ou des flux ciblés. Cette approche permet d'utiliser chaque moteur là où il est le plus pertinent, mais elle ajoute de la complexité d'exploitation et de synchronisation. Il faut évaluer la charge d'exploitation, la cohérence des données entre systèmes et les compétences de l'équipe. Pour un projet de taille modeste, une seule base bien maîtrisée est souvent plus rentable."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre MongoDB et PostgreSQL modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "MongoDB convient mieux lorsque votre projet privilégie scalabilité et distribution : MongoDB est conçu dès l'origine pour le sharding horizontal natif, avec un routage automatique par…. PostgreSQL est préférable lorsque votre projet privilégie langage de requête et puissance d'analyse : PostgreSQL utilise SQL, un standard riche avec jointures, sous-requêtes, fonctions de fenêtrage,….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et flexibilité du schéma",
+      "toolA": "Selon la version, ces validateurs couvrent un sous-ensemble des contraintes et ne remplacent pas un modèle relationnel strict.",
+      "toolB": "Cette rigueur réduit les incohérences mais demande des migrations explicites lorsque le modèle évolue."
+    },
+    {
+      "category": "Langage de requête et puissance d'analyse",
+      "toolA": "Les performances dépendent fortement de l'indexation et du modelage des documents.",
+      "toolB": "L'ajout d'extensions comme PostGIS ou pg_stat_statements élargit encore le champ des possibles, sous réserve de les installer et de les configurer."
+    },
+    {
+      "category": "Transactions et garanties d'intégrité",
+      "toolA": "Les contraintes d'intégrité référentielle ne sont pas natives et doivent être gérées côté application.",
+      "toolB": "Le compromis est une plus grande discipline de schéma et de migration."
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "Une mauvaise clé peut créer des hotspots difficiles à corriger sans réorganisation.",
+      "toolB": "Les charges très distribuées demandent donc une architecture plus étudiée."
+    },
+    {
+      "category": "Extensibilité et écosystème",
+      "toolA": "Les tarifs et disponibilités varient selon la région et le plan.",
+      "toolB": "Il faut vérifier la compatibilité avec la version et l'hébergeur retenus."
+    },
+    {
+      "category": "Exploitation, sauvegardes et sécurité",
+      "toolA": "Les fonctionnalités de sécurité et de sauvegarde varient entre Community, Enterprise et Atlas.",
+      "toolB": "Les fonctions d'audit avancées proviennent souvent d'extensions tierces."
+    }
+  ],
+  "introduction": "MongoDB et PostgreSQL répondent à un besoin proche, mais diffèrent sur modèle de données et flexibilité du schéma. MongoDB : MongoDB stocke des documents BSON dans des collections, sans schéma imposé au niveau de la base : chaque document peut… PostgreSQL : PostgreSQL est une base relationnelle qui impose des tables, des colonnes typées et des contraintes déclaratives. Le critère « Langage de requête et puissance d'analyse » met en évidence une autre différence pratique : MongoDB s'interroge avec un langage de filtres et un pipeline d'agrégation, complétés par MongoDB Query Language côté… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie scalabilité et distribution : MongoDB est conçu dès l'origine pour le sharding horizontal natif, avec un routage automatique par…",
+    "toolB": "votre projet privilégie langage de requête et puissance d'analyse : PostgreSQL utilise SQL, un standard riche avec jointures, sous-requêtes, fonctions de fenêtrage,…"
+  }
 }

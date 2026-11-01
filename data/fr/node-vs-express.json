@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-express",
   "meta": {
-    "title": "Node.js vs Express (2026) : quelle solution choisir ?",
-    "description": "Node.js et Express ne sont pas concurrents : l'un est un runtime JavaScript, l'autre un framework web bâti dessus. Comparez leurs rôles, forces et limites pour choisir en 2026."
+    "title": "Node.js vs Express: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Node.js et Express : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const http = require('node:http');\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });\n  res.end('Bonjour le monde !\\n');\n});\n\nserver.listen(3000, () => {\n  console.log('Serveur Node.js sur http://localhost:3000');\n});",
-    "tech2Snippet": "const express = require('express');\n\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Bonjour le monde !');\n});\n\napp.listen(3000, () => {\n  console.log('Serveur Express sur http://localhost:3000');\n});"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment décider entre Node.js seul et Node.js avec Express ?",
       "a": "Commencez par lister vos besoins : nombre de routes, middlewares nécessaires, contraintes de dépendances et compétences de l'équipe. Si le service est très simple et stable, Node.js nu peut suffire ; si l'application doit évoluer avec des routes et des traitements transverses, Express apporte un cadre utile. Dans le doute, prototyper les deux approches permet de trancher concrètement."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Node.js et Express modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Node.js convient mieux lorsque votre projet privilégie nature et rôle dans l'architecture : Node.js est un environnement d'exécution JavaScript côté serveur fondé sur le moteur V8, qui…. Express est préférable lorsque votre projet privilégie courbe d'apprentissage et simplicité de démarrage : Express réduit fortement le code répétitif grâce à ses méthodes de routage et à ses middlewares….",
+  "tradeoffs": [
+    {
+      "category": "Nature et rôle dans l'architecture",
+      "toolA": "Il ne présuppose aucune structure de routage et laisse l'architecture entièrement à votre charge.",
+      "toolB": "Il ne remplace pas Node.js : il l'utilise comme socle d'exécution."
+    },
+    {
+      "category": "Courbe d'apprentissage et simplicité de démarrage",
+      "toolA": "Un serveur HTTP minimal tient en quelques lignes, mais tout le reste (routage, corps de requête, erreurs) doit être écrit ou assemblé manuellement.",
+      "toolB": "Sa documentation est abondante et le modèle requête/réponse reste familier aux développeurs venus d'autres frameworks."
+    },
+    {
+      "category": "Routage et structuration des API",
+      "toolA": "Cela reste viable pour un service très simple, mais devient vite verbeux dès que le nombre de routes augmente.",
+      "toolB": "Cette organisation facilite la maintenance d'API de taille moyenne à grande."
+    },
+    {
+      "category": "Écosystème et disponibilité des bibliothèques",
+      "toolA": "Il bénéficie aussi d'API natives récentes (fetch, test runner) qui réduisent parfois le besoin de dépendances.",
+      "toolB": "Son écosystème est mature, mais le choix et la maintenance des middlewares incombent au projet."
+    },
+    {
+      "category": "Performance et comportement sous charge",
+      "toolA": "Le runtime seul ajoute peu de surcouche, ce qui peut convenir à des services minimalistes sensibles à la latence.",
+      "toolB": "Pour la plupart des API, cet impact reste modéré, mais il faut le mesurer avec vos propres scénarios plutôt que de se fier à des benchmarks tiers."
+    },
+    {
+      "category": "Sécurité et surface d'attaque",
+      "toolA": "La sécurité repose sur vos choix : validation des entrées, gestion des en-têtes, limites de taille et mises à jour régulières du runtime.",
+      "toolB": "La sécurité d'une application Express dépend donc fortement des modules choisis, maintenus et correctement configurés."
+    }
+  ],
+  "introduction": "Node.js et Express répondent à un besoin proche, mais diffèrent sur nature et rôle dans l'architecture. Node.js : Node.js est un environnement d'exécution JavaScript côté serveur fondé sur le moteur V8, qui fournit les API bas… Express : Express est une bibliothèque de framework web qui s'exécute sur Node.js et fournit un routeur, une pile de middlewares… Le critère « Courbe d'apprentissage et simplicité de démarrage » met en évidence une autre différence pratique : Node.js demande de comprendre les modules, la boucle d'événements et la gestion asynchrone avant de produire un… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie nature et rôle dans l'architecture : Node.js est un environnement d'exécution JavaScript côté serveur fondé sur le moteur V8, qui…",
+    "toolB": "votre projet privilégie courbe d'apprentissage et simplicité de démarrage : Express réduit fortement le code répétitif grâce à ses méthodes de routage et à ses middlewares…"
+  }
 }

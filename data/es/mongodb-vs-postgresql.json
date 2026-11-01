@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-postgresql",
   "meta": {
-    "title": "MongoDB vs PostgreSQL (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MongoDB y PostgreSQL en 2026: modelo de datos, consultas, consistencia, escalado, ecosistema y seguridad para ayudarte a elegir la base de datos adecuada."
+    "title": "MongoDB vs PostgreSQL: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MongoDB y PostgreSQL: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MongoDB"
@@ -94,5 +94,49 @@
       "q": "¿Es posible migrar de una a otra sin reescribir la aplicación?",
       "a": "La migración entre MongoDB y PostgreSQL normalmente implica rediseñar el modelo de datos y adaptar las consultas, porque los paradigmas documental y relacional son distintos. Existen herramientas y enfoques para trasladar datos, pero la lógica de acceso, los índices y las transacciones suelen requerir cambios en la aplicación. Antes de migrar conviene evaluar el coste, los riesgos y las pruebas de regresión necesarias."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MongoDB y PostgreSQL cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MongoDB encaja mejor cuando tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB almacena documentos BSON en colecciones y no exige un esquema rígido, lo que facilita…. PostgreSQL es preferible cuando tu proyecto prioriza lenguaje de consultas y capacidad analítica: PostgreSQL implementa SQL estándar con ampliaciones potentes: ventanas, CTE, funciones de….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y flexibilidad del esquema",
+      "toolA": "La flexibilidad no elimina la necesidad de validación: conviene definir reglas de validación de esquema y gobierno de datos para evitar inconsistencias en producción.",
+      "toolB": "También admite tipos JSON y JSONB, índices sobre ellos y funciones para trabajar con datos semiestructurados, aunque la flexibilidad de esquema total no es su enfoque principal."
+    },
+    {
+      "category": "Lenguaje de consultas y capacidad analítica",
+      "toolA": "Es muy expresivo para documentos y pipelines, pero las consultas analíticas complejas y las uniones profundas pueden requerir un diseño cuidadoso o herramientas adicionales.",
+      "toolB": "Es especialmente adecuado para informes, análisis complejos y consultas ad hoc que combinan muchas tablas con integridad y precisión."
+    },
+    {
+      "category": "Consistencia, transacciones e integridad",
+      "toolA": "La integridad no recae tanto en restricciones declarativas como en validaciones de esquema, lógica de aplicación y patrones de modelado, por lo que exige disciplina de diseño.",
+      "toolB": "Su modelo relacional hace más sencillo garantizar la integridad referencial y las operaciones atómicas complejas, aunque el rendimiento depende de la configuración y del diseño de índices y consultas."
+    },
+    {
+      "category": "Escalado y arquitectura distribuida",
+      "toolA": "La elección de claves de fragmentación, el equilibrio de datos y la topología del clúster influyen de forma decisiva en el rendimiento y deben planificarse con cuidado.",
+      "toolB": "El escalado horizontal de escritura no es nativo en el núcleo y suele requerir arquitecturas adicionales, por lo que conviene evaluar la carga y la complejidad operativa antes de adoptarlo."
+    },
+    {
+      "category": "Ecosistema, extensiones e integraciones",
+      "toolA": "Su ecosistema está orientado a documentos y aplicaciones modernas, aunque algunas capacidades avanzadas dependen del plan o del servicio contratado.",
+      "toolB": "Su compatibilidad con herramientas SQL, BI y ORM es extensa, y muchas funciones dependen de la versión y de las extensiones instaladas."
+    },
+    {
+      "category": "Rendimiento y cargas de trabajo típicas",
+      "toolA": "El rendimiento real depende del tamaño de los documentos, los índices, la memoria disponible y la configuración del clúster, por lo que no conviene generalizar sin pruebas propias.",
+      "toolB": "Su rendimiento también depende de la configuración, del vacuum, de la planificación de consultas y del hardware, y puede requerir ajustes específicos en cargas muy exigentes."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MongoDB y PostgreSQL responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad del esquema. MongoDB: MongoDB almacena documentos BSON en colecciones y no exige un esquema rígido, lo que facilita evolucionar la… PostgreSQL: PostgreSQL es una base de datos relacional con esquema definido, tablas, tipos estrictos y restricciones que protegen… El criterio de lenguaje de consultas y capacidad analítica añade otra diferencia práctica: MongoDB utiliza el lenguaje de consultas MQL y el marco de agregación por etapas para filtros, transformaciones,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB almacena documentos BSON en colecciones y no exige un esquema rígido, lo que facilita…",
+    "toolB": "tu proyecto prioriza lenguaje de consultas y capacidad analítica: PostgreSQL implementa SQL estándar con ampliaciones potentes: ventanas, CTE, funciones de…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "chroma-vs-weaviate",
   "meta": {
-    "title": "Chroma vs Weaviate (2026): welche Lösung passt besser?",
-    "description": "Chroma und Weaviate im Vergleich 2026: Funktionsumfang, Betrieb, Skalierung, Ökosystem und Codebeispiele. So treffen Sie die richtige Wahl für Ihre Vektordatenbank."
+    "title": "Chroma vs Weaviate: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Chroma und Weaviate: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Chroma"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import chromadb\n\nclient = chromadb.Client()\ncollection = client.create_collection(name=\"demo\")\ncollection.add(\n    documents=[\"Hallo, Welt!\"],\n    ids=[\"id1\"]\n)\nresults = collection.query(query_texts=[\"Hallo\"], n_results=1)\nprint(results[\"documents\"])",
-    "tech2Snippet": "import weaviate\n\nclient = weaviate.connect_to_local()\ncollection = client.collections.create(\n    name=\"Demo\",\n    vectorizer_config=weaviate.classes.config.Configure.Vectorizer.none()\n)\ncollection.data.insert({\"text\": \"Hallo, Welt!\"}, vector=[0.1, 0.2, 0.3])\nresult = collection.query.near_vector(near_vector=[0.1, 0.2, 0.3], limit=1)\nprint(result.objects)\nclient.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie aufwendig ist die Einarbeitung in beide Tools?",
       "a": "Chroma ist aufgrund seiner kleinen API und der unkomplizierten Einrichtung schnell erlernbar, was den Einstieg erleichtert. Weaviate erfordert mehr Einarbeitung, da Konzepte wie Schema, Module und GraphQL verstanden werden müssen. Dafür bietet die umfangreiche Dokumentation detaillierte Anleitungen für komplexe Betriebsszenarien."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Chroma und Weaviate verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Chroma passt besser, wenn dein Projekt priorisiert Einfachheit der Einrichtung und lokale Entwicklung: Chroma lässt sich als Python-Paket installieren und ohne separaten Server im In-Memory- oder…. Weaviate ist geeigneter, wenn dein Projekt priorisiert Skalierbarkeit und Produktionsbetrieb: Weaviate ist von Grund auf für verteilte Systeme konzipiert und unterstützt Sharding, Replikation….",
+  "tradeoffs": [
+    {
+      "category": "Einfachheit der Einrichtung und lokale Entwicklung",
+      "toolA": "Für lokale Prototypen ist das sehr zugänglich.",
+      "toolB": "Dafür ist die lokale Umgebung näher an einem produktiven Betrieb."
+    },
+    {
+      "category": "Skalierbarkeit und Produktionsbetrieb",
+      "toolA": "Die Dokumentation weist auf Grenzen bei sehr großen Datenmengen hin.",
+      "toolB": "Diese Architektur erfordert mehr Planung, zahlt sich aber bei Wachstum aus."
+    },
+    {
+      "category": "Filterung und Metadatenabfragen",
+      "toolA": "Für komplexe, verschachtelte Filterbedingungen stößt das Modell jedoch an Grenzen.",
+      "toolB": "Die Ausdrucksmächtigkeit ist höher, was komplexe Abfragen ermöglicht, aber auch Einarbeitung verlangt."
+    },
+    {
+      "category": "Hybridsuche und integrierte Module",
+      "toolA": "Das hält das Tool schlank, schränkt aber Anwendungsfälle mit gemischten Suchanforderungen ein.",
+      "toolB": "Für Anwendungen mit kombinierten Suchanforderungen ist das ein klarer Vorteil."
+    },
+    {
+      "category": "Ökosystem, Clients und Integrationen",
+      "toolA": "Für gängige Sprachen und Frameworks ist die Abdeckung dennoch solide.",
+      "toolB": "Das Ökosystem ist reifer und breiter aufgestellt, was die Einbindung in bestehende Systeme erleichtert."
+    },
+    {
+      "category": "Datenkonsistenz und Transaktionsmodell",
+      "toolA": "Für viele Anwendungsfälle reicht das aus, bei kritischen Schreibvorgängen ist Vorsicht geboten.",
+      "toolB": "Für produktive Systeme sind die Garantien dokumentiert und planbar."
+    }
+  ],
+  "introduction": "Chroma und Weaviate lösen ein ähnliches Problem, unterscheiden sich jedoch bei einfachheit der einrichtung und lokale entwicklung. Chroma: Chroma lässt sich als Python-Paket installieren und ohne separaten Server im In-Memory- oder Persistent-Client-Modus… Weaviate: Weaviate kann ebenfalls lokal gestartet werden, üblicherweise per Docker oder Docker Compose, und bietet eine graphQL-… Das Kriterium skalierbarkeit und produktionsbetrieb zeigt einen weiteren praktischen Unterschied: Chroma ist für den Betrieb als einzelner Dienst ausgelegt und eignet sich gut für kleine bis mittlere Lasten. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Einfachheit der Einrichtung und lokale Entwicklung: Chroma lässt sich als Python-Paket installieren und ohne separaten Server im In-Memory- oder…",
+    "toolB": "dein Projekt priorisiert Skalierbarkeit und Produktionsbetrieb: Weaviate ist von Grund auf für verteilte Systeme konzipiert und unterstützt Sharding, Replikation…"
+  }
 }

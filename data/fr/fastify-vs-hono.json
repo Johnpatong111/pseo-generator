@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-hono",
   "meta": {
-    "title": "Fastify vs Hono (2026): quelle solution choisir ?",
-    "description": "Comparatif Fastify vs Hono en 2026 : performances, écosystème, typage, déploiement edge, sécurité et cas d'usage. Conseils concrets pour choisir votre framework Node.js ou multiplateforme."
+    "title": "Fastify vs Hono: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Fastify et Hono : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Fastify"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const fastify = require('fastify')({ logger: true });\n\nfastify.get('/', async (request, reply) => {\n  return { message: 'Hello, World!' };\n});\n\nfastify.listen({ port: 3000 }, (err) => {\n  if (err) throw err;\n});",
-    "tech2Snippet": "import { Hono } from 'hono';\n\nconst app = new Hono();\n\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import Fastify from \"fastify\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\"/api/products\", async (request, reply) => {\n  const categoryId = request.query.category;\n  if (!categoryId) return reply.code(400).send({ error: \"category is required\" });\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return { products };\n});",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Les performances de Fastify et Hono sont-elles garanties en production ?",
       "a": "Aucune garantie absolue ne peut être donnée, car les performances dépendent de la version, de la configuration, du matériel et de la charge. Des benchmarks publics existent, mais ils ne reflètent pas nécessairement votre cas d'usage. Il est recommandé de réaliser vos propres tests dans un environnement représentatif."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Fastify et Hono modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Fastify convient mieux lorsque votre projet privilégie écosystème et plugins : richesse des modules officiels et communautaires, : Fastify dispose d'un écosystème mature avec de nombreux plugins officiels couvrant validation,…. Hono est préférable lorsque votre projet privilégie typage typescript : qualité des définitions de types, inférence et expérience : Hono est écrit en TypeScript et offre une inférence de types exceptionnelle, notamment pour les….",
+  "tradeoffs": [
+    {
+      "category": "Performance et empreinte : rapidité d'exécution et consommation de ressources",
+      "toolA": "Il reste une option solide pour les API Node.js à forte charge.",
+      "toolB": "Il ne faut pas en déduire une supériorité systématique sans mesures adaptées à votre contexte."
+    },
+    {
+      "category": "Écosystème et plugins : richesse des modules officiels et communautaires,",
+      "toolA": "Cela facilite la construction d'applications complètes sans réinventer la roue.",
+      "toolB": "La compatibilité avec les environnements edge est un atout, mais elle ne remplace pas la profondeur de l'écosystème Node.js."
+    },
+    {
+      "category": "Typage TypeScript : qualité des définitions de types, inférence et expérience",
+      "toolA": "L'expérience est solide, surtout avec les plugins typés.",
+      "toolB": "Cela en fait un choix particulièrement agréable pour les projets TypeScript modernes."
+    },
+    {
+      "category": "Portabilité et déploiement : capacité à s'exécuter sur Node.js, Deno, Bun et",
+      "toolA": "Il reste donc surtout pertinent pour les environnements Node.js classiques.",
+      "toolB": "C'est un avantage majeur pour les architectures edge et les projets multi-runtimes."
+    },
+    {
+      "category": "Validation et sécurité : prise en charge des schémas, validation des entrées",
+      "toolA": "La sécurité dépend toutefois de la configuration et des plugins choisis.",
+      "toolB": "La sécurité repose aussi sur le runtime et la configuration de l'utilisateur."
+    },
+    {
+      "category": "Courbe d'apprentissage et documentation : facilité de prise en main, clarté",
+      "toolA": "Les développeurs familiers avec Node.js s'y retrouvent rapidement.",
+      "toolB": "La relative jeunesse de l'écosystème peut toutefois demander plus d'exploration pour des cas avancés."
+    }
+  ],
+  "introduction": "Fastify et Hono répondent à un besoin proche, mais diffèrent sur performance et empreinte : rapidité d'exécution et consommation de ressources. Fastify : Fastify est conçu pour être rapide, avec un routeur optimisé et un faible surcoût par requête. Hono : Hono mise sur un routeur minimaliste et une empreinte réduite, ce qui peut se traduire par d'excellentes performances… Le critère « Écosystème et plugins : richesse des modules officiels et communautaires, » met en évidence une autre différence pratique : Fastify dispose d'un écosystème mature avec de nombreux plugins officiels couvrant validation, authentification, bases… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie écosystème et plugins : richesse des modules officiels et communautaires, : Fastify dispose d'un écosystème mature avec de nombreux plugins officiels couvrant validation,…",
+    "toolB": "votre projet privilégie typage typescript : qualité des définitions de types, inférence et expérience : Hono est écrit en TypeScript et offre une inférence de types exceptionnelle, notamment pour les…"
+  }
 }

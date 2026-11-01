@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB (2026) : quelle solution choisir ?",
-    "description": "Comparatif ScyllaDB vs MongoDB 2026 : architecture, modèle de données, cohérence, scalabilité, écosystème et cas d'usage. Découvrez quelle base NoSQL choisir pour votre projet."
+    "title": "ScyllaDB vs MongoDB: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez ScyllaDB et MongoDB : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const { Client } = require('cassandra-driver');\n\nasync function main() {\n  const client = new Client({\n    contactPoints: ['127.0.0.1'],\n    localDataCenter: 'datacenter1',\n    keyspace: 'demo'\n  });\n  await client.connect();\n  await client.execute(\n    \"CREATE TABLE IF NOT EXISTS messages (id uuid PRIMARY KEY, content text)\"\n  );\n  await client.execute(\n    \"INSERT INTO messages (id, content) VALUES (uuid(), ?)\",\n    ['Hello, World!']\n  );\n  const result = await client.execute('SELECT content FROM messages LIMIT 1');\n  console.log(result.rows[0].content);\n  await client.shutdown();\n}\n\nmain().catch(console.error);",
-    "tech2Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://127.0.0.1:27017');\n  await client.connect();\n  const collection = client.db('demo').collection('messages');\n  await collection.insertOne({ content: 'Hello, World!' });\n  const doc = await collection.findOne({});\n  console.log(doc.content);\n  await client.close();\n}\n\nmain().catch(console.error);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment vérifier les affirmations de performance avant de choisir ?",
       "a": "Les performances dépendent de la version, du matériel, de la configuration, du modèle de données et de la charge réelle, donc aucun chiffre générique ne peut garantir un résultat. La meilleure approche consiste à construire un banc d'essai représentatif avec vos requêtes, vos volumes et vos contraintes de latence, puis à comparer les deux options dans des conditions identiques. Les résultats doivent être interprétés avec prudence et complétés par une analyse du coût total et de l'exploitation."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre ScyllaDB et MongoDB modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "ScyllaDB convient mieux lorsque votre projet privilégie scalabilité et performances sous charge : ScyllaDB est conçue pour la scalabilité horizontale et la prédictibilité de latence, avec un…. MongoDB est préférable lorsque votre projet privilégie modèle de données et langage de requête : MongoDB stocke des documents BSON flexibles, sans schéma rigide imposé au niveau de la collection,….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle de distribution",
+      "toolA": "Son comportement dépend toutefois de la configuration du cluster, du facteur de réplication et de la charge réelle.",
+      "toolB": "La topologie, le choix de la clé de sharding et le niveau de lecture/écriture influencent fortement les performances et la cohérence observées."
+    },
+    {
+      "category": "Modèle de données et langage de requête",
+      "toolA": "Ce modèle est adapté aux séries temporelles, aux données de capteurs, aux catalogues à très grande échelle et aux charges d'écriture massives.",
+      "toolB": "La flexibilité de schéma demande néanmoins de la discipline côté application pour éviter des incohérences."
+    },
+    {
+      "category": "Cohérence et transactions",
+      "toolA": "La cohérence forte dépend du niveau choisi et de la topologie du cluster.",
+      "toolB": "Les performances dépendent de la version, de la topologie et de la charge."
+    },
+    {
+      "category": "Scalabilité et performances sous charge",
+      "toolA": "Aucun benchmark universel ne peut garantir un comportement identique sur toutes les charges.",
+      "toolB": "Pour des charges massives, une conception soignée et un suivi opérationnel sont indispensables, et les comparaisons chiffrées doivent être interprétées avec prudence."
+    },
+    {
+      "category": "Écosystème, outils et intégrations",
+      "toolA": "La compatibilité avec Cassandra n'est pas totale et doit être vérifiée selon les fonctionnalités utilisées.",
+      "toolB": "La richesse de l'écosystème ne dispense pas d'évaluer la compatibilité avec les versions et les offres réellement disponibles."
+    },
+    {
+      "category": "Exploitation, administration et coût total",
+      "toolA": "Le coût total dépend du matériel, de l'équipe et du niveau de service choisi.",
+      "toolB": "Les tarifs et les fonctionnalités varient selon l'offre et la région, et doivent être vérifiés auprès de l'éditeur."
+    }
+  ],
+  "introduction": "ScyllaDB et MongoDB répondent à un besoin proche, mais diffèrent sur architecture et modèle de distribution. ScyllaDB : ScyllaDB est une base NoSQL distribuée en colonnes larges, compatible avec l'API Cassandra et écrite en C++ avec un… MongoDB : MongoDB est une base documentaire distribuée avec un ensemble de réplicas (replica set) pour la haute disponibilité et… Le critère « Modèle de données et langage de requête » met en évidence une autre différence pratique : ScyllaDB utilise le modèle tabulaire large colonne avec CQL (Cassandra Query Language), proche de SQL pour les tables,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie scalabilité et performances sous charge : ScyllaDB est conçue pour la scalabilité horizontale et la prédictibilité de latence, avec un…",
+    "toolB": "votre projet privilégie modèle de données et langage de requête : MongoDB stocke des documents BSON flexibles, sans schéma rigide imposé au niveau de la collection,…"
+  }
 }

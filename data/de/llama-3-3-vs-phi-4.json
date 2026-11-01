@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-phi-4",
   "meta": {
-    "title": "Llama 3.3 vs Phi-4 (2026): welche Lösung passt besser?",
-    "description": "Llama 3.3 und Phi-4 im Vergleich: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Use Cases. Finden Sie das passende Modell für Ihr Projekt."
+    "title": "Llama 3.3 vs Phi-4: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Llama 3.3 und Phi-4: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welches Modell sollte ich für eine produktive API-Integration wählen?",
       "a": "Die Wahl hängt von Ihren Prioritäten ab: Llama 3.3 bietet eine höhere Leistungsfähigkeit und ein größeres Kontextfenster, ist aber teurer und langsamer. Phi-4 ist kostengünstiger und schneller, jedoch weniger leistungsstark bei komplexen Aufgaben. Für eine produktive Integration empfiehlt es sich, beide Modelle mit Ihren spezifischen Daten zu testen und die aktuellen API-Preise sowie SLAs der Anbieter zu vergleichen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Llama 3.3 und Phi-4 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Llama 3.3 passt besser, wenn dein Projekt priorisiert Kontextfenster: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Tokens bereitgestellt, was…. Phi-4 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1 Million Input-/Output-Tokens: Phi-4 ist ebenfalls über mehrere Plattformen verfügbar, darunter Azure AI und verschiedene….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Die genaue maximale Kontextlänge kann je nach Inference-Provider und Konfiguration variieren und sollte in der aktuellen Dokumentation des Anbieters überprüft werden.",
+      "toolB": "Für Aufgaben, die umfangreichen Kontext erfordern, ist dies eine Einschränkung, die bei der Architektur berücksichtigt werden muss."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Diese Zahlen dienen als Orientierung, sollten aber nicht als allgemeingültig betrachtet werden, da sie von Prompting, Few-Shot-Beispielen und Evaluierungsframework abhängen.",
+      "toolB": "Die Werte sind ebenfalls konfigurationsabhängig und nicht direkt mit größeren Modellen vergleichbar; für eine belastbare Bewertung sind die offiziellen Modellkarten und unabhängige Evaluierungen heranzuziehen."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input-/Output-Tokens",
+      "toolA": "Als Orientierung: Die Preise liegen häufig im Bereich von wenigen US-Dollar pro Million Tokens, abhängig von der Modellgröße und dem Anbieter.",
+      "toolB": "Für eine genaue Kalkulation sind die aktuellen Preislisten der Anbieter maßgeblich."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Der Durchsatz kann durch Batched Inference und Optimierungen wie Quantisierung verbessert werden, wobei die genauen Werte von der Bereitstellungsumgebung abhängen.",
+      "toolB": "Für latenzkritische Anwendungen oder Edge-Deployments ist dies ein Vorteil, sofern die Aufgabenstellung die geringere Modellkapazität zulässt."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Dadurch ist das Modell sowohl über APIs als auch zum Selbsthosten verfügbar, was Flexibilität und Datenkontrolle bietet, aber auch eigene Infrastruktur erfordert.",
+      "toolB": "Es kann über APIs bezogen oder selbst gehostet werden; die geringere Größe erleichtert das Selbsthosting auf kleineren GPUs oder sogar CPUs mit Quantisierung."
+    },
+    {
+      "category": "Praktische Anwendungsfälle",
+      "toolA": "Durch das große Kontextfenster und die hohe Modellkapazität ist es auch für Retrieval-Augmented Generation mit umfangreichen Wissensbasen geeignet.",
+      "toolB": "Es kann auch in Umgebungen mit begrenzten Ressourcen eingesetzt werden, beispielsweise auf Edge-Geräten oder in kostensensiblen Cloud-Setups, sofern die Aufgabenkomplexität die geringere Modellgröße nicht überfordert."
+    }
+  ],
+  "introduction": "Llama 3.3 und Phi-4 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Llama 3.3: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Tokens bereitgestellt, was umfangreiche Dokumente, lange… Phi-4: Phi-4 von Microsoft ist für ein kleineres Modell mit einem Kontextfenster von 16.000 Tokens spezifiziert; einige… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Meta veröffentlicht für Llama 3.3 70B Instruct unter anderem MMLU-Werte im Bereich von 86 % und HumanEval-Werte um 88… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Llama 3.3 wird von Meta mit einem Kontextfenster von 128.000 Tokens bereitgestellt, was…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1 Million Input-/Output-Tokens: Phi-4 ist ebenfalls über mehrere Plattformen verfügbar, darunter Azure AI und verschiedene…"
+  }
 }

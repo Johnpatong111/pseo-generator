@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-gemini-2-5-flash",
   "meta": {
-    "title": "Gemini 2.5 Pro vs Gemini 2.5 Flash (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Gemini 2.5 Pro i Flash: wydajność, kontekst, ceny API, opóźnienia i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Gemini 2.5 Pro vs Gemini 2.5 Flash: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Gemini 2.5 Pro i Gemini 2.5 Flash: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Minimalny przykład użycia Gemini 2.5 Pro przez Google AI Studio API (Python)\nimport google.generativeai as genai\n\ngenai.configure(api_key=\"TWOJ_KLUCZ_API\")\nmodel = genai.GenerativeModel('gemini-2.5-pro')\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)",
-    "tech2Snippet": "# Minimalny przykład użycia Gemini 2.5 Flash przez Google AI Studio API (Python)\nimport google.generativeai as genai\n\ngenai.configure(api_key=\"TWOJ_KLUCZ_API\")\nmodel = genai.GenerativeModel('gemini-2.5-flash')\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "Czy modele różnią się pod względem bezpieczeństwa i zgodności z regulacjami?",
       "a": "Oba modele są objęte politykami bezpieczeństwa Google i podlegają tym samym zasadom korzystania z API, więc pod względem zgodności z regulacjami różnice mogą być minimalne. Należy jednak pamiętać, że konkretne funkcje bezpieczeństwa i filtrowanie treści mogą się różnić w zależności od wersji modelu i konfiguracji. Zawsze sprawdzaj aktualne wytyczne i dokumentację, aby upewnić się, że spełniają wymagania Twojego projektu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Gemini 2.5 Pro a Gemini 2.5 Flash zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Gemini 2.5 Pro będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które według doniesień pozwala przetwarzać…. Gemini 2.5 Flash sprawdzi się, gdy projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Gemini 2.5 Flash jest pozycjonowany jako model ekonomiczny, oferując niższe stawki za milion….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Należy jednak pamiętać, że rzeczywista dostępna długość kontekstu może zależeć od wersji modelu, planu API i ograniczeń dostawcy, dlatego warto sprawdzić aktualne specyfikacje.",
+      "toolB": "Dokładna maksymalna liczba tokenów powinna być zweryfikowana w oficjalnej dokumentacji, ponieważ może się różnić w zależności od wersji i planu."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "W praktyce Pro jest często wybierany do złożonych zadań wymagających precyzji.",
+      "toolB": "Podobnie jak w przypadku Pro, konkretne wartości należy weryfikować w oficjalnych źródłach, ponieważ zależą od wersji i konfiguracji."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Wyższa cena jest uzasadniona większymi możliwościami i lepszą jakością odpowiedzi w trudnych zadaniach.",
+      "toolB": "Dokładne ceny są zmienne i należy je zweryfikować w oficjalnym cenniku, ponieważ mogą zależeć od wersji modelu i warunków umowy."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "Gemini 2.5 Pro, ze względu na większą złożoność obliczeniową, generuje odpowiedzi wolniej niż Flash, co może być odczuwalne w aplikacjach wymagających natychmiastowej reakcji. Opóźnienie zależy jednak od długości zapytania, obciążenia serwerów i regionu, więc nie jest stałe. W zastosowaniach czasu rzeczywistego lub interaktywnych czatach może wymagać optymal",
+      "toolB": "Warto przeprowadzić własne testy w docelowym środowisku, aby ocenić rzeczywiste czasy odpowiedzi."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostępność może się różnić w zależności od planu i kraju, dlatego należy sprawdzić oficjalne źródła.",
+      "toolB": "Podobnie jak w przypadku Pro, warunki korzystania i dostępność mogą zależeć od regionu i umowy z dostawcą."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Sprawdza się tam, gdzie jakość i precyzja są ważniejsze niż szybkość i koszt.",
+      "toolB": "Sprawdza się w aplikacjach, gdzie liczy się natychmiastowa reakcja i ekonomia."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro i Gemini 2.5 Flash odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Gemini 2.5 Pro: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które według doniesień pozwala przetwarzać setki tysięcy tokenów, a… Gemini 2.5 Flash: Gemini 2.5 Flash ma mniejsze okno kontekstu niż Pro, ale nadal wystarczające do wielu typowych zadań, takich jak… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Gemini 2.5 Pro osiąga wysokie wyniki w benchmarkach takich jak MMLU (wiedza ogólna) i HumanEval (programowanie), co… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które według doniesień pozwala przetwarzać…",
+    "toolB": "projekt stawia na kryterium „Ceny API za 1 mln tokenów wejścia/wyjścia”: Gemini 2.5 Flash jest pozycjonowany jako model ekonomiczny, oferując niższe stawki za milion…"
+  }
 }

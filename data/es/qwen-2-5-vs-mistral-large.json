@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-mistral-large",
   "meta": {
-    "title": "Qwen 2.5 vs Mistral Large (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Qwen 2.5 y Mistral Large en contexto, rendimiento, precios, latencia, acceso y casos de uso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "Qwen 2.5 vs Mistral Large: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Qwen 2.5 y Mistral Large: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nprompt = \"Hello, world!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from mistralai import Mistral\n\nclient = Mistral(api_key=\"TU_API_KEY\")\nresponse = client.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, world!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "¿Qué modelo es más recomendable para investigación y experimentación?",
       "a": "Qwen 2.5 es más adecuado para investigación gracias a su naturaleza abierta, que permite modificar la arquitectura, realizar ajuste fino y ejecutar experimentos sin depender de un proveedor externo. Mistral Large, al ser cerrado, limita la experimentación a la API y no permite acceso a los pesos. Para investigación avanzada, Qwen 2.5 ofrece mayor flexibilidad."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Qwen 2.5 y Mistral Large cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Qwen 2.5 encaja mejor cuando tu proyecto prioriza acceso y disponibilidad (abierto vs: Qwen 2.5 se distribuye como modelo abierto con licencias permisivas para muchos de sus tamaños, lo…. Mistral Large es preferible cuando tu proyecto prioriza precios de api por millón de tokens (entrada/salida): Mistral Large se ofrece mediante API de pago con tarifas por millón de tokens de entrada y salida….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto",
+      "toolA": "Para aplicaciones que requieren procesar documentos extensos o conversaciones largas, es recomendable verificar la ficha técnica del tamaño concreto que se vaya a utilizar.",
+      "toolB": "No obstante, al ser un modelo propietario, el límite puede variar según el plan contratado y la plataforma de acceso, por lo que conviene consultar la documentación vigente del proveedor."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "Estos datos provienen de informes oficiales y pueden variar según la versión y las condiciones de evaluación, por lo que no deben interpretarse como una medida absoluta de rendimiento en producción.",
+      "toolB": "Sin embargo, las cifras exactas dependen de la versión del modelo y del conjunto de evaluación utilizado, y no siempre son directamente comparables con las de modelos abiertos debido a diferencias metodológicas."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida)",
+      "toolA": "En plataformas como Alibaba Cloud, los precios varían según el tamaño del modelo y la región, y deben consultarse en la documentación oficial, ya que están sujetos a cambios.",
+      "toolB": "Estos precios pueden variar según el plan y el volumen de uso, y es imprescindible verificarlos en la página oficial de precios antes de realizar una estimación de costes."
+    },
+    {
+      "category": "Latencia",
+      "toolA": "No hay una cifra universal, por lo que se recomienda medir en el entorno previsto.",
+      "toolB": "Sin embargo, la latencia real puede variar según la carga del servicio y la región del usuario, y no se dispone de una garantía de tiempo de respuesta uniforme para todos los casos."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto vs",
+      "toolA": "Esta apertura facilita la personalización y el control, aunque requiere conocimientos técnicos para su puesta en marcha y mantenimiento.",
+      "toolB": "No se puede autoalojar ni modificar, pero ofrece la ventaja de una integración sencilla y un servicio gestionado con actualizaciones automáticas y soporte empresarial."
+    },
+    {
+      "category": "Casos de uso prácticos",
+      "toolA": "Su variedad de tamaños permite elegir entre eficiencia y capacidad según la tarea, aunque la integración y el ajuste fino corren a cargo del equipo.",
+      "toolB": "Su API facilita la integración rápida y el escalado, pero el coste por uso puede ser mayor para volúmenes elevados."
+    }
+  ],
+  "introduction": "Qwen 2.5 y Mistral Large responden a una necesidad similar, pero difieren en ventana de contexto. Qwen 2.5: Qwen 2.5 ofrece variantes con ventanas de contexto que, según la documentación oficial, alcanzan hasta 128 000 tokens… Mistral Large: Mistral Large, en sus versiones más recientes, admite una ventana de contexto amplia, con valores que la compañía ha… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: Qwen 2.5 ha publicado resultados en MMLU y HumanEval para varios tamaños, con puntuaciones que compiten favorablemente… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza acceso y disponibilidad (abierto vs: Qwen 2.5 se distribuye como modelo abierto con licencias permisivas para muchos de sus tamaños, lo…",
+    "toolB": "tu proyecto prioriza precios de api por millón de tokens (entrada/salida): Mistral Large se ofrece mediante API de pago con tarifas por millón de tokens de entrada y salida…"
+  }
 }

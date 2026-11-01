@@ -1,8 +1,8 @@
 {
   "slug": "prisma-vs-drizzle",
   "meta": {
-    "title": "Prisma vs Drizzle ORM (2026): quelle solution choisir ?",
-    "description": "Comparatif Prisma vs Drizzle ORM : typage TypeScript, migrations, performances, écosystème et courbe d'apprentissage pour choisir l'ORM adapté à votre projet en 2026."
+    "title": "Prisma vs Drizzle ORM: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez Prisma et Drizzle ORM : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Prisma"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { PrismaClient } from '@prisma/client';\n\nconst prisma = new PrismaClient();\n\nasync function main() {\n  const user = await prisma.user.create({\n    data: { email: 'hello@example.com', name: 'Hello World' },\n  });\n  console.log(user);\n}\n\nmain().finally(() => prisma.$disconnect());",
-    "tech2Snippet": "import { drizzle } from 'drizzle-orm/better-sqlite3';\nimport Database from 'better-sqlite3';\nimport { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';\n\nconst users = sqliteTable('users', {\n  id: integer('id').primaryKey({ autoIncrement: true }),\n  name: text('name').notNull(),\n});\n\nconst sqlite = new Database('hello.db');\nconst db = drizzle(sqlite);\n\nconst inserted = db.insert(users).values({ name: 'Hello World' }).returning().all();\nconsole.log(inserted);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quels sont les inconvénients à surveiller avec Prisma et Drizzle ORM ?",
       "a": "Prisma ajoute une étape de génération et une couche d'abstraction qui peuvent limiter certains usages très spécifiques à une base. Drizzle, plus proche du SQL, demande plus de rigueur et son écosystème est plus jeune, avec parfois moins de ressources. Dans les deux cas, surveillez les notes de version lors des mises à jour majeures et testez vos requêtes critiques."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Prisma et Drizzle ORM modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Prisma convient mieux lorsque votre projet privilégie courbe d'apprentissage et expérience développeur : Prisma offre une documentation abondante et une API homogène qui facilitent la prise en main,…. Drizzle ORM est préférable lorsque votre projet privilégie modèle d'abstraction et philosophie d'api : Drizzle ORM propose une API proche du SQL, construite avec des fonctions TypeScript composables….",
+  "tradeoffs": [
+    {
+      "category": "Modèle d'abstraction et philosophie d'API",
+      "toolA": "Cette abstraction éloigne du SQL brut et uniformise l'accès aux données, au prix d'une couche supplémentaire entre le code et la base.",
+      "toolB": "Ce modèle donne un contrôle précis sur la structure des requêtes et reste familier à ceux qui maîtrisent déjà SQL."
+    },
+    {
+      "category": "Typage TypeScript et inférence",
+      "toolA": "Cette génération garantit une cohérence forte, mais impose une étape de génération après chaque modification du schéma.",
+      "toolB": "L'inférence couvre les colonnes, les jointures et les résultats, avec un typage souvent jugé très fin par la communauté."
+    },
+    {
+      "category": "Migrations et gestion du schéma",
+      "toolA": "Le flux est guidé et adapté aux équipes qui préfèrent un processus encadré, même si les cas complexes demandent parfois des ajustements manuels.",
+      "toolB": "La flexibilité est appréciable, mais l'équipe doit parfois arbitrer entre génération automatique et écriture manuelle de SQL."
+    },
+    {
+      "category": "Performances et surcoût d'exécution",
+      "toolA": "Il convient de mesurer dans votre contexte plutôt que de se fier à des chiffres généraux.",
+      "toolB": "Les performances réelles restent toutefois liées au pilote de base, aux requêtes et à la charge applicative."
+    },
+    {
+      "category": "Courbe d'apprentissage et expérience développeur",
+      "toolA": "Les erreurs sont généralement explicites et le schéma centralise la compréhension du modèle de données.",
+      "toolB": "En contrepartie, les développeurs expérimentés apprécient la prévisibilité et la proximité avec la base de données."
+    },
+    {
+      "category": "Écosystème, intégrations et outillage",
+      "toolA": "La communauté est large et les ressources pédagogiques sont nombreuses.",
+      "toolB": "Drizzle s'intègre bien aux frameworks modernes et propose son propre studio, mais son écosystème est plus jeune et certaines intégrations peuvent être moins documentées. La communauté est active et en croissance."
+    }
+  ],
+  "introduction": "Prisma et Drizzle ORM répondent à un besoin proche, mais diffèrent sur modèle d'abstraction et philosophie d'api. Prisma : Prisma repose sur un schéma déclaratif unique qui génère un client typé, ce qui offre une API haut niveau très lisible… Drizzle ORM : Drizzle ORM propose une API proche du SQL, construite avec des fonctions TypeScript composables qui se traduisent de… Le critère « Typage TypeScript et inférence » met en évidence une autre différence pratique : Le client généré par Prisma fournit des types précis dérivés du schéma, y compris pour les relations et les champs… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie courbe d'apprentissage et expérience développeur : Prisma offre une documentation abondante et une API homogène qui facilitent la prise en main,…",
+    "toolB": "votre projet privilégie modèle d'abstraction et philosophie d'api : Drizzle ORM propose une API proche du SQL, construite avec des fonctions TypeScript composables…"
+  }
 }

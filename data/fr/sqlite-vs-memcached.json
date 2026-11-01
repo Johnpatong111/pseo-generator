@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-memcached",
   "meta": {
-    "title": "SQLite vs Memcached (2026) : quelle solution choisir ?",
-    "description": "SQLite et Memcached répondent à des besoins opposés : base relationnelle embarquée contre cache mémoire distribué. Comparatif 2026, critères, exemples et conseils."
+    "title": "SQLite vs Memcached: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez SQLite et Memcached : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "SQLite"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const Database = require('better-sqlite3');\nconst db = new Database('hello.db');\ndb.exec('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, text TEXT NOT NULL)');\ndb.prepare('INSERT INTO messages (text) VALUES (?)').run('Hello, World!');\nconsole.log(db.prepare('SELECT text FROM messages ORDER BY id DESC LIMIT 1').get());",
-    "tech2Snippet": "const Memcached = require('memcached');\nconst client = new Memcached('127.0.0.1:11211');\nclient.set('greeting', 'Hello, World!', 60, (err) => {\n  if (err) throw err;\n  client.get('greeting', (err, data) => {\n    if (err) throw err;\n    console.log(data);\n    client.end();\n  });\n});"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quels critères vérifier avant de choisir en 2026 ?",
       "a": "Vérifiez d'abord la persistance attendue, le volume de données, le nombre de serveurs et la tolérance à la perte de cache. Contrôlez ensuite les fonctionnalités réelles de la version envisagée, notamment le chiffrement, la concurrence et le support de votre langage. Enfin, comparez le coût total d'exploitation, les sauvegardes et la supervision, car les tarifs et fonctionnalités des offres managées évoluent."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre SQLite et Memcached modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "SQLite convient mieux lorsque votre projet privilégie nature et modèle de données : SQLite est une bibliothèque de base de données relationnelle intégrée qui stocke les données dans…. Memcached est préférable lorsque votre projet privilégie performance et cas d'usage typiques : Memcached est optimisé pour des accès mémoire à très faible latence et peut répartir la charge sur….",
+  "tradeoffs": [
+    {
+      "category": "Nature et modèle de données",
+      "toolA": "Elle gère tables, index, contraintes, transactions et vues, sans processus serveur séparé.",
+      "toolB": "Il stocke des valeurs opaques associées à des clés textuelles, avec une durée de vie optionnelle, et ne prétend pas être une base de données durable."
+    },
+    {
+      "category": "Persistance et durabilité des données",
+      "toolA": "La durabilité dépend du réglage de synchronisation choisi et du système de fichiers sous-jacent.",
+      "toolB": "Il est donc inadapté comme source de vérité, même si certains redémarrages peuvent préserver la mémoire selon la configuration de l'hôte."
+    },
+    {
+      "category": "Performance et cas d'usage typiques",
+      "toolA": "Les performances varient selon la taille de la base, les index et le matériel.",
+      "toolB": "Ses gains dépendent fortement du taux de succès du cache et du coût des requêtes évitées."
+    },
+    {
+      "category": "Déploiement et exploitation",
+      "toolA": "L'exploitation est simple, mais les sauvegardes à chaud et les migrations demandent une certaine rigueur.",
+      "toolB": "Il faut prévoir la haute disponibilité côté client ou architecture, car le serveur lui-même ne réplique pas les données."
+    },
+    {
+      "category": "Concurrence et montée en charge",
+      "toolA": "Pour des écritures massives ou multi-serveurs, une base cliente-serveur ou un partitionnement applicatif devient souvent plus adapté.",
+      "toolB": "La cohérence entre nœuds n'est pas garantie et la gestion des clés après ajout ou retrait de nœuds dépend du client."
+    },
+    {
+      "category": "Sécurité et contrôle d'accès",
+      "toolA": "L'authentification utilisateur n'est pas gérée par la bibliothèque.",
+      "toolB": "L'exposition directe à Internet est fortement déconseillée."
+    }
+  ],
+  "introduction": "SQLite et Memcached répondent à un besoin proche, mais diffèrent sur nature et modèle de données. SQLite : SQLite est une bibliothèque de base de données relationnelle intégrée qui stocke les données dans un fichier local et… Memcached : Memcached est un serveur de cache clé-valeur en mémoire, sans schéma ni requête SQL. Le critère « Persistance et durabilité des données » met en évidence une autre différence pratique : SQLite écrit sur disque et propose des garanties transactionnelles ACID, avec un mode journal configurable (rollback… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie nature et modèle de données : SQLite est une bibliothèque de base de données relationnelle intégrée qui stocke les données dans…",
+    "toolB": "votre projet privilégie performance et cas d'usage typiques : Memcached est optimisé pour des accès mémoire à très faible latence et peut répartir la charge sur…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "cassandra-vs-scylladb",
   "meta": {
-    "title": "Apache Cassandra vs ScyllaDB (2026): welche Lösung passt besser?",
-    "description": "Cassandra vs. ScyllaDB im Vergleich 2026: Architektur, CQL-Kompatibilität, Betrieb, Skalierung und Eignung für Teams – eine sachliche Entscheidungshilfe."
+    "title": "Apache Cassandra vs ScyllaDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche Apache Cassandra und ScyllaDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Apache Cassandra"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Minimalbeispiel: Cassandra mit Python-Treiber\nfrom cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\n\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.set_keyspace('demo')\nsession.execute(\"CREATE TABLE IF NOT EXISTS greets (id int PRIMARY KEY, msg text)\")\nsession.execute(\"INSERT INTO greets (id, msg) VALUES (1, 'Hallo, Welt!')\")\nrow = session.execute(\"SELECT msg FROM greets WHERE id = 1\").one()\nprint(row.msg)\n\ncluster.shutdown()",
-    "tech2Snippet": "# Minimalbeispiel: ScyllaDB mit Python-Treiber (CQL-kompatibel)\nfrom cassandra.cluster import Cluster\n\ncluster = Cluster(['127.0.0.1'])\nsession = cluster.connect()\n\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.set_keyspace('demo')\nsession.execute(\"CREATE TABLE IF NOT EXISTS greets (id int PRIMARY KEY, msg text)\")\nsession.execute(\"INSERT INTO greets (id, msg) VALUES (1, 'Hallo, Welt!')\")\nrow = session.execute(\"SELECT msg FROM greets WHERE id = 1\").one()\nprint(row.msg)\n\ncluster.shutdown()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wann sollte man sich eher für Cassandra und wann für ScyllaDB entscheiden?",
       "a": "Wählen Sie Apache Cassandra, wenn Ihnen Herstellerunabhängigkeit, ein breites Ökosystem, viele Managed-Angebote und eine große Talentbasis wichtig sind. ScyllaDB ist interessant, wenn Sie eine effiziente Ressourcennutzung, geringere Latenzschwankungen und integrierte Betriebswerkzeuge anstreben und die Lizenz- sowie Anbieterbindung akzeptabel ist. In beiden Fällen sollten Sie die Entscheidung anhand Ihrer Arbeitslast, Ihres Teams und Ihrer Betriebsanforderungen testen, statt sich auf pauschale Leistungsversprechen zu verlassen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Apache Cassandra und ScyllaDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Apache Cassandra passt besser, wenn dein Projekt priorisiert CQL-Kompatibilität und Ökosystem: Apache Cassandra definiert CQL als native Abfragesprache und verfügt über ein sehr breites…. ScyllaDB ist geeigneter, wenn dein Projekt priorisiert Ressourceneffizienz und Latenz: ScyllaDB ist in C++ implementiert und vermeidet eine globale Garbage Collection durch….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Datenmodell",
+      "toolA": "Die Architektur ist auf hohe Schreibdurchsätze und lineare Skalierung ausgelegt.",
+      "toolB": "Die Datenmodellierung ähnelt Cassandra stark, unterscheidet sich jedoch in Details der Implementierung."
+    },
+    {
+      "category": "CQL-Kompatibilität und Ökosystem",
+      "toolA": "Die Referenzimplementierung gilt als De-facto-Standard für kompatible Systeme.",
+      "toolB": "Vor einer Migration sollte die Kompatibilität mit der konkreten Anwendung und Treiberversion geprüft werden."
+    },
+    {
+      "category": "Ressourceneffizienz und Latenz",
+      "toolA": "Konkrete Zahlen sind ohne reproduzierbare Benchmarks nicht belastbar.",
+      "toolB": "Wie stark dieser Vorteil ausfällt, ist von Arbeitslast, Version, Konfiguration und Hardware abhängig."
+    },
+    {
+      "category": "Betrieb, Administration und Reife",
+      "toolA": "Der Betrieb erfordert dennoch Fachkenntnis bei Compaction, Reparatur und Kapazitätsplanung.",
+      "toolB": "Der Betrieb verlangt Einarbeitung in systemspezifische Eigenheiten."
+    },
+    {
+      "category": "Skalierung und Elastizität",
+      "toolA": "Die tatsächliche Skalierung hängt von Datenmodell und Konsistenzanforderungen ab.",
+      "toolB": "Die Effizienzgewinne bei der Skalierung sind arbeitslastabhängig und nicht pauschal garantierbar."
+    },
+    {
+      "category": "Lizenzierung und Portabilität",
+      "toolA": "Die Unabhängigkeit von einem einzelnen Anbieter ist ein wesentlicher Vorteil.",
+      "toolB": "Teams sollten die Lizenzbedingungen vor dem Einsatz rechtlich prüfen."
+    }
+  ],
+  "introduction": "Apache Cassandra und ScyllaDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und datenmodell. Apache Cassandra: Apache Cassandra ist eine verteilte Wide-Column-Datenbank mit peer-to-peer-Ring, konsistentem Hashing und… ScyllaDB: ScyllaDB verfolgt ebenfalls ein Wide-Column-Modell mit CQL und peer-to-peer-Topologie, nutzt aber eine… Das Kriterium cql-kompatibilität und ökosystem zeigt einen weiteren praktischen Unterschied: Apache Cassandra definiert CQL als native Abfragesprache und verfügt über ein sehr breites Ökosystem an Treibern,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert CQL-Kompatibilität und Ökosystem: Apache Cassandra definiert CQL als native Abfragesprache und verfügt über ein sehr breites…",
+    "toolB": "dein Projekt priorisiert Ressourceneffizienz und Latenz: ScyllaDB ist in C++ implementiert und vermeidet eine globale Garbage Collection durch…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-express",
   "meta": {
-    "title": "Node.js vs Express (2026): welche Lösung passt besser?",
-    "description": "Node.js vs Express im Vergleich 2026: Laufzeitumgebung gegen Web-Framework, mit Kriterien, Codebeispielen und klarer Empfehlung für dein Projekt."
+    "title": "Node.js vs Express: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Node.js und Express: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const http = require('node:http');\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });\n  res.end('Hallo, Welt!');\n});\n\nserver.listen(3000, () => {\n  console.log('Server läuft auf http://localhost:3000');\n});",
-    "tech2Snippet": "const express = require('express');\n\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hallo, Welt!');\n});\n\napp.listen(3000, () => {\n  console.log('Express läuft auf http://localhost:3000');\n});"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wann lohnt sich der Umstieg von Express auf eine Alternative?",
       "a": "Ein Wechsel kann sinnvoll sein, wenn du mehr Struktur, integrierte Typpfade oder zusätzliche Funktionen wie Validierung und OpenAPI-Integration benötigst. Auch ein hoher Wartungsaufwand oder Sicherheitsanforderungen können Anlass sein, Alternativen zu prüfen. Ob sich der Aufwand lohnt, hängt von Projektgröße, Teamkompetenz und Migrationsrisiko ab und sollte nicht pauschal entschieden werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Node.js und Express verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Node.js passt besser, wenn dein Projekt priorisiert Ökosystem und Erweiterbarkeit: Node.js verfügt über ein sehr großes Paket-Ökosystem über npm und eine breite Basis an…. Express ist geeigneter, wenn dein Projekt priorisiert Einstieg und Boilerplate: Express reduziert den Boilerplate-Aufwand für klassische Web-APIs deutlich, weil Routing,….",
+  "tradeoffs": [
+    {
+      "category": "Rolle und Abstraktionsebene",
+      "toolA": "Node.js definiert damit die Grundlage, nicht das Web-Framework.",
+      "toolB": "Ohne eine Laufzeitumgebung wie Node.js läuft Express nicht."
+    },
+    {
+      "category": "Einstieg und Boilerplate",
+      "toolA": "Der Aufwand hängt stark vom Umfang des Projekts ab.",
+      "toolB": "Für ein kleines Hello-World ist der Unterschied gering, bei mehreren Endpunkten und Middleware-Schichten wird Express in der Regel schneller produktiv."
+    },
+    {
+      "category": "Flexibilität und Kontrolle",
+      "toolA": "Für ungewöhnliche Anforderungen kann das ein Vorteil sein.",
+      "toolB": "Die Freiheit ist groß, erfordert aber Disziplin."
+    },
+    {
+      "category": "Ökosystem und Erweiterbarkeit",
+      "toolA": "Die Qualität einzelner Pakete sollte vor dem Einsatz geprüft werden.",
+      "toolB": "Kompatibilität und Wartungsstand einzelner Middleware-Pakete sollten vor Produktivnutzung geprüft werden."
+    },
+    {
+      "category": "Performance und Skalierung",
+      "toolA": "CPU-intensive Aufgaben erfordern zusätzliche Maßnahmen wie Worker Threads.",
+      "toolB": "Die Performance wird stark von der gewählten Middleware und dem Anwendungsdesign bestimmt."
+    },
+    {
+      "category": "Sicherheit und Verantwortlichkeiten",
+      "toolA": "Anwendungsspezifische Sicherheit muss dennoch selbst implementiert werden.",
+      "toolB": "Sicherheit ist daher eine gemeinsame Aufgabe von Framework-Konfiguration und Anwendungscode."
+    }
+  ],
+  "introduction": "Node.js und Express lösen ein ähnliches Problem, unterscheiden sich jedoch bei rolle und abstraktionsebene. Node.js: Node.js ist eine JavaScript-Laufzeitumgebung auf Basis der V8-Engine und stellt die Plattform bereit, auf der… Express: Express ist ein minimales Web-Framework, das auf Node.js aufsetzt und HTTP-Anfragen über Routing und Middleware… Das Kriterium einstieg und boilerplate zeigt einen weiteren praktischen Unterschied: Mit Node.js lässt sich ein HTTP-Server bereits über das eingebaute Modul `http` ohne zusätzliche Abhängigkeiten… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Ökosystem und Erweiterbarkeit: Node.js verfügt über ein sehr großes Paket-Ökosystem über npm und eine breite Basis an…",
+    "toolB": "dein Projekt priorisiert Einstieg und Boilerplate: Express reduziert den Boilerplate-Aufwand für klassische Web-APIs deutlich, weil Routing,…"
+  }
 }

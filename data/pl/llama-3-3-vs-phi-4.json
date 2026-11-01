@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-phi-4",
   "meta": {
-    "title": "Llama 3.3 vs Phi-4 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Llama 3.3 i Phi-4 pod kątem okna kontekstu, wyników benchmarków, cen API, opóźnień i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "Llama 3.3 vs Phi-4: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Llama 3.3 i Phi-4: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jakie są ograniczenia Phi-4?",
       "a": "Phi-4 ma mniejsze okno kontekstu (16 tys. tokenów), co utrudnia analizę bardzo długich dokumentów. Choć model jest wydajny, może mieć ograniczoną wiedzę ogólną w porównaniu do większych modeli. Dodatkowo dostępność przez API i ceny różnią się w zależności od dostawcy, więc warto zweryfikować warunki przed wdrożeniem."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Llama 3.3 a Phi-4 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Llama 3.3 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Llama 3.3 w wersji 70B oferuje okno kontekstu do 128 tys. Phi-4 sprawdzi się, gdy projekt stawia na kryterium „Cena API za 1 mln tokenów (wejście/wyjście)”: Phi-4 jest dostępny m.in.",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Wartość ta może zależeć od dostawcy API lub konfiguracji lokalnej, dlatego należy potwierdzić limit w dokumentacji konkretnego dostawcy.",
+      "toolB": "Przy pracy z obszernymi materiałami trzeba dzielić je na mniejsze części lub stosować techniki summarize-then-answer."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Należy pamiętać, że wyniki zależą od wersji modelu, sposobu ewaluacji i mogą różnić się między dostawcami.",
+      "toolB": "Jego wyniki są dobrze udokumentowane w publikacjach Microsoft, ale nadal wymagają weryfikacji dla konkretnej wersji i konfiguracji."
+    },
+    {
+      "category": "Cena API za 1 mln tokenów (wejście/wyjście)",
+      "toolA": "Aktualne ceny należy sprawdzić w cenniku wybranego dostawcy.",
+      "toolB": "Konkretne stawki zależą od planu i regionu, dlatego przed wdrożeniem warto zweryfikować oficjalny cennik."
+    },
+    {
+      "category": "Opóźnienie (latencja)",
+      "toolA": "Rzeczywiste czasy odpowiedzi zależą od infrastruktury dostawcy, konfiguracji sprzętowej i rozmiaru wsadu.",
+      "toolB": "W praktyce latencja zależy od dostawcy, obciążenia i parametrów żądania, dlatego należy ją zmierzyć w docelowym środowisku."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Jest także szeroko dostępna poprzez API różnych dostawców chmurowych, co daje elastyczność wyboru.",
+      "toolB": "w Azure AI, co ułatwia integrację w środowiskach chmurowych."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Może być używana zarówno w chmurze, jak i lokalnie.",
+      "toolB": "Sprawdzi się w aplikacjach edge, chatbotach o mniejszym kontekście i scenariuszach, gdzie liczą się koszty i prostota wdrożenia."
+    }
+  ],
+  "introduction": "Llama 3.3 i Phi-4 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Llama 3.3: Llama 3.3 w wersji 70B oferuje okno kontekstu do 128 tys. Phi-4: Phi-4 (14B) ma okno kontekstu wynoszące 16 tys. Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Llama 3.3 70B osiąga wysokie wyniki w testach wiedzy ogólnej i rozumowania, m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Llama 3.3 w wersji 70B oferuje okno kontekstu do 128 tys.",
+    "toolB": "projekt stawia na kryterium „Cena API za 1 mln tokenów (wejście/wyjście)”: Phi-4 jest dostępny m.in."
+  }
 }

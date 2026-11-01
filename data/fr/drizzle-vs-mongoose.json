@@ -1,8 +1,8 @@
 {
   "slug": "drizzle-vs-mongoose",
   "meta": {
-    "title": "Drizzle ORM vs Mongoose (2026): quelle solution choisir ?",
-    "description": "Drizzle ORM contre Mongoose en 2026 : typage TypeScript, modélisation, migrations, MongoDB contre SQL. Comparatif détaillé et conseils pour choisir selon votre projet."
+    "title": "Drizzle ORM vs Mongoose: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez Drizzle ORM et Mongoose : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Drizzle ORM"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { drizzle } from 'drizzle-orm/node-postgres';\nimport { pgTable, serial, text } from 'drizzle-orm/pg-core';\nimport { Client } from 'pg';\n\nconst users = pgTable('users', {\n  id: serial('id').primaryKey(),\n  name: text('name').notNull(),\n});\n\nconst client = new Client({ connectionString: process.env.DATABASE_URL });\nawait client.connect();\nconst db = drizzle(client);\n\nawait db.insert(users).values({ name: 'Hello, World!' });",
-    "tech2Snippet": "import mongoose from 'mongoose';\n\nconst userSchema = new mongoose.Schema({\n  name: { type: String, required: true },\n});\n\nconst User = mongoose.model('User', userSchema);\n\nawait mongoose.connect(process.env.MONGODB_URI);\nawait User.create({ name: 'Hello, World!' });"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Quel choix pour un projet full-stack TypeScript de taille moyenne ?",
       "a": "Pour un projet full-stack TypeScript avec une base SQL, Drizzle ORM est souvent cohérent : typage inféré, requêtes explicites et migrations versionnées facilitent la maintenance. Si le projet repose sur MongoDB et que l'équipe veut des schémas de documents avec validation intégrée, Mongoose reste un choix solide. Évaluez aussi la familiarité de l'équipe avec SQL ou avec le modèle document, car cela influence directement la productivité."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Drizzle ORM et Mongoose modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Drizzle ORM convient mieux lorsque votre projet privilégie typage typescript et sécurité de compilation : Drizzle produit des types inférés directement depuis le schéma, avec une forte protection à la…. Mongoose est préférable lorsque votre projet privilégie validation et intégrité des données : Mongoose intègre nativement un système de validation de documents (champs requis, types,….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et base ciblée",
+      "toolA": "Il s'appuie sur un schéma déclaré en TypeScript qui reflète les tables et colonnes réelles, ce qui rend explicite le mapping avec la base.",
+      "toolB": "Il permet de définir des schémas de documents enrichis (validation, hooks, méthodes) et convient bien aux données imbriquées et flexibles."
+    },
+    {
+      "category": "Typage TypeScript et sécurité de compilation",
+      "toolA": "Le SQL généré reste lisible, ce qui facilite le débogage des requêtes typées.",
+      "toolB": "Certaines responsabilités de validation restent à l'exécution plutôt qu'à la compilation."
+    },
+    {
+      "category": "Migrations et évolution du schéma",
+      "toolA": "Ce flux correspond à des pratiques relationnelles classiques et reste contrôlable dans une CI.",
+      "toolB": "Cela peut suffire pour des schémas souples, mais demande de la rigueur dès que les données changent de structure."
+    },
+    {
+      "category": "Requêtes et expressivité du langage",
+      "toolA": "La correspondance avec les requêtes relationnelles (jointures, agrégats) est directe et explicite.",
+      "toolB": "La logique de jointure se fait souvent par référencement de documents ou par agrégation, ce qui est adapté à MongoDB mais moins naturel pour des relations fortement structurées."
+    },
+    {
+      "category": "Validation et intégrité des données",
+      "toolA": "L'intégrité est donc largement déléguée à la base et à la couche applicative.",
+      "toolB": "Cela offre un garde-fou pratique pour MongoDB, même si cela ne remplace pas les contraintes d'une base relationnelle."
+    },
+    {
+      "category": "Écosystème, maturité et documentation",
+      "toolA": "L'API évolue encore et certaines intégrations dépendent de la version.",
+      "toolB": "Sa maturité est un atout pour les équipes qui cherchent des patterns éprouvés."
+    }
+  ],
+  "introduction": "Drizzle ORM et Mongoose répondent à un besoin proche, mais diffèrent sur modèle de données et base ciblée. Drizzle ORM : Drizzle ORM est conçu pour les bases relationnelles SQL (PostgreSQL, MySQL, SQLite, et plusieurs variantes via des… Mongoose : Mongoose est un ODM orienté document, historiquement centré sur MongoDB. Le critère « Typage TypeScript et sécurité de compilation » met en évidence une autre différence pratique : Drizzle produit des types inférés directement depuis le schéma, avec une forte protection à la compilation sur les… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie typage typescript et sécurité de compilation : Drizzle produit des types inférés directement depuis le schéma, avec une forte protection à la…",
+    "toolB": "votre projet privilégie validation et intégrité des données : Mongoose intègre nativement un système de validation de documents (champs requis, types,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "openai-o1-vs-openai-o3",
   "meta": {
-    "title": "OpenAI o1 vs OpenAI o3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie modeli OpenAI o1 i o3 pod kątem kontekstu, wydajności, cen API, opóźnień i dostępności. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "OpenAI o1 vs OpenAI o3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj OpenAI o1 i OpenAI o3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "OpenAI o1"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nresponse = client.chat.completions.create(\n    model=\"o1\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nresponse = client.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest bardziej odpowiedni do zadań wymagających rozumowania matematycznego?",
       "a": "Oba modele są projektowane z myślą o rozumowaniu, w tym matematycznym, ale ich względna przewaga może zależeć od konkretnego zadania i wersji. Publiczne benchmarki mogą nie odzwierciedlać rzeczywistych zastosowań, dlatego zaleca się testy na własnych problemach. Warto zwrócić uwagę na poprawność, jasność wyjaśnień i czas odpowiedzi."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między OpenAI o1 a OpenAI o3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "OpenAI o1 będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość i stabilność ekosystemu”: OpenAI o1 jest dostępny od dłuższego czasu, co może przekładać się na lepiej udokumentowane…. OpenAI o3 sprawdzi się, gdy projekt stawia na kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Dla OpenAI o3 publiczne, porównywalne wyniki MMLU i HumanEval mogą być ograniczone lub….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "W praktyce duże okno kontekstu pozwala analizować długie dokumenty i złożone rozmowy, ale rzeczywista dostępna długość może być mniejsza ze względu na tokeny zużywane na rozumowanie.",
+      "toolB": "Należy sprawdzić aktualne limity, ponieważ mogą się różnić między planami i punktami końcowymi API."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "Wyniki te mogą być przydatne do oceny ogólnej wiedzy i umiejętności programistycznych, ale nie zastępują testów na własnych danych.",
+      "toolB": "Zaleca się przeprowadzenie własnej ewaluacji na reprezentatywnym zestawie zadań, jeśli wydajność jest kluczowa."
+    },
+    {
+      "category": "Cena API za 1 mln tokenów wejściowych/wyjściowych",
+      "toolA": "Koszty mogą być wyższe dla dłuższych kontekstów lub specjalnych trybów, więc warto monitorować zużycie.",
+      "toolB": "Ceny API dla o3 mogą być inne niż dla o1 i również podlegają zmianom wraz z aktualizacjami modelu i polityką dostawcy. Nie należy zakładać konkretnych kwot bez weryfikacji w cenniku OpenAI. Przy planowaniu budżetu należy uwzględnić, że nowsze modele mogą mieć inną strukturę opłat, np. za tokeny rozumowania."
+    },
+    {
+      "category": "Opóźnienie (latencja)",
+      "toolA": "Rzeczywiste wartości należy mierzyć we własnym środowisku, ponieważ mogą się różnić w zależności od regionu i planu.",
+      "toolB": "W zastosowaniach wrażliwych na czas należy przeprowadzić testy wydajnościowe z reprezentatywnym obciążeniem i uwzględnić zmienność sieci."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość (open/closed)",
+      "toolA": "Nie jest to model open source, więc nie można go uruchomić lokalnie ani modyfikować wag.",
+      "toolB": "Podobnie jak o1, nie jest udostępniany jako model open source."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Warto stosować go tam, gdzie jakość odpowiedzi jest ważniejsza niż szybkość.",
+      "toolB": "Przed wdrożeniem produkcyjnym zaleca się testy porównawcze."
+    }
+  ],
+  "introduction": "OpenAI o1 i OpenAI o3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. OpenAI o1: OpenAI o1 oferuje okno kontekstu o określonym rozmiarze, który może się różnić w zależności od wersji modelu i planu… OpenAI o3: OpenAI o3, jako nowszy model, może oferować inne okno kontekstu niż o1, ale jego dokładny rozmiar nie jest stały i… Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: OpenAI publikowało wyniki o1 na różnych benchmarkach, w tym MMLU i HumanEval, ale wartości mogą się różnić w… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość i stabilność ekosystemu”: OpenAI o1 jest dostępny od dłuższego czasu, co może przekładać się na lepiej udokumentowane…",
+    "toolB": "projekt stawia na kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Dla OpenAI o3 publiczne, porównywalne wyniki MMLU i HumanEval mogą być ograniczone lub…"
+  }
 }

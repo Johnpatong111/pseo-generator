@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-nestjs",
   "meta": {
-    "title": "Gin vs NestJS (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Gin (Go) y NestJS (Node.js/TypeScript) en 2026: rendimiento, arquitectura, curva de aprendizaje, ecosistema y casos de uso para elegir bien tu backend."
+    "title": "Gin vs NestJS: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara Gin y NestJS: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Gin"
@@ -19,7 +19,7 @@
       "winner": "tie"
     },
     {
-      "category": "Rendimiento y eficiencia de recursos. Las diferencias de rendimiento dependen en gran medida de la carga de trabajo, la configuración y el código concreto, por lo que conviene evitarlas como criterio único. En términos generales, los frameworks de Go suelen mostrar menor latencia y consumo de memoria en pruebas sintéticas de tipo hello world, mientras que NestJS añade capas de abstracción sobre Express o Fastify que pueden influir en la sobrecarga. No obstante, para muchas aplicaciones reales el cuello de botella estará en la base de datos o en servicios externos.",
+      "category": "Rendimiento y eficiencia de recursos. Las diferencias de rendimiento dependen en gran medida de la carga de trabajo, la configuración y el código concreto, por lo que conviene evitarlas como criterio único. En términos generales, los frameworks de Go suelen mostrar menor latencia y consumo de memoria en pruebas sintéticas mínimas, mientras que NestJS añade capas de abstracción sobre Express o Fastify que pueden influir en la sobrecarga. No obstante, para muchas aplicaciones reales el cuello de botella estará en la base de datos o en servicios externos.",
       "toolA": "Gin es un framework HTTP minimalista con un enrutador de alto rendimiento y bajo consumo de memoria en comparación con muchas alternativas. Al ejecutarse sobre Go, suele ofrecer tiempos de arranque rápidos y una huella de recursos contenida, aunque el rendimiento final depende del diseño del servicio.",
       "toolB": "NestJS puede usar Express o Fastify como adaptador HTTP; con Fastify suele obtener mejor rendimiento que con Express, pero la capa de abstracción y el runtime de Node.js condicionan el resultado. En cargas con mucha E/S asíncrona su comportamiento es competitivo, y en tareas intensivas de CPU puede requerir workers o servicios separados.",
       "winner": "toolA"
@@ -88,5 +88,49 @@
       "q": "¿Cuál es más seguro, Gin o NestJS?",
       "a": "La seguridad no depende exclusivamente del framework: ambos permiten implementar autenticación, validación de entradas, control de acceso y protección frente a ataques comunes si se configuran correctamente. Gin y NestJS reciben actualizaciones de sus maintainers, y es responsabilidad del equipo mantener dependencias al día y revisar vulnerabilidades conocidas. Conviene aplicar buenas prácticas y auditorías periódicas en cualquiera de los dos casos."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Gin y NestJS cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Gin encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia de recursos: Gin es un framework HTTP minimalista con un enrutador de alto rendimiento y bajo consumo de…. NestJS es preferible cuando tu proyecto prioriza arquitectura y organización del código: NestJS impone y facilita una estructura modular con inyección de dependencias, decoradores y….",
+  "tradeoffs": [
+    {
+      "category": "Lenguaje y modelo de ejecución",
+      "toolA": "Su modelo de concurrencia con goroutines y canales resulta idiomático para servicios con mucha E/S y permite razonar sobre paralelismo con relativa claridad.",
+      "toolB": "Node.js gestiona la concurrencia mediante el bucle de eventos y promesas, lo que funciona bien en cargas dominadas por E/S, aunque las tareas intensivas de CPU requieren cuidado adicional."
+    },
+    {
+      "category": "Rendimiento y eficiencia de recursos",
+      "toolA": "Al ejecutarse sobre Go, suele ofrecer tiempos de arranque rápidos y una huella de recursos contenida, aunque el rendimiento final depende del diseño del servicio.",
+      "toolB": "En cargas con mucha E/S asíncrona su comportamiento es competitivo, y en tareas intensivas de CPU puede requerir workers o servicios separados."
+    },
+    {
+      "category": "Arquitectura y organización del código",
+      "toolA": "Esa flexibilidad favorece servicios pequeños y equipos con criterio arquitectónico claro, pero en proyectos grandes puede derivar en estructuras inconsistentes si no se documentan convenciones.",
+      "toolB": "Esa opinión fuerte reduce la fricción en equipos grandes y facilita la incorporación de nuevos desarrolladores, aunque puede resultar más ceremonioso para prototipos muy pequeños."
+    },
+    {
+      "category": "Curva de aprendizaje y experiencia del desarrollador",
+      "toolA": "La ausencia de estructura impuesta exige que el equipo defina sus propias convenciones, lo que puede ser una ventaja para perfiles experimentados.",
+      "toolB": "La contrapartida es una mayor cantidad de conceptos iniciales: módulos, decoradores, pipes, guards e interceptores, que requieren tiempo de aprendizaje."
+    },
+    {
+      "category": "Ecosistema y bibliotecas disponibles",
+      "toolA": "Gin integra middleware propio y admite bibliotecas de terceros, aunque algunas áreas pueden requerir más trabajo manual que en otros frameworks.",
+      "toolB": "Esa variedad acelera el desarrollo, pero conviene revisar el mantenimiento y la seguridad de cada dependencia antes de adoptarla."
+    },
+    {
+      "category": "Pruebas y calidad del código",
+      "toolA": "En Gin, la cobertura de pruebas depende de que el equipo defina su estrategia para controladores y middlewares, y las pruebas de integración HTTP son directas con net/http/httptest.",
+      "toolB": "TypeScript aporta comprobaciones en tiempo de compilación, pero al ejecutarse sobre JavaScript conviene complementar con validación en tiempo de ejecución y pruebas de integración realistas."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
+  },
+  "introduction": "Gin y NestJS responden a una necesidad similar, pero difieren en lenguaje y modelo de ejecución. Gin: Go compila a un binario nativo que incluye el runtime, lo que simplifica el despliegue en contenedores y elimina… NestJS: NestJS aprovecha TypeScript para ofrecer tipado estático en desarrollo y un ecosistema JavaScript muy amplio. El criterio de rendimiento y eficiencia de recursos añade otra diferencia práctica: Gin es un framework HTTP minimalista con un enrutador de alto rendimiento y bajo consumo de memoria en comparación con… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia de recursos: Gin es un framework HTTP minimalista con un enrutador de alto rendimiento y bajo consumo de…",
+    "toolB": "tu proyecto prioriza arquitectura y organización del código: NestJS impone y facilita una estructura modular con inyección de dependencias, decoradores y…"
+  }
 }

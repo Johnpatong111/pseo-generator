@@ -1,8 +1,8 @@
 {
   "slug": "mantine-vs-css-modules",
   "meta": {
-    "title": "Mantine vs CSS Modules (2026): welche Lösung passt besser?",
-    "description": "Mantine und CSS Modules im Vergleich: Komponentenbibliothek gegen reine Styling-Technik. Unterschiede bei Setup, Theming, Bündelgröße, Flexibilität und Wartbarkeit praxisnah erklärt."
+    "title": "Mantine vs CSS Modules: welches 2026 wählen — Styling, Komponenten und Entwickler-Workflow",
+    "description": "Vergleiche Mantine und CSS Modules: Bewerte Architekturkompromisse bei Komponenten-APIs, Style-Isolation und Wartung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Mantine"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import '@mantine/core/styles.css';\nimport { MantineProvider, Button } from '@mantine/core';\n\nexport default function App() {\n  return (\n    <MantineProvider>\n      <Button>Hallo Welt</Button>\n    </MantineProvider>\n  );\n}",
-    "tech2Snippet": "/* Hello.module.css */\n.greeting {\n  color: rebeccapurple;\n  font-weight: 600;\n}\n\n/* Hello.jsx */\nimport styles from './Hello.module.css';\n\nexport default function Hello() {\n  return <p className={styles.greeting}>Hallo Welt</p>;\n}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className=\"product-card\" aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Eignet sich einer der Ansätze auch außerhalb von React?",
       "a": "CSS Modules sind framework-agnostisch und funktionieren unter anderem mit Vue, Svelte oder reinen Bundler-Setups, sofern die jeweilige Toolchain den Import unterstützt. Mantine ist primär für React ausgelegt und setzt entsprechend auf React-Komponenten und den MantineProvider. Wenn Sie mehrere Frameworks parallel einsetzen, ist CSS Modules daher häufig die flexiblere Grundlage, während Mantine im React-Ökosystem seine Stärken ausspielt."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Mantine und CSS Modules verändert den Umgang mit Style-Verwaltung und Oberflächenkomposition; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Mantine passt besser, wenn dein Projekt priorisiert Theming und Designkonsistenz: Mantine bietet ein zentrales Theme mit Farbpaletten, Typografie, Spacing, Radius und…. CSS Modules ist geeigneter, wenn dein Projekt priorisiert Einrichtungsaufwand und Boilerplate: CSS Modules benötigt in modernen Bundlern wie Vite oder Next.js in der Regel keine oder nur….",
+  "tradeoffs": [
+    {
+      "category": "Grundkonzept und Einsatzbereich",
+      "toolA": "Es deckt UI-Aufbau, Theming und Accessibility-Grundlagen in einem Paket ab und richtet sich an React-Projekte, die ein konsistentes Designsystem brauchen.",
+      "toolB": "Sie liefert kein fertiges UI, sondern eine Methode, eigenes CSS pro Komponente zu kapseln – nutzbar mit React, Vue, Svelte oder reinem Bundler-Setup."
+    },
+    {
+      "category": "Einrichtungsaufwand und Boilerplate",
+      "toolA": "Danach stehen Komponenten sofort einsatzbereit zur Verfügung, was den Start beschleunigt, aber einen zusätzlichen Dependency-Block einführt.",
+      "toolB": "Sie importieren eine .module.css-Datei und verwenden die exportierten Klassennamen; es gibt keinen Provider und keine Laufzeitabhängigkeit."
+    },
+    {
+      "category": "Theming und Designkonsistenz",
+      "toolA": "Änderungen wirken projektweit konsistent, und CSS-Variablen werden automatisch generiert – abhängig von Version und Konfiguration.",
+      "toolB": "Das ist flexibler, verlangt aber Disziplin, damit Farben und Abstände über Dateien hinweg konsistent bleiben."
+    },
+    {
+      "category": "Flexibilität und Kontrolle über Markup",
+      "toolA": "Tiefe strukturelle Eingriffe sind möglich, aber teils umständlicher als bei reinem CSS, und Updates können Klassennamen verändern.",
+      "toolB": "Sie gestalten exakt das Markup, das Sie schreiben, was für pixelgenaue Designs und bestehende CSS-Systeme ideal ist."
+    },
+    {
+      "category": "Barrierefreiheit und Verhalten",
+      "toolA": "Das reduziert typische Accessibility-Fehler, garantiert aber keine vollständige Konformität – Prüfung bleibt Aufgabe des Teams und hängt von Version und Einsatz ab.",
+      "toolB": "Das gibt volle Kontrolle, erfordert aber mehr Fachwissen und Tests."
+    },
+    {
+      "category": "Bündelgröße und Performance",
+      "toolA": "Bei gezielten Imports lässt sich der Anteil reduzieren, ein Grundoverhead bleibt jedoch bestehen.",
+      "toolB": "Die tatsächliche Bundle-Größe hängt vom Umfang Ihres CSS und der Bundler-Konfiguration ab, nicht von einer Fremdbibliothek."
+    }
+  ],
+  "introduction": "Mantine und CSS Modules lösen ein ähnliches Problem, unterscheiden sich jedoch bei grundkonzept und einsatzbereich. Mantine: Mantine ist eine React-Komponentenbibliothek mit über 100 Komponenten, Hooks und einem eigenen Styling-System samt… CSS Modules: CSS Modules ist keine Bibliothek, sondern eine CSS-Spezifikation, die Klassennamen lokal scoped und so Kollisionen… Das Kriterium einrichtungsaufwand und boilerplate zeigt einen weiteren praktischen Unterschied: Nach der Installation von @mantine/core und @mantine/hooks muss die App in einen MantineProvider gehüllt und das… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Theming und Designkonsistenz: Mantine bietet ein zentrales Theme mit Farbpaletten, Typografie, Spacing, Radius und…",
+    "toolB": "dein Projekt priorisiert Einrichtungsaufwand und Boilerplate: CSS Modules benötigt in modernen Bundlern wie Vite oder Next.js in der Regel keine oder nur…"
+  }
 }

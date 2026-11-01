@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-gemma-3",
   "meta": {
-    "title": "Llama 3.3 vs Gemma 3 (2026): ¿Qué solución elegir?",
-    "description": "Llama 3.3 y Gemma 3 son modelos de lenguaje de pesos abiertos. Comparamos su contexto, rendimiento, acceso, licencias y casos de uso para ayudarte a elegir el más adecuado."
+    "title": "Llama 3.3 vs Gemma 3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Llama 3.3 y Gemma 3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"google/gemma-3-7b-it\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "¿Qué modelo conviene elegir para un proyecto de investigación en 2026?",
       "a": "Para investigación, ambos modelos son opciones válidas por ser de pesos abiertos. Llama 3.3 ofrece un contexto más amplio y un rendimiento sólido en tareas diversas, lo que puede ser útil para experimentos que requieren procesar grandes volúmenes de texto. Gemma 3, con sus variantes más ligeras, es práctico para iteraciones rápidas y para entornos con recursos computacionales limitados. Considera también las licencias y la disponibilidad de recursos de computación; se recomienda revisar las publicaciones técnicas más recientes para conocer las mejoras en cada versión."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Llama 3.3 y Gemma 3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Llama 3.3 encaja mejor cuando tu proyecto prioriza ventana de contexto y manejo de entradas largas: Llama 3.3, en sus versiones publicadas por Meta, ofrece una ventana de contexto que, según la…. Gemma 3 es preferible cuando tu proyecto prioriza latencia y eficiencia en la inferencia: Gemma 3 ofrece variantes de menor tamaño (como 2B, 7B y 27B parámetros) que pueden reducir la….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y manejo de entradas largas",
+      "toolA": "No obstante, el rendimiento efectivo en contextos muy largos puede degradarse y depende de la implementación y del hardware; se recomienda validar con cargas reales.",
+      "toolB": "Es necesario consultar la ficha técnica de la versión concreta para confirmar la longitud máxima y las condiciones de uso, ya que estos valores son sensibles a la versión y a la fecha de publicación."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU y HumanEval)",
+      "toolA": "Estos datos deben interpretarse con cautela, ya que no siempre son directamente comparables entre modelos debido a diferencias en los conjuntos de prueba y en las condiciones de ejecución.",
+      "toolB": "No se dispone de una comparación exhaustiva y actualizada en todas las configuraciones, por lo que se recomienda consultar las publicaciones oficiales más recientes y realizar evaluaciones propias si el rendimiento es crítico."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida)",
+      "toolA": "Es imprescindible consultar las páginas de precios actualizadas de cada plataforma para obtener cifras exactas.",
+      "toolB": "No se debe asumir un costo uniforme; se recomienda verificar las tarifas vigentes en la documentación oficial de cada servicio."
+    },
+    {
+      "category": "Latencia y eficiencia en la inferencia",
+      "toolA": "En implementaciones con GPUs de alta gama y técnicas de optimización como cuantización o uso de servidores de inferencia especializados, se pueden lograr tiempos de respuesta adecuados para aplicaciones interactivas, aunque no se dispone de cifras oficiales universales.",
+      "toolB": "Sin embargo, la latencia real también depende de la infraestructura y de la carga de trabajo; se sugiere medir en el entorno de despliegue previsto."
+    },
+    {
+      "category": "Acceso, licencia y disponibilidad de pesos abiertos",
+      "toolA": "Los pesos están disponibles para descarga y despliegue local, lo que facilita la personalización y el control total sobre los datos.",
+      "toolB": "Los modelos están disponibles para descarga y ejecución local, y su tamaño más reducido en algunas variantes facilita el despliegue en hardware de gama media."
+    },
+    {
+      "category": "Casos de uso prácticos y ecosistema",
+      "toolA": "Su amplio ecosistema de herramientas y la comunidad activa facilitan la integración con frameworks como LangChain o LlamaIndex.",
+      "toolB": "Su integración con el ecosistema de Google Cloud y su disponibilidad en entornos como Vertex AI simplifican el despliegue en infraestructura de Google."
+    }
+  ],
+  "introduction": "Llama 3.3 y Gemma 3 responden a una necesidad similar, pero difieren en ventana de contexto y manejo de entradas largas. Llama 3.3: Llama 3.3, en sus versiones publicadas por Meta, ofrece una ventana de contexto que, según la documentación oficial,… Gemma 3: Gemma 3, en sus variantes disponibles, presenta ventanas de contexto que varían según el tamaño del modelo; algunas… El criterio de rendimiento en benchmarks publicados (mmlu y humaneval) añade otra diferencia práctica: Meta ha publicado resultados de Llama 3.3 en benchmarks como MMLU y HumanEval para sus versiones instructivas, aunque… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y manejo de entradas largas: Llama 3.3, en sus versiones publicadas por Meta, ofrece una ventana de contexto que, según la…",
+    "toolB": "tu proyecto prioriza latencia y eficiencia en la inferencia: Gemma 3 ofrece variantes de menor tamaño (como 2B, 7B y 27B parámetros) que pueden reducir la…"
+  }
 }

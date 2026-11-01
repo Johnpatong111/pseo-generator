@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-svelte",
   "meta": {
-    "title": "SolidJS vs Svelte (2026): quelle solution choisir ?",
-    "description": "Comparaison détaillée entre SolidJS et Svelte en 2026 : réactivité, compilation, écosystème, courbe d'apprentissage, performance et cas d'usage. Découvrez lequel choisir."
+    "title": "SolidJS vs Svelte: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez SolidJS et Svelte : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "SolidJS"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createSignal } from 'solid-js';\nimport { render } from 'solid-js/web';\n\nfunction Hello() {\n  const [count, setCount] = createSignal(0);\n  return (\n    <div>\n      <p>Bonjour, monde ! Compteur : {count()}</p>\n      <button onClick={() => setCount(count() + 1)}>Incrémenter</button>\n    </div>\n  );\n}\n\nrender(() => <Hello />, document.getElementById('app'));",
-    "tech2Snippet": "<script>\n  let count = $state(0);\n</script>\n\n<p>Bonjour, monde ! Compteur : {count}</p>\n<button onclick={() => count++}>Incrémenter</button>"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Comment se passe le rendu côté serveur avec chaque outil ?",
       "a": "SolidJS propose le SSR via SolidStart, qui est activement développé mais moins mature que SvelteKit. Svelte offre un SSR robuste avec SvelteKit, des adaptateurs pour de nombreuses plateformes et une documentation complète. Pour des besoins de déploiement complexes, Svelte est généralement plus éprouvé."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre SolidJS et Svelte modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "SolidJS convient mieux lorsque votre projet privilégie modèle de réactivité : solidjs utilise un système de signaux fins sans virtual : SolidJS propose des signaux (createSignal) et des effets (createEffect) avec une réactivité fine. Svelte est préférable lorsque votre projet privilégie courbe d'apprentissage et lisibilité : syntaxe, concepts et familiarité pour : Svelte est réputé pour sa syntaxe proche du HTML, avec des blocs comme {#if} et {#each}.",
+  "tradeoffs": [
+    {
+      "category": "Modèle de réactivité : SolidJS utilise un système de signaux fins sans virtual",
+      "toolA": "Ce modèle offre un contrôle précis, mais demande de comprendre les dépendances et les cycles de vie.",
+      "toolB": "La syntaxe est généralement plus concise et accessible."
+    },
+    {
+      "category": "Courbe d'apprentissage et lisibilité : syntaxe, concepts et familiarité pour",
+      "toolA": "La documentation est correcte mais moins fournie que celle de Svelte.",
+      "toolB": "La documentation et les tutoriels sont abondants, ce qui facilite la prise en main."
+    },
+    {
+      "category": "Performance et empreinte : taille du bundle, exécution et comportement sous",
+      "toolA": "L'absence de virtual DOM réduit la surcharge, mais la charge réelle dépend de l'application.",
+      "toolB": "Svelte 5 apporte des améliorations, mais les benchmarks doivent être interprétés avec prudence car ils ne reflètent pas toujours les applications réelles."
+    },
+    {
+      "category": "Écosystème et outils : framework méta, bibliothèques, support IDE et",
+      "toolA": "Le support IDE et les outils de débogage existent mais sont moins matures.",
+      "toolB": "La communauté est vaste et active, ce qui facilite l'entraide."
+    },
+    {
+      "category": "Adoption et perspectives : popularité, offres d'emploi et pérennité",
+      "toolA": "Le projet est actif, mais moins soutenu par de grandes entreprises.",
+      "toolB": "La feuille de route est publique et le projet bénéficie d'une gouvernance stable."
+    },
+    {
+      "category": "Compatibilité et intégration : TypeScript, SSR, rendu et déploiement",
+      "toolA": "La compatibilité avec les bibliothèques React n'est pas garantie.",
+      "toolB": "L'intégration avec les outils de build et les plateformes de déploiement est éprouvée."
+    }
+  ],
+  "introduction": "SolidJS et Svelte répondent à un besoin proche, mais diffèrent sur modèle de réactivité : solidjs utilise un système de signaux fins sans virtual. SolidJS : SolidJS propose des signaux (createSignal) et des effets (createEffect) avec une réactivité fine. Svelte : Svelte compile les composants en code impératif qui met à jour le DOM de manière ciblée. Le critère « Courbe d'apprentissage et lisibilité : syntaxe, concepts et familiarité pour » met en évidence une autre différence pratique : SolidJS s'inspire de React avec des composants JSX et des primitives réactives explicites. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de réactivité : solidjs utilise un système de signaux fins sans virtual : SolidJS propose des signaux (createSignal) et des effets (createEffect) avec une réactivité fine.",
+    "toolB": "votre projet privilégie courbe d'apprentissage et lisibilité : syntaxe, concepts et familiarité pour : Svelte est réputé pour sa syntaxe proche du HTML, avec des blocs comme {#if} et {#each}."
+  }
 }

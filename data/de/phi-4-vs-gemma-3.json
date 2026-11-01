@@ -1,8 +1,8 @@
 {
   "slug": "phi-4-vs-gemma-3",
   "meta": {
-    "title": "Phi-4 vs Gemma 3 (2026): welche Lösung passt besser?",
-    "description": "Vergleich von Phi-4 und Gemma 3: Kontextfenster, Benchmarks, API-Preise, Latenz, Zugang und Einsatzgebiete. Entscheidungshilfe für 2026."
+    "title": "Phi-4 vs Gemma 3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Phi-4 und Gemma 3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Phi-4"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoProcessor, AutoModelForImageTextToText\n\nmodel_id = \"google/gemma-3-4b-it\"\nprocessor = AutoProcessor.from_pretrained(model_id)\nmodel = AutoModelForImageTextToText.from_pretrained(model_id, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\ninputs = processor.apply_chat_template(messages, add_generation_prompt=True, return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(processor.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Modell bietet das bessere Ökosystem und Tooling?",
       "a": "Gemma 3 wird von Google umfassend dokumentiert und ist in viele Plattformen und Frameworks integriert, was den Einstieg erleichtert. Phi-4 ist ebenfalls gut zugänglich, aber die Dokumentation und Community-Unterstützung sind weniger umfangreich. Die Wahl hängt auch davon ab, ob Sie bereits in der Google-Cloud-Umgebung arbeiten oder Microsoft-Tools bevorzugen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Phi-4 und Gemma 3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Phi-4 passt besser, wenn dein Projekt priorisiert Kontextfenster: Phi-4 (Version 2025) unterstützt ein Kontextfenster von 16.000 Token, wie in der offiziellen…. Gemma 3 ist geeigneter, wenn dein Projekt priorisiert Kontextfenster: Gemma 3 (Version 2025) bietet je nach Modellgröße ein Kontextfenster von bis zu 128.000 Token, was….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Für viele Chat- und Analyseaufgaben reicht dies aus, bei sehr langen Dokumenten oder umfangreichen Codebasen sind jedoch Grenzen gesetzt.",
+      "toolB": "Damit lassen sich deutlich längere Texte, Gesprächsverläufe oder Codeabschnitte in einem Durchlauf verarbeiten, sofern ausreichend Speicher verfügbar ist."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "HumanEval-Werte sind in den offiziellen Unterlagen nicht durchgängig dokumentiert; Aussagen zur Code-Leistung sollten daher anhand der aktuellen Modellkarte oder unabhängiger Evaluierungen überprüft werden.",
+      "toolB": "HumanEval-Resultate werden in der offiziellen Dokumentation nicht für alle Varianten einheitlich ausgewiesen, sodass ein direkter Vergleich nur eingeschränkt möglich ist und die Werte jeweils mit den entsprechenden Annahmen zu prüfen sind."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Token",
+      "toolA": "Die Preise unterscheiden sich je nach Anbieter, Region und Tarif und sind daher nicht einheitlich; für eine belastbare Kalkulation müssen die aktuellen Preislisten der jeweiligen Plattform herangezogen werden.",
+      "toolB": "Auch hier variieren die Preise pro 1M Input- und Output-Token nach Anbieter, Modellgröße und Tarif, sodass eine konkrete Preisangabe nur unter Verweis auf die aktuelle offizielle Preisliste möglich ist."
+    },
+    {
+      "category": "Latenz",
+      "toolA": "Bei API-Nutzung spielen Netzwerk und Anbieterinfrastruktur eine Rolle; allgemeingültige Latenzwerte lassen sich daher nicht ohne Messung unter realen Bedingungen angeben.",
+      "toolB": "Verbindliche Latenzversprechen sind ohne konkrete Messung nicht möglich."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Zusätzlich wird es über Azure AI Foundry und weitere Anbieter bereitgestellt, was sowohl lokale als auch verwaltete Nutzung ermöglicht.",
+      "toolB": "Die Gewichte sind über Hugging Face und andere Plattformen zugänglich, und das Modell ist in mehreren Größen erhältlich, was die Auswahl je nach Ressourcenbudget erleichtert."
+    },
+    {
+      "category": "Praktische Einsatzgebiete",
+      "toolA": "Für Szenarien mit sehr langen Kontexten oder multimodalen Eingaben ist es weniger geeignet.",
+      "toolB": "Die verschiedenen Modellgrößen erlauben eine Anpassung an unterschiedliche Hardware- und Leistungsanforderungen."
+    }
+  ],
+  "introduction": "Phi-4 und Gemma 3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Phi-4: Phi-4 (Version 2025) unterstützt ein Kontextfenster von 16.000 Token, wie in der offiziellen Modellkarte von Microsoft… Gemma 3: Gemma 3 (Version 2025) bietet je nach Modellgröße ein Kontextfenster von bis zu 128.000 Token, was in der offiziellen… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für Phi-4 veröffentlichte Microsoft Ergebnisse zum MMLU-Benchmark, die je nach Version und Evaluierungsmethode… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Phi-4 (Version 2025) unterstützt ein Kontextfenster von 16.000 Token, wie in der offiziellen…",
+    "toolB": "dein Projekt priorisiert Kontextfenster: Gemma 3 (Version 2025) bietet je nach Modellgröße ein Kontextfenster von bis zu 128.000 Token, was…"
+  }
 }

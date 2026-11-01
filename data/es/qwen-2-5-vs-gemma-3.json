@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-gemma-3",
   "meta": {
-    "title": "Qwen 2.5 vs Gemma 3 (2026): ¿Qué solución elegir?",
-    "description": "Comparativa detallada entre Qwen 2.5 y Gemma 3: contexto, rendimiento, precios de API, latencia, acceso y casos de uso para elegir el mejor modelo en 2026."
+    "title": "Qwen 2.5 vs Gemma 3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Qwen 2.5 y Gemma 3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"google/gemma-3-2b-it\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, world!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -82,5 +83,44 @@
       "q": "¿Qué modelo tiene mejor soporte para fine-tuning?",
       "a": "Tanto Qwen 2.5 como Gemma 3, al ser modelos abiertos, permiten el ajuste fino con las herramientas habituales de la comunidad, como Hugging Face Transformers y PEFT. La facilidad dependerá de la documentación disponible y del tamaño del modelo; en general, ambos cuentan con recursos y ejemplos, pero se recomienda consultar las guías oficiales para cada versión antes de iniciar un proceso de fine-tuning."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Qwen 2.5 y Gemma 3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Qwen 2.5 encaja mejor cuando tu proyecto prioriza ventana de contexto: Qwen 2.5 ofrece variantes con ventanas de contexto que, según la documentación oficial del…. Gemma 3 es preferible cuando tu proyecto prioriza rendimiento en benchmarks (mmlu y humaneval): Gemma 3, según informes públicos de Google, muestra avances en eficiencia y calidad, con….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto",
+      "toolA": "Se recomienda verificar la longitud máxima soportada para el modelo concreto que se vaya a utilizar, ya que puede variar entre implementaciones.",
+      "toolB": "El contexto disponible puede diferir entre los tamaños de modelo y las plataformas de despliegue, por lo que conviene confirmar el límite antes de diseñar aplicaciones que requieran entradas extensas."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU y HumanEval)",
+      "toolA": "Los datos disponibles sugieren un rendimiento competitivo en tareas de conocimiento general y generación de código, aunque la comparación directa con otros modelos requiere asegurar que las condiciones de evaluación sean equivalentes.",
+      "toolB": "No se dispone de una comparación exhaustiva y actualizada para todas las variantes, por lo que se recomienda evaluar el rendimiento en el caso de uso concreto mediante pruebas propias."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "Algunos modelos de la familia pueden tener costes competitivos, pero no se debe asumir un precio fijo sin verificar la tarifa vigente para la versión y región específicas.",
+      "toolB": "Para un despliegue en la nube, el gasto dependerá del proveedor y de los recursos asignados, por lo que no existe una tarifa única por token; se debe calcular el coste total según el entorno elegido."
+    },
+    {
+      "category": "Latencia",
+      "toolA": "En general, los modelos más pequeños de la familia tienden a responder más rápido, pero se recomienda medir la latencia en el entorno de producción previsto para obtener datos representativos.",
+      "toolB": "Sin embargo, no se dispone de cifras de latencia estandarizadas para todas las configuraciones, por lo que es necesario realizar pruebas en el entorno concreto para evaluar este aspecto."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto/cerrado)",
+      "toolA": "Esta combinación de acceso abierto y servicios gestionados brinda flexibilidad para distintos escenarios de despliegue.",
+      "toolB": "También puede utilizarse en servicios gestionados de Google Cloud, aunque no es un modelo cerrado de API exclusiva, lo que facilita su adopción tanto en entornos locales como en la nube."
+    },
+    {
+      "category": "Casos de uso prácticos",
+      "toolA": "Su disponibilidad como modelo abierto facilita la personalización y el ajuste fino para dominios específicos.",
+      "toolB": "Su integración con el ecosistema de Google y su enfoque en la eficiencia lo hacen útil para tareas de generación de texto y asistentes ligeros, aunque el rendimiento puede variar según el tamaño del modelo elegido."
+    }
+  ],
+  "introduction": "Qwen 2.5 y Gemma 3 responden a una necesidad similar, pero difieren en ventana de contexto. Qwen 2.5: Qwen 2.5 ofrece variantes con ventanas de contexto que, según la documentación oficial del proveedor, pueden alcanzar… Gemma 3: Gemma 3, en sus versiones publicadas, presenta ventanas de contexto que suelen ser más reducidas en comparación con… El criterio de rendimiento en benchmarks (mmlu y humaneval) añade otra diferencia práctica: Qwen 2.5 ha publicado resultados en benchmarks como MMLU y HumanEval para algunas de sus variantes, pero estos valores… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto: Qwen 2.5 ofrece variantes con ventanas de contexto que, según la documentación oficial del…",
+    "toolB": "tu proyecto prioriza rendimiento en benchmarks (mmlu y humaneval): Gemma 3, según informes públicos de Google, muestra avances en eficiencia y calidad, con…"
+  }
 }

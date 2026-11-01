@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-llama",
   "meta": {
-    "title": "Ollama vs Llama (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Ollama i Llama w 2026 r.: zastosowania, lokalne uruchamianie modeli, wymagania sprzętowe, licencje, ekosystem i bezpieczeństwo."
+    "title": "Ollama vs Llama: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Ollama i Llama: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Ollama"
@@ -94,5 +94,49 @@
       "q": "Czy można używać Ollama i Llama razem?",
       "a": "Tak, Ollama może służyć jako środowisko uruchomieniowe dla modeli Llama, co jest częstym połączeniem. Taki układ upraszcza uruchamianie, ale nadal wymaga sprawdzenia licencji, wydajności i bezpieczeństwa konfiguracji. Przed wdrożeniem należy zweryfikować zgodność wersji i wymagania sprzętowe."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Ollama a Llama zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Ollama będzie lepszy, gdy projekt stawia na kryterium „Sposób instalacji i uruchomienia”: Ollama instaluje się jako aplikację lub usługę systemową i uruchamia jednym poleceniem, a pobranie…. Llama sprawdzi się, gdy projekt stawia na kryterium „Sposób instalacji i uruchomienia”: Uruchomienie modelu Llama zwykle wymaga samodzielnego przygotowania środowiska wnioskowania, np.",
+  "tradeoffs": [
+    {
+      "category": "Czym jest narzędzie i do jakiego celu służy",
+      "toolA": "Ollama to lekki mechanizm uruchamiania modeli językowych lokalnie, udostępniający polecenia wiersza poleceń oraz lokalny serwer HTTP z API. Ułatwia pobieranie modeli z katalogu, zarządzanie nimi i wystawianie endpointu zgodnego z popularnym formatem zapytań, co przyspiesza prototypowanie. Zakres funkcji zależy od wersji i platformy.",
+      "toolB": "Llama nie jest narzędziem do zarządzania modelami, lecz samym modelem."
+    },
+    {
+      "category": "Sposób instalacji i uruchomienia",
+      "toolA": "Szczegóły instalacji i dostępność pakietów różnią się w zależności od systemu operacyjnego i wersji.",
+      "toolB": "Dokładne wymagania zależą od wersji modelu, formatu wag i wybranego stosu."
+    },
+    {
+      "category": "Wymagania sprzętowe i wydajność",
+      "toolA": "Ollama nie gwarantuje konkretnej szybkości — trzeba ją zmierzyć w docelowym środowisku.",
+      "toolB": "Przed wdrożeniem należy zweryfikować wymagania dla konkretnej wersji i konfiguracji."
+    },
+    {
+      "category": "Legalność i warunki licencji",
+      "toolA": "Przed użyciem komercyjnym trzeba zweryfikować zarówno licencję Ollama, jak i licencję modelu.",
+      "toolB": "Nie należy zakładać, że wszystkie warianty Llama mają identyczną licencję."
+    },
+    {
+      "category": "Możliwości integracji i ekosystem",
+      "toolA": "To dobre rozwiązanie dla zespołów, które chcą ograniczyć złożoność stosu.",
+      "toolB": "Kompatybilność zależy od formatu wag i wsparcia w danej bibliotece."
+    },
+    {
+      "category": "Bezpieczeństwo i prywatność danych",
+      "toolA": "Ollama nie zapewnia automatycznie pełnej izolacji ani zgodności z regulacjami.",
+      "toolB": "Należy zweryfikować politykę danych i wymagania zgodności dla konkretnego wdrożenia."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Ollama i Llama odpowiadają na podobną potrzebę, ale różnią się w obszarze czym jest narzędzie i do jakiego celu służy. Ollama: Ollama to lekki mechanizm uruchamiania modeli językowych lokalnie, udostępniający polecenia wiersza poleceń oraz… Llama: Llama to rodzina modeli językowych rozwijanych przez Meta, publikowanych w różnych rozmiarach i wariantach, w tym… Kolejną istotną różnicę pokazuje kryterium „Sposób instalacji i uruchomienia”: Ollama instaluje się jako aplikację lub usługę systemową i uruchamia jednym poleceniem, a pobranie modelu sprowadza… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Sposób instalacji i uruchomienia”: Ollama instaluje się jako aplikację lub usługę systemową i uruchamia jednym poleceniem, a pobranie…",
+    "toolB": "projekt stawia na kryterium „Sposób instalacji i uruchomienia”: Uruchomienie modelu Llama zwykle wymaga samodzielnego przygotowania środowiska wnioskowania, np."
+  }
 }

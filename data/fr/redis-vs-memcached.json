@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached (2026) : quelle solution choisir ?",
-    "description": "Comparatif Redis vs Memcached en 2026 : fonctionnalités, persistance, scalabilité, cas d'usage et conseils pour choisir le bon cache en mémoire selon votre projet."
+    "title": "Redis vs Memcached: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez Redis et Memcached : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Redis"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal avec redis-py (Python) : connexion et écriture/lecture d'une clé\nimport redis\n\nclient = redis.Redis(host=\"localhost\", port=6379, db=0, decode_responses=True)\nclient.set(\"hello\", \"world\")\nprint(client.get(\"hello\"))",
-    "tech2Snippet": "# Exemple minimal avec pymemcache (Python) : connexion et écriture/lecture d'une clé\nfrom pymemcache.client.base import Client\n\nclient = Client((\"localhost\", 11211))\nclient.set(\"hello\", \"world\")\nprint(client.get(\"hello\"))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Quel outil privilégier si je veux éviter le verrouillage propriétaire ?",
       "a": "Redis et Memcached sont tous deux disponibles sous des licences ouvertes, mais leurs modèles de gouvernance et leurs offres managées varient selon les fournisseurs cloud. Il convient de vérifier la licence applicable à la version utilisée, notamment pour Redis, ainsi que les conditions de portabilité de votre hébergement. Une architecture qui isole la couche cache derrière une abstraction applicative réduit le risque de dépendance excessive à un service donné."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Redis et Memcached modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Redis convient mieux lorsque votre projet privilégie modèle de données et richesse fonctionnelle : Redis propose nativement de nombreuses structures : chaînes, listes, hachages, ensembles,…. Memcached est préférable lorsque votre projet privilégie simplicité d'exploitation et écosystème : Memcached est réputé pour sa simplicité : peu de configuration, un protocole simple et une….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et richesse fonctionnelle",
+      "toolA": "Cette richesse permet de l'utiliser pour du cache mais aussi pour des files, du comptage, du classement ou de la gestion de sessions.",
+      "toolB": "Cette simplicité réduit la surface d'API et facilite la compréhension, mais elle impose de gérer la logique applicative côté client."
+    },
+    {
+      "category": "Persistance et durabilité des données",
+      "toolA": "Ces options ne garantissent pas une durabilité absolue équivalente à une base transactionnelle, mais elles couvrent de nombreux besoins de reprise après incident.",
+      "toolB": "Il faut donc considérer son contenu comme reconstructible et non critique, ce qui simplifie l'exploitation mais exclut certains usages."
+    },
+    {
+      "category": "Scalabilité et distribution",
+      "toolA": "La scalabilité horizontale est possible mais demande une planification du partitionnement et de la cohérence.",
+      "toolB": "Cela facilite l'ajout ou le retrait de nœuds, mais la logique de distribution reste côté client et la perte d'un nœud affecte les clés qu'il hébergeait."
+    },
+    {
+      "category": "Performance et gestion de la mémoire",
+      "toolA": "Son allocateur et sa gestion mémoire sont configurables, avec des politiques d'éviction à ajuster selon l'usage.",
+      "toolB": "Ces caractéristiques conviennent bien à du cache pur, mais la performance réelle dépend fortement de la charge, de la taille des valeurs et de la configuration réseau."
+    },
+    {
+      "category": "Cas d'usage typiques",
+      "toolA": "Sa polyvalence permet de mutualiser plusieurs usages, au prix d'une complexité opérationnelle parfois supérieure.",
+      "toolB": "Il est moins adapté aux besoins de structures de données avancées ou de persistance."
+    },
+    {
+      "category": "Sécurité et contrôle d'accès",
+      "toolA": "Une exposition réseau incorrecte reste un risque majeur si l'authentification et le pare-feu ne sont pas correctement configurés.",
+      "toolB": "Des variantes comme le support SASL existent selon les distributions, mais la sécurité réseau demeure primordiale."
+    }
+  ],
+  "introduction": "Redis et Memcached répondent à un besoin proche, mais diffèrent sur modèle de données et richesse fonctionnelle. Redis : Redis propose nativement de nombreuses structures : chaînes, listes, hachages, ensembles, ensembles triés, flux,… Memcached : Memcached repose sur un modèle clé-valeur simple, où les valeurs sont des blobs opaques que le serveur ne sait pas… Le critère « Persistance et durabilité des données » met en évidence une autre différence pratique : Redis propose plusieurs mécanismes de persistance optionnels, comme les instantanés RDB et le journal AOF, dont le… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de données et richesse fonctionnelle : Redis propose nativement de nombreuses structures : chaînes, listes, hachages, ensembles,…",
+    "toolB": "votre projet privilégie simplicité d'exploitation et écosystème : Memcached est réputé pour sa simplicité : peu de configuration, un protocole simple et une…"
+  }
 }

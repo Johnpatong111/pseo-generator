@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-gemini-2-5-pro",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs Gemini 2.5 Pro (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Claude 3.5 Sonnet y Gemini 2.5 Pro en contexto, rendimiento, precios, latencia y acceso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "Claude 3.5 Sonnet vs Gemini 2.5 Pro: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Claude 3.5 Sonnet y Gemini 2.5 Pro: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"])\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20241022\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hola, mundo\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "import os\nimport google.generativeai as genai\n\ngenai.configure(api_key=os.environ[\"GOOGLE_API_KEY\"])\nmodel = genai.GenerativeModel(\"gemini-2.5-pro\")\nresponse = model.generate_content(\"Hola, mundo\")\nprint(response.text)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -82,5 +83,44 @@
       "q": "¿Los resultados de benchmarks como MMLU y HumanEval son comparables entre estos modelos?",
       "a": "No necesariamente, ya que las puntuaciones publicadas pueden obtenerse con distintas versiones del modelo, configuraciones de prompt y metodologías de evaluación. Además, los benchmarks sintéticos no siempre reflejan el rendimiento en tareas del mundo real. Se recomienda usar los benchmarks como una referencia orientativa y complementarlos con pruebas propias adaptadas a tu dominio."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Claude 3.5 Sonnet y Gemini 2.5 Pro cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Claude 3.5 Sonnet encaja mejor cuando tu proyecto prioriza ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en: Claude 3.5 Sonnet ofrece una ventana de contexto de 200 000 tokens según la documentación oficial…. Gemini 2.5 Pro es preferible cuando tu proyecto prioriza ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en: Gemini 2.5 Pro, según Google, soporta una ventana de contexto de hasta 1 millón de tokens, e….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en",
+      "toolA": "No obstante, el rendimiento puede degradarse en los extremos de esa ventana, y el límite exacto debe verificarse con la versión y el plan contratado.",
+      "toolB": "Sin embargo, la disponibilidad de estos límites varía según el canal (API, AI Studio, Vertex AI) y la fecha de acceso."
+    },
+    {
+      "category": "Rendimiento en benchmarks: comparación de resultados publicados en pruebas",
+      "toolA": "No se dispone de una comparación directa con Gemini 2.5 Pro en las mismas condiciones, por lo que cualquier cifra debe tomarse con cautela y verificarse en las fichas técnicas actuales.",
+      "toolB": "Se recomienda consultar los informes oficiales de cada proveedor y no asumir superioridad numérica sin contexto."
+    },
+    {
+      "category": "Precio de API por millón de tokens: coste de entrada y salida en los planes de",
+      "toolA": "Es imprescindible consultar la página oficial de precios de Anthropic para la versión y fecha exactas.",
+      "toolB": "A menudo se ofrecen niveles gratuitos limitados y descuentos por volumen, pero las tarifas por millón de tokens de entrada y salida deben verificarse directamente en la documentación oficial de Google Cloud, ya que pueden cambiar con frecuencia."
+    },
+    {
+      "category": "Latencia: tiempo de respuesta percibido por el usuario, que depende de la",
+      "toolA": "No existen cifras oficiales de latencia garantizada, por lo que se recomienda realizar pruebas en el entorno de producción previsto.",
+      "toolB": "La experiencia dependerá del plan y de la región, y conviene medirla con la carga de trabajo específica."
+    },
+    {
+      "category": "Acceso y disponibilidad: canales de uso (API, plataformas en la nube,",
+      "toolA": "No es de código abierto, y el acceso puede requerir aprobación en algunas regiones o planes empresariales.",
+      "toolB": "Ofrece un nivel gratuito con límites y opciones de pago, pero no es de código abierto y su disponibilidad geográfica está sujeta a las políticas de Google Cloud."
+    },
+    {
+      "category": "Casos de uso prácticos: adecuación a tareas comunes como generación de código,",
+      "toolA": "Su enfoque en seguridad y coherencia lo hace adecuado para entornos empresariales con requisitos de cumplimiento, aunque puede ser menos ágil en tareas multimodales complejas.",
+      "toolB": "Su amplia ventana de contexto facilita el análisis de repositorios de código completos o bases documentales extensas, aunque la calidad puede variar según la tarea."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet y Gemini 2.5 Pro responden a una necesidad similar, pero difieren en ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en. Claude 3.5 Sonnet: Claude 3.5 Sonnet ofrece una ventana de contexto de 200 000 tokens según la documentación oficial de Anthropic, lo que… Gemini 2.5 Pro: Gemini 2.5 Pro, según Google, soporta una ventana de contexto de hasta 1 millón de tokens, e incluso 2 millones en… El criterio de rendimiento en benchmarks: comparación de resultados publicados en pruebas añade otra diferencia práctica: Anthropic ha reportado para Claude 3.5 Sonnet puntuaciones en MMLU y HumanEval, pero los valores concretos dependen de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en: Claude 3.5 Sonnet ofrece una ventana de contexto de 200 000 tokens según la documentación oficial…",
+    "toolB": "tu proyecto prioriza ventana de contexto: tamaño máximo de tokens que el modelo puede procesar en: Gemini 2.5 Pro, según Google, soporta una ventana de contexto de hasta 1 millón de tokens, e…"
+  }
 }

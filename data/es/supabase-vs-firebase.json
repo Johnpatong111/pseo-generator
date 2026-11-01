@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-firebase",
   "meta": {
-    "title": "Supabase vs Firebase (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Supabase y Firebase en 2026: base de datos, autenticación, tiempo real, precios, escalabilidad y ecosistema para elegir el backend adecuado."
+    "title": "Supabase vs Firebase: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Supabase y Firebase: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Supabase"
@@ -94,5 +94,49 @@
       "q": "¿Qué opción recomendarías a un equipo pequeño con experiencia en SQL?",
       "a": "Un equipo con experiencia en SQL suele adaptarse antes a Supabase, porque reutiliza PostgreSQL, consultas relacionales y herramientas conocidas. Eso puede reducir la curva de aprendizaje y facilitar la integración con sistemas existentes. Si, en cambio, el equipo prioriza servicios móviles gestionados y acepta un modelo NoSQL, Firebase puede resultar igualmente razonable."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Supabase y Firebase cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Supabase encaja mejor cuando tu proyecto prioriza modelo de datos y consultas: Supabase se construye sobre PostgreSQL, una base de datos relacional con SQL, claves foráneas,…. Firebase es preferible cuando tu proyecto prioriza autenticación: Firebase Authentication incluye correo y contraseña, teléfono, proveedores federados y una consola….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y consultas",
+      "toolA": "Permite consultas complejas y un control preciso del esquema, además de extensiones como PostGIS.",
+      "toolB": "Ofrece consultas flexibles pero limitadas comparadas con SQL y no impone un esquema fijo."
+    },
+    {
+      "category": "Tiempo real",
+      "toolA": "Está disponible en planes gestionados y puede configurarse en un despliegue propio, aunque el rendimiento depende del plan y la carga.",
+      "toolB": "Su comportamiento resulta muy cómodo para apps móviles, con matices según el modelo de datos y las reglas de seguridad."
+    },
+    {
+      "category": "Autenticación",
+      "toolA": "Se integra con las políticas de seguridad a nivel de fila de PostgreSQL, lo que exige entender bien el modelo de permisos.",
+      "toolB": "Su integración con el resto de servicios de Firebase es muy directa y está pensada para aplicaciones móviles y web."
+    },
+    {
+      "category": "Funciones sin servidor y lógica de backend",
+      "toolA": "La disponibilidad y los límites varían según el plan y la configuración.",
+      "toolB": "Está muy integrado, aunque puede implicar latencia en arranques en frío y depender de la configuración elegida."
+    },
+    {
+      "category": "Almacenamiento de archivos",
+      "toolA": "Se apoya en las políticas de seguridad de PostgreSQL para controlar quién accede a cada archivo.",
+      "toolB": "Está pensado para cargas desde móvil y web, con límites y precios que dependen del plan y del uso."
+    },
+    {
+      "category": "Precios y modelo de facturación",
+      "toolA": "Los límites y precios exactos cambian con el tiempo y conviene revisar la página oficial antes de decidir.",
+      "toolB": "Es recomendable estimar el consumo y configurar alertas presupuestarias en la consola."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\nconst db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);\nconst { data: products, error } = await db\n  .from(\"products\")\n  .select(\"id, name, price_cents\")\n  .eq(\"category_id\", categoryId)\n  .eq(\"active\", true)\n  .order(\"name\")\n  .limit(50);\n\nif (error) throw new Error(`Product query failed: ${error.message}`);",
+    "tech2Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\nconst productQuery = query(\n  collection(db, \"products\"),\n  where(\"categoryId\", \"==\", categoryId),\n  where(\"active\", \"==\", true),\n  orderBy(\"name\"),\n  limit(50),\n);\nconst snapshot = await getDocs(productQuery);\nconst products = snapshot.docs.map((document) => ({\n  id: document.id,\n  ...document.data(),\n}));"
+  },
+  "introduction": "Supabase y Firebase responden a una necesidad similar, pero difieren en modelo de datos y consultas. Supabase: Supabase se construye sobre PostgreSQL, una base de datos relacional con SQL, claves foráneas, transacciones y vistas. Firebase: Firebase se apoya en Firestore, una base de datos de documentos NoSQL con colecciones y documentos, además de Realtime… El criterio de tiempo real añade otra diferencia práctica: Supabase ofrece Realtime para escuchar cambios en tablas y transmitir eventos a los clientes. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y consultas: Supabase se construye sobre PostgreSQL, una base de datos relacional con SQL, claves foráneas,…",
+    "toolB": "tu proyecto prioriza autenticación: Firebase Authentication incluye correo y contraseña, teléfono, proveedores federados y una consola…"
+  }
 }

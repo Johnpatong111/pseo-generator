@@ -1,8 +1,8 @@
 {
   "slug": "azure-vs-cloudflare",
   "meta": {
-    "title": "Microsoft Azure vs Cloudflare (2026): quelle solution choisir ?",
-    "description": "Comparez Microsoft Azure et Cloudflare en 2026 : cloud complet contre edge network, sécurité, coûts, DX. Découvrez quelle plateforme convient à votre projet."
+    "title": "Microsoft Azure vs Cloudflare: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Microsoft Azure et Cloudflare : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Microsoft Azure"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal avec Azure Functions (Python), modèle v2\n# fichier function_app.py\nimport azure.functions as func\n\napp = func.FunctionApp()\n\n@app.route(route=\"hello\", auth_level=func.AuthLevel.ANONYMOUS)\ndef hello(req: func.HttpRequest) -> func.HttpResponse:\n    return func.HttpResponse(\"Hello, World!\", status_code=200)\n\n# Pour exécuter localement :\n# pip install azure-functions\n# func start",
-    "tech2Snippet": "// Exemple minimal avec Cloudflare Workers\n// fichier src/index.js\nexport default {\n  async fetch(request, env, ctx) {\n    return new Response(\"Hello, World!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  },\n};\n\n// Pour exécuter localement :\n// npm install -g wrangler\n// wrangler dev"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as azure from \"@pulumi/azure-native\";\n\nconst productsStorage = new azure.storage.StorageAccount(\"products\", {\n  resourceGroupName: resourceGroup.name,\n  sku: { name: \"Standard_LRS\" },\n  kind: \"StorageV2\",\n});\n\nexport const productStorageId = productsStorage.id;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Peut-on combiner Azure et Cloudflare sans risque de verrouillage ?",
       "a": "La combinaison est techniquement possible et courante, à condition de garder le DNS et les configurations documentés et exportables. Le risque de verrouillage dépend surtout des services managés spécifiques utilisés dans chaque plateforme, comme les bindings de Workers ou les services PaaS d'Azure. Une architecture modulaire, avec des interfaces standards et une infrastructure décrite comme code, réduit la dépendance et facilite une éventuelle évolution."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Microsoft Azure et Cloudflare modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Microsoft Azure convient mieux lorsque votre projet privilégie positionnement et étendue de la plateforme : Microsoft Azure est une plateforme cloud généraliste qui couvre l'infrastructure (machines…. Cloudflare est préférable lorsque votre projet privilégie sécurité et protection contre les attaques : Cloudflare est réputé pour son réseau anycast et ses protections DDoS activées dès les offres de….",
+  "tradeoffs": [
+    {
+      "category": "Positionnement et étendue de la plateforme",
+      "toolA": "Son périmètre dépasse largement la seule distribution de contenu ou la protection réseau.",
+      "toolB": "Elle ne remplace pas un cloud IaaS complet : on n'y loue pas de machines virtuelles classiques pour exécuter une pile applicative arbitraire."
+    },
+    {
+      "category": "Sécurité et protection contre les attaques",
+      "toolA": "La configuration reste à la charge de l'équipe : mal calibrée, une règle permissive peut exposer des ressources.",
+      "toolB": "Les fonctionnalités avancées de WAF, de gestion des bots et de conformité dépendent toutefois du plan souscrit, et non d'un niveau unique."
+    },
+    {
+      "category": "Développement serverless et expérience développeur",
+      "toolA": "En contrepartie, la surface d'API et la gestion des identités (RBAC, service principals) peuvent alourdir la prise en main pour un petit projet.",
+      "toolB": "Certaines limites d'exécution et la disponibilité variable des API selon les offres imposent de vérifier la compatibilité réelle de chaque projet."
+    },
+    {
+      "category": "Performance et distribution mondiale",
+      "toolA": "Une application mal répartie ou sans mise en cache peut être nettement plus lente que son potentiel théorique.",
+      "toolB": "Les gains réels varient selon la proximité des points de présence, le type de trafic et les règles de cache appliquées."
+    },
+    {
+      "category": "Tarification et prévisibilité des coûts",
+      "toolA": "Les outils de gestion des coûts aident à suivre la dépense, mais une gouvernance est nécessaire pour éviter les dérives.",
+      "toolB": "Pour des charges serverless intensives ou du stockage massif, il faut néanmoins modéliser finement le volume et les options."
+    },
+    {
+      "category": "Conformité, gouvernance et écosystème entreprise",
+      "toolA": "Les détails et garanties dépendent du service et de la région choisis.",
+      "toolB": "Pour une grande organisation exigeant une intégration annuaire et un contrôle fin des ressources, l'écosystème Microsoft est souvent plus direct."
+    }
+  ],
+  "introduction": "Microsoft Azure et Cloudflare répondent à un besoin proche, mais diffèrent sur positionnement et étendue de la plateforme. Microsoft Azure : Microsoft Azure est une plateforme cloud généraliste qui couvre l'infrastructure (machines virtuelles, réseau,… Cloudflare : Cloudflare est historiquement un réseau de distribution de contenu et de sécurité, devenu une plateforme edge avec… Le critère « Sécurité et protection contre les attaques » met en évidence une autre différence pratique : Azure propose des services de sécurité natifs comme Microsoft Defender for Cloud, les groupes de sécurité réseau,… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie positionnement et étendue de la plateforme : Microsoft Azure est une plateforme cloud généraliste qui couvre l'infrastructure (machines…",
+    "toolB": "votre projet privilégie sécurité et protection contre les attaques : Cloudflare est réputé pour son réseau anycast et ses protections DDoS activées dès les offres de…"
+  }
 }

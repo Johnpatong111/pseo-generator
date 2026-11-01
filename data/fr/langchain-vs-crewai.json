@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-crewai",
   "meta": {
-    "title": "LangChain vs CrewAI (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 LangChain vs CrewAI : frameworks d'agents LLM, orchestration, collaboration, apprentissage et limites. Choisissez l'outil adapté à votre projet."
+    "title": "LangChain vs CrewAI: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez LangChain et CrewAI : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "LangChain"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_openai import ChatOpenAI\nfrom langchain_core.prompts import ChatPromptTemplate\n\nllm = ChatOpenAI(model=\"gpt-4o-mini\")\nprompt = ChatPromptTemplate.from_template(\"Dis bonjour à {nom} en français.\")\nchain = prompt | llm\nresult = chain.invoke({\"nom\": \"le monde\"})\nprint(result.content)",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Assistant\",\n    goal=\"Saluer l'utilisateur\",\n    backstory=\"Tu es un assistant amical.\",\n    verbose=False\n)\ntask = Task(\n    description=\"Dis bonjour au monde en français.\",\n    expected_output=\"Un message de salutation en français.\",\n    agent=agent\n)\ncrew = Crew(agents=[agent], tasks=[task], verbose=False)\nresult = crew.kickoff()\nprint(result)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "LangChain ou CrewAI pour un chatbot simple ?",
       "a": "Pour un chatbot simple sans collaboration multi-agents, LangChain offre plus de souplesse et d'intégrations, tandis que CrewAI peut sembler surdimensionné. Si vous prévoyez d'ajouter des agents collaboratifs plus tard, CrewAI peut être un choix évolutif. Dans tous les cas, commencez par un prototype minimal et mesurez la latence et les coûts."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre LangChain et CrewAI modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "LangChain convient mieux lorsque votre projet privilégie intégrations et écosystème : LangChain bénéficie d'un écosystème très large : intégrations avec de nombreux fournisseurs de…. CrewAI est préférable lorsque votre projet privilégie courbe d'apprentissage et expérience développeur : CrewAI mise sur une API concise : quelques classes suffisent pour définir un agent, une tâche et….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modularité",
+      "toolA": "Sa modularité permet d'assembler des workflows personnalisés et de remplacer des composants, mais elle peut entraîner une certaine complexité pour les débutants.",
+      "toolB": "Cette architecture est plus opinionated et facilite la prise en main pour des scénarios de collaboration, au prix d'une flexibilité moindre pour des pipelines non multi-agents."
+    },
+    {
+      "category": "Courbe d'apprentissage et expérience développeur",
+      "toolA": "L'écosystème LangSmith aide au débogage et au suivi, ce qui facilite l'apprentissage progressif, surtout avec de l'expérience en développement Python ou JavaScript.",
+      "toolB": "Cette simplicité accélère le prototypage, mais les utilisateurs avancés peuvent devoir contourner des abstractions pour des besoins spécifiques."
+    },
+    {
+      "category": "Orchestration multi-agents",
+      "toolA": "Cette approche est puissante mais nécessite de concevoir soi-même la logique de collaboration et de gestion des erreurs.",
+      "toolB": "La collaboration est donc native, même si la personnalisation fine des interactions peut être limitée par le cadre."
+    },
+    {
+      "category": "Intégrations et écosystème",
+      "toolA": "Cette couverture facilite l'adoption dans des environnements variés, mais la qualité et la maintenance des intégrations peuvent varier selon les packages.",
+      "toolB": "Son écosystème est plus restreint et centré sur les agents, ce qui peut suffire pour des projets ciblés mais moins pour des besoins très diversifiés."
+    },
+    {
+      "category": "Contrôle, personnalisation et débogage",
+      "toolA": "Cette transparence facilite le débogage et l'optimisation, au prix d'une configuration plus verbeuse.",
+      "toolB": "Le débogage est généralement plus simple pour des scénarios standards, mais peut être moins souple pour des cas complexes."
+    },
+    {
+      "category": "Cas d'usage et flexibilité",
+      "toolA": "Sa flexibilité permet d'adapter la solution à des besoins variés, mais demande une conception soignée pour éviter la surcomplexité.",
+      "toolB": "Il est moins adapté aux pipelines simples ou aux applications non orientées agents."
+    }
+  ],
+  "introduction": "LangChain et CrewAI répondent à un besoin proche, mais diffèrent sur architecture et modularité. LangChain : LangChain propose une architecture composable autour de runnables, de chaînes et d'agents, avec de nombreuses… CrewAI : CrewAI structure le code autour d'agents, de tâches et de processus (séquentiel ou hiérarchique) pour former des… Le critère « Courbe d'apprentissage et expérience développeur » met en évidence une autre différence pratique : LangChain offre une documentation étendue et de nombreux exemples, mais son API riche et ses multiples couches peuvent… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie intégrations et écosystème : LangChain bénéficie d'un écosystème très large : intégrations avec de nombreux fournisseurs de…",
+    "toolB": "votre projet privilégie courbe d'apprentissage et expérience développeur : CrewAI mise sur une API concise : quelques classes suffisent pour définir un agent, une tâche et…"
+  }
 }

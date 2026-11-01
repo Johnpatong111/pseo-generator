@@ -1,8 +1,8 @@
 {
   "slug": "llama-3-3-vs-qwen-2-5",
   "meta": {
-    "title": "Llama 3.3 vs Qwen 2.5 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Llama 3.3 i Qwen 2.5: okno kontekstu, wyniki benchmarków, ceny API, opóźnienia, dostępność i zastosowania. Sprawdź, który model wybrać w 2026 r."
+    "title": "Llama 3.3 vs Qwen 2.5: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Llama 3.3 i Qwen 2.5: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Llama 3.3"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Przykład minimalnego wywołania Llama 3.3 przez zgodny z OpenAI interfejs dostawcy\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://TWOJ-DOSTAWCA/v1\", api_key=\"TWOJ_KLUCZ\")\nresponse = client.chat.completions.create(\n    model=\"llama-3.3-70b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Przykład minimalnego wywołania Qwen 2.5 przez zgodny z OpenAI interfejs dostawcy\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"https://TWOJ-DOSTAWCA/v1\", api_key=\"TWOJ_KLUCZ\")\nresponse = client.chat.completions.create(\n    model=\"qwen2.5-72b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model wybrać do wdrożenia komercyjnego?",
       "a": "Wybór zależy od licencji, języka, budżetu i wymagań dotyczących hostingu. Qwen 2.5 w wielu wariantach na licencjach otwartych bywa wygodny dla wdrożeń komercyjnych, a Llama 3.3 oferuje szeroki ekosystem i wsparcie dostawców chmurowych. Przed uruchomieniem sprawdź aktualną licencję konkretnej wersji, warunki dostawcy oraz zgodność z wymaganiami regulacyjnymi w Twojej branży."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Llama 3.3 a Qwen 2.5 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Llama 3.3 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Llama 3.3 jest udostępniana z oknem kontekstu rzędu 128 tysięcy tokenów w wersji instruct, co…. Qwen 2.5 sprawdzi się, gdy projekt stawia na kryterium „Dostępność modelu i otwartość”: Qwen 2.5 jest udostępniany w otwartych wariantach na licencjach Apache 2.0 lub podobnych, zależnie….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Rzeczywista jakość odpowiedzi przy dużym wypełnieniu kontekstu zależy od dostawcy hostingu i konfiguracji, dlatego warto sprawdzić limity w oficjalnej dokumentacji.",
+      "toolB": "Przy zadaniach z długim kontekstem porównuj konkretną wersję modelu, a nie całą rodzinę."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Traktuj opublikowane wyniki jako wskazówkę, a nie gwarancję wydajności w Twoim zastosowaniu.",
+      "toolB": "Przed decyzją zweryfikuj aktualne karty modeli i raporty techniczne."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Porównuj ceny wraz z limitami szybkości i warunkami umowy.",
+      "toolB": "Przed kalkulacją kosztów zweryfikuj aktualny cennik konkretnego dostawcy i wariantu."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "Przed wdrożeniem przeprowadź test obciążeniowy na własnym scenariuszu.",
+      "toolB": "Porównuj konkretne wersje i mierz opóźnienia w warunkach zbliżonych do produkcji."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Przed użyciem komercyjnym sprawdź aktualną treść licencji i wymagania dotyczące oznaczania.",
+      "toolB": "Zweryfikuj licencję wybranego wariantu przed integracją."
+    },
+    {
+      "category": "Wsparcie języków i zastosowania praktyczne",
+      "toolA": "Sprawdź zachowanie modelu na własnych próbkach w docelowym języku.",
+      "toolB": "Jakość w konkretnym języku nadal wymaga weryfikacji na reprezentatywnych danych."
+    }
+  ],
+  "introduction": "Llama 3.3 i Qwen 2.5 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Llama 3.3: Llama 3.3 jest udostępniana z oknem kontekstu rzędu 128 tysięcy tokenów w wersji instruct, co pozwala analizować… Qwen 2.5: Qwen 2.5 występuje w wielu rozmiarach, a część wariantów oferuje długie okno kontekstu, jednak dokładne wartości… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Meta publikowała wyniki Llama 3.3 na popularnych benchmarkach, w tym MMLU i HumanEval, ale wartości zależą od wersji,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Llama 3.3 jest udostępniana z oknem kontekstu rzędu 128 tysięcy tokenów w wersji instruct, co…",
+    "toolB": "projekt stawia na kryterium „Dostępność modelu i otwartość”: Qwen 2.5 jest udostępniany w otwartych wariantach na licencjach Apache 2.0 lub podobnych, zależnie…"
+  }
 }

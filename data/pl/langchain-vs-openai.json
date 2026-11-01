@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-openai",
   "meta": {
-    "title": "LangChain vs OpenAI (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie LangChain i OpenAI w 2026 r.: framework do orkiestracji a platforma modeli i API. Sprawdź kryteria, koszty, bezpieczeństwo i rekomendacje."
+    "title": "LangChain vs OpenAI: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj LangChain i OpenAI: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "LangChain"
@@ -94,5 +94,49 @@
       "q": "Czy można połączyć LangChain i OpenAI w jednym projekcie?",
       "a": "Tak, to częsty wzorzec: LangChain odpowiada za orkiestrację, a OpenAI dostarcza modele i punkty końcowe API. Takie połączenie daje elastyczność, ale zwiększa liczbę zależności i punktów wymagających monitoringu. Należy zadbać o obsługę błędów, limity i bezpieczeństwo kluczy API."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między LangChain a OpenAI zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "LangChain będzie lepszy, gdy projekt stawia na kryterium „Zakres integracji z dostawcami modeli”: LangChain wyróżnia się szerokim zestawem integracji z modelami wielu dostawców, co ułatwia zmianę…. OpenAI sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i dokumentacja”: OpenAI prowadzi stosunkowo spójną dokumentację API i przewodniki po funkcjach platformy, co….",
+  "tradeoffs": [
+    {
+      "category": "Czym jest dane narzędzie i do czego służy",
+      "toolA": "Zakres funkcji zależy od wersji biblioteki i języka programowania.",
+      "toolB": "Dostępność funkcji zależy od planu, regionu i wersji interfejsu API."
+    },
+    {
+      "category": "Zakres integracji z dostawcami modeli",
+      "toolA": "Abstrakcje mogą upraszczać migrację, ale nie gwarantują identycznego zachowania modeli.",
+      "toolB": "Ograniczeniem jest mniejsza elastyczność przy konieczności łączenia modeli konkurencyjnych w jednym standardzie."
+    },
+    {
+      "category": "Kontrola nad przepływem i logiką aplikacji",
+      "toolA": "Zachowanie zależy od wybranej wersji i konfiguracji komponentów.",
+      "toolB": "Dostępne mechanizmy pomocnicze zależą od planu i aktualnej oferty platformy."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i dokumentacja",
+      "toolA": "Szybkie tempo zmian oznacza konieczność śledzenia informacji o wersjach i migracjach.",
+      "toolB": "Zakres dostępnych materiałów i funkcji może się różnić w zależności od planu i regionu."
+    },
+    {
+      "category": "Bezpieczeństwo, prywatność i zgodność",
+      "toolA": "Należy sprawdzić, jakie dane są przesyłane do zewnętrznych integracji i modeli.",
+      "toolB": "Nie należy zakładać jednolitych gwarancji dla wszystkich planów bez weryfikacji warunków."
+    },
+    {
+      "category": "Koszty i model rozliczeń",
+      "toolA": "Rzeczywisty koszt zależy od architektury i obciążenia.",
+      "toolB": "Koszt całkowity obejmuje również infrastrukturę aplikacji i ewentualne opłaty za funkcje dodatkowe."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
+  },
+  "introduction": "LangChain i OpenAI odpowiadają na podobną potrzebę, ale różnią się w obszarze czym jest dane narzędzie i do czego służy. LangChain: LangChain to framework i biblioteka do budowania aplikacji opartych na modelach językowych, obejmująca łańcuchy,… OpenAI: OpenAI to dostawca modeli językowych i multimodalnych oraz platformy API, a także narzędzi wspierających pracę z… Kolejną istotną różnicę pokazuje kryterium „Zakres integracji z dostawcami modeli”: LangChain wyróżnia się szerokim zestawem integracji z modelami wielu dostawców, co ułatwia zmianę dostawcy lub… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Zakres integracji z dostawcami modeli”: LangChain wyróżnia się szerokim zestawem integracji z modelami wielu dostawców, co ułatwia zmianę…",
+    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu i dokumentacja”: OpenAI prowadzi stosunkowo spójną dokumentację API i przewodniki po funkcjach platformy, co…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB (2026): quelle solution choisir ?",
-    "description": "SQLite ou DuckDB en 2026 ? Comparez OLTP et OLAP, transactions, analyse de colonnes, formats de fichiers, écosystème et limites pour choisir la base adaptée à votre projet."
+    "title": "SQLite vs DuckDB: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez SQLite et DuckDB : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "SQLite"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\nconn.execute(\"CREATE TABLE hello (message TEXT)\")\nconn.execute(\"INSERT INTO hello VALUES (?)\", (\"Hello, World!\",))\nprint(conn.execute(\"SELECT message FROM hello\").fetchone()[0])\nconn.close()",
-    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect()\ncon.execute(\"CREATE TABLE hello (message VARCHAR)\")\ncon.execute(\"INSERT INTO hello VALUES ('Hello, World!')\")\nprint(con.execute(\"SELECT message FROM hello\").fetchone()[0])\ncon.close()"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on migrer facilement de SQLite vers DuckDB, ou inversement ?",
       "a": "DuckDB propose une extension permettant de lire une base SQLite, ce qui facilite la copie de données vers un environnement analytique. L'inverse est moins direct : il faut exporter puis importer, en tenant compte des différences de types et de contraintes. Une migration mérite des tests sur un échantillon représentatif avant toute bascule en production."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre SQLite et DuckDB modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "SQLite convient mieux lorsque votre projet privilégie charges transactionnelles (oltp) : mesure l'aptitude à gérer de nombreuses : SQLite est historiquement optimisé pour les charges transactionnelles : insertions ligne par…. DuckDB est préférable lorsque votre projet privilégie analytique et requêtes de type olap : évalue les performances sur agrégations, : DuckDB est spécifiquement conçu pour l'analytique : moteur vectorisé, exécution parallèle et prise….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de stockage et architecture : évalue la façon dont chaque base organise",
+      "toolA": "Cette architecture embarquée supprime la nécessité d'un serveur, mais les performances en lecture analytique sur de gros volumes restent limitées par ce modèle orienté lignes.",
+      "toolB": "Le stockage se fait dans un fichier unique ou en mémoire, ce qui facilite l'intégration dans des notebooks et des pipelines de données sans infrastructure dédiée."
+    },
+    {
+      "category": "Charges transactionnelles (OLTP) : mesure l'aptitude à gérer de nombreuses",
+      "toolA": "Son mode WAL améliore la concurrence lecture/écriture, même si les écritures restent globalement sérialisées dans un fichier.",
+      "toolB": "Il vaut mieux l'utiliser pour charger des lots de données puis les interroger, plutôt que pour un flux transactionnel soutenu."
+    },
+    {
+      "category": "Analytique et requêtes de type OLAP : évalue les performances sur agrégations,",
+      "toolA": "Selon la taille des données et la configuration, certaines requêtes restent acceptables, mais ce n'est pas son point fort.",
+      "toolB": "Les performances observées varient toutefois selon la mémoire disponible et la complexité des requêtes."
+    },
+    {
+      "category": "Écosystème et langages : examine la disponibilité des pilotes, la portabilité",
+      "toolA": "Cet écosystème mature facilite l'adoption et la maintenance sur le long terme.",
+      "toolB": "Son écosystème est plus jeune que celui de SQLite, mais il progresse rapidement et couvre bien les besoins analytiques modernes."
+    },
+    {
+      "category": "Concurrence et accès multi-processus : compare la manière dont chaque moteur",
+      "toolA": "Pour des accès multi-processus légers, ce compromis fonctionne bien, mais les écritures très concurrentes restent un point de contention.",
+      "toolB": "Pour des accès partagés, il faut passer par un serveur ou une architecture différente, ce qui constitue une contrainte à anticiper."
+    },
+    {
+      "category": "Formats de fichiers et sources externes : évalue la capacité à interroger",
+      "toolA": "L'import préalable est généralement nécessaire pour l'analyse.",
+      "toolB": "Cette souplesse réduit les étapes de préparation et facilite l'exploration de données hétérogènes dans un même environnement."
+    }
+  ],
+  "introduction": "SQLite et DuckDB répondent à un besoin proche, mais diffèrent sur modèle de stockage et architecture : évalue la façon dont chaque base organise. SQLite : SQLite est une bibliothèque C qui stocke les données dans un unique fichier, avec un moteur en ligne orienté lignes et… DuckDB : DuckDB est également une bibliothèque embarquée sans serveur, mais son moteur est orienté colonnes et vectorisé, conçu… Le critère « Charges transactionnelles (OLTP) : mesure l'aptitude à gérer de nombreuses » met en évidence une autre différence pratique : SQLite est historiquement optimisé pour les charges transactionnelles : insertions ligne par ligne, mises à jour… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie charges transactionnelles (oltp) : mesure l'aptitude à gérer de nombreuses : SQLite est historiquement optimisé pour les charges transactionnelles : insertions ligne par…",
+    "toolB": "votre projet privilégie analytique et requêtes de type olap : évalue les performances sur agrégations, : DuckDB est spécifiquement conçu pour l'analytique : moteur vectorisé, exécution parallèle et prise…"
+  }
 }

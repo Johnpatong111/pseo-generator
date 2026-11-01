@@ -1,8 +1,8 @@
 {
   "slug": "astra-db-vs-qdrant",
   "meta": {
-    "title": "Astra DB vs Qdrant (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Astra DB (base de datos gestionada sobre Cassandra con búsqueda vectorial) y Qdrant (motor vectorial especializado) para ayudarte a elegir el mejor motor para RAG y tus proyectos."
+    "title": "Astra DB vs Qdrant: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Astra DB y Qdrant: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Astra DB"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"TU_TOKEN_DE_ASTRA\")\ndb = client.get_database(\"TU_ENDPOINT\", keyspace=\"default_keyspace\")\ncollection = db.create_collection(\"demo\", dimension=3, metric=\"cosine\")\ncollection.insert_one({\"_id\": \"1\", \"$vector\": [0.1, 0.2, 0.3], \"texto\": \"hola mundo\"})\nprint(collection.find_one({}, sort={\"$vector\": [0.1, 0.2, 0.3]}))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(url=\"http://localhost:6333\")\nclient.recreate_collection(\n    collection_name=\"demo\",\n    vectors_config=VectorParams(size=3, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"demo\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3], payload={\"texto\": \"hola mundo\"})],\n)\nprint(client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3], limit=1))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "¿Cómo puedo validar cuál funciona mejor en mi caso concreto?",
       "a": "La forma más fiable es construir una prueba de concepto con una muestra representativa de tus datos y medir la calidad de recuperación y la latencia bajo tu carga esperada. Evita basarte solo en comparativas genéricas, porque los resultados dependen del corpus, de los filtros y de la configuración. Revisa también la documentación oficial de cada herramienta para confirmar que las funciones que necesitas están disponibles en tu plan y versión."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Astra DB y Qdrant cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Astra DB encaja mejor cuando tu proyecto prioriza integraciones y ecosistema para rag: Se integra con el ecosistema de DataStax y con frameworks habituales de IA (como LangChain o…. Qdrant es preferible cuando tu proyecto prioriza modelo de datos subyacente: Es un motor orientado a colecciones de puntos, donde cada punto combina un vector con una carga….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos subyacente",
+      "toolA": "El detalle exacto de esquemas y límites depende de la versión y del plan contratado.",
+      "toolB": "No está pensado para sustituir una base operacional de amplio espectro."
+    },
+    {
+      "category": "Búsqueda vectorial e indexación",
+      "toolA": "La calidad final depende de la dimensión de los vectores, el volumen y la configuración del índice.",
+      "toolB": "El rendimiento real depende del hardware, del tamaño del corpus y de los parámetros elegidos, no de cifras genéricas."
+    },
+    {
+      "category": "Modelo operativo y despliegue",
+      "toolA": "No está pensada para un despliegue totalmente autoalojado en local.",
+      "toolB": "Esa flexibilidad es útil en entornos con requisitos estrictos de soberanía de datos."
+    },
+    {
+      "category": "Integraciones y ecosistema para RAG",
+      "toolA": "Conviene comprobar qué conectores y utilidades están realmente soportados en cada plan.",
+      "toolB": "La amplitud de integraciones concretas debe verificarse en la documentación actual del proyecto."
+    },
+    {
+      "category": "Ajuste a la carga de trabajo",
+      "toolA": "No es la opción más especializada si el único requisito es recuperación vectorial a gran escala con ajuste fino.",
+      "toolB": "Si además necesitas una base operacional amplia, probablemente tengas que combinarla con otro almacén."
+    },
+    {
+      "category": "Coste y previsión de gasto",
+      "toolA": "Al unificar cargas operacionales y vectoriales puede simplificar la factura, pero también implica pagar por un servicio más amplio del necesario si solo buscas vectores.",
+      "toolB": "Las tarifas concretas cambian con frecuencia y deben verificarse."
+    }
+  ],
+  "introduction": "Astra DB y Qdrant responden a una necesidad similar, pero difieren en modelo de datos subyacente. Astra DB: Se apoya en el modelo de Cassandra (tablas particionadas con CQL y, según el caso, colecciones con esquema flexible),… Qdrant: Es un motor orientado a colecciones de puntos, donde cada punto combina un vector con una carga útil (payload) JSON de… El criterio de búsqueda vectorial e indexación añade otra diferencia práctica: Ofrece búsqueda por similitud vectorial sobre colecciones, con opciones de indexación que han ido evolucionando entre… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza integraciones y ecosistema para rag: Se integra con el ecosistema de DataStax y con frameworks habituales de IA (como LangChain o…",
+    "toolB": "tu proyecto prioriza modelo de datos subyacente: Es un motor orientado a colecciones de puntos, donde cada punto combina un vector con una carga…"
+  }
 }

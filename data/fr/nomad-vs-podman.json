@@ -1,8 +1,8 @@
 {
   "slug": "nomad-vs-podman",
   "meta": {
-    "title": "Nomad vs Podman (2026): quelle solution choisir ?",
-    "description": "Nomad vs Podman en 2026 : orchestration de clusters contre moteur de conteneurs. Critères, exemples et verdict pour choisir selon votre besoin réel."
+    "title": "Nomad vs Podman: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Nomad et Podman : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Nomad"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# hello.nomad\njob \"hello\" {\n  datacenters = [\"dc1\"]\n  type        = \"service\"\n\n  group \"web\" {\n    count = 1\n\n    task \"server\" {\n      driver = \"docker\"\n\n      config {\n        image   = \"nginx:alpine\"\n        ports   = [\"http\"]\n      }\n\n      resources {\n        cpu    = 100\n        memory = 128\n      }\n    }\n  }\n}\n\n# Exécution : nomad job run hello.nomad",
-    "tech2Snippet": "# Lancer un conteneur « Hello, World! » avec Podman\npodman run --rm docker.io/library/hello-world:latest"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Comment démarrer rapidement avec chacun de ces outils ?",
       "a": "Pour Podman, une commande suffit souvent pour lancer un conteneur de test sur un poste local, comme le montre l'exemple fourni. Pour Nomad, il faut d'abord démarrer un agent puis soumettre un fichier de job décrivant la tâche. Commencer par un environnement de test permet de mesurer la complexité réelle avant un déploiement en production."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Nomad et Podman modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Nomad convient mieux lorsque votre projet privilégie rôle principal et positionnement : Nomad est un planificateur et orchestrateur de charges de travail développé par HashiCorp : il…. Podman est préférable lorsque votre projet privilégie sécurité et isolation : Podman met en avant le mode rootless, qui permet d'exécuter des conteneurs sans privilèges root et….",
+  "tradeoffs": [
+    {
+      "category": "Rôle principal et positionnement",
+      "toolA": "Il prend en charge des conteneurs, mais aussi des exécutables, des tâches batch et des services système, ce qui le distingue d'un simple moteur de conteneurs.",
+      "toolB": "Il vise d'abord un usage local ou par hôte, avec un mode rootless natif, et ne fournit pas nativement de planification multi-nœuds."
+    },
+    {
+      "category": "Architecture et fonctionnement interne",
+      "toolA": "Cette architecture distribuée est pensée pour la haute disponibilité et le placement dynamique des charges.",
+      "toolB": "Cette approche par hôte est légère mais ne constitue pas, seule, un orchestrateur de cluster."
+    },
+    {
+      "category": "Planification et montée en charge multi-nœuds",
+      "toolA": "C'est précisément ce que Podman ne propose pas nativement, ce qui rend Nomad pertinent dès qu'il faut coordonner plusieurs machines.",
+      "toolB": "En revanche, il n'embarque pas de planificateur distribué comparable à celui de Nomad, ce qui limite son usage à grande échelle sans brique additionnelle."
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "La sécurité dépend fortement de la configuration du cluster, des politiques ACL et du durcissement des nœuds, et doit être évaluée au cas par cas.",
+      "toolB": "L'absence de démon permanent limite aussi la surface d'attaque, même si la sécurité réelle dépend toujours des réglages, des images et des politiques de l'hôte."
+    },
+    {
+      "category": "Écosystème, compatibilité et intégrations",
+      "toolA": "Son écosystème est solide mais plus spécialisé que celui de l'univers Docker/Kubernetes.",
+      "toolB": "Il s'intègre aux outils de l'écosystème conteneurs et à systemd via Quadlet, ce qui en fait un choix courant pour remplacer Docker sur un hôte."
+    },
+    {
+      "category": "Facilité d'apprentissage et exploitation",
+      "toolA": "Une fois en place, l'exploitation est cohérente, mais la courbe d'apprentissage est réelle pour les débutants.",
+      "toolB": "Pour des scénarios avancés (réseau, multi-hôtes, orchestration), il faut néanmoins ajouter des briques et de la configuration."
+    }
+  ],
+  "introduction": "Nomad et Podman répondent à un besoin proche, mais diffèrent sur rôle principal et positionnement. Nomad : Nomad est un planificateur et orchestrateur de charges de travail développé par HashiCorp : il place des tâches sur un… Podman : Podman est un moteur de conteneurs sans démon, compatible avec l'écosystème OCI, conçu pour construire, exécuter et… Le critère « Architecture et fonctionnement interne » met en évidence une autre différence pratique : Nomad repose sur un modèle client-serveur : des agents serveur forment le plan de contrôle (avec consensus Raft) et… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie rôle principal et positionnement : Nomad est un planificateur et orchestrateur de charges de travail développé par HashiCorp : il…",
+    "toolB": "votre projet privilégie sécurité et isolation : Podman met en avant le mode rootless, qui permet d'exécuter des conteneurs sans privilèges root et…"
+  }
 }

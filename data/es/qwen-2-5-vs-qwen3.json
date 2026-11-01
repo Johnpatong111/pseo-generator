@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen3",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen3 (2026): ¿Qué solución elegir?",
-    "description": "Comparativa práctica entre Qwen 2.5 y Qwen3 en 2026: ventana de contexto, benchmarks publicados, precios de API, latencia, acceso y casos de uso para elegir con criterio."
+    "title": "Qwen 2.5 vs Qwen3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Qwen 2.5 y Qwen3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Ejemplo mínimo con la API compatible de OpenAI usando Qwen 2.5\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=\"TU_CLAVE\",\n    base_url=\"https://dashscope-intl.aliyuncs.com/compatible-mode/v1\",\n)\n\nresponse = client.chat.completions.create(\n    model=\"qwen2.5-7b-instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Hola, ¿quién eres?\"}],\n)\n\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "# Ejemplo mínimo con la API compatible de OpenAI usando Qwen3\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=\"TU_CLAVE\",\n    base_url=\"https://dashscope-intl.aliyuncs.com/compatible-mode/v1\",\n)\n\nresponse = client.chat.completions.create(\n    model=\"qwen3-8b\",\n    messages=[{\"role\": \"user\", \"content\": \"Hola, ¿quién eres?\"}],\n    extra_body={\"enable_thinking\": False},\n)\n\nprint(response.choices[0].message.content)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "¿Es difícil migrar de Qwen 2.5 a Qwen3?",
       "a": "La migración suele ser sencilla si usas una API compatible, pero debes ajustar prompts, límites de tokens y parámetros específicos como el modo de pensamiento. Además, conviene validar el formato de las respuestas y comparar resultados con un conjunto de pruebas representativo antes de cambiar en producción."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Qwen 2.5 y Qwen3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Qwen 2.5 encaja mejor cuando tu proyecto prioriza latencia y rendimiento en producción: La latencia de Qwen 2.5 depende del tamaño del modelo, la infraestructura, la cuantización y la…. Qwen3 es preferible cuando tu proyecto prioriza rendimiento en benchmarks publicados (mmlu y humaneval): Qwen3 introdujo modos de razonamiento que mejoran el rendimiento en tareas de matemáticas y….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y gestión de entradas largas",
+      "toolA": "En la práctica conviene confirmar la longitud máxima soportada por el endpoint concreto antes de diseñar flujos con documentos extensos.",
+      "toolB": "El modo de razonamiento puede consumir parte del presupuesto de tokens en la respuesta, así que el contexto útil para el usuario puede ser menor si no se ajusta el límite de salida."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU y HumanEval)",
+      "toolA": "Sin embargo, las cifras no son directamente comparables entre versiones si cambian el prompt, el número de muestras o el ajuste, por lo que deben citarse con su configuración exacta.",
+      "toolB": "Aun así, las puntuaciones dependen del modo (pensamiento activado o desactivado), de la versión concreta y del arnés de evaluación, de modo que conviene consultar las tablas oficiales y no extrapolar cifras entre modelos."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida)",
+      "toolA": "No existe una tarifa única: conviene revisar la página de precios vigente del proveedor elegido, ya que los importes por millón de tokens de entrada y salida cambian con frecuencia y pueden incluir descuentos por caché o por volumen.",
+      "toolB": "Los precios publicados por proveedores deben verificarse en la documentación oficial actual, y en autoalojamiento el coste real se traslada a GPU, memoria y energía, no a una tarifa por token."
+    },
+    {
+      "category": "Latencia y rendimiento en producción",
+      "toolA": "No hay una cifra universal, por lo que recomendamos medir con tu carga real y comparar percentiles, no solo la media.",
+      "toolB": "En modo no pensante se aproxima a generaciones anteriores, pero la latencia efectiva varía según el proveedor y la configuración; conviene evaluar el tiempo hasta el primer token y el total por petición en tu escenario."
+    },
+    {
+      "category": "Acceso, licencias y disponibilidad abierta o cerrada",
+      "toolA": "Las condiciones exactas dependen de la variante y del tamaño, así que conviene revisar la licencia del modelo concreto antes de usarlo en productos comerciales.",
+      "toolB": "Las licencias y los términos pueden diferir entre modelos, y algunos tamaños o capacidades pueden estar limitados según el proveedor; verifica la ficha oficial del modelo y las condiciones del servicio antes de integrarlo."
+    },
+    {
+      "category": "Casos de uso prácticos y ecosistema",
+      "toolA": "Su amplia adopción en herramientas como vLLM, Ollama o LM Studio facilita las pruebas locales y el despliegue en producción.",
+      "toolB": "Para cargas simples puede ser excesivo si el modo de pensamiento genera tokens adicionales, por lo que conviene evaluar coste y latencia frente a la ganancia de calidad."
+    }
+  ],
+  "introduction": "Qwen 2.5 y Qwen3 responden a una necesidad similar, pero difieren en ventana de contexto y gestión de entradas largas. Qwen 2.5: La familia Qwen 2.5 se publicó con variantes de contexto que llegan hasta 128K tokens en los modelos principales,… Qwen3: Qwen3 mantiene ventanas de contexto amplias en sus modelos principales, con cifras que deben comprobarse en la… El criterio de rendimiento en benchmarks publicados (mmlu y humaneval) añade otra diferencia práctica: Los informes técnicos de Qwen 2.5 reportaron resultados en MMLU y HumanEval para distintos tamaños, y estos valores… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza latencia y rendimiento en producción: La latencia de Qwen 2.5 depende del tamaño del modelo, la infraestructura, la cuantización y la…",
+    "toolB": "tu proyecto prioriza rendimiento en benchmarks publicados (mmlu y humaneval): Qwen3 introdujo modos de razonamiento que mejoran el rendimiento en tareas de matemáticas y…"
+  }
 }

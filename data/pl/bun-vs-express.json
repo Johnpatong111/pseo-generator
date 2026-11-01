@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Bun i Express w 2026 roku: wydajność, ekosystem, dojrzałość, bezpieczeństwo i wsparcie dla TypeScript. Sprawdź, które rozwiązanie lepiej pasuje do Twojego projektu."
+    "title": "Bun vs Express: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Bun i Express: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "Jak zaplanować migrację z Express do Bun?",
       "a": "Rozpocznij od inwentaryzacji zależności i sprawdzenia tych, które korzystają z natywnych modułów lub nietypowych API Node.js, a następnie uruchom testy na kopii projektu w docelowej wersji Bun. Migrację warto prowadzić etapami, z możliwością wycofania, i zweryfikować wydajność, obsługę błędów oraz bezpieczeństwo przed przełączeniem ruchu produkcyjnego."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Bun a Express zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu…. Express sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co….",
+  "tradeoffs": [
+    {
+      "category": "Wydajność i przepustowość żądań",
+      "toolA": "Rzeczywiste wyniki silnie zależą jednak od wersji Bun, konfiguracji serwera, charakteru obciążenia oraz użytych zależności, dlatego nie należy traktować ich jako uniwersalnej gwarancji.",
+      "toolB": "W typowych aplikacjach CRUD różnice względem nowszych rozwiązań bywają mniejsze niż sugerują proste testy syntetyczne, a wąskim gardłem często okazuje się baza danych lub zewnętrzne usługi."
+    },
+    {
+      "category": "Dojrzałość ekosystemu i bibliotek",
+      "toolA": "Mimo szybkiego rozwoju część bibliotek natywnych lub opartych na specyficznych API Node.js może wymagać obejść, a wsparcie zależy od wersji Bun i konkretnej zależności.",
+      "toolB": "Dojrzałość ekosystemu przekłada się na większą przewidywalność w projektach legacy, choć część popularnych paczek wymaga już świadomego wyboru wersji i audytu bezpieczeństwa."
+    },
+    {
+      "category": "Wsparcie dla TypeScript",
+      "toolA": "Uwaga: transpilacja nie oznacza pełnej kontroli typów, więc w projektach o wysokich wymaganiach jakościowych nadal warto uruchamiać osobne sprawdzanie typów.",
+      "toolB": "To rozwiązanie sprawdzone i elastyczne, ale wiąże się z dodatkową konfiguracją oraz koniecznością utrzymania spójnego pipeline'u budowania."
+    },
+    {
+      "category": "Bezpieczeństwo i aktualizacje",
+      "toolA": "Część mechanizmów ochronnych, takich jak nagłówki czy walidacja, trzeba skonfigurować samodzielnie lub dobrać odpowiednie biblioteki, podobnie jak w innych frameworkach.",
+      "toolB": "Sam framework nie gwarantuje bezpieczeństwa aplikacji — ostateczny poziom ochrony zależy od kodu, konfiguracji i procesu utrzymania."
+    },
+    {
+      "category": "Krzywa uczenia się i doświadczenie deweloperskie",
+      "toolA": "Dla osób znających Node.js wiele API jest zbliżonych, ale niektóre różnice w zachowaniu i wsparciu zależności wymagają nauki oraz weryfikacji dokumentacji dla konkretnej wersji.",
+      "toolB": "Nauka podstaw jest szybka, natomiast utrzymanie większego projektu wymaga samodzielnego doboru bibliotek i wypracowania konwencji, co bywa pracochłonne."
+    },
+    {
+      "category": "Kompatybilność z Node.js i zależnościami",
+      "toolA": "Przed migracją warto sprawdzić zależności natywne, moduły korzystające z nietypowych API oraz zachowanie w docelowej wersji Bun.",
+      "toolB": "To ogranicza ryzyko nieoczekiwanych problemów, choć nadal obowiązuje weryfikacja wersji Node.js oraz zgodności konkretnych paczek."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Bun i Express odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i przepustowość żądań. Bun: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu scenariuszach przekłada się… Express: Express działa jako stosunkowo cienka warstwa na serwerze HTTP Node.js, a jego wydajność zależy głównie od wersji… Kolejną istotną różnicę pokazuje kryterium „Dojrzałość ekosystemu i bibliotek”: Bun stara się zachować kompatybilność z dużą częścią ekosystemu npm i wbudowuje menedżer pakietów, bundler oraz runner… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu…",
+    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co…"
+  }
 }

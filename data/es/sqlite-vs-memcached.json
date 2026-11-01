@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-memcached",
   "meta": {
-    "title": "SQLite vs Memcached (2026): ¿Qué solución elegir?",
-    "description": "Comparamos SQLite y Memcached en 2026: persistencia, rendimiento, escalado, concurrencia y casos de uso reales para elegir la opción adecuada."
+    "title": "SQLite vs Memcached: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara SQLite y Memcached: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "SQLite"
@@ -94,5 +94,49 @@
       "q": "¿Se pueden usar SQLite y Memcached juntos?",
       "a": "Sí, es una combinación habitual en servicios pequeños o medianos: SQLite actúa como almacén persistente y Memcached cachea consultas o sesiones para reducir la carga de lectura. La aplicación debe gestionar la invalidación de caché cuando SQLite cambia. En arquitecturas con varios servidores, Memcached aporta el escalado horizontal del que carece SQLite."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre SQLite y Memcached cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de…. Memcached es preferible cuando tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y….",
+  "tradeoffs": [
+    {
+      "category": "Modelo y propósito fundamental",
+      "toolA": "Está diseñado para persistir datos de forma fiable en dispositivos y servicios con cargas moderadas.",
+      "toolB": "Funciona como una capa de caché delante de bases de datos u otros orígenes."
+    },
+    {
+      "category": "Persistencia y durabilidad de los datos",
+      "toolA": "La durabilidad exacta depende de la configuración de sincronización elegida y de las características del sistema de archivos subyacente.",
+      "toolB": "Su valor está en acelerar accesos, no en conservar información crítica."
+    },
+    {
+      "category": "Rendimiento y latencia",
+      "toolA": "El rendimiento depende del tamaño de la base de datos, del esquema, de los índices y del uso de WAL; las escrituras concurrentes intensas pueden convertirse en un cuello de botella.",
+      "toolB": "Su diseño multihilo y su escalado horizontal permiten manejar grandes volúmenes de operaciones por segundo, aunque el rendimiento real depende de la red, del número de nodos y del tamaño de los valores."
+    },
+    {
+      "category": "Concurrencia y escalado",
+      "toolA": "El escalado se limita al servidor o dispositivo donde reside el archivo, por lo que no es una opción para clústeres con escritura compartida.",
+      "toolB": "Soporta muchas conexiones concurrentes y un alto rendimiento agregado, aunque la coherencia entre nodos no está garantizada y el cliente debe encargarse de la distribución de datos."
+    },
+    {
+      "category": "Consultas y modelo de datos",
+      "toolA": "Permite modelar relaciones complejas y realizar agregaciones directamente en la base de datos sin lógica adicional en la aplicación.",
+      "toolB": "La lógica de acceso y agregación recae por completo en la aplicación, lo que simplifica el servidor pero limita el tipo de operaciones que puede resolver por sí mismo."
+    },
+    {
+      "category": "Administración y operación",
+      "toolA": "Las copias de seguridad se pueden hacer copiando el archivo o usando la API de backup, aunque la configuración de journal y bloqueos requiere cierta atención.",
+      "toolB": "Su operación es relativamente sencilla, pero en arquitecturas grandes implica coordinar nodos, monitorizar métricas y prever el impacto del desalojo de entradas."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "SQLite y Memcached responden a una necesidad similar, pero difieren en modelo y propósito fundamental. SQLite: SQLite es un motor de base de datos relacional embebido que se ejecuta dentro del propio proceso de la aplicación y… Memcached: Memcached es un sistema de almacenamiento clave-valor en memoria, distribuido y sin persistencia, cuyo objetivo es… El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de…",
+    "toolB": "tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y…"
+  }
 }

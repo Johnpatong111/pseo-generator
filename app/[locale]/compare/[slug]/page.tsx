@@ -874,7 +874,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   }
 
   const title = getComparisonTitle(comparison, localeParam);
-  const seoTitle = `${title} | ${BRAND_NAME}`;
+  const seoTitle = `${comparison.meta.title} | ${BRAND_NAME}`;
   const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
     LOCALES.flatMap((locale) => {
@@ -929,7 +929,7 @@ function getStructuredData(
 ) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
-  const title = getComparisonTitle(comparison, locale);
+  const title = comparison.meta.title || getComparisonTitle(comparison, locale);
   const categories = getComparisonCategories(comparison.slug);
   const keywords = [
     comparison.toolA.name,
@@ -945,12 +945,22 @@ function getStructuredData(
         "@type": "TechArticle",
         headline: title,
         description: comparison.meta.description,
-        abstract: comparison.introduction ?? comparison.verdict,
+        abstract: comparison.heroSubtitle ?? comparison.introduction ?? comparison.verdict,
         inLanguage: locale,
         mainEntityOfPage: pageUrl,
         about: [comparison.toolA.name, comparison.toolB.name],
         articleSection: categories,
         keywords,
+        author: {
+          "@type": "Organization",
+          name: "SnippetsLibrary Team",
+          url: absoluteSiteUrl("/"),
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "SnippetsLibrary",
+          url: absoluteSiteUrl("/"),
+        },
         isPartOf: {
           "@type": "WebSite",
           name: "SnippetsLibrary",
@@ -1103,7 +1113,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           {text.quickVerdict}
         </h2>
         <p className="mt-4 text-base leading-7 text-slate-700 dark:text-slate-200">
-          {comparison.verdict}
+          {comparison.quickVerdict ?? comparison.verdict}
         </p>
       </section>
 
@@ -1220,6 +1230,9 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
             {title}
           </h1>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300">
+            {comparison.heroSubtitle}
+          </p>
         </header>
 
         <ComparisonViewToggle
@@ -1241,17 +1254,11 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           >
             {text.context}
           </h2>
-          {comparison.introduction ? (
-            <p className="mt-4 max-w-5xl text-base leading-7 text-slate-600 dark:text-slate-300">
-              {comparison.introduction}
-            </p>
-          ) : (
-            <>
-              <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                {text.evidenceBasedContext}
-              </p>
-              <div className="mt-5 grid gap-5 md:grid-cols-2">
-                {contextCriteria.map((criterion) => (
+          <p className="mt-4 max-w-5xl text-base leading-7 text-slate-600 dark:text-slate-300">
+            {comparison.introduction ?? text.evidenceBasedContext}
+          </p>
+          <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {(comparison.tradeoffs.length ? comparison.tradeoffs : contextCriteria).map((criterion) => (
                   <article
                     key={criterion.category}
                     className="rounded-xl bg-slate-50 p-4 dark:bg-slate-950 sm:p-5"
@@ -1267,9 +1274,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                     </p>
                   </article>
                 ))}
-              </div>
-            </>
-          )}
+          </div>
         </section>
 
         <div className="mb-10 grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
@@ -1290,7 +1295,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               {text.quickVerdict}
             </h2>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-800 dark:text-slate-100">
-              {comparison.verdict}
+              {comparison.quickVerdict ?? comparison.verdict}
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               {[comparison.toolA.name, comparison.toolB.name].map((name) => (
@@ -1313,7 +1318,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             </div>
             <ComparisonActions
               title={title}
-              summary={comparison.verdict}
+              summary={comparison.quickVerdict ?? comparison.verdict}
               labels={{
                 copy: text.copySummary,
                 copied: text.copied,
@@ -1489,6 +1494,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               <CodeComparison
                 toolA={comparison.toolA.name}
                 toolB={comparison.toolB.name}
+                scenario={codeExamples.scenario}
                 tech1Snippet={codeExamples.tech1Snippet}
                 tech2Snippet={codeExamples.tech2Snippet}
                 labels={{

@@ -1,8 +1,8 @@
 {
   "slug": "prisma-vs-drizzle",
   "meta": {
-    "title": "Prisma vs Drizzle ORM (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Prisma y Drizzle ORM en 2026: tipado, rendimiento, migraciones, consultas SQL, soporte de motores y ecosistema para elegir el ORM adecuado."
+    "title": "Prisma vs Drizzle ORM: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Prisma y Drizzle ORM: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Prisma"
@@ -88,5 +88,49 @@
       "q": "¿Cómo puedo decidir entre Prisma y Drizzle para 2026?",
       "a": "Una prueba de concepto con el esquema real del proyecto, las consultas más habituales y una carga representativa aporta más información que una comparación abstracta. Si el equipo valora un flujo guiado y herramientas integradas, Prisma puede encajar mejor; si prioriza control SQL y transparencia en TypeScript, Drizzle resulta atractivo. Conviene revisar las notas de versión y la compatibilidad con el motor de base de datos antes de comprometerse."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Prisma y Drizzle ORM cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Prisma encaja mejor cuando tu proyecto prioriza sistema de migraciones y evolución del esquema: Prisma Migrate genera migraciones a partir del esquema declarativo y lleva un historial de cambios…. Drizzle ORM es preferible cuando tu proyecto prioriza modelo de definición del esquema y ergonomía de desarrollo: Drizzle describe el esquema directamente en TypeScript, de modo que las tablas, columnas y….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de definición del esquema y ergonomía de desarrollo",
+      "toolA": "Esa separación facilita la lectura del modelo de datos y la generación automática de tipos, aunque añade un paso de generación y una capa propia que hay que conocer.",
+      "toolB": "Reduce la duplicación entre modelo y aplicación y encaja bien con editores que ofrecen autocompletado sobre objetos TypeScript, si bien exige más disciplina para mantener el esquema ordenado."
+    },
+    {
+      "category": "Rendimiento y control sobre las consultas SQL",
+      "toolA": "Los detalles de rendimiento dependen de la versión, la configuración del motor y la carga de trabajo, por lo que conviene medirlos en el caso concreto.",
+      "toolB": "Su naturaleza cercana a SQL puede suponer una ventaja en cargas con muchas uniones o agregaciones, aunque el rendimiento final depende igualmente del motor, los índices y la configuración."
+    },
+    {
+      "category": "Sistema de migraciones y evolución del esquema",
+      "toolA": "El flujo es cómodo para equipos que prefieren que la herramienta derive el SQL, aunque los casos de personalización avanzada requieren revisar y editar las migraciones generadas.",
+      "toolB": "Su enfoque es flexible y transparente, pero implica más trabajo manual en escenarios de evolución compleja y depende de la configuración elegida."
+    },
+    {
+      "category": "Tipado, seguridad de tipos y experiencia con TypeScript",
+      "toolA": "La integración con TypeScript es madura y está bien documentada, aunque los tipos del cliente generado pueden resultar menos inmediatos de inspeccionar que los definidos en el código.",
+      "toolB": "La inferencia suele ser precisa y transparente, pero depende de que el esquema esté bien tipado y de la configuración del proyecto."
+    },
+    {
+      "category": "Soporte de motores de base de datos y despliegue",
+      "toolA": "El despliegue requiere considerar el motor de consultas, los adaptadores y las particularidades de cada entorno gestionado.",
+      "toolB": "La disponibilidad y madurez de cada controlador varían, por lo que conviene comprobar la compatibilidad con el proveedor de base de datos antes de adoptarlo."
+    },
+    {
+      "category": "Ecosistema, documentación y comunidad",
+      "toolA": "Su comunidad es amplia, lo que suele facilitar encontrar guías, aunque el ritmo de cambios entre versiones exige revisar las notas de cada release.",
+      "toolB": "Al ser un proyecto más reciente, algunos patrones y ejemplos están menos consolidados que en alternativas más veteranas, y la calidad de los recursos disponibles varía."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
+  },
+  "introduction": "Prisma y Drizzle ORM responden a una necesidad similar, pero difieren en modelo de definición del esquema y ergonomía de desarrollo. Prisma: Prisma define el modelo en un archivo de esquema dedicado y genera un cliente tipado a partir de él. Drizzle ORM: Drizzle describe el esquema directamente en TypeScript, de modo que las tablas, columnas y relaciones son código… El criterio de rendimiento y control sobre las consultas sql añade otra diferencia práctica: Prisma abstrae el acceso a datos con su cliente y su motor de consultas, y permite cierto control mediante consultas… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza sistema de migraciones y evolución del esquema: Prisma Migrate genera migraciones a partir del esquema declarativo y lleva un historial de cambios…",
+    "toolB": "tu proyecto prioriza modelo de definición del esquema y ergonomía de desarrollo: Drizzle describe el esquema directamente en TypeScript, de modo que las tablas, columnas y…"
+  }
 }

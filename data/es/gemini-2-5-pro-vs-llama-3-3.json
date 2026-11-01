@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-llama-3-3",
   "meta": {
-    "title": "Gemini 2.5 Pro vs Llama 3.3 (2026): ¿Qué solución elegir?",
-    "description": "Comparativa práctica de Gemini 2.5 Pro y Llama 3.3 en 2026: contexto, rendimiento, acceso, costes, latencia y casos de uso para elegir el modelo adecuado."
+    "title": "Gemini 2.5 Pro vs Llama 3.3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Gemini 2.5 Pro y Llama 3.3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom google import genai\n\nclient = genai.Client(api_key=os.environ[\"GEMINI_API_KEY\"])\nresponse = client.models.generate_content(\n    model=\"gemini-2.5-pro\",\n    contents=\"Hola, mundo\"\n)\nprint(response.text)",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\ninputs = tokenizer(\"Hola, mundo\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=32)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "¿Qué modelo es más adecuado si necesito análisis de imágenes?",
       "a": "Gemini 2.5 Pro está diseñado para trabajar con varias modalidades, incluida la imagen, según el canal de acceso y la documentación vigente. Llama 3.3 es un modelo de texto, por lo que un caso multimodal requeriría combinar modelos o componentes adicionales, con la complejidad que ello implica."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Gemini 2.5 Pro y Llama 3.3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Gemini 2.5 Pro encaja mejor cuando tu proyecto prioriza ventana de contexto y manejo de entradas largas: Gemini 2.5 Pro se ofrece a través de la API de Google con una ventana de contexto muy amplia,…. Llama 3.3 es preferible cuando tu proyecto prioriza acceso, licencia y disponibilidad abierta o cerrada: Llama 3.3 se distribuye con pesos y licencia comunitaria de Meta, lo que permite descargarlo,….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y manejo de entradas largas",
+      "toolA": "El límite exacto depende del modelo concreto y del canal de acceso, por lo que conviene confirmarlo en la documentación oficial de Google antes de dimensionar una aplicación.",
+      "toolB": "El contexto efectivo puede variar según el motor de inferencia, la cuantización y la memoria disponible en el hardware, así que el valor publicado debe contrastarse con la configuración real de despliegue."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU, HumanEval)",
+      "toolA": "Para una comparación justa hay que usar la misma versión, el mismo conjunto de evaluación y el mismo ajuste de decodificación, y aun así los resultados no garantizan el rendimiento en dominios concretos.",
+      "toolB": "Estos valores son reproducibles en teoría, aunque el rendimiento práctico cambia con el motor de inferencia, la cuantización y el hardware; conviene replicar la evaluación en el entorno propio antes de decidir."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida)",
+      "toolA": "Las cifras concretas son sensibles a la fecha y al plan, por lo que deben consultarse en la página oficial de precios de Google Cloud o AI Studio en el momento de presupuestar.",
+      "toolB": "Comparar solo una tarifa de API externa con Gemini sería engañoso sin incluir el coste total de propiedad del despliegue propio."
+    },
+    {
+      "category": "Latencia y rendimiento en producción",
+      "toolA": "Google ofrece niveles de servicio y opciones de aprovisionamiento, pero no conviene asumir cifras fijas sin medir en la propia aplicación con la cuota contratada.",
+      "toolB": "Al ser autohospedado, el equipo puede optimizarla, pero también debe asumir la ingeniería de escalado y monitorización."
+    },
+    {
+      "category": "Acceso, licencia y disponibilidad abierta o cerrada",
+      "toolA": "Esto simplifica el cumplimiento y el mantenimiento, pero limita la personalización profunda y crea dependencia del proveedor y de sus condiciones de servicio.",
+      "toolB": "La contrapartida es que el equipo asume la seguridad, el cumplimiento, las actualizaciones y la capacidad de cómputo."
+    },
+    {
+      "category": "Capacidades multimodales y modalidades de entrada",
+      "toolA": "La disponibilidad exacta de cada modalidad y sus límites conviene verificarla en la documentación oficial, porque puede variar entre la API y las interfaces de producto.",
+      "toolB": "Para tareas con imágenes o audio, habría que diseñar una arquitectura que combine varios modelos."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro y Llama 3.3 responden a una necesidad similar, pero difieren en ventana de contexto y manejo de entradas largas. Gemini 2.5 Pro: Gemini 2.5 Pro se ofrece a través de la API de Google con una ventana de contexto muy amplia, pensada para documentos… Llama 3.3: Llama 3.3 tiene una ventana de contexto definida en su model card y en la implementación de referencia, habitualmente… El criterio de rendimiento en benchmarks publicados (mmlu, humaneval) añade otra diferencia práctica: Google publica resultados de Gemini 2.5 Pro en pruebas como MMLU y HumanEval, pero las cifras dependen de la versión… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y manejo de entradas largas: Gemini 2.5 Pro se ofrece a través de la API de Google con una ventana de contexto muy amplia,…",
+    "toolB": "tu proyecto prioriza acceso, licencia y disponibilidad abierta o cerrada: Llama 3.3 se distribuye con pesos y licencia comunitaria de Meta, lo que permite descargarlo,…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "phi-4-vs-gemma-3",
   "meta": {
-    "title": "Phi-4 vs Gemma 3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Phi-4 i Gemma 3: kontekst, wydajność, dostęp, licencje i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Phi-4 vs Gemma 3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Phi-4 i Gemma 3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Phi-4"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_id = \"google/gemma-3-4b-it\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest bardziej odpowiedni dla aplikacji wielojęzycznych?",
       "a": "Gemma 3 została zaprojektowana z myślą o obsłudze wielu języków i deklaruje wsparcie dla szerokiego zakresu języków, co może być korzystne w aplikacjach wielojęzycznych. Phi-4 koncentruje się głównie na języku angielskim, więc jego jakość w innych językach może być niższa. Dla potwierdzenia jakości w konkretnych językach zaleca się przeprowadzenie testów porównawczych."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Phi-4 a Gemma 3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Phi-4 będzie lepszy, gdy projekt stawia na kryterium „Licencjonowanie i warunki użytkowania”: Phi-4 jest udostępniany na licencji MIT, która generalnie pozwala na użycie komercyjne,…. Gemma 3 sprawdzi się, gdy projekt stawia na kryterium „Okno kontekstu”: Gemma 3 występuje w wielu rozmiarach, a część wariantów oferuje okno kontekstu do 128 tys.",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Wartość ta może się różnić w zależności od wariantu i implementacji, dlatego przed wdrożeniem należy potwierdzić limity w dokumentacji dostawcy lub repozytorium modelu.",
+      "toolB": "Dostępność i dokładny limit zależą od konkretnej wersji modelu oraz platformy hostującej, więc zaleca się sprawdzenie aktualnych specyfikacji."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU, HumanEval)",
+      "toolA": "Należy jednak pamiętać, że wyniki zależą od wersji modelu, sposobu ewaluacji i konfiguracji; podane liczby wymagają weryfikacji w oficjalnych źródłach.",
+      "toolB": "Publikowane wartości mogą nie być bezpośrednio porównywalne ze względu na różne protokoły testowe, dlatego należy je traktować jako orientacyjne i sprawdzać w dokumentacji Google."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych/wyjściowych",
+      "toolA": "Nie ma jednej oficjalnej stawki API dla wszystkich platform; ceny należy weryfikować u wybranego dostawcy.",
+      "toolB": "Podobnie jak w przypadku Phi-4, stawki mogą się różnić i wymagają sprawdzenia w cenniku konkretnego usługodawcy."
+    },
+    {
+      "category": "Opóźnienie (latencja)",
+      "toolA": "Rzeczywista latencja zależy jednak od sprzętu, kwantyzacji, obciążenia i implementacji, więc nie można podać jednej wartości bez testów w docelowym środowisku.",
+      "toolB": "Podobnie jak w przypadku Phi-4, latencja jest silnie uzależniona od warunków wdrożenia i wymaga pomiarów w konkretnym scenariuszu."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Licencja może nakładać pewne ograniczenia, dlatego przed użyciem komercyjnym należy zapoznać się z warunkami.",
+      "toolB": "Licencja Gemmy ma swoje zasady, które należy sprawdzić przed wdrożeniem produkcyjnym."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Jego zwarta architektura ułatwia wdrożenie na mniejszych serwerach lub urządzeniach brzegowych.",
+      "toolB": "Rodzina modeli pozwala dopasować kompromis między jakością a kosztem."
+    }
+  ],
+  "introduction": "Phi-4 i Gemma 3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Phi-4: Phi-4 (wersja bazowa) według dostępnych informacji obsługuje okno kontekstu do 16 tys. Gemma 3: Gemma 3 występuje w wielu rozmiarach, a część wariantów oferuje okno kontekstu do 128 tys. Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU, HumanEval)”: Phi-4 osiąga wysokie wyniki w benchmarkach takich jak MMLU i HumanEval, co jest często podkreślane w materiałach… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Licencjonowanie i warunki użytkowania”: Phi-4 jest udostępniany na licencji MIT, która generalnie pozwala na użycie komercyjne,…",
+    "toolB": "projekt stawia na kryterium „Okno kontekstu”: Gemma 3 występuje w wielu rozmiarach, a część wariantów oferuje okno kontekstu do 128 tys."
+  }
 }

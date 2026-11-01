@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-pro-vs-llama-3-3",
   "meta": {
-    "title": "Gemini 2.5 Pro vs Llama 3.3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Gemini 2.5 Pro i Llama 3.3 w 2026 roku: wydajność, kontekst, ceny API, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "Gemini 2.5 Pro vs Llama 3.3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Gemini 2.5 Pro i Llama 3.3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Gemini 2.5 Pro"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"TWOJ_KLUCZ_API\")\nmodel = genai.GenerativeModel(\"gemini-2.5-pro\")\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"meta-llama/Llama-3.3-8B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name)\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model jest łatwiejszy we wdrożeniu?",
       "a": "Gemini 2.5 Pro jest łatwiejszy, ponieważ wystarczy uzyskać klucz API i korzystać z gotowej usługi, bez zarządzania infrastrukturą. Llama 3.3 wymaga skonfigurowania środowiska, pobrania wag i zapewnienia mocy obliczeniowej, co może być bardziej czasochłonne."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Gemini 2.5 Pro a Llama 3.3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Gemini 2.5 Pro będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może…. Llama 3.3 sprawdzi się, gdy projekt stawia na kryterium „Dostępność modelu i otwartość”: Llama 3.3 to model otwarty (open weights), który można pobrać i hostować na własnych serwerach lub….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Dostępność i dokładne limity należy potwierdzić w oficjalnej dokumentacji Google, ponieważ mogą się różnić między wersjami modelu i poziomami API.",
+      "toolB": "Rzeczywista długość kontekstu może zależeć od konfiguracji wdrożenia i wymaga weryfikacji w dokumentacji Meta dla konkretnej wersji modelu."
+    },
+    {
+      "category": "Wyniki na benchmarkach (MMLU, HumanEval)",
+      "toolA": "Należy jednak pamiętać, że wyniki mogą się różnić w zależności od wersji modelu, sposobu ewaluacji i konfiguracji, dlatego warto porównywać je z ostrożnością i zawsze sprawdzać aktualne dane u dostawcy.",
+      "toolB": "Dokładne wartości zależą od wersji i sposobu pomiaru, dlatego należy je weryfikować w oficjalnych materiałach Meta i nie traktować jako gwarantowanych."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia/wyjścia",
+      "toolA": "Ze względu na zmienność cennika, konkretne stawki należy sprawdzić w aktualnej oficjalnej dokumentacji Google Cloud.",
+      "toolB": "Trudno podać jedną cenę za 1 mln tokenów, ponieważ jest ona uzależniona od wybranego dostawcy i konfiguracji, dlatego należy porównać oferty dostawców lub oszacować koszty własne."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "Google nie publikuje gwarantowanych wartości latencji, więc należy je traktować jako zmienne i weryfikować w testach na własnym obciążeniu.",
+      "toolB": "Nie ma jednej wartości dla wszystkich wdrożeń, dlatego porównania należy dokonywać w kontekście konkretnego setupu."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Zapewnia to gotową infrastrukturę i wsparcie, ale wiąże się z zależnością od dostawcy i jego regulaminu.",
+      "toolB": "Daje to większą kontrolę nad danymi i możliwość dostrajania, ale wymaga zarządzania infrastrukturą i wiąże się z odpowiedzialnością za zgodność z licencją."
+    },
+    {
+      "category": "Możliwości multimodalne",
+      "toolA": "Dostępność poszczególnych funkcji może zależeć od wersji modelu i interfejsu API, dlatego warto sprawdzić aktualne wsparcie.",
+      "toolB": "To ogranicza jego zastosowanie w aplikacjach wymagających analizy obrazów czy audio bez dodatkowej integracji."
+    }
+  ],
+  "introduction": "Gemini 2.5 Pro i Llama 3.3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Gemini 2.5 Pro: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może sięgać milionów tokenów,… Llama 3.3: Llama 3.3 ma okno kontekstu 128 tys. Kolejną istotną różnicę pokazuje kryterium „Wyniki na benchmarkach (MMLU, HumanEval)”: Gemini 2.5 Pro osiąga wysokie wyniki na popularnych benchmarkach, takich jak MMLU i HumanEval, co potwierdzają… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Gemini 2.5 Pro oferuje bardzo duże okno kontekstu, które w zależności od wersji i planu może…",
+    "toolB": "projekt stawia na kryterium „Dostępność modelu i otwartość”: Llama 3.3 to model otwarty (open weights), który można pobrać i hostować na własnych serwerach lub…"
+  }
 }

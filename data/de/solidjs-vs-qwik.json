@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik (2026): welche Lösung passt besser?",
-    "description": "SolidJS und Qwik im Vergleich 2026: Reaktivität, Resumability, Lazy Loading, Ökosystem, Lernkurve und Einsatzgebiete – mit klarer Empfehlung."
+    "title": "SolidJS vs Qwik: welches 2026 wählen — Funktionen, Leistung und Ökosystem",
+    "description": "Vergleiche SolidJS und Qwik: Bewerte Architekturkompromisse bei Rendering, Routing und Datenladen und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "SolidJS"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createSignal } from \"solid-js\";\n\nexport default function App() {\n  const [count, setCount] = createSignal(0);\n  return (\n    <main>\n      <h1>Hello, World!</h1>\n      <button onClick={() => setCount(count() + 1)}>\n        Klicks: {count()}\n      </button>\n    </main>\n  );\n}",
-    "tech2Snippet": "import { component$, useSignal } from \"@builder.io/qwik\";\n\nexport const App = component$(() => {\n  const count = useSignal(0);\n  return (\n    <main>\n      <h1>Hello, World!</h1>\n      <button onClick$={() => count.value++}>\n        Klicks: {count.value}\n      </button>\n    </main>\n  );\n});"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Rolle spielen Hosting und Rendering-Strategie bei der Wahl?",
       "a": "Die Rendering-Strategie – clientseitig, serverseitig oder statisch – bestimmt maßgeblich, welches Framework seine Stärken ausspielen kann. Qwik profitiert besonders von Szenarien mit vielen Einstiegspunkten und verzögertem Laden, während SolidJS in klassischen SPA- und SSR-Setups gut funktioniert. Hosting-Anbieter, Caching und Deployment-Pipeline sollten daher früh in die Entscheidung einbezogen werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen SolidJS und Qwik verändert den Umgang mit Rendering der Oberfläche und Datenladen; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "SolidJS passt besser, wenn dein Projekt priorisiert Lernkurve und mentales Modell: Wer React oder JSX kennt, findet sich in SolidJS schnell zurecht, muss aber die fehlende…. Qwik ist geeigneter, wenn dein Projekt priorisiert Rendering und Auslieferung: Qwik ist auf Resumability ausgelegt: Statt zu hydratisieren, lädt es nur die Handler, die für eine….",
+  "tradeoffs": [
+    {
+      "category": "Reaktivitätsmodell",
+      "toolA": "Das Modell ist explizit und vorhersehbar, verlangt aber ein Verständnis für Memos, Effekte und Abhängigkeitsverfolgung.",
+      "toolB": "Das Modell ist mächtig, aber konzeptionell ungewohnter als bei klassischen reaktiven Frameworks."
+    },
+    {
+      "category": "Rendering und Auslieferung",
+      "toolA": "Konkrete Leistungswerte hängen von Bundle-Größe, Hosting und Arbeitslast ab.",
+      "toolB": "Die tatsächliche Wirkung ist von Version, Konfiguration und Seitenstruktur abhängig."
+    },
+    {
+      "category": "Lernkurve und mentales Modell",
+      "toolA": "Mit entsprechender Einarbeitung ist der Code jedoch kompakt und gut lesbar.",
+      "toolB": "Erfahrene Teams profitieren, Einsteiger benötigen mehr Einarbeitungszeit."
+    },
+    {
+      "category": "Ökosystem und Bibliotheken",
+      "toolA": "Die Auswahl ist für typische Anwendungsfälle ausreichend, bei Nischenbibliotheken kann sie jedoch eingeschränkt sein.",
+      "toolB": "Kompatibilität mit bestehenden Bibliotheken muss im Einzelfall geprüft werden."
+    },
+    {
+      "category": "Performance-Strategie",
+      "toolA": "Aussagen zu konkreten Geschwindigkeitsvorteilen sollten stets mit eigenen Messungen belegt werden.",
+      "toolB": "Die Ergebnisse sind von Version, Optimierer-Konfiguration und Arbeitslast abhängig."
+    },
+    {
+      "category": "Entwicklerwerkzeuge und Debugging",
+      "toolA": "Die Dokumentation ist solide, aber weniger umfangreich als bei großen Ökosystemen.",
+      "toolB": "Die Werkzeuge sind leistungsfähig, erfordern aber Einarbeitung."
+    }
+  ],
+  "introduction": "SolidJS und Qwik lösen ein ähnliches Problem, unterscheiden sich jedoch bei reaktivitätsmodell. SolidJS: SolidJS verwendet feinkörnige Signale und Effekte, bei denen Komponentenfunktionen nur einmal ausgeführt werden. Qwik: Qwik setzt auf eine resumierbare Ausführung: Der Zustand wird serialisiert und beim Client ohne erneutes Ausführen der… Das Kriterium rendering und auslieferung zeigt einen weiteren praktischen Unterschied: SolidJS bietet clientseitiges Rendering sowie serverseitiges Rendering und Hydration über Solid Start. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Lernkurve und mentales Modell: Wer React oder JSX kennt, findet sich in SolidJS schnell zurecht, muss aber die fehlende…",
+    "toolB": "dein Projekt priorisiert Rendering und Auslieferung: Qwik ist auf Resumability ausgelegt: Statt zu hydratisieren, lädt es nur die Handler, die für eine…"
+  }
 }

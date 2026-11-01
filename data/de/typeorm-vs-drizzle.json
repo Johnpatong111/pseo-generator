@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-drizzle",
   "meta": {
-    "title": "TypeORM vs Drizzle ORM (2026): welche Lösung passt besser?",
-    "description": "TypeORM vs Drizzle ORM im Vergleich 2026: Architektur, Typsicherheit, Migrationen, Performance und Ökosystem. Hilft bei der Wahl der passenden ORM für Node.js."
+    "title": "TypeORM vs Drizzle ORM: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche TypeORM und Drizzle ORM: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "TypeORM"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';\n\n@Entity()\nclass User {\n  @PrimaryGeneratedColumn()\n  id: number;\n\n  @Column()\n  name: string;\n}\n\n// In der Anwendung: await dataSource.getRepository(User).save({ name: 'Welt' });",
-    "tech2Snippet": "import { pgTable, serial, text } from 'drizzle-orm/pg-core';\nimport { drizzle } from 'drizzle-orm/node-postgres';\n\nconst users = pgTable('users', {\n  id: serial('id').primaryKey(),\n  name: text('name').notNull(),\n});\n\nconst db = drizzle(process.env.DATABASE_URL!);\nawait db.insert(users).values({ name: 'Welt' });"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie wirkt sich die Wahl auf die langfristige Wartbarkeit aus?",
       "a": "TypeORM ist seit Jahren etabliert und bietet eine große Community, leidet aber unter historisch bedingten Inkonsistenzen zwischen Hauptversionen, was Migrationen erschweren kann. Drizzle ORM ist jünger und entwickelt sich schnell, was häufigere API-Änderungen mit sich bringen kann, aber einen klaren, SQL-nahen Ansatz verfolgt. Die langfristige Wartbarkeit hängt stark von der Teamgröße, der Dokumentationsdisziplin und der Bereitschaft ab, sich mit Änderungen auseinanderzusetzen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen TypeORM und Drizzle ORM verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "TypeORM passt besser, wenn dein Projekt priorisiert Datenbankunterstützung und Kompatibilität: TypeORM unterstützt eine breite Palette relationaler Datenbanken wie PostgreSQL, MySQL, MariaDB,…. Drizzle ORM ist geeigneter, wenn dein Projekt priorisiert Typsicherheit und Developer Experience: Drizzle ORM zeichnet sich durch eine durchgängig hohe Typsicherheit aus, da Abfragen aus dem….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Abstraktionsgrad",
+      "toolA": "Diese Abstraktion erleichtert den Einstieg für Teams mit objektorientiertem Hintergrund, kann aber bei komplexen Abfragen an Transparenz verlieren.",
+      "toolB": "Dadurch bleibt die Kontrolle über generierte Abfragen hoch, was particularly bei optimierungsbedürftigen Workloads hilfreich ist, jedoch mehr SQL-Kenntnisse voraussetzt."
+    },
+    {
+      "category": "Typsicherheit und Developer Experience",
+      "toolA": "Die Developer Experience profitiert von umfangreicher Dokumentation und vielen Beispielen, leidet aber unter historisch bedingten Inkonsistenzen zwischen Versionen.",
+      "toolB": "Die Developer Experience ist modern und editorfreundlich, erfordert jedoch Einarbeitung in die SQL-nahe API und das Migrationswerkzeug."
+    },
+    {
+      "category": "Migrationen und Schema-Verwaltung",
+      "toolA": "Die Synchronisation ist für die Entwicklung praktisch, sollte in Produktion jedoch mit Vorsicht und expliziten Migrationen erfolgen, da automatische Änderungen je nach Konfiguration riskant sein können.",
+      "toolB": "Dieser Ansatz fördert nachvollziehbare, versionierte Änderungen, verlangt aber Disziplin beim Erzeugen und Anwenden der Migrationen."
+    },
+    {
+      "category": "Datenbankunterstützung und Kompatibilität",
+      "toolA": "Diese Bandbreite macht es für heterogene Umgebungen attraktiv, wobei der Reifegrad je nach Treiber und Datenbank variieren kann.",
+      "toolB": "Die Unterstützung ist tiefer auf diese Ziele zugeschnitten, weniger breit als bei TypeORM, und die Kompatibilität hängt von der jeweiligen Version und dem Treiber ab."
+    },
+    {
+      "category": "Performance und Laufzeitverhalten",
+      "toolA": "Die tatsächliche Performance hängt stark von der Datenbank, den Indizes und der Art der Abfragen ab; pauschale Aussagen sind ohne Messung nicht belastbar.",
+      "toolB": "Konkrete Leistungsunterschiede sind jedoch arbeitslastabhängig und sollten nicht als allgemeingültig angenommen werden, ohne eigene Messungen durchzuführen."
+    },
+    {
+      "category": "Ökosystem, Reife und Community",
+      "toolA": "Die Reife bringt Stabilität, aber auch Altlasten und gelegentlich uneinheitliche Dokumentation zwischen Hauptversionen mit sich.",
+      "toolB": "Die Reife ist geringer als bei TypeORM, was sich in häufigeren API-Änderungen und weniger etablierten Best Practices niederschlagen kann."
+    }
+  ],
+  "introduction": "TypeORM und Drizzle ORM lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und abstraktionsgrad. TypeORM: TypeORM verfolgt einen objektrelationalen Ansatz mit Entitätsklassen, Dekoratoren und Repositories, wodurch… Drizzle ORM: Drizzle ORM ist ein typsicherer Query-Builder, der nahe an SQL bleibt und das Schema deklarativ in TypeScript definiert. Das Kriterium typsicherheit und developer experience zeigt einen weiteren praktischen Unterschied: TypeORM bietet Typunterstützung über Entitätsdefinitionen und Repository-Methoden, wobei die Typsicherheit bei… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenbankunterstützung und Kompatibilität: TypeORM unterstützt eine breite Palette relationaler Datenbanken wie PostgreSQL, MySQL, MariaDB,…",
+    "toolB": "dein Projekt priorisiert Typsicherheit und Developer Experience: Drizzle ORM zeichnet sich durch eine durchgängig hohe Typsicherheit aus, da Abfragen aus dem…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "claude-fable-5-1-vs-openai-o3",
   "meta": {
-    "title": "Claude Fable 5.1 vs OpenAI o3 (2026): quelle solution choisir ?",
-    "description": "Comparaison de Claude Fable 5.1 (contexte 1M, tarif $10/$50 par million de jetons) et d'OpenAI o3 : contextes, tarifs, performances publiées, accès API, cas d'usage et limites, pour choisir en 2026."
+    "title": "Claude Fable 5.1 vs OpenAI o3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Claude Fable 5.1 et OpenAI o3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon…"
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"VOTRE_CLE_API\")\n\nmessage = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}],\n)\n\nprint(message.content[0].text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"VOTRE_CLE_API\")\n\nresponse = client.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}],\n)\n\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -100,5 +101,44 @@
       "q": "Quelles précautions prendre pour les données sensibles ?",
       "a": "Vérifiez les conditions contractuelles, les options de résidence des données, les certifications et les engagements de confidentialité dans la documentation officielle de chaque fournisseur. Ces éléments dépendent de l'offre, de la région et du type de compte, donc une validation par votre équipe juridique et sécurité est recommandée. En cas d'exigence stricte, envisagez des architectures qui minimisent les données envoyées au modèle."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Claude Fable 5.1 et OpenAI o3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Claude Fable 5.1 convient mieux lorsque votre projet privilégie fenêtre de contexte : Claude Fable 5.1 offre une fenêtre de contexte de 1 million de jetons et une sortie maximale de…. OpenAI o3 est préférable lorsque votre projet privilégie performances aux benchmarks publiés (mmlu, humaneval) : OpenAI communique également des résultats pour o3, mais les scores MMLU et HumanEval publiés….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte",
+      "toolA": "Cette capacité facilite l'analyse de corpus volumineux et de bases de code étendues en une seule requête, sous réserve de la configuration et des limites d'usage appliquées par le fournisseur.",
+      "toolB": "À notre connaissance, o3 ne revendique pas une fenêtre de 1 million de jetons, mais ce point doit être confirmé à la date de consultation."
+    },
+    {
+      "category": "Performances aux benchmarks publiés (MMLU, HumanEval)",
+      "toolA": "Les scores ne doivent pas être comparés sans vérifier qu'ils portent sur les mêmes tests et les mêmes conditions.",
+      "toolB": "Une comparaison chiffrée fiable exige de retrouver les résultats officiels les plus récents et de vérifier que les protocoles sont comparables ; à défaut, comparez qualitativement le raisonnement et la génération de code."
+    },
+    {
+      "category": "Tarification API (prix par million de jetons)",
+      "toolA": "Ces valeurs sont celles documentées à la date de consultation et peuvent évoluer.",
+      "toolB": "Une comparaison chiffrée suppose de relever les prix entrée/sortie et les éventuels tarifs de cache ou de traitement par lot au moment de l'évaluation."
+    },
+    {
+      "category": "Latence et débit",
+      "toolA": "Pour un usage en production, mesurez le temps de première réponse et le débit sur votre propre trafic plutôt que de vous fier à une valeur générale.",
+      "toolB": "Là encore, une mesure sur votre charge réelle est plus fiable qu'un chiffre publié, et les SLA éventuels doivent être vérifiés dans les conditions du fournisseur."
+    },
+    {
+      "category": "Accès au modèle et disponibilité ouverte ou fermée",
+      "toolA": "L'accès dépend de l'éligibilité du compte, de la région et des conditions d'utilisation, à vérifier dans la documentation officielle.",
+      "toolB": "La disponibilité, les quotas et les fonctionnalités associées dépendent du plan et de la région, et doivent être confirmés auprès d'OpenAI."
+    },
+    {
+      "category": "Cas d'usage pratiques",
+      "toolA": "Sa sortie maximale de 128 000 jetons aide pour les réponses longues structurées, dans les limites de l'offre.",
+      "toolB": "Il est pertinent lorsque la qualité du raisonnement prime sur le coût et la latence, et son intégration à l'écosystème OpenAI peut simplifier certains déploiements."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 et OpenAI o3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte. Claude Fable 5.1 : Claude Fable 5.1 offre une fenêtre de contexte de 1 million de jetons et une sortie maximale de 128 000 jetons,… OpenAI o3 : OpenAI o3 est présenté par OpenAI comme un modèle de raisonnement ; les limites de contexte exactes et la taille de… Le critère « Performances aux benchmarks publiés (MMLU, HumanEval) » met en évidence une autre différence pratique : Anthropic publie des résultats aux benchmarks pour ses modèles ; il convient de consulter la fiche officielle de… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : Claude Fable 5.1 offre une fenêtre de contexte de 1 million de jetons et une sortie maximale de…",
+    "toolB": "votre projet privilégie performances aux benchmarks publiés (mmlu, humaneval) : OpenAI communique également des résultats pour o3, mais les scores MMLU et HumanEval publiés…"
+  }
 }

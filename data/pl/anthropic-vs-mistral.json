@@ -1,8 +1,8 @@
 {
   "slug": "anthropic-vs-mistral",
   "meta": {
-    "title": "Anthropic vs Mistral (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Anthropic i Mistral w 2026: modele, bezpieczeństwo, wdrożenia, koszty i ekosystem. Sprawdź, które rozwiązanie AI lepiej pasuje do Twojego projektu."
+    "title": "Anthropic vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Anthropic i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Anthropic"
@@ -88,5 +88,49 @@
       "q": "Jak najlepiej porównać oba rozwiązania przed zakupem?",
       "a": "Przygotuj zestaw reprezentatywnych zadań z własnej domeny, zdefiniuj mierniki jakości, kosztu i opóźnień, a następnie przetestuj oba rozwiązania w konfiguracji zbliżonej do produkcyjnej. Uwzględnij też warunki umowne, dostępność funkcji w wybranym planie oraz koszty operacyjne, ponieważ cenniki i możliwości mogą się zmieniać wraz z wersjami produktów."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Anthropic a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Anthropic będzie lepszy, gdy projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we….",
+  "tradeoffs": [
+    {
+      "category": "Jakość modeli w zadaniach rozumowania i generowania tekstu",
+      "toolA": "W praktyce jakość należy weryfikować na własnym zestawie testowym, ponieważ różnice między modelami bywają wąskie i zależne od języka oraz domeny.",
+      "toolB": "W wielu zadaniach modele Mistral wypadają konkurencyjnie, szczególnie gdy liczy się stosunek jakości do kosztu, ale wyniki trzeba potwierdzić testami na danych zbliżonych do produkcyjnych."
+    },
+    {
+      "category": "Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami",
+      "toolA": "Należy jednak pamiętać, że żaden model nie gwarantuje pełnej odporności na błędy i próby obejścia zabezpieczeń, a skuteczność zależy od wdrożonych filtrów, konfiguracji i procesów nadzoru.",
+      "toolB": "Daje to większą kontrolę nad zachowaniem modelu, ale wymaga dojrzałych procesów oceny ryzyka i testów odporności na próby obejścia zabezpieczeń."
+    },
+    {
+      "category": "Prywatność danych i opcje wdrożeń lokalnych",
+      "toolA": "Dla organizacji z restrykcyjnymi wymogami dotyczącymi lokalizacji danych oznacza to konieczność dokładnej weryfikacji zapisów umownych i dostępnych opcji wdrożenia.",
+      "toolB": "Jest to istotne dla podmiotów objętych regulacjami europejskimi, choć pełna zgodność wymaga skonfigurowania środowiska, monitoringu i procedur bezpieczeństwa po stronie wdrażającego."
+    },
+    {
+      "category": "Dojrzałość ekosystemu, narzędzi i integracji",
+      "toolA": "Zakres funkcji i dostępność integracji mogą się różnić w zależności od planu, regionu i wersji produktu, dlatego warto sprawdzić aktualną dokumentację przed wyborem.",
+      "toolB": "Elastyczność jest duża, ale część integracji wymaga samodzielnej konfiguracji, co bywa atutem dla zespołów technicznych i wyzwaniem dla organizacji oczekujących gotowego rozwiązania."
+    },
+    {
+      "category": "Koszt i przewidywalność wydatków",
+      "toolA": "W aplikacjach o dużym ruchu kluczowe jest oszacowanie zużycia i wdrożenie monitoringu, ponieważ koszt może rosnąć wraz ze skalą i złożonością zapytań.",
+      "toolB": "Ostateczny koszt całkowity zależy od wybranego modelu, dostawcy chmury, konfiguracji i skali, więc porównanie powinno obejmować nie tylko cennik, ale też koszty operacyjne."
+    },
+    {
+      "category": "Wsparcie dla języka polskiego i wielojęzyczność",
+      "toolA": "Przed wdrożeniem warto przetestować reprezentatywne przykłady, w tym teksty branżowe, aby ocenić poprawność terminologii i spójność stylu.",
+      "toolB": "W zadaniach wymagających precyzyjnej terminologii warto porównać modele na własnych danych, ponieważ wyniki mogą się różnić między wersjami i trybami użycia."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Anthropic i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze jakość modeli w zadaniach rozumowania i generowania tekstu. Anthropic: Anthropic rozwija rodzinę modeli Claude, która jest kojarzona z mocnymi wynikami w zadaniach rozumowania, analizy… Mistral: Mistral oferuje zróżnicowaną rodzinę modeli — od mniejszych, lekkich modeli po większe modele ogólnego przeznaczenia —… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu ostrożności, co bywa… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu…",
+    "toolB": "projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we…"
+  }
 }

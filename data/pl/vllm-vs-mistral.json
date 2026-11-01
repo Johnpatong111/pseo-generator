@@ -1,8 +1,8 @@
 {
   "slug": "vllm-vs-mistral",
   "meta": {
-    "title": "vLLM vs Mistral (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie vLLM i Mistral w 2026 r.: wydajność serwowania, koszty, prywatność, zgodność z modelami i łatwość wdrożenia. Sprawdź, które rozwiązanie wybrać."
+    "title": "vLLM vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj vLLM i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "vLLM"
@@ -94,5 +94,49 @@
       "q": "Które rozwiązanie wybrać na start projektu?",
       "a": "Na szybki start i prototyp zwykle wygodniejszy jest Mistral dzięki gotowemu API i brakowi zarządzania serwerami. Gdy projekt wymaga pełnej kontroli, niestandardowych modeli lub optymalizacji kosztów przy dużym ruchu, warto rozważyć vLLM. Częstą praktyką jest rozpoczęcie od API, a następnie migracja do vLLM wraz ze wzrostem skali."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między vLLM a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "vLLM będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przepustowość serwowania”: vLLM jest zoptymalizowany pod kątem dużego obciążenia: stosuje zarządzanie pamięcią KV cache przez…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: Mistral oferuje gotowe API i usługi zarządzane, więc pierwsze wywołanie modelu jest proste i nie….",
+  "tradeoffs": [
+    {
+      "category": "Czym jest narzędzie i do czego służy",
+      "toolA": "Jego funkcje i wydajność zależą od wersji, konfiguracji oraz dostępnego GPU.",
+      "toolB": "Zakres funkcji, ceny i dostępność modeli różnią się w zależności od planu, regionu i wersji usługi."
+    },
+    {
+      "category": "Wydajność i przepustowość serwowania",
+      "toolA": "Rzeczywiste wyniki zależą jednak od modelu, typu i liczby GPU, konfiguracji oraz charakteru ruchu, więc nie należy zakładać konkretnych wartości bez własnych pomiarów.",
+      "toolB": "Gwarancje opóźnień i przepustowości należy sprawdzić w dokumentacji konkretnej usługi."
+    },
+    {
+      "category": "Koszty i model rozliczeń",
+      "toolA": "Nie ma jednego cennika vLLM, bo to zależy od wdrożenia i dostawcy chmury.",
+      "toolB": "Aktualne stawki trzeba każdorazowo sprawdzić w cenniku dostawcy, ponieważ mogą się zmieniać."
+    },
+    {
+      "category": "Prywatność, zgodność i kontrola nad danymi",
+      "toolA": "Bezpieczeństwo zależy od konfiguracji i wersji, więc wymaga świadomych działań operacyjnych.",
+      "toolB": "Przed wdrożeniem warto zweryfikować region przetwarzania, retencję danych i dostępne certyfikaty."
+    },
+    {
+      "category": "Elastyczność modeli i możliwość dostosowania",
+      "toolA": "Zakres wsparcia zależy od wersji vLLM i dostępnych integracji.",
+      "toolB": "Dostępność funkcji fine-tuningu i modeli zależy od planu oraz regionu."
+    },
+    {
+      "category": "Łatwość wdrożenia i utrzymania",
+      "toolA": "Dla osób bez doświadczenia w infrastrukturze próg wejścia może być wysoki.",
+      "toolB": "To dobra opcja dla zespołów, które chcą skupić się na aplikacji, a nie na infrastrukturze."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:8000/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "vLLM i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze czym jest narzędzie i do czego służy. vLLM: vLLM to otwartoźródłowy silnik wnioskowania i serwowania modeli językowych, zaprojektowany z myślą o wysokiej… Mistral: Mistral to firma i ekosystem obejmujący modele językowe (np. Kolejną istotną różnicę pokazuje kryterium „Wydajność i przepustowość serwowania”: vLLM jest zoptymalizowany pod kątem dużego obciążenia: stosuje zarządzanie pamięcią KV cache przez PagedAttention oraz… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i przepustowość serwowania”: vLLM jest zoptymalizowany pod kątem dużego obciążenia: stosuje zarządzanie pamięcią KV cache przez…",
+    "toolB": "projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: Mistral oferuje gotowe API i usługi zarządzane, więc pierwsze wywołanie modelu jest proste i nie…"
+  }
 }

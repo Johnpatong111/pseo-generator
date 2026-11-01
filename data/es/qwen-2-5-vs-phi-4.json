@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-phi-4",
   "meta": {
-    "title": "Qwen 2.5 vs Phi-4 (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Qwen 2.5 y Phi-4 en contexto, rendimiento, acceso, latencia y casos de uso para ayudarte a elegir el modelo adecuado en 2026."
+    "title": "Qwen 2.5 vs Phi-4: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Qwen 2.5 y Phi-4: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nprompt = \"Hello, world!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"microsoft/phi-4\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nprompt = \"Hello, world!\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "¿Qué limitaciones debo considerar en cada uno?",
       "a": "Qwen 2.5, en sus versiones más grandes, requiere hardware potente y puede tener una latencia mayor; además, los precios y la disponibilidad varían entre proveedores. Phi-4 tiene una ventana de contexto más corta y un enfoque principal en inglés, lo que puede limitar su uso en documentos largos o aplicaciones multilingües. Evalúa estas limitaciones frente a tus necesidades concretas y verifica las condiciones actuales en la documentación oficial."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Qwen 2.5 y Phi-4 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Qwen 2.5 encaja mejor cuando tu proyecto prioriza ventana de contexto: máxima longitud de entrada que el modelo puede procesar: Qwen 2.5 se distribuye en varias versiones (desde 0.5B hasta 72B, además de variantes MoE) y…. Phi-4 es preferible cuando tu proyecto prioriza latencia: tiempo de respuesta típico en inferencia, influido por el tamaño del: Phi-4, al ser un modelo compacto (14B parámetros), tiende a ofrecer una latencia menor en….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto: máxima longitud de entrada que el modelo puede procesar",
+      "toolA": "No obstante, el límite exacto depende de la variante y del proveedor de inferencia, por lo que conviene confirmarlo en la ficha técnica de la versión concreta.",
+      "toolB": "Esta cifra puede variar en implementaciones ajustadas o en servicios de terceros, así que se recomienda verificar el valor exacto en la documentación del proveedor que utilices."
+    },
+    {
+      "category": "Rendimiento en benchmarks: comparación de resultados publicados en MMLU",
+      "toolA": "Estos datos suelen aparecer en el informe técnico o en la model card, y no deben interpretarse como una medida absoluta de calidad en todos los dominios.",
+      "toolB": "Sin embargo, las comparaciones directas con Qwen 2.5 deben hacerse con precaución, ya que los conjuntos de evaluación y las versiones pueden diferir."
+    },
+    {
+      "category": "Precios de API por millón de tokens (entrada/salida): coste orientativo del",
+      "toolA": "No se dispone de una tarifa única universal, por lo que es imprescindible consultar la página de precios actual del proveedor elegido.",
+      "toolB": "Al igual que con Qwen 2.5, los costes deben verificarse en la calculadora de precios oficial, ya que pueden cambiar con el tiempo."
+    },
+    {
+      "category": "Latencia: tiempo de respuesta típico en inferencia, influido por el tamaño del",
+      "toolA": "Además, factores como el proveedor, la región y la longitud de la entrada afectan al rendimiento, por lo que no hay una cifra única representativa.",
+      "toolB": "No obstante, la latencia real también depende del servicio de inferencia y de la optimización aplicada, por lo que conviene medirla en el entorno de destino."
+    },
+    {
+      "category": "Acceso y disponibilidad (abierto/cerrado): facilidad para obtener y desplegar",
+      "toolA": "También está disponible como servicio gestionado en plataformas en la nube, ofreciendo flexibilidad según las necesidades del proyecto.",
+      "toolB": "La disponibilidad de la versión abierta puede variar según la región y el momento, así que se recomienda consultar el repositorio oficial."
+    },
+    {
+      "category": "Casos de uso prácticos: idoneidad para escenarios comunes como generación de",
+      "toolA": "Su flexibilidad permite elegir la variante que mejor se ajuste a los recursos disponibles.",
+      "toolB": "Su tamaño compacto lo hace apropiado para entornos con limitaciones de hardware, aunque su ventana de contexto más corta puede restringir el procesamiento de documentos muy largos."
+    }
+  ],
+  "introduction": "Qwen 2.5 y Phi-4 responden a una necesidad similar, pero difieren en ventana de contexto: máxima longitud de entrada que el modelo puede procesar. Qwen 2.5: Qwen 2.5 se distribuye en varias versiones (desde 0.5B hasta 72B, además de variantes MoE) y algunas de ellas soportan… Phi-4: Phi-4, en su versión base, tiene una ventana de contexto de 16 000 tokens, de acuerdo con la información publicada por… El criterio de rendimiento en benchmarks: comparación de resultados publicados en mmlu añade otra diferencia práctica: Qwen 2.5 ha reportado resultados en MMLU y HumanEval para varias de sus variantes, aunque las cifras varían según el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto: máxima longitud de entrada que el modelo puede procesar: Qwen 2.5 se distribuye en varias versiones (desde 0.5B hasta 72B, además de variantes MoE) y…",
+    "toolB": "tu proyecto prioriza latencia: tiempo de respuesta típico en inferencia, influido por el tamaño del: Phi-4, al ser un modelo compacto (14B parámetros), tiende a ofrecer una latencia menor en…"
+  }
 }

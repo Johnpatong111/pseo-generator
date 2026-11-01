@@ -6,5 +6,5 @@ export default async function LegacyComparisonRedirect({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  redirect(`/pl/compare/${slug}`);
+  redirect(`/en/compare/${slug}`);
 }

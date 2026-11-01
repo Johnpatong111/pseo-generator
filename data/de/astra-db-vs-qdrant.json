@@ -1,8 +1,8 @@
 {
   "slug": "astra-db-vs-qdrant",
   "meta": {
-    "title": "Astra DB vs Qdrant (2026): welche Lösung passt besser?",
-    "description": "Vergleich von Astra DB und Qdrant für Vektorsuche und RAG: Datenmodell, Betrieb, Integrationen und Eignung – neutral und ohne erfundene Benchmarks."
+    "title": "Astra DB vs Qdrant: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Astra DB und Qdrant: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Astra DB"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"DEIN_ASTRA_DB_APPLICATION_TOKEN\")\ndb = client.get_database(\"DEIN_ASTRA_DB_API_ENDPOINT\")\ncollection = db.create_collection(\"hello\", dimension=3)\ncollection.insert_one({\"_id\": \"1\", \"text\": \"Hallo Welt\", \"$vector\": [0.1, 0.2, 0.3]})\nprint(collection.find_one({\"_id\": \"1\"}))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.create_collection(collection_name=\"hello\", vectors_config=VectorParams(size=3, distance=Distance.COSINE))\nclient.upsert(collection_name=\"hello\", points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3], payload={\"text\": \"Hallo Welt\"})])\nprint(client.retrieve(collection_name=\"hello\", ids=[1]))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Eignet sich Qdrant für große Datenmengen und hohe Abfragelasten?",
       "a": "Qdrant ist für Vektor-Workloads konzipiert und unterstützt horizontale Skalierung sowie Sharding, sodass es für große Datenmengen geeignet sein kann. Die tatsächliche Leistung hängt jedoch von Hardware, Indexparametern und Abfragemustern ab und lässt sich nicht pauschal quantifizieren. Für belastbare Aussagen sollten Sie eigene Tests oder offizielle Benchmarks heranziehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Astra DB und Qdrant verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Astra DB passt besser, wenn dein Projekt priorisiert Datenmodell und Cassandra-Kompatibilität: Astra DB ist eine verwaltete Datenbank auf Basis von Apache Cassandra und bietet ein…. Qdrant ist geeigneter, wenn dein Projekt priorisiert Vektorindexierung und Suchfunktionen: Qdrant ist auf Vektorsuche spezialisiert und bietet native Unterstützung für ANN-Indizes,….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Cassandra-Kompatibilität",
+      "toolA": "Die genaue CQL-Kompatibilität und verfügbare Features können je nach Version und Tarif variieren und sollten in der offiziellen Dokumentation geprüft werden.",
+      "toolB": "Wer ein Cassandra-Datenmodell benötigt, findet in Qdrant keine direkte Entsprechung."
+    },
+    {
+      "category": "Vektorindexierung und Suchfunktionen",
+      "toolA": "Die Vektorsuche ist Teil der breiteren Datenbankplattform und nicht das einzige Hauptmerkmal.",
+      "toolB": "Qdrant wird kontinuierlich weiterentwickelt; Funktionen können sich zwischen Versionen unterscheiden."
+    },
+    {
+      "category": "Betriebsmodell und Hosting",
+      "toolA": "Für Teams ohne eigene Betriebsressourcen kann das den Einstieg erleichtern.",
+      "toolB": "Die Wahl hängt von Compliance-, Kosten- und Betriebsanforderungen ab."
+    },
+    {
+      "category": "Integrationen und Ökosystem",
+      "toolA": "Die Einbindung in bestehende Cassandra- oder DataStax-Umgebungen kann von Vorteil sein.",
+      "toolB": "Für spezialisierte Vektor-Workloads ist das Ökosystem oft direkt auf diese Anwendungsfälle zugeschnitten."
+    },
+    {
+      "category": "Skalierung und Leistungscharakteristik",
+      "toolA": "Belastbare Leistungsvergleiche erfordern eigene Tests oder offizielle Benchmarks.",
+      "toolB": "Die Engine ist auf Ähnlichkeitssuche spezialisiert."
+    },
+    {
+      "category": "Eignung für RAG-Architekturen",
+      "toolA": "Die Eignung hängt von den Anforderungen an Filterung, Skalierung und Integration ab und sollte für den konkreten Tarif geprüft werden.",
+      "toolB": "Die konkrete Eignung ist von Version, Konfiguration und Arbeitslast abhängig."
+    }
+  ],
+  "introduction": "Astra DB und Qdrant lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und cassandra-kompatibilität. Astra DB: Astra DB ist eine verwaltete Datenbank auf Basis von Apache Cassandra und bietet ein Cassandra-kompatibles Datenmodell… Qdrant: Qdrant ist eine spezialisierte Vektordatenbank ohne Cassandra-Kompatibilität und verwendet ein eigenes Dokumenten- und… Das Kriterium vektorindexierung und suchfunktionen zeigt einen weiteren praktischen Unterschied: Astra DB bietet integrierte Vektorsuche mit ANN-Indizes, die für Ähnlichkeitssuche und RAG-Szenarien genutzt werden… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Cassandra-Kompatibilität: Astra DB ist eine verwaltete Datenbank auf Basis von Apache Cassandra und bietet ein…",
+    "toolB": "dein Projekt priorisiert Vektorindexierung und Suchfunktionen: Qdrant ist auf Vektorsuche spezialisiert und bietet native Unterstützung für ANN-Indizes,…"
+  }
 }

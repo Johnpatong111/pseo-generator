@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-deepseek-r1",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs DeepSeek R1 (2026): quelle solution choisir ?",
-    "description": "Comparaison détaillée entre Claude 3.7 Sonnet et DeepSeek R1 : contexte, performances, tarifs API, latence, accès et cas d’usage. Conseils pour choisir en 2026."
+    "title": "Claude 3.7 Sonnet vs DeepSeek R1: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Claude 3.7 Sonnet et DeepSeek R1 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon…"
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -50,8 +50,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"VOTRE_CLE_API\")\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.deepseek.com\", api_key=\"VOTRE_CLE_API\")\nresponse = client.chat.completions.create(\n    model=\"deepseek-reasoner\",\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -86,5 +87,44 @@
       "q": "Les deux modèles sont-ils disponibles en français ?",
       "a": "Oui, les deux modèles sont multilingues et peuvent générer des réponses en français, avec des niveaux de qualité qui dépendent de l’entraînement et du prompt. Claude 3.7 Sonnet est réputé pour son traitement naturel des langues, tandis que DeepSeek R1, bien que performant, peut parfois produire des tournures moins idiomatiques. Dans les deux cas, une vérification humaine reste recommandée pour les contenus sensibles."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Claude 3.7 Sonnet et DeepSeek R1 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Claude 3.7 Sonnet convient mieux lorsque votre projet privilégie fenêtre de contexte : Claude 3.7 Sonnet propose une fenêtre de contexte étendue, ce qui permet de traiter des documents…. DeepSeek R1 est préférable lorsque votre projet privilégie tarification api (prix pour 1m de tokens en entrée/sortie) : DeepSeek R1 est proposé via une API officielle avec des tarifs compétitifs, et peut aussi être….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte",
+      "toolA": "La valeur exacte dépend de l’offre et doit être vérifiée dans la documentation officielle d’Anthropic, car elle peut évoluer selon la version et le plan d’accès.",
+      "toolB": "Les limites précises varient selon la version du modèle et le mode de déploiement (API officielle ou auto-hébergement), et doivent être confirmées auprès du fournisseur ou dans les fichiers de configuration publiés."
+    },
+    {
+      "category": "Performances aux benchmarks (MMLU, HumanEval)",
+      "toolA": "Il est prudent de se référer aux rapports officiels d’Anthropic et de ne pas extrapoler des scores numériques sans vérification, car les comparaisons directes entre modèles ne sont pas toujours normalisées.",
+      "toolB": "Une comparaison rigoureuse exige donc de citer les mêmes conditions."
+    },
+    {
+      "category": "Tarification API (prix pour 1M de tokens en entrée/sortie)",
+      "toolA": "Les prix exacts dépendent de l’offre, de la région et de la politique tarifaire en vigueur ; ils doivent être consultés sur la page officielle d’Anthropic, car ils peuvent évoluer.",
+      "toolB": "Les prix API pour 1M de tokens en entrée/sortie doivent être vérifiés sur la documentation officielle de DeepSeek, car ils sont sensibles à la version et aux conditions commerciales."
+    },
+    {
+      "category": "Latence et débit",
+      "toolA": "Anthropic ne garantit pas de latence fixe dans tous les plans, et les valeurs observées peuvent varier ; il est donc recommandé de prévoir des tests dans l’environnement cible plutôt que de se fier à des chiffres non vérifiés.",
+      "toolB": "Aucune valeur universelle ne peut être avancée sans préciser la configuration ; une évaluation qualitative et des tests en conditions réelles sont nécessaires."
+    },
+    {
+      "category": "Accès au modèle et caractère ouvert/fermé",
+      "toolA": "Cette approche facilite la conformité et le support, mais limite la personnalisation profonde et l’auto-hébergement.",
+      "toolB": "Cette ouverture offre une grande flexibilité et la possibilité de déployer en interne, mais exige des compétences techniques et des ressources de calcul adaptées."
+    },
+    {
+      "category": "Cas d’usage pratiques",
+      "toolA": "Son écosystème et ses garde-fous intégrés peuvent réduire les efforts de mise en production.",
+      "toolB": "Il peut aussi servir de base pour du fine-tuning, mais nécessite une expertise en infrastructure et une évaluation approfondie de la licence."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet et DeepSeek R1 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte. Claude 3.7 Sonnet : Claude 3.7 Sonnet propose une fenêtre de contexte étendue, ce qui permet de traiter des documents longs, des bases de… DeepSeek R1 : DeepSeek R1 offre également une fenêtre de contexte généreuse, adaptée à l’analyse de textes longs et au raisonnement… Le critère « Performances aux benchmarks (MMLU, HumanEval) » met en évidence une autre différence pratique : Les résultats publiés pour Claude 3.7 Sonnet sur MMLU et HumanEval sont généralement solides, mais ils dépendent des… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte : Claude 3.7 Sonnet propose une fenêtre de contexte étendue, ce qui permet de traiter des documents…",
+    "toolB": "votre projet privilégie tarification api (prix pour 1m de tokens en entrée/sortie) : DeepSeek R1 est proposé via une API officielle avec des tarifs compétitifs, et peut aussi être…"
+  }
 }

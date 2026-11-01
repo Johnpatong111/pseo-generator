@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-pinecone",
   "meta": {
-    "title": "LangChain vs Pinecone (2026): welche Lösung passt besser?",
-    "description": "LangChain und Pinecone sind keine direkten Konkurrenten: Das eine ist ein Framework für LLM-Anwendungen, das andere eine Vektordatenbank. Der Vergleich zeigt, wann sich welche Kombination lohnt."
+    "title": "LangChain vs Pinecone: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche LangChain und Pinecone: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_openai import ChatOpenAI\nfrom langchain_core.prompts import ChatPromptTemplate\n\nprompt = ChatPromptTemplate.from_template(\"Sag Hallo zu {name} auf Deutsch.\")\nmodel = ChatOpenAI(model=\"gpt-4o-mini\")\nchain = prompt | model\nprint(chain.invoke({\"name\": \"Welt\"}).content)",
-    "tech2Snippet": "from pinecone import Pinecone\n\npc = Pinecone(api_key=\"DEIN_API_KEY\")\nindex = pc.Index(\"mein-index\")\nindex.upsert(vectors=[(\"vec1\", [0.1, 0.2, 0.3], {\"text\": \"Hallo Welt\"})])\nprint(index.query(vector=[0.1, 0.2, 0.3], top_k=1, include_metadata=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es Alternativen, die ich in Betracht ziehen sollte?",
       "a": "Ja, je nach Anforderung kommen für LLM-Orchestrierung auch andere Frameworks infrage, und für Vektorsuche gibt es sowohl selbst betriebene als auch verwaltete Datenbanken. Die Wahl sollte auf Kriterien wie Skalierung, Betriebsmodell, Kosten und Kompatibilität basieren. Ein Vergleich mehrerer Optionen vor der Entscheidung ist empfehlenswert."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen LangChain und Pinecone verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "LangChain passt besser, wenn dein Projekt priorisiert Flexibilität und Anbieterunabhängigkeit: LangChain ist modular aufgebaut und unterstützt viele LLM-Anbieter, Embedding-Modelle und…. Pinecone ist geeigneter, wenn dein Projekt priorisiert Betriebsmodell und Infrastruktur: Pinecone wird als vollständig verwalteter Dienst betrieben; Nutzer müssen keine Server….",
+  "tradeoffs": [
+    {
+      "category": "Hauptzweck und Kategorie",
+      "toolA": "Der Fokus liegt auf Orchestrierung und schneller Iteration, nicht auf der Bereitstellung eines eigenen Vektorindex.",
+      "toolB": "Pinecone ist kein Framework zur LLM-Orchestrierung, sondern ein spezialisierter Baustein für Vektorspeicherung und -abfrage."
+    },
+    {
+      "category": "Betriebsmodell und Infrastruktur",
+      "toolA": "Der Aufwand hängt stark von der gewählten Architektur und den eingesetzten Komponenten ab.",
+      "toolB": "Details zu Regionen, Sicherheitsfunktionen und Limits können je nach Tarif und Konfiguration variieren."
+    },
+    {
+      "category": "Vektorähnlichkeitssuche und Indexfunktionen",
+      "toolA": "Für einfache Prototypen gibt es lokale Speicher, für Produktionslasten sind externe Datenbanken üblich.",
+      "toolB": "Konkrete Leistungswerte sind von Indexgröße, Dimensionen, Filterkomplexität und Tarif abhängig."
+    },
+    {
+      "category": "Flexibilität und Anbieterunabhängigkeit",
+      "toolA": "Die Abstraktionen können jedoch bei sehr spezifischen Anforderungen zusätzlichen Anpassungsaufwand erzeugen.",
+      "toolB": "Die Integration in LangChain ist möglich, ändert aber nichts an der Anbieterbindung."
+    },
+    {
+      "category": "Integration in LLM-Workflows",
+      "toolA": "Die Integration von Vektordatenbanken wie Pinecone ist über entsprechende Pakete vorgesehen.",
+      "toolB": "Die Kombination mit LangChain ist ein verbreitetes Muster, um beides zu verbinden."
+    },
+    {
+      "category": "Sicherheit und Compliance",
+      "toolA": "Verantwortung für Datenschutz und Zugriffskontrolle liegt beim Betreiber.",
+      "toolB": "Für regulierte Umgebungen sind Regionenwahl und Datenresidenz relevant."
+    }
+  ],
+  "introduction": "LangChain und Pinecone lösen ein ähnliches Problem, unterscheiden sich jedoch bei hauptzweck und kategorie. LangChain: LangChain ist ein Open-Source-Framework zur Entwicklung von Anwendungen auf Basis großer Sprachmodelle. Pinecone: Pinecone ist eine verwaltete Vektordatenbank, die für Ähnlichkeitssuche und Retrieval-Aufgaben optimiert ist. Das Kriterium betriebsmodell und infrastruktur zeigt einen weiteren praktischen Unterschied: LangChain ist eine Bibliothek, die in der eigenen Anwendung oder in eigenen Diensten läuft; Betrieb, Skalierung und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Flexibilität und Anbieterunabhängigkeit: LangChain ist modular aufgebaut und unterstützt viele LLM-Anbieter, Embedding-Modelle und…",
+    "toolB": "dein Projekt priorisiert Betriebsmodell und Infrastruktur: Pinecone wird als vollständig verwalteter Dienst betrieben; Nutzer müssen keine Server…"
+  }
 }

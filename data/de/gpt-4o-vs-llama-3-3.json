@@ -1,8 +1,8 @@
 {
   "slug": "gpt-4o-vs-llama-3-3",
   "meta": {
-    "title": "GPT-4o vs Llama 3.3 (2026): welche Lösung passt besser?",
-    "description": "GPT-4o gegen Llama 3.3 im Vergleich 2026: Kontextfenster, Benchmark-Einordnung, API-Preise, Latenz, Zugang und Einsatzszenarien – sachlich, ohne erfundene Messwerte."
+    "title": "GPT-4o vs Llama 3.3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche GPT-4o und Llama 3.3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "GPT-4o"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}],\n)\n\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=32)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Worauf sollte ich vor dem Wechsel oder dem Produktiveinsatz achten?",
       "a": "Prüfen Sie Modellversion, Tarif, Lizenzbedingungen und die aktuelle Dokumentation des Anbieters, weil sich Preise, Benchmark-Werte und Funktionsumfang ändern können. Führen Sie zusätzlich einen Test mit eigenen Aufgaben und realistischer Last durch, um Qualität und Latenz im Ziel-Szenario zu bewerten. Für regulierte Umgebungen sollten Datenschutz- und Sicherheitsanforderungen frühzeitig mit Recht und IT abgestimmt werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen GPT-4o und Llama 3.3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "GPT-4o passt besser, wenn dein Projekt priorisiert Benchmark-Leistung (MMLU, HumanEval): Für GPT-4o veröffentlicht OpenAI Benchmark-Ergebnisse, die sich mit anderen Modellen vergleichen…. Llama 3.3 ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1 Mio: Bei Llama 3.3 gibt es keinen einheitlichen Listenpreis, da das Modell als offene Gewichte….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Eingabelänge",
+      "toolA": "Der exakte Wert hängt vom gewählten Modell-Snapshot und der API-Version ab und sollte vor dem Produktiveinsatz in der offiziellen OpenAI-Dokumentation geprüft werden.",
+      "toolB": "Der tatsächlich nutzbare Anteil hängt jedoch von der Serving-Konfiguration (etwa vLLM, TensorRT-LLM oder Anbieter-API) und vom Speicher der eingesetzten Hardware ab; hier ist die jeweilige Implementierungsdokumentation maßgeblich."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Die Werte sollten nicht als allgemeingültige Leistungsgarantie verstanden werden, da sie von Prompt-Format, Few-Shot-Setting und Version abhängen.",
+      "toolB": "Ein direkter Vergleich mit GPT-4o ist nur zulässig, wenn identische Evaluierungs-Setups zugrunde liegen; ansonsten bleibt der Vergleich qualitativ und sollte anhand der aktuellen Model Cards und technischen Berichte nachvollzogen werden."
+    },
+    {
+      "category": "API-Preise pro 1 Mio",
+      "toolA": "Eingabe- und Ausgabe-Token sind zeitabhängig und sollten immer der aktuellen offiziellen Preisseite entnommen werden, statt sich auf ältere Angaben zu verlassen.",
+      "toolB": "Die Kosten ergeben sich aus GPU-Stunden, Speicher, Betriebsaufwand sowie gegebenenfalls Token-Preisen eines Drittanbieters und müssen pro Szenario individuell kalkuliert werden."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Für planbare Anwendungen sind eigene Messungen mit der Ziel-Last und dem gewählten Snapshot sinnvoll, da offizielle Angaben meist nur Richtwerte liefern.",
+      "toolB": "Selbsthosting erlaubt eine gezielte Optimierung, erfordert aber eigenes Kapazitätsmanagement; bei Drittanbieter-APIs gelten deren jeweilige Latenzprofile."
+    },
+    {
+      "category": "Modellzugang und offene bzw",
+      "toolA": "Das vereinfacht Betrieb und Support, schränkt aber die Kontrolle über Gewichte, Feintuning und On-Premises-Betrieb ein.",
+      "toolB": "Allerdings ist die Nutzung an die Llama-Lizenz gebunden, und der Betrieb erfordert entsprechendes Know-how sowie geeignete Hardware."
+    },
+    {
+      "category": "Multimodalität und Funktionsumfang",
+      "toolA": "Der genaue Funktionsumfang kann je nach API-Endpunkt und Modell-Snapshot variieren und sollte vor der Integration geprüft werden.",
+      "toolB": "Dafür lässt sich das Modell in eigene Pipelines einbetten, etwa mit eigenen Retrieval- oder Tool-Schichten."
+    }
+  ],
+  "introduction": "GPT-4o und Llama 3.3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und eingabelänge. GPT-4o: GPT-4o bietet ein großes Kontextfenster, das sich für längere Dokumente, mehrstufige Dialoge und umfangreiche… Llama 3.3: Llama 3.3 wird von Meta mit einem Kontextfenster veröffentlicht, das ebenfalls für längere Texte und mehrere Dokumente… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für GPT-4o veröffentlicht OpenAI Benchmark-Ergebnisse, die sich mit anderen Modellen vergleichen lassen, sofern… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Benchmark-Leistung (MMLU, HumanEval): Für GPT-4o veröffentlicht OpenAI Benchmark-Ergebnisse, die sich mit anderen Modellen vergleichen…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1 Mio: Bei Llama 3.3 gibt es keinen einheitlichen Listenpreis, da das Modell als offene Gewichte…"
+  }
 }

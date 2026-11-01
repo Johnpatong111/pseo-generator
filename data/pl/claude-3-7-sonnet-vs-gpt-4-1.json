@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-gpt-4-1",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs GPT-4.1 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude 3.7 Sonnet i GPT-4.1 pod kątem okna kontekstu, wydajności, cen API, opóźnień i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude 3.7 Sonnet vs GPT-4.1: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.7 Sonnet i GPT-4.1: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nmessage = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(message.content[0].text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.completions.create(\n    model=\"gpt-4.1\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Który model wybrać do pracy z kodem i agentami AI?",
       "a": "Claude 3.7 Sonnet jest często ceniony za jakość generowania kodu i ostrożne rozumowanie, co może być przydatne w zadaniach agentowych wymagających planowania. GPT-4.1 również dobrze radzi sobie z kodem i oferuje szerokie wsparcie narzędziowe w ekosystemie OpenAI. Wybór zależy od konkretnego języka programowania, stylu pracy i integracji; warto przetestować oba modele na własnych repozytoriach."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.7 Sonnet a GPT-4.1 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.7 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Claude 3.7 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. GPT-4.1 sprawdzi się, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: GPT-4.1 ma okno kontekstu do 1 miliona tokenów w wybranych wariantach, co umożliwia przetwarzanie….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Warto testować na własnych danych, ponieważ jakość odpowiedzi nie zawsze rośnie liniowo z długością kontekstu.",
+      "toolB": "Przy tak dużym kontekście koszt wejścia i czas odpowiedzi mogą być znaczące, więc warto rozważyć dzielenie zadań na mniejsze części."
+    },
+    {
+      "category": "Wyniki w testach porównawczych (MMLU, HumanEval)",
+      "toolA": "W praktyce model jest często chwalony za rozumowanie i jakość kodu, ale to ocena jakościowa, a nie zmierzony wynik.",
+      "toolB": "Bezpośrednie porównywanie liczb między modelami bywa mylące, jeśli testy nie są identyczne."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Przed wdrożeniem należy sprawdzić aktualne stawki za tokeny wejściowe i wyjściowe oraz ewentualne koszty dodatkowe, takie jak pamięć podręczna.",
+      "toolB": "Przy porównywaniu kosztów warto uwzględnić nie tylko cenę za token, ale też średnią długość zapytań i odpowiedzi."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "W zastosowaniach czasu rzeczywistego należy testować własne scenariusze i monitorować czas odpowiedzi.",
+      "toolB": "Przy wyborze modelu do aplikacji interaktywnych warto przeprowadzić testy porównawcze w docelowym środowisku."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostępność i funkcje zależą od regionu i umowy z dostawcą.",
+      "toolB": "Zakres funkcji i limitów zależy od wersji i planu, dlatego trzeba sprawdzić aktualne warunki w dokumentacji."
+    },
+    {
+      "category": "Zastosowania praktyczne i ekosystem",
+      "toolA": "Model dobrze współpracuje z narzędziami chmurowymi, ale nie oferuje natywnej multimodalności tak rozbudowanej jak GPT-4.1.",
+      "toolB": "Dla zespołów korzystających już z OpenAI może być wygodniejszym wyborem ze względu na spójne API."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet i GPT-4.1 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. Claude 3.7 Sonnet: Claude 3.7 Sonnet oferuje okno kontekstu o rozmiarze 200 tys. GPT-4.1: GPT-4.1 ma okno kontekstu do 1 miliona tokenów w wybranych wariantach, co umożliwia przetwarzanie naprawdę dużych… Kolejną istotną różnicę pokazuje kryterium „Wyniki w testach porównawczych (MMLU, HumanEval)”: Dla Claude 3.7 Sonnet producent publikuje wybrane wyniki testów, ale nie zawsze są one bezpośrednio porównywalne z… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: Claude 3.7 Sonnet oferuje okno kontekstu o rozmiarze 200 tys.",
+    "toolB": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: GPT-4.1 ma okno kontekstu do 1 miliona tokenów w wybranych wariantach, co umożliwia przetwarzanie…"
+  }
 }

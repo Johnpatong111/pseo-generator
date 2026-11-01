@@ -1,8 +1,8 @@
 {
   "slug": "prisma-vs-drizzle",
   "meta": {
-    "title": "Prisma vs Drizzle ORM (2026): welche Lösung passt besser?",
-    "description": "Prisma und Drizzle ORM im Vergleich 2026: Typsicherheit, SQL-Kontrolle, Migrationen, Performance, Ökosystem und Betrieb – mit klarer Empfehlung für dein Projekt."
+    "title": "Prisma vs Drizzle ORM: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche Prisma und Drizzle ORM: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Prisma"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { PrismaClient } from '@prisma/client'\n\nconst prisma = new PrismaClient()\n\nasync function main() {\n  const users = await prisma.user.findMany()\n  console.log(users)\n}\n\nmain()\n  .catch((e) => console.error(e))\n  .finally(async () => {\n    await prisma.$disconnect()\n  })",
-    "tech2Snippet": "import { drizzle } from 'drizzle-orm/node-postgres'\nimport { pgTable, serial, text } from 'drizzle-orm/pg-core'\nimport { Pool } from 'pg'\n\nexport const users = pgTable('users', {\n  id: serial('id').primaryKey(),\n  name: text('name').notNull(),\n})\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL })\nconst db = drizzle(pool)\n\nasync function main() {\n  const rows = await db.select().from(users)\n  console.log(rows)\n  await pool.end()\n}\n\nmain().catch((e) => console.error(e))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import { PrismaClient } from \"@prisma/client\";\n\nconst prisma = new PrismaClient();\nconst products = await prisma.product.findMany({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  orderBy: { name: \"asc\" },\n  take: 50,\n});\n\nawait prisma.$disconnect();",
+    "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nconst rows = await db\n  .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n  .from(products)\n  .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n  .orderBy(asc(products.name))\n  .limit(50);"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welches Tool ist für Serverless- oder Edge-Deployments besser geeignet?",
       "a": "Drizzle ORM ist durch seinen schlanken Ansatz oft eine naheliegende Wahl für serverlose und edge-nahe Umgebungen. Prisma hat hier ebenfalls Verbesserungen erzielt, die aber je nach Plattform und Konfiguration variieren können. Im Zweifel sollten Kaltstartzeiten und Laufzeitverhalten in der Zielumgebung konkret geprüft werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Prisma und Drizzle ORM verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Prisma passt besser, wenn dein Projekt priorisiert Migrationen und Schema-Evolution: Prisma Migrate erzeugt SQL-Migrationen aus dem Schema und unterstützt einen strukturierten…. Drizzle ORM ist geeigneter, wenn dein Projekt priorisiert Schema-Definition und SQL-Nähe: Drizzle ORM definiert Tabellen und Spalten direkt in TypeScript mit einer API, die eng an SQL….",
+  "tradeoffs": [
+    {
+      "category": "Typsicherheit und Developer Experience",
+      "toolA": "Die Qualität der Typen hängt jedoch von der Schema-Pflege und dem Migrations-Workflow ab.",
+      "toolB": "Der Ansatz verlangt mehr Vertrautheit mit SQL, belohnt diese aber mit expliziter Kontrolle."
+    },
+    {
+      "category": "Schema-Definition und SQL-Nähe",
+      "toolA": "Komplexe, datenbankspezifische Konstrukte lassen sich teils über Rohabfragen abbilden.",
+      "toolB": "Wer SQL sicher beherrscht, kommt mit diesem Modell meist schneller zu präzisen Abfragen."
+    },
+    {
+      "category": "Migrationen und Schema-Evolution",
+      "toolA": "Details und Grenzen können je nach Datenbank-Dialekt und Konfiguration variieren.",
+      "toolB": "Für spezielle Datenbank-Setups kann zusätzliche manuelle Arbeit erforderlich sein, was von Version und Konfiguration abhängt."
+    },
+    {
+      "category": "Performance und Laufzeitverhalten",
+      "toolA": "Pauschale Aussagen zur Performance sind ohne konkrete Arbeitslast und Konfiguration nicht belastbar.",
+      "toolB": "Die tatsächliche Leistung hängt stark von Datenbank, Abfrageform und Treiber ab."
+    },
+    {
+      "category": "Ökosystem, Integrationen und Tooling",
+      "toolA": "Neue Funktionen und Integrationen können je nach Version unterschiedlich weit ausgereift sein.",
+      "toolB": "Für Nischen-Dialekte oder sehr spezielle Anforderungen kann die Unterstützung je nach Version variieren."
+    },
+    {
+      "category": "Lernkurve und Team-Eignung",
+      "toolA": "Wer maximale Kontrolle über SQL benötigt, stößt jedoch an Grenzen der Abstraktion.",
+      "toolB": "Im Team sollte daher geprüft werden, wie sicher alle Beteiligten im Umgang mit SQL sind."
+    }
+  ],
+  "introduction": "Prisma und Drizzle ORM lösen ein ähnliches Problem, unterscheiden sich jedoch bei typsicherheit und developer experience. Prisma: Prisma erzeugt aus einer deklarativen Schema-Datei einen typisierten Client, der Abfragen und Ergebnisse weitgehend… Drizzle ORM: Drizzle ORM leitet Typen direkt aus dem in TypeScript definierten Schema ab und bleibt damit nah an der Sprache selbst. Das Kriterium schema-definition und sql-nähe zeigt einen weiteren praktischen Unterschied: Prisma verwendet ein eigenes Schema-Format mit Modellen und Relationen, aus dem Client und Migrationen abgeleitet… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Migrationen und Schema-Evolution: Prisma Migrate erzeugt SQL-Migrationen aus dem Schema und unterstützt einen strukturierten…",
+    "toolB": "dein Projekt priorisiert Schema-Definition und SQL-Nähe: Drizzle ORM definiert Tabellen und Spalten direkt in TypeScript mit einer API, die eng an SQL…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-autogen",
   "meta": {
-    "title": "Claude Fable 5.1 vs AutoGen (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude Fable 5.1 i AutoGen: kontekst 1M, ceny API, wydajność, zastosowania. Sprawdź, które narzędzie lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude Fable 5.1 vs AutoGen: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude Fable 5.1 i AutoGen: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom anthropic import Anthropic\n\nclient = Anthropic(api_key=os.environ[\"ANTHROPIC_API_KEY\"])\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from autogen import ConversableAgent\n\nagent = ConversableAgent(\n    name=\"hello_agent\",\n    llm_config={\"config_list\": [{\"model\": \"gpt-4\", \"api_key\": \"YOUR_API_KEY\"}]},\n    human_input_mode=\"NEVER\"\n)\nresponse = agent.generate_reply(messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}])\nprint(response)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Czy AutoGen wymaga znajomości Pythona?",
       "a": "Tak, AutoGen jest biblioteką Pythona, więc do jej używania potrzebna jest przynajmniej podstawowa znajomość tego języka. Konfiguracja agentów i przepływów odbywa się poprzez kod, co daje elastyczność, ale może być barierą dla osób nietechnicznych. Istnieją jednak przykłady i szablony, które ułatwiają start."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude Fable 5.1 a AutoGen zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude Fable 5.1 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu”: Claude Fable 5.1 oferuje okno kontekstu o wielkości 1 miliona tokenów, co pozwala przetwarzać…. AutoGen sprawdzi się, gdy projekt stawia na kryterium „Cena API za 1M tokenów wejścia/wyjścia”: AutoGen jest darmowym frameworkiem open-source, ale korzystanie z niego wiąże się z kosztami….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu",
+      "toolA": "Wartości te są aktualne według oficjalnej dokumentacji Anthropic, ale mogą ulec zmianie w przyszłych wersjach.",
+      "toolB": "Sam framework nie przechowuje kontekstu między wywołaniami, chyba że zaimplementujesz mechanizmy pamięci."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "Bez potwierdzonych danych nie można rzetelnie porównać wyników.",
+      "toolB": "Nie można przypisać mu konkretnych wartości MMLU czy HumanEval."
+    },
+    {
+      "category": "Cena API za 1M tokenów wejścia/wyjścia",
+      "toolA": "Są to aktualne ceny według dokumentacji Anthropic, ale mogą się zmienić.",
+      "toolB": "Nie ma jednej stawki – wszystko zależy od dostawcy modelu i konfiguracji."
+    },
+    {
+      "category": "Opóźnienie (latencja)",
+      "toolA": "Zaleca się testowanie w docelowym środowisku.",
+      "toolB": "AutoGen wprowadza dodatkową warstwę orchestracji, co może zwiększyć opóźnienie w porównaniu do bezpośredniego wywołania modelu. Rzeczywiste opóźnienie zależy od liczby agentów, złożoności przepływu i szybkości modeli. Brak oficjalnych benchmarków."
+    },
+    {
+      "category": "Dostęp do modelu i otwartość",
+      "toolA": "Dostęp wymaga klucza API i jest regulowany przez warunki korzystania z usługi.",
+      "toolB": "Wymaga jednak samodzielnej konfiguracji i utrzymania."
+    },
+    {
+      "category": "Praktyczne zastosowania",
+      "toolA": "Dzięki dużemu oknu kontekstu i wysokiej jakości odpowiedzi nadaje się do zaawansowanych zastosowań enterprise.",
+      "toolB": "Sprawdza się, gdy potrzebna jest elastyczna orchestracja i integracja różnych modeli."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 i AutoGen odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu. Claude Fable 5.1: Claude Fable 5.1 oferuje okno kontekstu o wielkości 1 miliona tokenów, co pozwala przetwarzać bardzo długie dokumenty,… AutoGen: AutoGen jako framework nie narzuca własnego okna kontekstu – jest ono zależne od użytego modelu (np. Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Anthropic nie publikuje wyników MMLU ani HumanEval dla Claude Fable 5.1 w oficjalnej dokumentacji modelu. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu”: Claude Fable 5.1 oferuje okno kontekstu o wielkości 1 miliona tokenów, co pozwala przetwarzać…",
+    "toolB": "projekt stawia na kryterium „Cena API za 1M tokenów wejścia/wyjścia”: AutoGen jest darmowym frameworkiem open-source, ale korzystanie z niego wiąże się z kosztami…"
+  }
 }

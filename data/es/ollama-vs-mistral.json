@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-mistral",
   "meta": {
-    "title": "Ollama vs Mistral (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Ollama y Mistral en 2026: ejecución local, privacidad, modelos, API, escalabilidad y facilidad de uso para elegir la mejor opción según tu proyecto."
+    "title": "Ollama vs Mistral: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Ollama y Mistral: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Ollama"
@@ -84,5 +84,49 @@
       "q": "¿Puedo cambiar de Ollama a Mistral fácilmente?",
       "a": "La migración no es automática: Ollama expone una API local con un formato similar al de OpenAI, mientras que Mistral tiene su propia API y SDK. Si tu aplicación está bien abstraída, puede que solo necesites cambiar el endpoint y la autenticación, pero revisa las diferencias en modelos y parámetros antes de migrar para evitar sorpresas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Ollama y Mistral cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Ollama encaja mejor cuando tu proyecto prioriza modelo de despliegue y ejecución: Ollama es una herramienta de código abierto que permite descargar y ejecutar modelos de lenguaje…. Mistral es preferible cuando tu proyecto prioriza catálogo de modelos y capacidades: Mistral desarrolla y ofrece modelos propios como Mistral Large, Mistral Small y versiones….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de despliegue y ejecución",
+      "toolA": "Su enfoque local simplifica la puesta en marcha sin necesidad de configurar infraestructura en la nube, aunque el rendimiento depende del hardware disponible.",
+      "toolB": "La API gestionada evita la gestión de servidores, pero requiere conexión a internet y está sujeta a las condiciones del servicio y a los límites del plan contratado."
+    },
+    {
+      "category": "Privacidad y control de datos",
+      "toolA": "No obstante, la seguridad final depende de la configuración del sistema y de las prácticas de cada organización.",
+      "toolB": "Para datos sensibles, conviene revisar la documentación oficial y las opciones de despliegue privado si existen en el plan contratado."
+    },
+    {
+      "category": "Catálogo de modelos y capacidades",
+      "toolA": "La disponibilidad y el rendimiento de cada modelo dependen de los recursos del equipo y de la versión de Ollama.",
+      "toolB": "El acceso a los modelos más avanzados suele requerir el uso de la API o planes de pago, y las características varían según la versión."
+    },
+    {
+      "category": "Facilidad de uso e instalación",
+      "toolA": "La experiencia puede variar según el sistema operativo y requiere cierta familiaridad con la terminal para aprovechar todas sus funciones.",
+      "toolB": "No obstante, la configuración inicial y la gestión de claves pueden ser más burocráticas que una instalación local."
+    },
+    {
+      "category": "Rendimiento y escalabilidad",
+      "toolA": "Para cargas intensivas o múltiples usuarios simultáneos, puede requerir una configuración más robusta o no ser la opción más adecuada.",
+      "toolB": "La latencia y el rendimiento dependen de la región, la carga y el modelo elegido, y pueden ser más predecibles para aplicaciones en producción."
+    },
+    {
+      "category": "Coste y modelo de precios",
+      "toolA": "No hay tarifas por uso, aunque invertir en equipos potentes puede ser necesario para obtener un rendimiento aceptable con modelos grandes.",
+      "toolB": "Los precios concretos deben consultarse en la web oficial, ya que pueden cambiar y no conviene asumir cifras sin verificar."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Ollama y Mistral responden a una necesidad similar, pero difieren en modelo de despliegue y ejecución. Ollama: Ollama es una herramienta de código abierto que permite descargar y ejecutar modelos de lenguaje directamente en tu… Mistral: Mistral ofrece modelos accesibles mediante una API en la nube y también versiones abiertas que pueden ejecutarse en… El criterio de privacidad y control de datos añade otra diferencia práctica: Al ejecutarse en local, Ollama mantiene los datos y las consultas dentro de tu equipo o red, lo que facilita el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de despliegue y ejecución: Ollama es una herramienta de código abierto que permite descargar y ejecutar modelos de lenguaje…",
+    "toolB": "tu proyecto prioriza catálogo de modelos y capacidades: Mistral desarrolla y ofrece modelos propios como Mistral Large, Mistral Small y versiones…"
+  }
 }

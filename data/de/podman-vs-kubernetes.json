@@ -1,8 +1,8 @@
 {
   "slug": "podman-vs-kubernetes",
   "meta": {
-    "title": "Podman vs Kubernetes (2026): welche Lösung passt besser?",
-    "description": "Podman vs Kubernetes 2026: Ein praxisnaher Vergleich für Einsteiger und Teams. Erfahren Sie, wann Podman als Container-Engine und wann Kubernetes als Orchestrator die bessere Wahl ist."
+    "title": "Podman vs Kubernetes: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Podman und Kubernetes: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Podman"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import (\n\t\"fmt\"\n\t\"net/http\"\n)\n\nfunc main() {\n\thttp.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {\n\t\tfmt.Fprintln(w, \"Hello, World!\")\n\t})\n\thttp.ListenAndServe(\":8080\", nil)\n}",
-    "tech2Snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: hello\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: hello\n  template:\n    metadata:\n      labels:\n        app: hello\n    spec:\n      containers:\n      - name: hello\n        image: hashicorp/http-echo\n        args:\n        - \"-text=Hello, World!\"\n        ports:\n        - containerPort: 5678\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: hello\nspec:\n  selector:\n    app: hello\n  ports:\n  - port: 80\n    targetPort: 5678"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Können Podman und Kubernetes gemeinsam genutzt werden?",
       "a": "Ja, Podman und Kubernetes lassen sich sinnvoll kombinieren: Podman kann für die lokale Entwicklung und das Bauen von Images verwendet werden, während Kubernetes diese Images im Produktivbetrieb orchestriert. Auch für das Testen von Kubernetes-Manifesten oder das Erstellen von Pods ist Podman nützlich."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Podman und Kubernetes verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Podman passt besser, wenn dein Projekt priorisiert Architektur und Betriebsmodell: Podman arbeitet als daemonlose Container-Engine, die Container direkt über die Laufzeit (z. Kubernetes ist geeigneter, wenn dein Projekt priorisiert Orchestrierung und Skalierung: Kubernetes ist auf Orchestrierung spezialisiert: Es skaliert Pods automatisch, verteilt Lasten,….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "Podman kann im Rootless-Modus betrieben werden, sodass Benutzer ohne Root-Rechte Container ausführen können.",
+      "toolB": "Der Betrieb erfordert mehr Infrastruktur und Fachwissen als eine einzelne Container-Engine."
+    },
+    {
+      "category": "Einfachheit und Lernkurve",
+      "toolA": "Für einfache Aufgaben wie das Bauen und Starten eines Containers sind nur wenige Befehle nötig.",
+      "toolB": "mit kind oder minikube) ist aufwendiger als der Start eines einzelnen Containers."
+    },
+    {
+      "category": "Orchestrierung und Skalierung",
+      "toolA": "Funktionen wie automatische Skalierung, Selbstheilung über Nodes hinweg oder Rolling Updates sind nicht integriert.",
+      "toolB": "Diese Funktionen sind für den Betrieb großer, verteilter Anwendungen entscheidend."
+    },
+    {
+      "category": "Sicherheit und Rechteverwaltung",
+      "toolA": "Zusätzlich lassen sich Seccomp, Capabilities und SELinux nutzen.",
+      "toolB": "Allerdings ist die sichere Konfiguration komplexer und erfordert sorgfältige Planung, da Fehlkonfigurationen gravierende Folgen haben können."
+    },
+    {
+      "category": "Ökosystem und Kompatibilität",
+      "toolA": "Das Ökosystem ist kleiner als das von Kubernetes, aber für viele lokale und einfache Produktivszenarien ausreichend.",
+      "toolB": "Es ist der De-facto-Standard für Container-Orchestrierung und wird von allen großen Cloud-Anbietern unterstützt."
+    },
+    {
+      "category": "Ressourcenbedarf und Overhead",
+      "toolA": "Für Entwicklungsumgebungen und kleine Server ist der Overhead gering.",
+      "toolB": "Der genaue Bedarf hängt von der Cluster-Größe und den installierten Komponenten ab."
+    }
+  ],
+  "introduction": "Podman und Kubernetes lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell. Podman: Podman arbeitet als daemonlose Container-Engine, die Container direkt über die Laufzeit (z. Kubernetes: Kubernetes ist ein verteiltes Orchestrierungssystem mit Control Plane und Nodes, das Container über mehrere Hosts… Das Kriterium einfachheit und lernkurve zeigt einen weiteren praktischen Unterschied: Podman bietet eine CLI, die bewusst an Docker angelehnt ist, und ermöglicht einen schnellen Einstieg ohne Cluster-Setup. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Architektur und Betriebsmodell: Podman arbeitet als daemonlose Container-Engine, die Container direkt über die Laufzeit (z.",
+    "toolB": "dein Projekt priorisiert Orchestrierung und Skalierung: Kubernetes ist auf Orchestrierung spezialisiert: Es skaliert Pods automatisch, verteilt Lasten,…"
+  }
 }

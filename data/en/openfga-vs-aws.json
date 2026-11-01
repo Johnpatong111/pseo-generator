@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS (2026): Which option should you choose?",
-    "description": "Compare OpenFGA and AWS for authorization in 2026: architecture, hosting, scalability, security, cost, and developer experience to pick the right fit."
+    "title": "OpenFGA vs AWS: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
+    "description": "Compare OpenFGA and AWS architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -94,5 +94,49 @@
       "q": "Can OpenFGA and AWS be used together?",
       "a": "Yes, and this is a common pattern: use AWS IAM for infrastructure and service-to-service identity, and OpenFGA for application-level relationships such as document sharing or team permissions. Integration requires consistent identity mapping between the two systems."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between OpenFGA and AWS changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "OpenFGA is the better fit when your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed…. AWS is a stronger fit when your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations,….",
+  "tradeoffs": [
+    {
+      "category": "Core purpose and scope",
+      "toolA": "It focuses narrowly on answering permission questions through an authorization model and relationship tuples, and it is not a general-purpose cloud platform.",
+      "toolB": "Its authorization story spans AWS Identity and Access Management (IAM), Cognito, and service-specific policies, which are designed for cloud resources and infrastructure identity rather than arbitrary application-level relationship graphs."
+    },
+    {
+      "category": "Authorization model expressiveness",
+      "toolA": "It answers check, expand, and list-objects queries against relationship data, and model complexity should be validated against your read and write patterns.",
+      "toolB": "These mechanisms are powerful for infrastructure and resource access, but expressing deep application-level relationship graphs generally requires custom logic in your own services."
+    },
+    {
+      "category": "Hosting and operational model",
+      "toolA": "Self-hosting means you own upgrades, backups, database tuning, and high availability, which is a real operational burden.",
+      "toolB": "You trade some control and portability for reduced operational overhead, and pricing depends heavily on the specific services and usage tiers you select."
+    },
+    {
+      "category": "Scalability and latency",
+      "toolA": "Actual latency and throughput depend on model design, datastore choice, caching, and deployment topology, so load testing your specific workload is important.",
+      "toolB": "However, per-request authorization overhead, quotas, and throttling limits vary by service and should be reviewed for latency-sensitive designs."
+    },
+    {
+      "category": "Security, compliance, and identity integration",
+      "toolA": "You remain responsible for securing the API, configuring authentication for the server, and protecting the backing datastore, and compliance certifications depend on your own deployment rather than the software itself.",
+      "toolB": "Security guarantees depend on correct IAM policy design, and overly broad permissions are a common risk, so least-privilege review remains essential."
+    },
+    {
+      "category": "Developer experience and ecosystem",
+      "toolA": "Its community and documentation are active, but the project evolves quickly, so reviewing release notes before upgrading is advisable.",
+      "toolB": "The learning curve for IAM and service-specific authorization can be steep, and the breadth of options sometimes makes the correct pattern non-obvious for newcomers."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "OpenFGA and AWS address a related need, but differ in core purpose and scope. OpenFGA: OpenFGA is an open-source authorization engine implementing fine-grained relationship-based access control (ReBAC)… AWS: AWS is a broad cloud platform covering compute, storage, databases, networking, identity, and more. The authorization model expressiveness criterion adds another practical distinction: OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed…",
+    "toolB": "your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations,…"
+  }
 }

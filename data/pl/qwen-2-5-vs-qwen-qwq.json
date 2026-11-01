@@ -1,8 +1,8 @@
 {
   "slug": "qwen-2-5-vs-qwen-qwq",
   "meta": {
-    "title": "Qwen 2.5 vs Qwen QwQ (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Qwen 2.5 i Qwen QwQ w 2026 roku: wydajność, kontekst, ceny API, dostępność i zastosowania. Sprawdź, który model lepiej pasuje do Twojego projektu."
+    "title": "Qwen 2.5 vs Qwen QwQ: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Qwen 2.5 i Qwen QwQ: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Qwen 2.5"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/Qwen2.5-7B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))",
-    "tech2Snippet": "from transformers import AutoModelForCausalLM, AutoTokenizer\n\nmodel_name = \"Qwen/QwQ-32B-Preview\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"auto\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Hello, World!\"}]\ntext = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Jakie są ograniczenia Qwen QwQ w porównaniu do Qwen 2.5?",
       "a": "Qwen QwQ jest modelem eksperymentalnym, więc może mieć mniejsze okno kontekstu, wyższe opóźnienia i mniej rozbudowane mechanizmy bezpieczeństwa. Jego dostępność przez API może być ograniczona, a wsparcie społeczności mniejsze. Qwen 2.5 oferuje szerszą gamę rozmiarów i lepiej sprawdza się w różnorodnych zastosowaniach produkcyjnych."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Qwen 2.5 a Qwen QwQ zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Qwen 2.5 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Qwen 2.5 oferuje różne rozmiary modeli (od 0,5B do 72B) i w zależności od wariantu oraz…. Qwen QwQ sprawdzi się, gdy projekt stawia na kryterium „Wyniki na benchmarkach (MMLU, HumanEval) – porównanie jakościowe”: Qwen QwQ jest modelem eksperymentalnym skoncentrowanym na rozumowaniu, a jego wyniki na….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich wejść",
+      "toolA": "Długi kontekst jest przydatny w analizie dokumentów i rozmowach wieloturowych.",
+      "toolB": "Mniejszy kontekst może wystarczyć do złożonych zadań analitycznych, ale może być niewygodny przy bardzo długich dokumentach."
+    },
+    {
+      "category": "Wyniki na benchmarkach (MMLU, HumanEval) – porównanie jakościowe",
+      "toolA": "Należy pamiętać, że wyniki benchmarków nie zawsze przekładają się bezpośrednio na wydajność w rzeczywistych zastosowaniach.",
+      "toolB": "Ewentualne porównania liczbowe należy opierać na oficjalnych, aktualnych źródłach."
+    },
+    {
+      "category": "Ceny API za 1 mln tokenów wejściowych i wyjściowych",
+      "toolA": "Aktualne stawki należy sprawdzić w cenniku wybranego dostawcy, ponieważ mogą się zmieniać.",
+      "toolB": "Przed planowaniem budżetu należy zweryfikować warunki u dostawcy."
+    },
+    {
+      "category": "Opóźnienia (latencja) i przepustowość",
+      "toolA": "Warto testować różne rozmiary, aby znaleźć kompromis między jakością a szybkością.",
+      "toolB": "Rzeczywiste opóźnienia zależą od dostawcy i obciążenia, dlatego należy je zmierzyć w środowisku docelowym."
+    },
+    {
+      "category": "Dostępność modelu i otwartość (open/closed)",
+      "toolA": "Ta otwartość sprzyja przejrzystości i kontroli nad modelem.",
+      "toolB": "Przed użyciem komercyjnym należy dokładnie sprawdzić licencję i regulamin dostawcy."
+    },
+    {
+      "category": "Zastosowania praktyczne i dojrzałość ekosystemu",
+      "toolA": "Jest to model dojrzały, często wybierany do wdrożeń produkcyjnych.",
+      "toolB": "Nadaje się raczej do eksperymentów i specjalistycznych zastosowań."
+    }
+  ],
+  "introduction": "Qwen 2.5 i Qwen QwQ odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich wejść. Qwen 2.5: Qwen 2.5 oferuje różne rozmiary modeli (od 0,5B do 72B) i w zależności od wariantu oraz konfiguracji okno kontekstu… Qwen QwQ: Qwen QwQ to model skoncentrowany na rozumowaniu, a jego okno kontekstu jest zwykle mniejsze niż w największych… Kolejną istotną różnicę pokazuje kryterium „Wyniki na benchmarkach (MMLU, HumanEval) – porównanie jakościowe”: Qwen 2.5 jest dojrzałą rodziną modeli, dla której publikowane są wyniki na popularnych benchmarkach, takich jak MMLU… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich wejść”: Qwen 2.5 oferuje różne rozmiary modeli (od 0,5B do 72B) i w zależności od wariantu oraz…",
+    "toolB": "projekt stawia na kryterium „Wyniki na benchmarkach (MMLU, HumanEval) – porównanie jakościowe”: Qwen QwQ jest modelem eksperymentalnym skoncentrowanym na rozumowaniu, a jego wyniki na…"
+  }
 }

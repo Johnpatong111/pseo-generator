@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB (2026): welche Lösung passt besser?",
-    "description": "PostgreSQL vs DuckDB 2026: OLTP gegen OLAP, Betriebsaufwand, SQL-Kompatibilität und Praxisbeispiele. So treffen Sie die richtige Wahl für Ihr Projekt."
+    "title": "PostgreSQL vs DuckDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche PostgreSQL und DuckDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import psycopg2\n\nconn = psycopg2.connect(\n    host=\"localhost\",\n    dbname=\"postgres\",\n    user=\"postgres\",\n    password=\"postgres\"\n)\ncur = conn.cursor()\ncur.execute(\"SELECT 'Hello, World!'\")\nprint(cur.fetchone()[0])\ncur.close()\nconn.close()",
-    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect()\nresult = con.execute(\"SELECT 'Hello, World!'\").fetchone()\nprint(result[0])\ncon.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es Einschränkungen bei der Kompatibilität zwischen beiden Systemen?",
       "a": "Die SQL-Dialekte von PostgreSQL und DuckDB sind nicht vollständig identisch, sodass Abfragen und Datentypen bei einer Portierung angepasst werden müssen. Während PostgreSQL einen sehr umfangreichen Funktionsumfang für transaktionale Anwendungen bietet, ist DuckDB auf analytische Abfragen spezialisiert. Eine Migration sollte daher mit konkreten Tests und einer Prüfung der Anforderungen einhergehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen PostgreSQL und DuckDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "PostgreSQL passt besser, wenn dein Projekt priorisiert Transaktionen und Mehrbenutzerbetrieb: PostgreSQL bietet vollständige ACID-Transaktionen, MVCC, Isolationsstufen und umfangreiche…. DuckDB ist geeigneter, wenn dein Projekt priorisiert Analytische Abfragen und Spaltenausrichtung: DuckDB ist spaltenorientiert und auf analytische Abfragen mit Aggregationen, Scans und komplexen….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell",
+      "toolA": "Für Anwendungen mit dauerhaftem Mehrbenutzerzugriff ist dieses Modell etabliert und flexibel skalierbar.",
+      "toolB": "Ein Mehrbenutzerbetrieb mit vielen gleichzeitigen Schreibern ist nicht das primäre Einsatzfeld."
+    },
+    {
+      "category": "Transaktionen und Mehrbenutzerbetrieb",
+      "toolA": "Die konkrete Skalierung hängt von Schema, Indizes, Hardware und Konfiguration ab.",
+      "toolB": "Die Eignung hängt von der Arbeitslast und der Art des Zugriffs ab."
+    },
+    {
+      "category": "Analytische Abfragen und Spaltenausrichtung",
+      "toolA": "Ein pauschales Urteil ist ohne konkrete Arbeitslast nicht möglich.",
+      "toolB": "Die tatsächliche Leistung hängt von Datenmenge, Abfrage und Hardware ab."
+    },
+    {
+      "category": "SQL-Funktionsumfang und Kompatibilität",
+      "toolA": "Details unterscheiden sich je nach Version und installierten Erweiterungen.",
+      "toolB": "Für analytische Abfragen ist der Funktionsumfang umfangreich, für transaktionale Anwendungen jedoch weniger ausgeprägt."
+    },
+    {
+      "category": "Datenformate und Integration",
+      "toolA": "Für klassische Anwendungsdatenbanken ist die Integration sehr breit.",
+      "toolB": "Für lokale Analyse-Pipelines ist die Datenanbindung besonders unkompliziert."
+    },
+    {
+      "category": "Sicherheit und Zugriffskontrolle",
+      "toolA": "Für Mehrbenutzerumgebungen sind diese Mechanismen etabliert.",
+      "toolB": "Die Eignung hängt vom Betriebsmodell und den Anforderungen ab."
+    }
+  ],
+  "introduction": "PostgreSQL und DuckDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell. PostgreSQL: PostgreSQL arbeitet als klassischer Client-Server mit einem dauerhaft laufenden Datenbankdienst, der Verbindungen von… DuckDB: DuckDB ist eine eingebettete analytische Datenbank, die ohne separaten Serverprozess in den eigenen Prozess geladen… Das Kriterium transaktionen und mehrbenutzerbetrieb zeigt einen weiteren praktischen Unterschied: PostgreSQL bietet vollständige ACID-Transaktionen, MVCC, Isolationsstufen und umfangreiche Sperrmechanismen für viele… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Transaktionen und Mehrbenutzerbetrieb: PostgreSQL bietet vollständige ACID-Transaktionen, MVCC, Isolationsstufen und umfangreiche…",
+    "toolB": "dein Projekt priorisiert Analytische Abfragen und Spaltenausrichtung: DuckDB ist spaltenorientiert und auf analytische Abfragen mit Aggregationen, Scans und komplexen…"
+  }
 }

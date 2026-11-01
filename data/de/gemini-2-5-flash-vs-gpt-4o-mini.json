@@ -1,8 +1,8 @@
 {
   "slug": "gemini-2-5-flash-vs-gpt-4o-mini",
   "meta": {
-    "title": "Gemini 2.5 Flash vs GPT-4o mini (2026): welche Lösung passt besser?",
-    "description": "Vergleich von Gemini 2.5 Flash und GPT-4o mini: Kontextfenster, Leistung, API-Preise, Latenz und Einsatzgebiete. Entscheidungshilfe für 2026."
+    "title": "Gemini 2.5 Flash vs GPT-4o mini: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Gemini 2.5 Flash und GPT-4o mini: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Gemini 2.5 Flash"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"YOUR_API_KEY\")\nmodel = genai.GenerativeModel(\"gemini-2.5-flash\")\nresponse = model.generate_content(\"Hello, World!\")\nprint(response.text)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(api_key=\"YOUR_API_KEY\")\nresponse = client.chat.completions.create(\n    model=\"gpt-4o-mini\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Wie zuverlässig sind die veröffentlichten Benchmark-Ergebnisse?",
       "a": "Benchmark-Ergebnisse sind version- und methodenabhängig und daher nur eingeschränkt vergleichbar, wenn sie nicht unter identischen Bedingungen erhoben wurden. Hersteller veröffentlichen oft Ergebnisse, die auf bestimmten Prompt-Formaten oder Evaluierungsskripten basieren. Für eine fundierte Entscheidung sollten Sie eigene Tests mit Ihren spezifischen Aufgaben durchführen und die offiziellen Dokumentationen der Anbieter konsultieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Gemini 2.5 Flash und GPT-4o mini verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Gemini 2.5 Flash passt besser, wenn dein Projekt priorisiert Kontextfenster: Gemini 2.5 Flash bietet ein sehr großes Kontextfenster, das laut Google für die Verarbeitung…. GPT-4o mini ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: GPT-4o mini ist als kostengünstiges Modell positioniert, wobei die genauen Preise pro 1 Million….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster",
+      "toolA": "Die genaue maximale Token-Anzahl ist versions- und tarifabhängig und sollte in der offiziellen Dokumentation geprüft werden.",
+      "toolB": "Auch hier sind die exakten Grenzwerte von der jeweiligen API-Version und dem Tarif abhängig und müssen in der OpenAI-Dokumentation verifiziert werden."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval)",
+      "toolA": "Belastbare, direkt vergleichbare Zahlen zu MMLU und HumanEval liegen nur vor, wenn beide Anbieter dieselben Testbedingungen dokumentieren; andernfalls ist ein qualitativer Vergleich angemessen.",
+      "toolB": "Ein fairer Vergleich erfordert daher, die genauen Evaluierungsdetails zu prüfen oder eigene Tests mit der Zielaufgabe durchzuführen."
+    },
+    {
+      "category": "API-Preise pro 1 Million Input- und Output-Token",
+      "toolA": "Konkrete Zahlen sollten der aktuellen offiziellen Preisliste entnommen werden, da sie sonst schnell veralten.",
+      "toolB": "Auch hier ist die offizielle Preisseite die verlässliche Quelle für aktuelle Werte."
+    },
+    {
+      "category": "Latenz und Antwortgeschwindigkeit",
+      "toolA": "Offizielle Latenzangaben sind oft nur als Richtwerte verfügbar und sollten nicht als garantierte Messwerte betrachtet werden.",
+      "toolB": "Vergleichbare Latenzwerte erfordern Messungen unter identischen Bedingungen."
+    },
+    {
+      "category": "Modellzugang und Offenheit",
+      "toolA": "Der Zugang ist an Google-Konten und die jeweiligen Nutzungsbedingungen gebunden; eine Offenlegung der Gewichte erfolgt nicht.",
+      "toolB": "Der Zugang erfordert ein OpenAI-Konto und unterliegt den OpenAI-Nutzungsrichtlinien; auch hier sind die Modellgewichte nicht öffentlich."
+    },
+    {
+      "category": "Multimodale Fähigkeiten",
+      "toolA": "Diese Bandbreite macht es für Anwendungen interessant, die verschiedene Medientypen kombinieren.",
+      "toolB": "Für rein textbasierte oder bildgestützte Aufgaben ist die Funktionalität ausreichend, für komplexere multimodale Szenarien jedoch eingeschränkt."
+    }
+  ],
+  "introduction": "Gemini 2.5 Flash und GPT-4o mini lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster. Gemini 2.5 Flash: Gemini 2.5 Flash bietet ein sehr großes Kontextfenster, das laut Google für die Verarbeitung umfangreicher Dokumente,… GPT-4o mini: GPT-4o mini besitzt ein Kontextfenster, das für die meisten alltäglichen Anwendungen ausreichend ist, jedoch deutlich… Das Kriterium benchmark-leistung (mmlu und humaneval) zeigt einen weiteren praktischen Unterschied: Google veröffentlicht für Gemini 2.5 Flash Benchmark-Ergebnisse, die je nach Version und Evaluierungsmethode variieren. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster: Gemini 2.5 Flash bietet ein sehr großes Kontextfenster, das laut Google für die Verarbeitung…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1 Million Input- und Output-Token: GPT-4o mini ist als kostengünstiges Modell positioniert, wobei die genauen Preise pro 1 Million…"
+  }
 }

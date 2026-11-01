@@ -1,8 +1,8 @@
 {
   "slug": "tailwind-vs-styled-components",
   "meta": {
-    "title": "Tailwind CSS vs styled-components (2026): welche Lösung passt besser?",
-    "description": "Tailwind CSS und styled-components im direkten Vergleich 2026: Styling-Ansatz, DX, Performance, Wartbarkeit, Ökosystem und Einsatzgebiete – mit klarer Empfehlung."
+    "title": "Tailwind CSS vs styled-components: welches 2026 wählen — Styling, Komponenten und Entwickler-Workflow",
+    "description": "Vergleiche Tailwind CSS und styled-components: Bewerte Architekturkompromisse bei Komponenten-APIs, Style-Isolation und Wartung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Tailwind CSS"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import React from \"react\";\n\nexport default function HelloWorld() {\n  return (\n    <div className=\"min-h-screen flex items-center justify-center bg-slate-100\">\n      <h1 className=\"text-3xl font-bold text-slate-900\">Hallo, Welt!</h1>\n    </div>\n  );\n}",
-    "tech2Snippet": "import React from \"react\";\nimport styled from \"styled-components\";\n\nconst Wrapper = styled.div`\n  min-height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background-color: #f1f5f9;\n`;\n\nconst Heading = styled.h1`\n  font-size: 1.875rem;\n  font-weight: 700;\n  color: #0f172a;\n`;\n\nexport default function HelloWorld() {\n  return (\n    <Wrapper>\n      <Heading>Hallo, Welt!</Heading>\n    </Wrapper>\n  );\n}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className=\"grid gap-3 rounded-xl border border-slate-200 p-4 shadow-sm\" aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}",
+    "tech2Snippet": "import styled from \"styled-components\";\n\nconst ProductCardShell = styled.article`\n  display: grid;\n  gap: 0.75rem;\n  padding: 1rem;\n  border: 1px solid #cbd5e1;\n  border-radius: 0.75rem;\n`;\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <ProductCardShell aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </ProductCardShell>\n  );\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Welche Rolle spielen Server Components und CSS-in-JS 2026?",
       "a": "Server Components und Streaming verändern die Anforderungen an Styling-Bibliotheken, da Laufzeitstile auf dem Server und Client konsistent sein müssen. Tailwind CSS ist mit statischem CSS in diesen Modellen oft unkomplizierter, während CSS-in-JS je nach Framework-Unterstützung zusätzliche Konfiguration erfordert. Die konkrete Eignung ist versions- und frameworkabhängig und sollte vor der Architekturentscheidung geprüft werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Tailwind CSS und styled-components verändert den Umgang mit Style-Verwaltung und Oberflächenkomposition; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Tailwind CSS passt besser, wenn dein Projekt priorisiert Performance und Auslieferung: Tailwind CSS erzeugt in der Regel statisches CSS, das zur Build-Zeit gescannt und auf die…. styled-components ist geeigneter, wenn dein Projekt priorisiert Dynamische Stile und Theming: styled-components unterstützt Props-basierte dynamische Stile sowie ein….",
+  "tradeoffs": [
+    {
+      "category": "Styling-Ansatz und Mentalmodell",
+      "toolA": "Das erfordert anfangs ein Umdenken, macht aber das Ergebnis lokal und vorhersehbar.",
+      "toolB": "Benannte Komponenten erleichtern semantisches Lesen im JSX."
+    },
+    {
+      "category": "Lernkurve und Entwicklererfahrung",
+      "toolA": "Sehr lange Klassenlisten können das Markup jedoch unübersichtlich machen.",
+      "toolB": "Dafür entsteht mehr Boilerplate, da für viele Stile eigene Komponenten definiert werden."
+    },
+    {
+      "category": "Performance und Auslieferung",
+      "toolA": "Die konkrete Größe hängt von Konfiguration, Inhalten und Purge-Einstellungen ab.",
+      "toolB": "Kleine, stark dynamische Stile können die Auslieferung gegenüber statischem CSS verlangsamen."
+    },
+    {
+      "category": "Dynamische Stile und Theming",
+      "toolA": "Für stark datenabhängige Stilberechnungen ist dieser Weg teils umständlicher.",
+      "toolB": "Das ist sehr ausdrucksstark, kann aber bei häufigen Props-Änderungen mehr Stil-Neuberechnungen erzeugen."
+    },
+    {
+      "category": "Wartbarkeit und Skalierung im Team",
+      "toolA": "Sehr lange Klassenzüge lassen sich durch Komponenten- oder ``@apply``-Abstraktionen bändigen.",
+      "toolB": "Refactorings sind typsicher möglich, erfordern aber Disziplin."
+    },
+    {
+      "category": "Ökosystem, Tooling und Kompatibilität",
+      "toolA": "Die Integration in Build-Tools hängt vom jeweiligen Setup und der Tailwind-Version ab.",
+      "toolB": "Kompatibilität und Wartungsstatus sollten daher versionsabhängig geprüft werden."
+    }
+  ],
+  "introduction": "Tailwind CSS und styled-components lösen ein ähnliches Problem, unterscheiden sich jedoch bei styling-ansatz und mentalmodell. Tailwind CSS: Tailwind CSS verwendet Utility-Klassen direkt im Markup, die zu kleinen, komponierbaren Stilen kombiniert werden. styled-components: styled-components beschreibt Stile in JavaScript- oder TypeScript-Dateien über ``styled``- und ``css``-APIs, gekoppelt… Das Kriterium lernkurve und entwicklererfahrung zeigt einen weiteren praktischen Unterschied: Tailwind CSS verlangt, die Utility-Namen und Konfigurationskonventionen zu lernen; wer CSS kennt, kommt meist schnell… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Performance und Auslieferung: Tailwind CSS erzeugt in der Regel statisches CSS, das zur Build-Zeit gescannt und auf die…",
+    "toolB": "dein Projekt priorisiert Dynamische Stile und Theming: styled-components unterstützt Props-basierte dynamische Stile sowie ein…"
+  }
 }

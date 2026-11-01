@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB (2026): welche Lösung passt besser?",
-    "description": "ScyllaDB vs MongoDB im Vergleich 2026: Architektur, Datenmodell, Skalierung, Konsistenz, Betrieb und Eignung – mit klarer Empfehlung je Anwendungsfall."
+    "title": "ScyllaDB vs MongoDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche ScyllaDB und MongoDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from cassandra.cluster import Cluster\n\ncluster = Cluster([\"127.0.0.1\"])\nsession = cluster.connect()\n\nsession.execute(\"CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}\")\nsession.execute(\"CREATE TABLE IF NOT EXISTS demo.hello (id int PRIMARY KEY, message text)\")\nsession.execute(\"INSERT INTO demo.hello (id, message) VALUES (1, 'Hello, World!')\")\nrow = session.execute(\"SELECT message FROM demo.hello WHERE id = 1\").one()\nprint(row.message)\n\ncluster.shutdown()",
-    "tech2Snippet": "from pymongo import MongoClient\n\nclient = MongoClient(\"mongodb://localhost:27017/\")\ncollection = client[\"demo\"][\"hello\"]\n\ncollection.insert_one({\"_id\": 1, \"message\": \"Hello, World!\"})\ndocument = collection.find_one({\"_id\": 1})\nprint(document[\"message\"])\n\nclient.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte man 2026 zwischen ScyllaDB und MongoDB entscheiden?",
       "a": "Eine belastbare Entscheidung basiert auf Datenmodell, erwartetem Zugriffsmuster, Konsistenzanforderungen, Team-Know-how und Betriebsmodell. Ein Proof of Concept mit realitätsnaher Arbeitslast liefert konkrete Erkenntnisse, die pauschale Aussagen nicht ersetzen können. Bei dokumentorientierter Flexibilität spricht vieles für MongoDB, bei vorhersehbarer Hochlast und Skalierung für ScyllaDB."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen ScyllaDB und MongoDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "ScyllaDB passt besser, wenn dein Projekt priorisiert Skalierung und Lastverhalten: ScyllaDB ist auf horizontale Skalierung über viele Knoten ausgelegt und nutzt einen…. MongoDB ist geeigneter, wenn dein Projekt priorisiert Datenmodell und Schemaflexibilität: MongoDB arbeitet mit flexiblen Dokumenten, deren Felder sich pro Dokument unterscheiden können,….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Replikationsmodell",
+      "toolA": "Die Replikation erfolgt über Tunable Consistency und einen Gossip-basierten Cluster-Verbund, sodass keine zentrale Koordinationskomponente erforderlich ist; Details hängen von Version und Topologie ab.",
+      "toolB": "Replikation innerhalb eines Shards erfolgt über Replica Sets mit Primary- und Secondary-Knoten; das genaue Verhalten ist von Version und Read-/Write-Concern abhängig."
+    },
+    {
+      "category": "Datenmodell und Schemaflexibilität",
+      "toolA": "Das Schema ist fest definiert, kann aber durch neue Spalten erweitert werden; eine echte Schemaflexibilität pro Datensatz ist nicht vorgesehen.",
+      "toolB": "Ein optionales Schema-Validation kann Regeln erzwingen; das Ausmaß an Flexibilität ist von Version und Konfiguration abhängig."
+    },
+    {
+      "category": "Abfragesprache und Sekundärindizes",
+      "toolA": "Sekundärindizes und materialisierte Sichten existieren, sind aber mit Vorsicht einzusetzen, da ihre Eignung von Version und Datenverteilung abhängt.",
+      "toolB": "Die Bandbreite an Abfragemustern ist deutlich größer; einzelne Operatoren und Indexoptionen sind versionsabhängig."
+    },
+    {
+      "category": "Skalierung und Lastverhalten",
+      "toolA": "Eine Lastverteilung ohne zentralen Engpass ist ein Kernziel der Architektur; tatsächliche Durchsatz- und Latenzwerte sind stark von Hardware, Schema und Arbeitslast abhängig.",
+      "toolB": "Hotspots und Balancer-Verhalten können die Skalierung beeinflussen; die konkreten Ergebnisse sind von Version, Sharding-Strategie und Arbeitslast abhängig."
+    },
+    {
+      "category": "Konsistenz und Transaktionen",
+      "toolA": "Vollwertige, ACID-konforme Mehrzeilen-Transaktionen sind nicht das primäre Designziel; das Verhalten hängt von Konfiguration und Version ab.",
+      "toolB": "Die Garantien und Grenzen sind von Version, Read-/Write-Concern und Topologie abhängig."
+    },
+    {
+      "category": "Betrieb, Deployment und Ökosystem",
+      "toolA": "Das Ökosystem ist kleiner als das von MongoDB, bietet aber Cassandra-Kompatibilität und Werkzeuge für Monitoring und Betrieb.",
+      "toolB": "Der Betrieb ist sowohl self-hosted als auch verwaltet möglich; Funktionsumfang und Konditionen sind tarif- und versionsabhängig."
+    }
+  ],
+  "introduction": "ScyllaDB und MongoDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und replikationsmodell. ScyllaDB: ScyllaDB ist eine verteilte Wide-Column-Datenbank, die als kompatible Neuimplementierung der Cassandra-Schnittstelle… MongoDB: MongoDB speichert Dokumente im BSON-Format und verteilt sie über Sharding auf mehrere Shards, wobei ein… Das Kriterium datenmodell und schemaflexibilität zeigt einen weiteren praktischen Unterschied: ScyllaDB verwendet ein Wide-Column-Modell mit Tabellen, Partitionen und Clustering-Spalten, bei dem das Zugriffsmuster… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Skalierung und Lastverhalten: ScyllaDB ist auf horizontale Skalierung über viele Knoten ausgelegt und nutzt einen…",
+    "toolB": "dein Projekt priorisiert Datenmodell und Schemaflexibilität: MongoDB arbeitet mit flexiblen Dokumenten, deren Felder sich pro Dokument unterscheiden können,…"
+  }
 }

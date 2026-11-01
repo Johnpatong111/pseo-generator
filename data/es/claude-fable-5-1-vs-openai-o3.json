@@ -1,8 +1,8 @@
 {
   "slug": "claude-fable-5-1-vs-openai-o3",
   "meta": {
-    "title": "Claude Fable 5.1 vs OpenAI o3 (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Claude Fable 5.1 y OpenAI o3 en contexto, razonamiento, precio, latencia y acceso. Descubre qué modelo conviene a tu proyecto y sus limitaciones reales."
+    "title": "Claude Fable 5.1 vs OpenAI o3: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Claude Fable 5.1 y OpenAI o3: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TU_API_KEY\")\n\nrespuesta = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=64,\n    messages=[{\"role\": \"user\", \"content\": \"Di hola en español.\"}],\n)\n\nprint(respuesta.content[0].text)",
-    "tech2Snippet": "from openai import OpenAI\n\ncliente = OpenAI(api_key=\"TU_API_KEY\")\n\nrespuesta = cliente.chat.completions.create(\n    model=\"o3\",\n    messages=[{\"role\": \"user\", \"content\": \"Di hola en español.\"}],\n)\n\nprint(respuesta.choices[0].message.content)"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "¿Los precios y capacidades de estos modelos son estables en 2026?",
       "a": "No necesariamente: los precios, los límites de contexto, las versiones y la disponibilidad regional pueden cambiar a lo largo de 2026. Antes de decidir, verifica la documentación oficial de Anthropic y de OpenAI para la versión exacta que vayas a usar, y evita comparar cifras de fechas distintas sin ajustar la configuración."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Claude Fable 5.1 y OpenAI o3 cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Claude Fable 5.1 encaja mejor cuando tu proyecto prioriza ventana de contexto y longitud de salida: Claude Fable 5.1 documenta una ventana de contexto de 1M de tokens y una salida máxima de 128K…. OpenAI o3 es preferible cuando tu proyecto prioriza casos de uso prácticos y ecosistema: OpenAI o3 destaca en problemas que requieren razonamiento paso a paso, verificación de hipótesis y….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y longitud de salida",
+      "toolA": "Esto resulta útil para analizar corpus extensos, contratos o bases de código completas en una sola petición, aunque el rendimiento real puede degradarse con contextos enormes y conviene medirlo en tu carga de trabajo.",
+      "toolB": "En la práctica, muchas tareas de razonamiento complejo no requieren contextos gigantes, pero los documentos muy largos pueden obligar a fragmentar o resumir el contenido."
+    },
+    {
+      "category": "Rendimiento en benchmarks publicados (MMLU y HumanEval)",
+      "toolA": "Cualquier comparación numérica debe basarse en una evaluación reproducida con la misma versión, el mismo prompt y la misma configuración de muestreo.",
+      "toolB": "Sin una fuente oficial fechada y una metodología idéntica, no es riguroso afirmar que un modelo supera al otro en estas pruebas."
+    },
+    {
+      "category": "Precio de API por millón de tokens",
+      "toolA": "Las lecturas de caché de prompt cuestan 0,25 USD por millón de tokens, un 97,5 % por debajo del precio base de entrada; estos valores son sensibles a la fecha y pueden cambiar.",
+      "toolB": "Para una comparación justa conviene desglosar entrada, salida y, si existe, tokens de razonamiento facturables según la documentación vigente."
+    },
+    {
+      "category": "Latencia y rendimiento de respuesta",
+      "toolA": "Con entradas de hasta 1M de tokens, el tiempo hasta el primer token y la duración total pueden crecer de forma notable, por lo que conviene medir con tu propia carga.",
+      "toolB": "La latencia real varía según el nivel de esfuerzo de razonamiento, la carga y la región, y debe medirse contra la versión concreta que vayas a usar."
+    },
+    {
+      "category": "Acceso al modelo y disponibilidad abierta o cerrada",
+      "toolA": "No es un modelo de pesos abiertos, por lo que no puede alojarse localmente ni inspeccionarse su funcionamiento interno.",
+      "toolB": "Tampoco es de pesos abiertos, de modo que la portabilidad y el control de infraestructura son limitados en comparación con modelos abiertos."
+    },
+    {
+      "category": "Casos de uso prácticos y ecosistema",
+      "toolA": "El almacenamiento en caché de prompts resulta atractivo para asistentes con instrucciones y contexto repetidos, siempre que se gestione bien la invalidación de caché.",
+      "toolB": "Su integración con el ecosistema de herramientas y funciones de OpenAI facilita construir agentes y flujos de trabajo, aunque el coste y la latencia pueden ser mayores en tareas de razonamiento intensivo."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 y OpenAI o3 responden a una necesidad similar, pero difieren en ventana de contexto y longitud de salida. Claude Fable 5.1: Claude Fable 5.1 documenta una ventana de contexto de 1M de tokens y una salida máxima de 128K tokens, según la… OpenAI o3: OpenAI o3 no publica en la documentación que consultamos una ventana de 1M de tokens; su límite de contexto y de… El criterio de rendimiento en benchmarks publicados (mmlu y humaneval) añade otra diferencia práctica: Para Claude Fable 5.1 no constan resultados publicados y comparables de MMLU y HumanEval en las fuentes oficiales de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y longitud de salida: Claude Fable 5.1 documenta una ventana de contexto de 1M de tokens y una salida máxima de 128K…",
+    "toolB": "tu proyecto prioriza casos de uso prácticos y ecosistema: OpenAI o3 destaca en problemas que requieren razonamiento paso a paso, verificación de hipótesis y…"
+  }
 }

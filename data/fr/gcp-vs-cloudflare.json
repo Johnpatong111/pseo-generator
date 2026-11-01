@@ -1,8 +1,8 @@
 {
   "slug": "gcp-vs-cloudflare",
   "meta": {
-    "title": "Google Cloud vs Cloudflare (2026): quelle solution choisir ?",
-    "description": "Comparatif Google Cloud vs Cloudflare en 2026 : calcul, réseau, edge, sécurité, tarifs et cas d'usage. Découvrez quelle plateforme convient à votre projet web ou cloud."
+    "title": "Google Cloud vs Cloudflare: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Google Cloud et Cloudflare : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Google Cloud"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Hello World sur Google Cloud Run (Dockerfile minimal)\n# 1) app.py\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route(\"/\")\ndef hello():\n    return \"Hello, World!\"\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=8080)\n\n# 2) requirements.txt\n# flask==3.0.0\n# gunicorn==21.2.0\n\n# 3) Déploiement (Cloud Run facture à l'usage, vérifiez les tarifs)\n# gcloud run deploy hello --source . --region europe-west1 --allow-unauthenticated",
-    "tech2Snippet": "// Hello World avec Cloudflare Workers (module ES)\nexport default {\n  async fetch(request, env, ctx) {\n    return new Response(\"Hello, World!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  },\n};\n\n// Déploiement : npx wrangler deploy\n// (wrangler.jsonc avec name, main et compatibility_date)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment choisir entre les deux pour un projet data ou IA ?",
       "a": "Pour de l'analytique, du machine learning ou des traitements de données à grande échelle, Google Cloud avec BigQuery et Vertex AI est généralement plus adapté. Cloudflare reste pertinent pour exposer une API ou protéger un service, mais pas pour entraîner ou stocker massivement des données. Évaluez vos besoins en volume, en gouvernance et en coûts avant d'arbitrer."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Google Cloud et Cloudflare modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Google Cloud convient mieux lorsque votre projet privilégie calcul et hébergement d'applications : Google Cloud propose Compute Engine (VM), Google Kubernetes Engine, Cloud Run (conteneurs…. Cloudflare est préférable lorsque votre projet privilégie réseau, cdn et performance edge : Cloudflare exploite un réseau edge étendu et un CDN intégré par défaut, avec des optimisations….",
+  "tradeoffs": [
+    {
+      "category": "Positionnement et modèle de service",
+      "toolA": "Il s'adresse aux équipes qui veulent héberger et exploiter des applications de bout en bout, avec un large catalogue de services régionaux.",
+      "toolB": "Son modèle vise à rapprocher le traitement et la protection des utilisateurs, plutôt qu'à remplacer intégralement un cloud IaaS."
+    },
+    {
+      "category": "Calcul et hébergement d'applications",
+      "toolA": "Ces options couvrent des besoins variés, de la VM classique au conteneur managé, avec un contrôle important sur le réseau et les identités.",
+      "toolB": "Le modèle convient bien aux logiques edge et aux API légères, mais reste moins adapté aux traitements lourds ou aux applications à état complexe."
+    },
+    {
+      "category": "Base de données et stockage",
+      "toolA": "L'écosystème est riche, ce qui facilite l'architecture de données et l'analytique à grande échelle.",
+      "toolB": "Ces services sont pratiques pour des usages ciblés, mais moins complets que les bases managées de Google Cloud pour des charges transactionnelles exigeantes."
+    },
+    {
+      "category": "Réseau, CDN et performance edge",
+      "toolA": "La performance dépend fortement du placement, de la configuration et de la charge réelle.",
+      "toolB": "Le gain de latence dépend du contenu, du cache et de la localisation des utilisateurs, et doit être mesuré dans votre contexte."
+    },
+    {
+      "category": "Sécurité et protection",
+      "toolA": "La sécurité repose sur une configuration rigoureuse des identités et des périmètres, qui demande de l'expertise.",
+      "toolB": "Ces protections sont rapides à activer pour un site ou une API, mais leur efficacité dépend des règles et du plan souscrit."
+    },
+    {
+      "category": "Tarification et prévisibilité des coûts",
+      "toolA": "Des remises existent selon l'engagement et l'usage, mais les tarifs évoluent et doivent être vérifiés.",
+      "toolB": "Les coûts peuvent toutefois augmenter avec le trafic et les fonctionnalités avancées."
+    }
+  ],
+  "introduction": "Google Cloud et Cloudflare répondent à un besoin proche, mais diffèrent sur positionnement et modèle de service. Google Cloud : Google Cloud est un fournisseur de cloud public complet : compute, stockage, réseau, bases de données managées, data… Cloudflare : Cloudflare est avant tout un réseau edge et une plateforme de sécurité : CDN, DNS, WAF, protection DDoS, workers… Le critère « Calcul et hébergement d'applications » met en évidence une autre différence pratique : Google Cloud propose Compute Engine (VM), Google Kubernetes Engine, Cloud Run (conteneurs serverless) et App Engine. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie calcul et hébergement d'applications : Google Cloud propose Compute Engine (VM), Google Kubernetes Engine, Cloud Run (conteneurs…",
+    "toolB": "votre projet privilégie réseau, cdn et performance edge : Cloudflare exploite un réseau edge étendu et un CDN intégré par défaut, avec des optimisations…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-mongoose",
   "meta": {
-    "title": "TypeORM vs Mongoose (2026): ¿Qué solución elegir?",
-    "description": "Comparamos TypeORM y Mongoose en 2026: soporte de bases de datos, modelos, tipado en TypeScript, migraciones, consultas y ecosistema para elegir el ORM adecuado."
+    "title": "TypeORM vs Mongoose: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara TypeORM y Mongoose: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "TypeORM"
@@ -88,5 +88,49 @@
       "q": "¿Puedo cambiar de TypeORM a Mongoose más adelante?",
       "a": "El cambio implica adaptar entidades a esquemas de documentos y revisar consultas, relaciones y migraciones, por lo que no es trivial. Si prevés necesitar MongoDB, elegir Mongoose desde el inicio puede ahorrar refactorizaciones, y lo contrario ocurre si el destino es SQL. Planificar el motor antes de construir el modelo reduce el riesgo."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre TypeORM y Mongoose cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "TypeORM encaja mejor cuando tu proyecto prioriza tipado y experiencia con typescript: TypeORM está escrito en TypeScript y ofrece decoradores, entidades tipadas y repositorios…. Mongoose es preferible cuando tu proyecto prioriza definición de esquemas y validación: Mongoose define esquemas con tipos, valores por defecto, validadores personalizados y middleware….",
+  "tradeoffs": [
+    {
+      "category": "Bases de datos y modelo de datos",
+      "toolA": "Su enfoque encaja de forma natural con esquemas relacionales, claves foráneas y relaciones entre tablas, aunque el soporte de MongoDB se considera menos prioritario que el relacional.",
+      "toolB": "Si tu persistencia es documental, su ajuste al motor es mayor; si necesitas SQL, no es la herramienta adecuada."
+    },
+    {
+      "category": "Tipado y experiencia con TypeScript",
+      "toolA": "La calidad del tipado depende de la versión y de la configuración del proyecto.",
+      "toolB": "En conjunto, ambas ofrecen un soporte sólido, pero con curvas de aprendizaje distintas."
+    },
+    {
+      "category": "Definición de esquemas y validación",
+      "toolA": "La validación de datos suele delegarse en class-validator u otras capas, por lo que no incorpora un sistema de validación de documentos tan integrado como un ODM documental.",
+      "toolB": "Esa validación integrada resulta práctica para datos documentales, aunque conviene revisar que las reglas se apliquen de forma coherente en escrituras masivas o actualizaciones."
+    },
+    {
+      "category": "Migraciones y evolución del esquema",
+      "toolA": "La generación automática debe revisarse antes de aplicarla, ya que puede producir cambios inesperados según la configuración y el motor.",
+      "toolB": "Los cambios de estructura suelen gestionarse con scripts propios o herramientas externas, lo que exige disciplina y procesos definidos por el equipo."
+    },
+    {
+      "category": "Consultas y relaciones",
+      "toolA": "Su modelo relacional permite joins y consultas SQL complejas, aunque algunas cargas mal configuradas pueden provocar problemas de rendimiento.",
+      "toolB": "Es cómodo para datos anidados y documentos, pero las relaciones complejas y los joins profundos pueden requerir varias consultas o agregaciones, con impacto en el rendimiento según el caso."
+    },
+    {
+      "category": "Rendimiento y escalabilidad",
+      "toolA": "En cargas relacionales intensivas puede ser eficiente si se evitan cargas innecesarias de relaciones y se revisa el SQL generado.",
+      "toolB": "Puede escalar bien en lecturas documentales, pero las referencias y agregaciones costosas requieren planificación; no hay una ventaja general demostrable sin medir la carga real."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
+  },
+  "introduction": "TypeORM y Mongoose responden a una necesidad similar, pero difieren en bases de datos y modelo de datos. TypeORM: TypeORM está diseñado en torno a entidades y repositorios con soporte para motores relacionales como PostgreSQL,… Mongoose: Mongoose es un ODM específico para MongoDB y no pretende abstraer bases de datos relacionales. El criterio de tipado y experiencia con typescript añade otra diferencia práctica: TypeORM está escrito en TypeScript y ofrece decoradores, entidades tipadas y repositorios genéricos que facilitan el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza tipado y experiencia con typescript: TypeORM está escrito en TypeScript y ofrece decoradores, entidades tipadas y repositorios…",
+    "toolB": "tu proyecto prioriza definición de esquemas y validación: Mongoose define esquemas con tipos, valores por defecto, validadores personalizados y middleware…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "chroma-vs-qdrant",
   "meta": {
-    "title": "Chroma vs Qdrant (2026): welche Lösung passt besser?",
-    "description": "Chroma und Qdrant im Vergleich 2026: Architektur, Skalierung, Filter, Betrieb und Ökosystem – eine sachliche Orientierung für die passende Vektordatenbank."
+    "title": "Chroma vs Qdrant: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Chroma und Qdrant: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Chroma"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import chromadb\n\nclient = chromadb.Client()\ncollection = client.get_or_create_collection(name=\"demo\")\ncollection.add(ids=[\"1\"], documents=[\"Hallo, Welt!\"])\nprint(collection.query(query_texts=[\"Hallo\"], n_results=1))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import VectorParams, Distance, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.recreate_collection(collection_name=\"demo\", vectors_config=VectorParams(size=4, distance=Distance.COSINE))\nclient.upsert(collection_name=\"demo\", points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4], payload={\"text\": \"Hallo, Welt!\"})])\nprint(client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3, 0.4], limit=1))"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte man Kosten und Lizenzmodelle vergleichen?",
       "a": "Chroma und Qdrant sind in Open-Source-Varianten verfügbar und werden zusätzlich als verwaltete Dienste angeboten, deren Preise sich ändern können. Ein fairer Vergleich berücksichtigt neben Lizenz- oder Tarifkosten auch Infrastruktur, Betriebspersonal und Migrationsaufwand. Da Preise und Funktionsumfang variieren, sollte man stets die aktuelle Preisliste und die Anforderungen des eigenen Projekts heranziehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Chroma und Qdrant verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Chroma passt besser, wenn dein Projekt priorisiert Entwicklerfreundlichkeit und Einstiegshürde: Chroma punktet mit einem sehr niedrigen Einstieg: Installation per pip, lokale Persistenz und eine…. Qdrant ist geeigneter, wenn dein Projekt priorisiert Skalierung und Leistungsverhalten unter Last: Qdrant ist auf verteilte und horizontale Skalierung ausgelegt und unterstützt Sharding sowie….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Betriebsmodell von Chroma und Qdrant",
+      "toolA": "Für Mehrbenutzer- oder Server-Setups bietet Chroma zudem einen Client-Server-Modus, dessen konkrete Ausprägung und Grenzen von Version und Konfiguration abhängen.",
+      "toolB": "Diese Trennung erfordert mehr Betriebsaufwand, schafft aber klare Grenzen zwischen Anwendung und Datenbank sowie bessere Möglichkeiten für Skalierung und Isolation."
+    },
+    {
+      "category": "Skalierung und Leistungsverhalten unter Last",
+      "toolA": "Aussagen zu Durchsatz und Latenz sind stark von Hardware, Indexart und Arbeitslast abhängig und sollten nicht pauschal bewertet werden.",
+      "toolB": "Für hohe Last und große Kollektionen bietet es mehr Stellschrauben, erfordert aber auch mehr Kapazitätsplanung und tuningbezogenes Know-how."
+    },
+    {
+      "category": "Metadatenfilter und Abfrageausdruck",
+      "toolA": "Komplexe, verschachtelte Filterlogik und sehr fein abgestufte Operatoren sind je nach Version und API-Umfang begrenzter als bei spezialisierten Systemen.",
+      "toolB": "Gerade für Anwendungen mit harten Metadatenanforderungen, etwa Mandantentrennung oder Kategorien, ist diese Filterflexibilität ein praktischer Vorteil, dessen genaue Semantik von der Version abhängt."
+    },
+    {
+      "category": "Client-Unterstützung und Integration in bestehende Stacks",
+      "toolA": "Clients für andere Sprachen und serverbasierte Integrationen existieren, ihr Funktionsumfang kann jedoch je nach Version und Bibliothek variieren.",
+      "toolB": "Dadurch lässt sich das System auch in polyglotten Backends und bestehenden Microservice-Landschaften vergleichsweise sauber einbetten."
+    },
+    {
+      "category": "Entwicklerfreundlichkeit und Einstiegshürde",
+      "toolA": "Diese Einfachheit bedeutet jedoch nicht, dass komplexe Produktionsanforderungen ohne zusätzliche Architektur automatisch abgedeckt sind.",
+      "toolB": "Die Dokumentation und die konsistente API-Struktur erleichtern die Einarbeitung, dennoch ist der anfängliche Aufwand höher als bei Chroma."
+    },
+    {
+      "category": "Persistenz, Sicherung und Datenhaltung",
+      "toolA": "Für einfache lokale Projekte genügt oft das Sichern des Datenverzeichnisses, was aber keine Produktions-Backup-Strategie ersetzt.",
+      "toolB": "In Cluster-Betrieben sind Snapshot-Strategien und Speicher-Backends sorgfältig zu planen, was mehr Aufwand, aber auch mehr Kontrolle bedeutet."
+    }
+  ],
+  "introduction": "Chroma und Qdrant lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und betriebsmodell von chroma und qdrant. Chroma: Chroma kann als eingebettete Bibliothek direkt im Python-Prozess laufen und lokal Daten persistent speichern, was den… Qdrant: Qdrant ist als eigenständiger Dienst konzipiert, der üblicherweise per Docker, systemd oder Kubernetes betrieben wird… Das Kriterium skalierung und leistungsverhalten unter last zeigt einen weiteren praktischen Unterschied: Chroma eignet sich gut für kleine bis mittlere Datensätze und lokale Anwendungen, während sehr große Kollektionen und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Entwicklerfreundlichkeit und Einstiegshürde: Chroma punktet mit einem sehr niedrigen Einstieg: Installation per pip, lokale Persistenz und eine…",
+    "toolB": "dein Projekt priorisiert Skalierung und Leistungsverhalten unter Last: Qdrant ist auf verteilte und horizontale Skalierung ausgelegt und unterstützt Sharding sowie…"
+  }
 }

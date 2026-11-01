@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra (2026): ¿Qué solución elegir?",
-    "description": "Comparamos PostgreSQL y Apache Cassandra en 2026: modelo de datos, escalabilidad, consistencia, operación y casos de uso para elegir bien tu base de datos."
+    "title": "PostgreSQL vs Apache Cassandra: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara PostgreSQL y Apache Cassandra: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -94,5 +94,49 @@
       "q": "¿Qué debo evaluar antes de migrar de PostgreSQL a Cassandra?",
       "a": "Antes de migrar hay que revisar los patrones de consulta, porque Cassandra requiere diseñar tablas a partir de los accesos previstos y no admite joins. También conviene analizar los requisitos de consistencia, el volumen de datos, la tolerancia a fallos y el coste operativo del clúster. Una prueba de concepto con datos y cargas realistas, junto con una estimación de precios actual, ayuda a evitar sorpresas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre PostgreSQL y Apache Cassandra cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza modelo de datos y lenguaje de consulta: PostgreSQL es una base de datos relacional con SQL estándar, tipos avanzados (JSONB, arrays,…. Apache Cassandra es preferible cuando tu proyecto prioriza escalabilidad y rendimiento bajo carga: Apache Cassandra está diseñada desde el inicio para escalar horizontalmente de forma casi lineal….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y lenguaje de consulta",
+      "toolA": "Permite joins complejos, subconsultas, vistas y funciones almacenadas, lo que facilita modelar dominios cambiantes sin rediseños profundos.",
+      "toolB": "Es muy eficiente para accesos por clave, pero poco flexible si los patrones de consulta cambian a menudo."
+    },
+    {
+      "category": "Escalabilidad y rendimiento bajo carga",
+      "toolA": "Su rendimiento es excelente en cargas mixtas, aunque la escritura intensiva en un único nodo puede convertirse en el cuello de botella.",
+      "toolB": "El rendimiento depende mucho del modelado y del tamaño del clúster."
+    },
+    {
+      "category": "Consistencia y transacciones",
+      "toolA": "Es una elección natural cuando no se pueden tolerar lecturas desactualizadas o escrituras parciales.",
+      "toolB": "Soporta transacciones ligeras y batches con limitaciones, pero no ofrece la misma riqueza transaccional que un sistema relacional; la consistencia fuerte suele implicar mayor latencia."
+    },
+    {
+      "category": "Disponibilidad y tolerancia a fallos",
+      "toolA": "La disponibilidad es buena si se configura correctamente, pero exige planificación y operación cuidadosas para evitar ventanas de indisponibilidad.",
+      "toolB": "Su diseño multirregional es una ventaja clara para sistemas que deben seguir escribiendo durante incidentes."
+    },
+    {
+      "category": "Facilidad de operación y mantenimiento",
+      "toolA": "Tareas como copias de seguridad, actualizaciones de versión y ajuste de parámetros están bien documentadas y cuentan con herramientas maduras.",
+      "toolB": "La observabilidad y la depuración de latencias son más complejas, aunque existen operadores y servicios gestionados que reducen la carga."
+    },
+    {
+      "category": "Ecosistema, integraciones y comunidad",
+      "toolA": "Esto facilita encontrar personal cualificado, ejemplos y soporte comercial de muchos proveedores.",
+      "toolB": "Aun así, su ecosistema es más especializado y hay menos profesionales disponibles en comparación con PostgreSQL."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL y Apache Cassandra responden a una necesidad similar, pero difieren en modelo de datos y lenguaje de consulta. PostgreSQL: PostgreSQL es una base de datos relacional con SQL estándar, tipos avanzados (JSONB, arrays, rangos, tipos… Apache Cassandra: Apache Cassandra es una base de datos distribuida de tipo wide-column con lenguaje CQL, similar a SQL pero sin joins… El criterio de escalabilidad y rendimiento bajo carga añade otra diferencia práctica: PostgreSQL escala verticalmente con solidez y también horizontalmente mediante réplicas de lectura, particionado… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y lenguaje de consulta: PostgreSQL es una base de datos relacional con SQL estándar, tipos avanzados (JSONB, arrays,…",
+    "toolB": "tu proyecto prioriza escalabilidad y rendimiento bajo carga: Apache Cassandra está diseñada desde el inicio para escalar horizontalmente de forma casi lineal…"
+  }
 }

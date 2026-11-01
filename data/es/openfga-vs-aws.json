@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS (2026): ¿Qué solución elegir?",
-    "description": "Comparamos OpenFGA y los servicios de autorización de AWS en 2026: modelos, escalabilidad, integración, seguridad y costes para elegir la mejor opción."
+    "title": "OpenFGA vs AWS: cuál elegir en 2026 — despliegue, escalabilidad y costes",
+    "description": "Compara OpenFGA y AWS: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -90,5 +90,49 @@
       "q": "¿Cómo afecta la latencia a la elección entre OpenFGA y AWS?",
       "a": "La latencia de OpenFGA depende de la base de datos y la configuración del clúster, y puede optimizarse con caché y réplicas. Los servicios gestionados de AWS ofrecen latencias predecibles respaldadas por su infraestructura, pero pueden verse afectados por cuotas y límites de throughput. Realiza pruebas con tu carga real antes de decidir."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre OpenFGA y AWS cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "OpenFGA encaja mejor cuando tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que…. AWS es preferible cuando tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de autorización y expresividad",
+      "toolA": "Su enfoque declarativo facilita escenarios complejos como equipos anidados o compartición granular, aunque requiere aprender su DSL.",
+      "toolB": "Cedar permite políticas declarativas con análisis estático, pero no está diseñado específicamente para ReBAC puro, por lo que ciertos patrones de relaciones requieren adaptaciones."
+    },
+    {
+      "category": "Flexibilidad y portabilidad",
+      "toolA": "No obstante, la operación y escalado corren por cuenta del equipo, salvo que se use una oferta gestionada de terceros.",
+      "toolB": "La autorización basada en IAM o Verified Permissions está ligada a las APIs y modelos de AWS, lo que puede implicar reescritura en caso de migración."
+    },
+    {
+      "category": "Integración con el ecosistema y servicios gestionados",
+      "toolA": "Su adopción requiere configurar y mantener el servidor o usar servicios de terceros, lo que puede aumentar el esfuerzo operativo.",
+      "toolB": "Esto reduce la carga operativa y acelera el desarrollo en aplicaciones ya desplegadas en AWS, aunque la integración con sistemas externos puede ser menos directa."
+    },
+    {
+      "category": "Seguridad, auditoría y cumplimiento",
+      "toolA": "No incluye por sí mismo certificaciones de cumplimiento; estas deben gestionarse en la infraestructura subyacente.",
+      "toolB": "Verified Permissions e IAM se benefician de la infraestructura de AWS, aunque el cumplimiento final depende de la configuración y del uso correcto de las políticas."
+    },
+    {
+      "category": "Escalabilidad y rendimiento",
+      "toolA": "No hay garantías de latencia específicas sin pruebas en el entorno del cliente.",
+      "toolB": "El rendimiento de Verified Permissions o IAM está respaldado por la infraestructura de AWS, aunque los límites de throughput y las cuotas pueden afectar a cargas muy elevadas."
+    },
+    {
+      "category": "Costes y modelo de precios",
+      "toolA": "Si se usa una oferta gestionada de terceros, habrá que sumar las tarifas correspondientes, que varían según el proveedor.",
+      "toolB": "La previsibilidad depende de la arquitectura y del volumen de peticiones; conviene revisar la calculadora de precios oficial."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "OpenFGA y AWS responden a una necesidad similar, pero difieren en modelo de autorización y expresividad. OpenFGA: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que permite expresar… AWS: AWS ofrece varios enfoques: IAM para permisos de recursos, Verified Permissions (basado en Cedar) para autorización de… El criterio de flexibilidad y portabilidad añade otra diferencia práctica: OpenFGA es de código abierto y se puede desplegar en cualquier nube o entorno local, lo que evita dependencias de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que…",
+    "toolB": "tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de…"
+  }
 }

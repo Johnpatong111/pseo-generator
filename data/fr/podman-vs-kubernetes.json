@@ -1,8 +1,8 @@
 {
   "slug": "podman-vs-kubernetes",
   "meta": {
-    "title": "Podman vs Kubernetes (2026) : quelle solution choisir ?",
-    "description": "Comparez Podman et Kubernetes en 2026 : moteur de conteneurs local contre orchestrateur de clusters. Cas d'usage, sécurité, courbe d'apprentissage, verdict et FAQ pour bien choisir."
+    "title": "Podman vs Kubernetes: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Podman et Kubernetes : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Podman"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "podman run --rm docker.io/library/hello-world",
-    "tech2Snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: hello\nspec:\n  containers:\n  - name: hello\n    image: docker.io/library/hello-world"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles limites faut-il anticiper avec Podman et Kubernetes ?",
       "a": "Podman reste principalement orienté machine unique : il ne fournit pas d'ordonnancement multi-nœuds ni de reprise automatique sur panne de nœud, et certaines intégrations cloud sont moins directes. Kubernetes, de son côté, introduit une complexité opérationnelle, un coût de ressources et un besoin de compétences spécialisées. Dans les deux cas, la compatibilité, les performances et les fonctions exactes dépendent de la version, de la distribution et de la configuration : une validation dans votre environnement reste indispensable."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Podman et Kubernetes modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Podman convient mieux lorsque votre projet privilégie courbe d'apprentissage et expérience développeur : Podman s'apprend vite pour qui connaît Docker, grâce à une CLI très proche et des commandes…. Kubernetes est préférable lorsque votre projet privilégie architecture et modèle d'exécution : Kubernetes repose sur un plan de contrôle (API server, etcd, scheduler, controllers) qui pilote….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle d'exécution",
+      "toolA": "Le mode rootless est pleinement supporté et recommandé pour les postes de travail.",
+      "toolB": "Cette architecture apporte redondance et montée en charge, au prix d'une complexité opérationnelle réelle."
+    },
+    {
+      "category": "Cas d'usage et portée",
+      "toolA": "Il convient aussi aux environnements où l'on veut éviter un démon privilégié.",
+      "toolB": "Il devient pertinent dès que la haute disponibilité ou la multiplicité des services entre en jeu."
+    },
+    {
+      "category": "Sécurité et isolation",
+      "toolA": "La sécurité dépend néanmoins de la configuration : les montages, les capabilities et les politiques de mots de passe restent à durcir.",
+      "toolB": "Un cluster mal configuré peut exposer l'API server ou des privilèges excessifs, d'où l'importance des audits et des mises à jour."
+    },
+    {
+      "category": "Courbe d'apprentissage et expérience développeur",
+      "toolA": "Les concepts avancés (pods, génération de manifestes, systemd) demandent un peu plus d'effort mais restent abordables.",
+      "toolB": "La courbe est réelle, mais des distributions et des plateformes managées atténuent une partie de la complexité."
+    },
+    {
+      "category": "Gestion des images et compatibilité OCI",
+      "toolA": "Certaines optimisations de build ou de cache peuvent varier selon la configuration et le moteur de stockage utilisé.",
+      "toolB": "La gestion des images est robuste mais répartie entre plusieurs composants, ce qui demande une organisation claire des pipelines."
+    },
+    {
+      "category": "Orchestration, scalabilité et haute disponibilité",
+      "toolA": "La scalabilité horizontale et la reprise automatique sur panne de nœud ne sont pas des fonctions natives.",
+      "toolB": "Cette puissance a un coût : ressources du plan de contrôle, complexité de configuration et besoin de compétences dédiées."
+    }
+  ],
+  "introduction": "Podman et Kubernetes répondent à un besoin proche, mais diffèrent sur architecture et modèle d'exécution. Podman : Podman fonctionne sans démon central : chaque conteneur est lancé par un processus enfant de l'utilisateur, via conmon… Kubernetes : Kubernetes repose sur un plan de contrôle (API server, etcd, scheduler, controllers) qui pilote des kubelets sur des… Le critère « Cas d'usage et portée » met en évidence une autre différence pratique : Podman cible l'exécution de conteneurs sur une seule machine : développement, tests, builds d'images, tâches… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie courbe d'apprentissage et expérience développeur : Podman s'apprend vite pour qui connaît Docker, grâce à une CLI très proche et des commandes…",
+    "toolB": "votre projet privilégie architecture et modèle d'exécution : Kubernetes repose sur un plan de contrôle (API server, etcd, scheduler, controllers) qui pilote…"
+  }
 }

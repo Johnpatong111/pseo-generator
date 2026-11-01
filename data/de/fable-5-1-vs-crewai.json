@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-crewai",
   "meta": {
-    "title": "Claude Fable 5.1 vs CrewAI (2026): welche Lösung passt besser?",
-    "description": "Claude Fable 5.1 (1M-Token-Kontext, $10/$50 pro 1M Tokens) gegen CrewAI: Kriterien, Codebeispiele und Entscheidungshilfe für Ihr Projekt im Jahr 2026."
+    "title": "Claude Fable 5.1 vs CrewAI: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Claude Fable 5.1 und CrewAI: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"DEIN_API_KEY\")\n\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=1024,\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}]\n)\n\nprint(response.content[0].text)",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Assistent\",\n    goal=\"Antworte freundlich\",\n    backstory=\"Ein hilfsbereiter KI-Assistent.\",\n    verbose=False\n)\n\ntask = Task(\n    description=\"Sage Hallo, Welt!\",\n    expected_output=\"Eine kurze Begrüßung\",\n    agent=agent\n)\n\ncrew = Crew(agents=[agent], tasks=[task])\nprint(crew.kickoff())"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -100,5 +101,44 @@
       "q": "Gibt es Benchmarks, die einen direkten Vergleich ermöglichen?",
       "a": "Ein direkter Benchmark-Vergleich ist nicht sinnvoll, da Claude Fable 5.1 ein Sprachmodell und CrewAI ein Orchestrierungsframework ist. Benchmarks wie MMLU oder HumanEval beziehen sich auf Modelle, nicht auf Frameworks. Für Claude Fable 5.1 sollten veröffentlichte Werte in der offiziellen Dokumentation geprüft werden; CrewAI wird nicht anhand solcher Metriken bewertet."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Claude Fable 5.1 und CrewAI verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Claude Fable 5.1 passt besser, wenn dein Projekt priorisiert Kontextfenster und maximaler Output: Claude Fable 5.1 bietet laut offizieller Dokumentation ein Kontextfenster von 1.000.000 Tokens und…. CrewAI ist geeigneter, wenn dein Projekt priorisiert API-Preise pro 1M Input-/Output-Tokens: CrewAI selbst erhebt keine Token-Preise; die Kosten entstehen durch die genutzten Sprachmodelle….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und maximaler Output",
+      "toolA": "Damit eignet es sich für sehr lange Dokumente, Codebasen oder mehrstufige Analysen in einem einzigen Aufruf, sofern der Tarif dies unterstützt.",
+      "toolB": "Die maximale Ausgabe pro Agent oder Schritt hängt von der Konfiguration des Modells und der Aufgabenbeschreibung ab und muss in der jeweiligen Integration geprüft werden."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU, HumanEval)",
+      "toolA": "Konkrete Scores sollten bei Bedarf in der offiziellen Modellübersicht verifiziert werden, da sie versionsabhängig sind.",
+      "toolB": "Ein Vergleich der Framework-Performance ist daher nicht sinnvoll, und die Ergebnisse hängen von den gewählten Modellen und der Aufgabenstellung ab."
+    },
+    {
+      "category": "API-Preise pro 1M Input-/Output-Tokens",
+      "toolA": "Prompt-Cache-Lesevorgänge werden mit 0,25 US-Dollar pro 1 Million Tokens berechnet (97,5 % unter dem Basis-Input-Preis); Preise und Verfügbarkeit können sich ändern und sind tarifabhängig.",
+      "toolB": "Die Gesamtkosten hängen von der Anzahl der Agenten, der Modellwahl und der Workflow-Komplexität ab und müssen individuell kalkuliert werden."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Für latenzkritische Anwendungen sollten eigene Messungen unter realistischer Last erfolgen, da die Werte konfigurationsabhängig sind.",
+      "toolB": "Die konkrete Latenz wird von den verwendeten Modellen, der Anzahl der Schritte und der Netzwerkanbindung bestimmt und ist ohne Messung nicht pauschal anzugeben."
+    },
+    {
+      "category": "Modellzugang und Open-/Closed-Verfügbarkeit",
+      "toolA": "Es kann nicht lokal betrieben werden; der Zugang setzt ein API-Konto und die Einhaltung der Nutzungsbedingungen voraus.",
+      "toolB": "Für Unternehmensfunktionen bietet CrewAI zudem kostenpflichtige Enterprise-Angebote mit zusätzlichem Support."
+    },
+    {
+      "category": "Praktische Anwendungsfälle",
+      "toolA": "Es ist weniger für die Koordination vieler spezialisierter Agenten gedacht, kann aber als Modell innerhalb eines Orchestrierungsframeworks dienen.",
+      "toolB": "Es ermöglicht die Definition von Aufgaben, Tools und Rollen und eignet sich für automatisierte Geschäftsprozesse, bei denen Flexibilität und Erweiterbarkeit gefragt sind."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 und CrewAI lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und maximaler output. Claude Fable 5.1: Claude Fable 5.1 bietet laut offizieller Dokumentation ein Kontextfenster von 1.000.000 Tokens und eine maximale… CrewAI: CrewAI ist ein Framework und besitzt kein eigenes Kontextfenster; die Kontextgröße wird durch das jeweils angebundene… Das Kriterium benchmark-leistung (mmlu, humaneval) zeigt einen weiteren praktischen Unterschied: Für Claude Fable 5.1 sind in der bereitgestellten Dokumentation keine MMLU- oder HumanEval-Werte veröffentlicht;… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und maximaler Output: Claude Fable 5.1 bietet laut offizieller Dokumentation ein Kontextfenster von 1.000.000 Tokens und…",
+    "toolB": "dein Projekt priorisiert API-Preise pro 1M Input-/Output-Tokens: CrewAI selbst erhebt keine Token-Preise; die Kosten entstehen durch die genutzten Sprachmodelle…"
+  }
 }

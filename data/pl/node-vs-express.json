@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-express",
   "meta": {
-    "title": "Node.js vs Express (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Node.js i Express w 2026 roku: wydajność, bezpieczeństwo, ekosystem, krzywa uczenia się i zastosowania. Sprawdź, które narzędzie pasuje do Twojego projektu."
+    "title": "Node.js vs Express: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Node.js i Express: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Node.js"
@@ -94,5 +94,49 @@
       "q": "Jakie są główne ograniczenia Node.js i Express?",
       "a": "Node.js wymaga większej wiedzy specjalistycznej przy budowie złożonych aplikacji i samodzielnego zapewnienia wielu warstw. Express, choć prosty, nie jest kompletnym rozwiązaniem bezpieczeństwa i wymaga starannego doboru middleware. Ograniczenia te należy oceniać w kontekście konkretnego projektu i wersji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Node.js a Express zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Node.js będzie lepszy, gdy projekt stawia na kryterium „Wydajność i skalowalność”: Node.js zapewnia wydajne wejście/wyjście nieblokujące i dobrze skaluje się w aplikacjach…. Express sprawdzi się, gdy projekt stawia na kryterium „Szybkość rozpoczęcia pracy i krzywa uczenia się”: Express skraca czas startu dzięki gotowym mechanizmom routingu i middleware, co pozwala szybko….",
+  "tradeoffs": [
+    {
+      "category": "Rola i poziom abstrakcji",
+      "toolA": "Jego zachowanie może się różnić w zależności od wersji LTS i konfiguracji.",
+      "toolB": "Express to framework aplikacyjny działający na Node.js, który dostarcza gotowy routing, middleware i obsługę żądań HTTP. Upraszcza tworzenie API i aplikacji webowych, ale nie zastępuje Node.js – musi być uruchamiany w tym środowisku. Zakres funkcji zależy od wersji Express (np. 4.x vs 5.x) i użytych middleware."
+    },
+    {
+      "category": "Szybkość rozpoczęcia pracy i krzywa uczenia się",
+      "toolA": "Dostępność materiałów edukacyjnych zależy od wersji i ekosystemu.",
+      "toolB": "Wersje 4.x i 5.x mają różnice w obsłudze błędów asynchronicznych, co warto sprawdzić przed wdrożeniem."
+    },
+    {
+      "category": "Wydajność i skalowalność",
+      "toolA": "Nie należy zakładać stałych benchmarków bez uwzględnienia konkretnego środowiska.",
+      "toolB": "Wersje i sposób wdrażania mają istotny wpływ na wyniki."
+    },
+    {
+      "category": "Ekosystem i dostępność bibliotek",
+      "toolA": "Kompatybilność może zależeć od wersji Node.js i systemu operacyjnego.",
+      "toolB": "Należy weryfikować zgodność i bezpieczeństwo przed użyciem w produkcji."
+    },
+    {
+      "category": "Bezpieczeństwo",
+      "toolA": "Nie można zakładać, że samo środowisko zapewni ochronę bez świadomych praktyk programistycznych.",
+      "toolB": "Poziom ochrony zależy od wersji, użytych komponentów i sposobu wdrożenia."
+    },
+    {
+      "category": "Elastyczność i kontrola architektury",
+      "toolA": "Elastyczność jest szczególnie cenna w systemach o nietypowych wymaganiach.",
+      "toolB": "Zakres elastyczności zależy od wersji i wybranych dodatków."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
+  },
+  "introduction": "Node.js i Express odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i poziom abstrakcji. Node.js: Node.js jest środowiskiem uruchomieniowym opartym na silniku V8, które udostępnia niskopoziomowe API do obsługi… Express: Express to framework aplikacyjny działający na Node.js, który dostarcza gotowy routing, middleware i obsługę żądań HTTP. Kolejną istotną różnicę pokazuje kryterium „Szybkość rozpoczęcia pracy i krzywa uczenia się”: Node.js wymaga zrozumienia modelu asynchronicznego, pętli zdarzeń, modułów i zarządzania procesami, co bywa trudne dla… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wydajność i skalowalność”: Node.js zapewnia wydajne wejście/wyjście nieblokujące i dobrze skaluje się w aplikacjach…",
+    "toolB": "projekt stawia na kryterium „Szybkość rozpoczęcia pracy i krzywa uczenia się”: Express skraca czas startu dzięki gotowym mechanizmom routingu i middleware, co pozwala szybko…"
+  }
 }

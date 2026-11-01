@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-v3-vs-mistral-large",
   "meta": {
-    "title": "DeepSeek V3 vs Mistral Large (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie DeepSeek V3 i Mistral Large w 2026 r.: kontekst, benchmarki, ceny API, opóźnienia, dostępność i zastosowania. Sprawdź, który model wybrać."
+    "title": "DeepSeek V3 vs Mistral Large: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj DeepSeek V3 i Mistral Large: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "DeepSeek V3"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from openai import OpenAI\n\n# DeepSeek udostępnia punkt końcowy zgodny z API OpenAI; weryfikuj aktualny URL i nazwę modelu.\nklient = OpenAI(api_key=\"TWOJ_KLUCZ\", base_url=\"https://api.deepseek.com\")\n\nodpowiedz = klient.chat.completions.create(\n    model=\"deepseek-chat\",\n    messages=[{\"role\": \"user\", \"content\": \"Powiedz: Witaj, świecie!\"}],\n)\nprint(odpowiedz.choices[0].message.content)",
-    "tech2Snippet": "from mistralai import Mistral\n\n# Użyj klucza API z konsoli Mistral i potwierdź aktualną nazwę modelu.\nklient = Mistral(api_key=\"TWOJ_KLUCZ\")\n\nodpowiedz = klient.chat.complete(\n    model=\"mistral-large-latest\",\n    messages=[{\"role\": \"user\", \"content\": \"Powiedz: Witaj, świecie!\"}],\n)\nprint(odpowiedz.choices[0].message.content)"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Który model wybrać dla firmy z Europy?",
       "a": "Firma ceniąca europejskiego dostawcę, wsparcie komercyjne i gotowe integracje chmurowe zwykle rozważy Mistral Large. Organizacja gotowa na własne wdrożenie i szukająca otwartych wag oraz niższych kosztów API może wybrać DeepSeek V3, o ile potwierdzi zgodność prawną i bezpieczeństwo hostingu. W obu przypadkach decyzję warto poprzedzić pilotażem na realnych danych i weryfikacją aktualnych warunków u dostawcy."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między DeepSeek V3 a Mistral Large zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "DeepSeek V3 będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: DeepSeek V3 w publikowanych specyfikacjach rodziny modeli obsługuje bardzo duże okno kontekstu,…. Mistral Large sprawdzi się, gdy projekt stawia na kryterium „Zastosowania praktyczne i ekosystem”: Mistral Large znajduje zastosowanie w aplikacjach biznesowych, obsłudze klienta, analityce….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstu i obsługa długich dokumentów",
+      "toolA": "Dokładny limit zależy jednak od wersji modelu i punktu końcowego API, dlatego należy go potwierdzić w oficjalnej dokumentacji przed projektowaniem pipeline'u.",
+      "toolB": "Rzeczywisty limit i obsługa długich promptów zależą od konkretnej wersji oraz planu API i wymagają weryfikacji u dostawcy."
+    },
+    {
+      "category": "Wyniki benchmarków (MMLU i HumanEval)",
+      "toolA": "Ponieważ benchmarki są wrażliwe na wersję modelu, sposób ewaluacji i warunki uruchomienia, liczby należy porównywać wyłącznie dla zgodnych konfiguracji i sprawdzać w oficjalnych źródłach.",
+      "toolB": "Rzetelne porównanie wymaga tych samych promptów, ustawień i wersji modeli, dlatego decyzję warto oprzeć na własnej ewaluacji na reprezentatywnym zbiorze zadań."
+    },
+    {
+      "category": "Cennik API za 1 mln tokenów wejścia i wyjścia",
+      "toolA": "Ceny są zmienne w czasie, zależne od wersji i ewentualnych rabatów za cache, więc konkretne kwoty trzeba zweryfikować w aktualnym cenniku dostawcy.",
+      "toolB": "Dokładne stawki należy sprawdzić w oficjalnym cenniku Mistral, ponieważ mogą się zmieniać wraz z nowymi wersjami modelu."
+    },
+    {
+      "category": "Opóźnienia i przepustowość",
+      "toolA": "Samodzielne hostowanie wag otwartych pozwala kontrolować infrastrukturę, ale wymaga własnego zaplecza GPU i nie gwarantuje niskich opóźnień bez odpowiedniego skalowania.",
+      "toolB": "Publikowane wartości nie są jednolite dla wszystkich wersji, więc porównanie opóźnień warto prowadzić jakościowo lub przez własne pomiary w docelowym środowisku."
+    },
+    {
+      "category": "Dostępność modelu i otwartość wag",
+      "toolA": "Dostępność konkretnej wersji, licencja i warunki komercyjnego użycia wymagają jednak sprawdzenia w oficjalnym repozytorium i dokumentacji.",
+      "toolB": "Daje to dostawcy większą kontrolę nad jakością i bezpieczeństwem, ale ogranicza możliwość pełnego audytu i niezależnego wdrożenia."
+    },
+    {
+      "category": "Zastosowania praktyczne i ekosystem",
+      "toolA": "Ekosystem integracji jest rozwijany, ale może wymagać więcej pracy przy niestandardowych wdrożeniach i zgodności z narzędziami korporacyjnymi.",
+      "toolB": "Dostawca rozwija integracje chmurowe i narzędzia korporacyjne, co bywa atutem dla organizacji ceniących wsparcie i lokalne uregulowania."
+    }
+  ],
+  "introduction": "DeepSeek V3 i Mistral Large odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstu i obsługa długich dokumentów. DeepSeek V3: DeepSeek V3 w publikowanych specyfikacjach rodziny modeli obsługuje bardzo duże okno kontekstu, rzędu setek tysięcy… Mistral Large: Mistral Large oferuje okno kontekstu wystarczające do typowych zadań biznesowych, ale zwykle mniejsze niż największe… Kolejną istotną różnicę pokazuje kryterium „Wyniki benchmarków (MMLU i HumanEval)”: Dla DeepSeek V3 publikowano wyniki MMLU i HumanEval w materiałach premiery, wskazujące na silną pozycję w zadaniach… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstu i obsługa długich dokumentów”: DeepSeek V3 w publikowanych specyfikacjach rodziny modeli obsługuje bardzo duże okno kontekstu,…",
+    "toolB": "projekt stawia na kryterium „Zastosowania praktyczne i ekosystem”: Mistral Large znajduje zastosowanie w aplikacjach biznesowych, obsłudze klienta, analityce…"
+  }
 }

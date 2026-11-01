@@ -1,8 +1,8 @@
 {
   "slug": "autogen-vs-crewai",
   "meta": {
-    "title": "AutoGen vs CrewAI (2026): welche Lösung passt besser?",
-    "description": "AutoGen vs CrewAI 2026: Vergleich von Architektur, Multi-Agenten-Orchestrierung, Codeausführung, Ökosystem und Lernkurve – mit Empfehlung für Ihr Projekt."
+    "title": "AutoGen vs CrewAI: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche AutoGen und CrewAI: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "AutoGen"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from autogen import AssistantAgent, UserProxyAgent\n\nassistant = AssistantAgent(name=\"assistant\", llm_config={\"config_list\": [{\"model\": \"gpt-4o-mini\"}]})\nuser = UserProxyAgent(name=\"user\", human_input_mode=\"NEVER\", code_execution_config=False)\nuser.initiate_chat(assistant, message=\"Sag Hallo Welt auf Deutsch.\")",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(role=\"Begrüßer\", goal=\"Freundlich grüßen\", backstory=\"Ein hilfsbereiter Assistent.\")\ntask = Task(description=\"Sag Hallo Welt auf Deutsch.\", expected_output=\"Eine kurze Begrüßung.\", agent=agent)\ncrew = Crew(agents=[agent], tasks=[task])\ncrew.kickoff()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Kosten sind bei der Wahl zu berücksichtigen?",
       "a": "Neben möglichen Lizenz- oder Hostingkosten fallen vor allem Modellaufrufe und Infrastruktur ins Gewicht, deren Höhe stark von Arbeitslast, Kontextlänge und Anbieter abhängt. Da beide Frameworks unterschiedliche Orchestrierungsmuster nahelegen, kann die Anzahl der Modellaufrufe je nach Aufgabe deutlich variieren. Konkrete Preisaussagen sollten Sie daher nur auf Basis Ihrer eigenen Messungen und der aktuellen Anbieterkonditionen treffen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen AutoGen und CrewAI verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "AutoGen passt besser, wenn dein Projekt priorisiert Codeausführung und Werkzeuge: AutoGen bringt mit dem UserProxyAgent und codeausführenden Agenten eine ausgeprägte Unterstützung…. CrewAI ist geeigneter, wenn dein Projekt priorisiert Architektur und Agentenmodell: CrewAI modelliert Agenten als Teammitglieder mit Rolle, Ziel und Hintergrundgeschichte, die in….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Agentenmodell",
+      "toolA": "Je nach Version und eingesetzten Erweiterungen können sich API-Details und empfohlene Muster ändern.",
+      "toolB": "Der sequenzielle oder hierarchische Prozess ist fest eingebaut und macht die Struktur leicht nachvollziehbar, wenngleich weniger frei formbar als reine Konversationsgraphen."
+    },
+    {
+      "category": "Multi-Agenten-Orchestrierung und Steuerbarkeit",
+      "toolA": "Die tatsächliche Stabilität hängt stark von der Konfiguration und der Komplexität des Gesprächsflusses ab.",
+      "toolB": "Für ungewöhnliche oder stark dynamische Interaktionsmuster sind die Möglichkeiten dagegen weniger flexibel als bei einem konversationsbasierten Ansatz."
+    },
+    {
+      "category": "Codeausführung und Werkzeuge",
+      "toolA": "Die Sicherheit der Codeausführung muss jedoch stets durch geeignete Sandboxing- und Berechtigungskonzepte abgesichert werden.",
+      "toolB": "Wer umfangreiche Codegenerierung mit Ausführung benötigt, muss zusätzliche Integrationen vorsehen."
+    },
+    {
+      "category": "Lernkurve und Dokumentation",
+      "toolA": "Die Community ist aktiv, die Qualität der Beispiele variiert jedoch.",
+      "toolB": "Für sehr spezielle Anforderungen stößt die vergleichsweise einfache Abstraktion jedoch an Grenzen."
+    },
+    {
+      "category": "Ökosystem und Integrationen",
+      "toolA": "Die verfügbaren Integrationen hängen von der Version und den gepflegten Erweiterungspaketen ab.",
+      "toolB": "Die konkrete Verfügbarkeit und Reife einzelner Integrationen sollte vor dem Einsatz geprüft werden."
+    },
+    {
+      "category": "Produktivität und Wartbarkeit im Team",
+      "toolA": "Die Wartbarkeit hängt stark von der Disziplin des Teams und der gewählten Architektur ab.",
+      "toolB": "Bei sehr dynamischen Anforderungen kann die starre Struktur jedoch zusätzlichen Aufwand verursachen."
+    }
+  ],
+  "introduction": "AutoGen und CrewAI lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und agentenmodell. AutoGen: AutoGen organisiert Agenten als konversationsbasierte Akteure, die über Nachrichten miteinander interagieren; Rollen… CrewAI: CrewAI modelliert Agenten als Teammitglieder mit Rolle, Ziel und Hintergrundgeschichte, die in einer Crew… Das Kriterium multi-agenten-orchestrierung und steuerbarkeit zeigt einen weiteren praktischen Unterschied: AutoGen bietet feingranulare Kontrolle über Konversationsmuster, etwa Gruppenchats mit Sprecherwahl und verschachtelte… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Codeausführung und Werkzeuge: AutoGen bringt mit dem UserProxyAgent und codeausführenden Agenten eine ausgeprägte Unterstützung…",
+    "toolB": "dein Projekt priorisiert Architektur und Agentenmodell: CrewAI modelliert Agenten als Teammitglieder mit Rolle, Ziel und Hintergrundgeschichte, die in…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nextjs-vs-remix",
   "meta": {
-    "title": "Next.js vs Remix (2026) : quelle solution choisir ?",
-    "description": "Comparatif Next.js vs Remix en 2026 : rendu, routage, données, déploiement, écosystème et sécurité. Conseils concrets pour choisir selon votre projet et votre équipe."
+    "title": "Next.js vs Remix: lequel choisir en 2026 — fonctionnalités, performances et écosystème",
+    "description": "Comparez Next.js et Remix : évaluez les compromis architecturaux liés à rendu, routage et chargement des données et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Next.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// app/page.tsx (Next.js, App Router)\nexport default function Page() {\n  return <h1>Hello, World!</h1>;\n}",
-    "tech2Snippet": "// app/routes/_index.tsx (Remix)\nexport default function Index() {\n  return <h1>Hello, World!</h1>;\n}"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport default async function ProductPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) throw new Error(\"Missing category\");\n  const products = await productRepository.listActiveByCategory(category);\n  return <ul>{products.map((product: Product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
+    "tech2Snippet": "import { json } from \"@remix-run/node\";\nimport { useLoaderData } from \"@remix-run/react\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function loader({ request }: { request: Request }) {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId) throw new Response(\"Missing category\", { status: 400 });\n  const products = await productRepository.listActiveByCategory(categoryId);\n  return json({ products });\n}\n\nexport default function ProductRoute() {\n  const { products } = useLoaderData<typeof loader>();\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Comment choisir entre Next.js et Remix pour une équipe déjà familière avec React ?",
       "a": "Si votre équipe veut un cadre très intégré, un large écosystème et des modes de rendu variés, Next.js est souvent le choix le plus direct. Si elle privilégie un modèle explicite de routes imbriquées, de loaders et d’actions, et une forte adhérence aux Web Standards, Remix peut être plus confortable. Dans les deux cas, prévoyez un petit projet pilote pour valider l’adéquation avec vos contraintes de déploiement et vos habitudes de développement."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Next.js et Remix modifie la manière de gérer le rendu de l’interface et le chargement des données ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Next.js convient mieux lorsque votre projet privilégie modèle de rendu et flexibilité : Next.js prend en charge le rendu statique et le rendu serveur, ainsi que des modes hybrides selon…. Remix est préférable lorsque votre projet privilégie routage et organisation des pages : Remix adopte un routage imbriqué explicite, où les routes et les layouts sont définis de manière….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de rendu et flexibilité",
+      "toolA": "Cette flexibilité convient aux sites mêlant pages de contenu et applications interactives, mais elle demande de comprendre les implications de chaque stratégie de rendu.",
+      "toolB": "Il est moins centré sur la génération statique complète que Next.js, même si des approches de pré-génération existent selon l’écosystème."
+    },
+    {
+      "category": "Routage et organisation des pages",
+      "toolA": "La structure peut devenir riche en conventions lorsqu’on multiplie les layouts et les segments.",
+      "toolB": "Il est particulièrement lisible pour les applications à fort besoin de navigation imbriquée, même s’il demande une bonne compréhension du modèle de routes."
+    },
+    {
+      "category": "Chargement et mutation des données",
+      "toolA": "Les mutations sont généralement gérées via des actions serveur ou des appels API, avec des garanties variables selon la version et l’hébergement.",
+      "toolB": "Il est souvent plus direct pour les formulaires complexes, mais peut demander plus de code explicite pour des cas de cache très avancés."
+    },
+    {
+      "category": "Écosystème, documentation et support",
+      "toolA": "Elle s’accompagne d’une évolution rapide des conventions, ce qui peut nécessiter des mises à jour régulières et une veille technique.",
+      "toolB": "En revanche, la stabilité conceptuelle et l’adhérence aux standards peuvent réduire la charge de réapprentissage."
+    },
+    {
+      "category": "Déploiement et portabilité",
+      "toolA": "La portabilité est donc bonne mais variable selon les fonctionnalités utilisées.",
+      "toolB": "Le déploiement est généralement explicite et bien documenté."
+    },
+    {
+      "category": "Performance et expérience utilisateur",
+      "toolA": "Il n’existe pas de garantie universelle : des mesures adaptées à votre cas restent nécessaires.",
+      "toolB": "Aucun des deux outils ne peut promettre des gains systématiques."
+    }
+  ],
+  "introduction": "Next.js et Remix répondent à un besoin proche, mais diffèrent sur modèle de rendu et flexibilité. Next.js : Next.js prend en charge le rendu statique et le rendu serveur, ainsi que des modes hybrides selon les routes et la… Remix : Remix s’appuie sur le rendu serveur et l’hydratation côté client, avec une forte orientation vers les Web Standards et… Le critère « Routage et organisation des pages » met en évidence une autre différence pratique : Next.js utilise un routage basé sur les fichiers, avec des conventions de dossiers et des layouts imbriqués. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de rendu et flexibilité : Next.js prend en charge le rendu statique et le rendu serveur, ainsi que des modes hybrides selon…",
+    "toolB": "votre projet privilégie routage et organisation des pages : Remix adopte un routage imbriqué explicite, où les routes et les layouts sont définis de manière…"
+  }
 }

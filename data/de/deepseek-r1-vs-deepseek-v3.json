@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-deepseek-v3",
   "meta": {
-    "title": "DeepSeek R1 vs DeepSeek V3 (2026): welche Lösung passt besser?",
-    "description": "DeepSeek R1 vs DeepSeek V3 im Vergleich 2026: Reasoning-Modell gegen schnelles Basismodell, mit Kriterien zu Kontext, Zugang, API, Latenz und typischen Einsatzfällen."
+    "title": "DeepSeek R1 vs DeepSeek V3: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche DeepSeek R1 und DeepSeek V3: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.deepseek.com\", api_key=\"DEIN_API_KEY\")\n\nresponse = client.chat.completions.create(\n    model=\"deepseek-reasoner\",\n    messages=[{\"role\": \"user\", \"content\": \"Wie viele Primzahlen liegen zwischen 1 und 30? Antworte knapp.\"}]\n)\n\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "from openai import OpenAI\n\nclient = OpenAI(base_url=\"https://api.deepseek.com\", api_key=\"DEIN_API_KEY\")\n\nresponse = client.chat.completions.create(\n    model=\"deepseek-chat\",\n    messages=[{\"role\": \"user\", \"content\": \"Schreibe eine kurze Begrüßung: Hallo, Welt!\"}]\n)\n\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Lassen sich beide Modelle in dasselbe Projekt integrieren?",
       "a": "Ja, beide nutzen übliche Chat-Completion-Schnittstellen und lassen sich über gängige SDKs ansprechen. Häufig wird V3 für schnelle Standardaufgaben und R1 für schwierige Fälle kombiniert. Dabei sollten Routing-Logik, Fehlerbehandlung und Kostenkontrolle gemeinsam geplant werden."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen DeepSeek R1 und DeepSeek V3 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "DeepSeek R1 passt besser, wenn dein Projekt priorisiert Kontextfenster und Modellkonfiguration: R1 ist als Reasoning-Modell mit veröffentlichten Gewichten verfügbar und lässt sich je nach…. DeepSeek V3 ist geeigneter, wenn dein Projekt priorisiert Kontextfenster und Modellkonfiguration: V3 ist das Basismodell ohne separate Denkphase und wird über mehrere Anbieter sowie als offene….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und Modellkonfiguration",
+      "toolA": "Für lange Dokumente ist der Reasoning-Anteil zusätzlich zu den Eingabetokens einzuplanen.",
+      "toolB": "Da keine langen internen Denkketten erzeugt werden, steht das Fenster stärker dem eigentlichen Inhalt und der Antwort zur Verfügung."
+    },
+    {
+      "category": "Benchmark-Leistung (MMLU und HumanEval, nur bei Vergleichbarkeit)",
+      "toolA": "Tendenziell wird R1 für Aufgaben mit mehrstufigem Schlussfolgern und komplexer Mathematik oder Programmierung positioniert.",
+      "toolB": "V3 wird eher als starkes Allzweckmodell mit günstiger Inferenz positioniert, ohne explizite Denkphase."
+    },
+    {
+      "category": "API-Preise pro 1M Input- und Output-Tokens",
+      "toolA": "Konkrete Beträge müssen zur Nutzungszeit in der aktuellen offiziellen Preisliste geprüft werden.",
+      "toolB": "Verbindliche Zahlen sind ausschließlich der aktuellen offiziellen Preisliste des jeweiligen Anbieters zu entnehmen."
+    },
+    {
+      "category": "Latenz und Durchsatz",
+      "toolA": "Für interaktive Echtzeitanwendungen kann die Denkphase ein limitierender Faktor sein.",
+      "toolB": "Messwerte sollten als qualitativ eingeordnet und nicht als allgemeingültige Zahlen übernommen werden."
+    },
+    {
+      "category": "Modellzugang und offene beziehungsweise geschlossene Verfügbarkeit",
+      "toolA": "Die konkrete Verfügbarkeit einzelner Versionen ist zeitabhängig und sollte regelmäßig geprüft werden.",
+      "toolB": "Auch hier gilt: Lizenz, Version und Anbieterkonditionen sind individuell zu verifizieren."
+    },
+    {
+      "category": "Praktische Einsatzfälle",
+      "toolA": "Für einfache Massenanfragen ist R1 oft überdimensioniert.",
+      "toolB": "Bei besonders kniffligen Schlussfolgerungsaufgaben kann es gegenüber einem spezialisierten Reasoning-Modell Nachteile haben."
+    }
+  ],
+  "introduction": "DeepSeek R1 und DeepSeek V3 lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und modellkonfiguration. DeepSeek R1: R1 ist als Reasoning-Modell mit veröffentlichten Gewichten verfügbar und lässt sich je nach Anbieter oder lokalem… DeepSeek V3: V3 ist das Basismodell ohne separate Denkphase und wird über mehrere Anbieter sowie als offene Gewichte angeboten. Das Kriterium benchmark-leistung (mmlu und humaneval, nur bei vergleichbarkeit) zeigt einen weiteren praktischen Unterschied: Zu R1 wurden in den offiziellen Veröffentlichungen Benchmark-Ergebnisse berichtet, die sich auf bestimmte Versionen,… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und Modellkonfiguration: R1 ist als Reasoning-Modell mit veröffentlichten Gewichten verfügbar und lässt sich je nach…",
+    "toolB": "dein Projekt priorisiert Kontextfenster und Modellkonfiguration: V3 ist das Basismodell ohne separate Denkphase und wird über mehrere Anbieter sowie als offene…"
+  }
 }

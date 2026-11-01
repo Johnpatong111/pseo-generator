@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-vllm",
   "meta": {
-    "title": "Ollama vs vLLM (2026): welche Lösung passt besser?",
-    "description": "Ollama vs vLLM: Ein detaillierter Vergleich für 2026 zu Einfachheit, Performance, Skalierung, Hardware und Anwendungsfällen – inklusive Entscheidungshilfe und Codebeispielen."
+    "title": "Ollama vs vLLM: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Ollama und vLLM: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Ollama"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import ollama\n\nresponse = ollama.chat(model='llama3', messages=[\n    {'role': 'user', 'content': 'Hello, World!'}\n])\nprint(response['message']['content'])",
-    "tech2Snippet": "from vllm import LLM, SamplingParams\n\nllm = LLM(model='meta-llama/Llama-3-8B-Instruct')\nsampling_params = SamplingParams(temperature=0.8, max_tokens=50)\noutputs = llm.generate(['Hello, World!'], sampling_params)\nprint(outputs[0].outputs[0].text)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:8000/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "Kann ich Ollama und vLLM in derselben Umgebung kombinieren?",
       "a": "Ja, es ist möglich, Ollama für Entwicklung und vLLM für Produktion zu verwenden, da beide unterschiedliche Stärken haben. Sie könnten beispielsweise mit Ollama Prototypen erstellen und die gleichen Modelle später mit vLLM in der Produktion bereitstellen. Dies erfordert jedoch eine sorgfältige Planung der Schnittstellen und der Modellkompatibilität."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Ollama und vLLM verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Ollama passt besser, wenn dein Projekt priorisiert Benutzerfreundlichkeit und Einrichtung: Ollama bietet eine äußerst einfache Installation über eine einzelne Binärdatei oder ein…. vLLM ist geeigneter, wenn dein Projekt priorisiert Leistung und Durchsatz: vLLM wurde für hohen Durchsatz und minimale Latenz unter Last entwickelt und nutzt Techniken wie….",
+  "tradeoffs": [
+    {
+      "category": "Benutzerfreundlichkeit und Einrichtung",
+      "toolA": "Die Standardeinstellungen sind für lokale Workstations sinnvoll gewählt, und die Lernkurve ist sehr niedrig.",
+      "toolB": "Für eine produktionsreife Bereitstellung sind zusätzliche Komponenten wie ein Reverse-Proxy oder ein Orchestrierungssystem oft unerlässlich."
+    },
+    {
+      "category": "Leistung und Durchsatz",
+      "toolA": "In Tests mit mehreren parallelen Anfragen zeigt es im Vergleich zu spezialisierten Servern oft eine geringere Skalierung.",
+      "toolB": "Die tatsächliche Leistung ist stark von der GPU-Ausstattung, der Modellgröße und der Konfiguration abhängig und sollte für den eigenen Workload gemessen werden."
+    },
+    {
+      "category": "Skalierung und Produktionsreife",
+      "toolA": "Eine Skalierung erfordert zusätzliche Infrastruktur und eigene Logik.",
+      "toolB": "Damit eignet es sich besser für Anwendungen mit hohen Verfügbarkeits- und Skalierungsanforderungen, sofern die entsprechende Infrastruktur vorhanden ist."
+    },
+    {
+      "category": "Hardware-Unterstützung und Effizienz",
+      "toolA": "Die Auswahl an Quantisierungen und Modellformaten ist praktisch, aber weniger umfangreich als bei vLLM.",
+      "toolB": "Für CPUs oder Apple Silicon ist vLLM nicht die primäre Zielplattform, was die Einsatzmöglichkeiten einschränkt."
+    },
+    {
+      "category": "Modellunterstützung und Ökosystem",
+      "toolA": "Weniger verbreitete oder sehr neue Modelle sind möglicherweise nicht sofort verfügbar.",
+      "toolB": "Allerdings erfordert die Nutzung neuer Modelle manchmal Anpassungen oder spezifische Versionen."
+    },
+    {
+      "category": "Sicherheit und Mandantenfähigkeit",
+      "toolA": "Die Angriffsfläche ist gering, solange es nur lokal genutzt wird.",
+      "toolB": "Für strenge Mandantentrennung sind zusätzliche Komponenten erforderlich."
+    }
+  ],
+  "introduction": "Ollama und vLLM lösen ein ähnliches Problem, unterscheiden sich jedoch bei benutzerfreundlichkeit und einrichtung. Ollama: Ollama bietet eine äußerst einfache Installation über eine einzelne Binärdatei oder ein Installationspaket für macOS,… vLLM: vLLM wird üblicherweise per pip installiert und erfordert entweder eine Python-Umgebung mit CUDA oder die Nutzung… Das Kriterium leistung und durchsatz zeigt einen weiteren praktischen Unterschied: Ollama ist auf interaktive Einzelnutzung und moderate Parallelität ausgelegt und erzielt auf Workstations gute… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Benutzerfreundlichkeit und Einrichtung: Ollama bietet eine äußerst einfache Installation über eine einzelne Binärdatei oder ein…",
+    "toolB": "dein Projekt priorisiert Leistung und Durchsatz: vLLM wurde für hohen Durchsatz und minimale Latenz unter Last entwickelt und nutzt Techniken wie…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-redis",
   "meta": {
-    "title": "MongoDB vs Redis (2026): quelle solution choisir ?",
-    "description": "Comparez MongoDB et Redis en 2026 : modèle de données, performances, scalabilité, sécurité. Découvrez quel outil convient à votre projet."
+    "title": "MongoDB vs Redis: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez MongoDB et Redis : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "MongoDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  try {\n    await client.connect();\n    const db = client.db('test');\n    const collection = db.collection('messages');\n    await collection.insertOne({ text: 'Hello, World!' });\n    const doc = await collection.findOne({});\n    console.log(doc.text);\n  } finally {\n    await client.close();\n  }\n}\n\nmain().catch(console.error);",
-    "tech2Snippet": "const Redis = require('ioredis');\nconst redis = new Redis();\n\nasync function main() {\n  await redis.set('message', 'Hello, World!');\n  const value = await redis.get('message');\n  console.log(value);\n  await redis.quit();\n}\n\nmain().catch(console.error);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -94,5 +95,44 @@
       "q": "Quel outil choisir pour des données très structurées avec des jointures ?",
       "a": "MongoDB propose des agrégations avec $lookup, mais les jointures ne sont pas aussi naturelles que dans une base relationnelle. Redis n'est pas conçu pour des jointures complexes. Si les jointures sont centrales, une base relationnelle reste souvent plus adaptée ; entre les deux, MongoDB offre davantage de possibilités."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre MongoDB et Redis modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "MongoDB convient mieux lorsque votre projet privilégie modèle de données : MongoDB stocke des documents BSON dans des collections, offrant un schéma flexible et des requêtes…. Redis est préférable lorsque votre projet privilégie performances et latence : Redis fonctionne principalement en mémoire, ce qui lui permet souvent des temps de réponse très….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données",
+      "toolA": "Ce modèle convient aux données hiérarchiques ou hétérogènes, comme les catalogues produits ou les profils utilisateurs.",
+      "toolB": "Il ne permet pas de requêtes ad hoc complexes sur le contenu, mais il est très efficace pour des accès directs par clé et des opérations atomiques."
+    },
+    {
+      "category": "Performances et latence",
+      "toolA": "Les performances dépendent du schéma, des index et de la charge ; les requêtes complexes peuvent être coûteuses sans index approprié.",
+      "toolB": "Les performances restent dépendantes de la taille des données, de la configuration et de la persistance éventuelle."
+    },
+    {
+      "category": "Persistance et durabilité",
+      "toolA": "La durabilité est configurable selon le niveau d'acquittement des écritures et le mode de réplication.",
+      "toolB": "Selon la configuration, une perte de données reste possible en cas d'arrêt brutal, surtout sans persistance."
+    },
+    {
+      "category": "Scalabilité et haute disponibilité",
+      "toolA": "La scalabilité dépend de la conception du schéma et des clés de sharding choisies.",
+      "toolB": "La scalabilité horizontale est possible mais certaines structures multi-clés restent limitées."
+    },
+    {
+      "category": "Requêtes et fonctionnalités de recherche",
+      "toolA": "Il permet des requêtes ad hoc sans devoir modéliser les accès à l'avance.",
+      "toolB": "Des modules optionnels peuvent ajouter des capacités de recherche, mais ils ne font pas partie du cœur standard."
+    },
+    {
+      "category": "Cas d'usage typiques",
+      "toolA": "Il brille lorsque le schéma évolue et que les requêtes sont variées.",
+      "toolB": "Il complète souvent une base de données principale plutôt que de la remplacer."
+    }
+  ],
+  "introduction": "MongoDB et Redis répondent à un besoin proche, mais diffèrent sur modèle de données. MongoDB : MongoDB stocke des documents BSON dans des collections, offrant un schéma flexible et des requêtes riches sur des… Redis : Redis repose sur un magasin clé-valeur avec des structures de données variées : chaînes, listes, ensembles, hachages,… Le critère « Performances et latence » met en évidence une autre différence pratique : MongoDB est optimisé pour des lectures et écritures persistantes sur disque, avec un cache interne et des index. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de données : MongoDB stocke des documents BSON dans des collections, offrant un schéma flexible et des requêtes…",
+    "toolB": "votre projet privilégie performances et latence : Redis fonctionne principalement en mémoire, ce qui lui permet souvent des temps de réponse très…"
+  }
 }

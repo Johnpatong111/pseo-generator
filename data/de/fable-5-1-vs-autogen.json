@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-autogen",
   "meta": {
-    "title": "Claude Fable 5.1 vs AutoGen (2026): welche Lösung passt besser?",
-    "description": "Claude Fable 5.1 als verwaltetes Anthropic-Modell trifft auf AutoGen als Open-Source-Framework für Multi-Agenten. Ein Vergleich nach Kontext, Preis, Reife und Einsatz."
+    "title": "Claude Fable 5.1 vs AutoGen: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche Claude Fable 5.1 und AutoGen: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from anthropic import Anthropic\n\nclient = Anthropic()\nmessage = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Hallo, Welt!\"}],\n)\nprint(message.content[0].text)",
-    "tech2Snippet": "from autogen import AssistantAgent, UserProxyAgent\n\nassistant = AssistantAgent(\"assistant\", llm_config={\"config_list\": [{\"model\": \"gpt-4o-mini\"}]})\nuser = UserProxyAgent(\"user\", human_input_mode=\"NEVER\", code_execution_config=False)\nuser.initiate_chat(assistant, message=\"Sag Hallo, Welt!\")"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Option eignet sich für den Einstieg mit wenig Infrastruktur?",
       "a": "Für einen schnellen Einstieg mit minimaler Infrastruktur ist Claude Fable 5.1 meist unkomplizierter, da ein API-Schlüssel genügt und kein eigener Server betrieben werden muss. AutoGen erfordert zunächst die Einrichtung einer Python-Umgebung, die Konfiguration von Modell-Endpunkten und das Verständnis der Agentenmuster. Wer später mehr Kontrolle braucht, kann von einem direkten Modellaufruf schrittweise zu einer Orchestrierung mit AutoGen übergehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Claude Fable 5.1 und AutoGen verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Claude Fable 5.1 passt besser, wenn dein Projekt priorisiert Kontextfenster und maximale Ausgabelänge: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1…. AutoGen ist geeigneter, wenn dein Projekt priorisiert Verfügbarkeit und Offenheit des Zugangs: AutoGen ist ein quelloffenes Framework von Microsoft und kann ohne Lizenzkosten selbst betrieben….",
+  "tradeoffs": [
+    {
+      "category": "Kontextfenster und maximale Ausgabelänge",
+      "toolA": "Damit lassen sich umfangreiche Dokumente, große Codestände oder lange Gesprächsverläufe in einem einzigen Aufruf verarbeiten, wobei die tatsächlich nutzbare Länge von der jeweiligen API-Konfiguration abhängen kann.",
+      "toolB": "Wer AutoGen einsetzt, muss die Kontext- und Ausgabelimits pro konfiguriertem Backend selbst prüfen und die Agenten-Orchestrierung entsprechend dimensionieren, etwa durch Aufteilen langer Verläufe."
+    },
+    {
+      "category": "Verfügbarkeit und Offenheit des Zugangs",
+      "toolA": "Die Nutzung setzt ein Konto, API-Schlüssel und die Einhaltung der Anbieterrichtlinien voraus, während Gewichtungen und Modellinterna nicht offengelegt sind.",
+      "toolB": "Es ist nicht an einen bestimmten Modellanbieter gebunden und lässt sich mit Cloud-APIs, lokalen Modellen oder eigenen Endpunkten kombinieren, was maximale Flexibilität, aber auch eigene Betriebsverantwortung bedeutet."
+    },
+    {
+      "category": "Preismodell und Kostenstruktur",
+      "toolA": "Diese Preise gelten zum Stand der Dokumentation und können sich ändern, sodass vor Kalkulationen die offizielle Preisliste zu prüfen ist.",
+      "toolB": "Die Gesamtkosten hängen stark von Architektur, Anzahl der Agenten und Arbeitslast ab und lassen sich nicht pauschal beziffern."
+    },
+    {
+      "category": "Reife, Dokumentation und Ökosystem",
+      "toolA": "Die Dokumentation beschreibt Modelle, Limits und Preise an zentraler Stelle, wodurch Integrationen planbar werden.",
+      "toolB": "Teams sollten daher Versionsstände pinnen und Release-Notes verfolgen."
+    },
+    {
+      "category": "Funktionsumfang für Multi-Agenten-Orchestrierung",
+      "toolA": "Über Tool-Use und strukturierte Ausgaben lässt es sich jedoch in solche Systeme einbetten und als leistungsfähiger Ausführungsbaustein nutzen.",
+      "toolB": "Damit lassen sich kooperative Agentenmuster abbilden, ohne die Orchestrierung von Grund auf selbst zu implementieren."
+    },
+    {
+      "category": "Praktische Einsatzszenarien",
+      "toolA": "Die Eignung für konkrete Aufgaben sollte mit eigenen Evaluierungen geprüft werden.",
+      "toolB": "Der Nutzen hängt stark von der Qualität der angebundenen Modelle und der sorgfältigen Definition der Agentenrollen ab."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 und AutoGen lösen ein ähnliches Problem, unterscheiden sich jedoch bei kontextfenster und maximale ausgabelänge. Claude Fable 5.1: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1 Million Token und eine… AutoGen: AutoGen bringt kein eigenes Kontextfenster mit, sondern erbt die Grenzen des jeweils angebundenen Modells oder… Das Kriterium verfügbarkeit und offenheit des zugangs zeigt einen weiteren praktischen Unterschied: Claude Fable 5.1 ist ein proprietäres Modell von Anthropic und wird über die Anthropic-API sowie die zugehörige… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Kontextfenster und maximale Ausgabelänge: Claude Fable 5.1 verfügt laut offizieller Anthropic-Dokumentation über ein Kontextfenster von 1…",
+    "toolB": "dein Projekt priorisiert Verfügbarkeit und Offenheit des Zugangs: AutoGen ist ein quelloffenes Framework von Microsoft und kann ohne Lizenzkosten selbst betrieben…"
+  }
 }

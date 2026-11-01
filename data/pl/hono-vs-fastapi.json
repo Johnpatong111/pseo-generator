@@ -1,8 +1,8 @@
 {
   "slug": "hono-vs-fastapi",
   "meta": {
-    "title": "Hono vs FastAPI (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Hono i FastAPI w 2026 roku: wydajność, ekosystem, typowanie, wdrożenia i bezpieczeństwo. Sprawdź, które narzędzie lepiej pasuje do Twojego projektu."
+    "title": "Hono vs FastAPI: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Hono i FastAPI: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Hono"
@@ -94,5 +94,49 @@
       "q": "Czy można połączyć Hono i FastAPI w jednym systemie?",
       "a": "Tak, można rozdzielić system na usługi: Hono jako lekka warstwa API lub bramka na brzegu, a FastAPI jako usługa backendowa odpowiedzialna za logikę biznesową lub modele uczenia maszynowego. Takie podejście zwiększa złożoność operacyjną i wymaga uzgodnienia kontraktów API oraz uwierzytelniania między usługami. Zanim je wybierzesz, warto ocenić, czy korzyści przewyższają koszt utrzymania dwóch technologii."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Hono a FastAPI zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Hono będzie lepszy, gdy projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia…. FastAPI sprawdzi się, gdy projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i….",
+  "tradeoffs": [
+    {
+      "category": "Język, typowanie i spójność z zespołem",
+      "toolA": "Komfort typowania zależy jednak od konfiguracji trybu ścisłego oraz od tego, czy walidacja jest podłączona do definicji tras.",
+      "toolB": "Dla zespołów data science i backendu Pythonowego jest to naturalne środowisko pracy."
+    },
+    {
+      "category": "Wydajność i narzut frameworka",
+      "toolA": "Nie należy zakładać stałej przewagi wydajnościowej bez pomiarów w docelowym środowisku.",
+      "toolB": "W typowych API CRUD różnice względem lekkich frameworków JavaScript są często mniejsze niż sugerują to proste porównania."
+    },
+    {
+      "category": "Ekosystem i biblioteki",
+      "toolA": "Nie wszystkie rozwiązania znane z Node.js działają bez zmian na platformach brzegowych.",
+      "toolB": "Integracje z narzędziami asynchronicznymi wymagają czasem dodatkowej konfiguracji."
+    },
+    {
+      "category": "Dokumentacja API i walidacja danych",
+      "toolA": "Zespół musi świadomie zaplanować walidację wejścia i wyjścia oraz utrzymanie dokumentacji.",
+      "toolB": "Zachowanie szczegółów schematu może się zmieniać między wersjami, więc warto przypinać zależności."
+    },
+    {
+      "category": "Wdrażanie i przenośność między środowiskami",
+      "toolA": "Przenośność kodu nie oznacza automatycznie identycznego zachowania we wszystkich środowiskach.",
+      "toolB": "Zachowanie w serverless zależy od dostawcy i konkretnego adaptera."
+    },
+    {
+      "category": "Bezpieczeństwo i utrzymanie",
+      "toolA": "Regularne aktualizacje zależności są istotne, ponieważ ekosystem JavaScriptu zmienia się szybko.",
+      "toolB": "Należy śledzić biuletyny bezpieczeństwa Pythona, Pydantic i serwera ASGI oraz przypinać wersje zależności."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Hono i FastAPI odpowiadają na podobną potrzebę, ale różnią się w obszarze język, typowanie i spójność z zespołem. Hono: Hono powstało w TypeScripcie i jest rozwijane w tym języku, a typy żądań i odpowiedzi można wiązać z walidatorami… FastAPI: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i serializacji danych. Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Hono jest lekkim frameworkiem projektowanym pod środowiska oparte na standardach webowych, w tym runtime'y brzegowe i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia…",
+    "toolB": "projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i…"
+  }
 }

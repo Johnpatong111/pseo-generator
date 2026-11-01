@@ -1,8 +1,8 @@
 {
   "slug": "pulumi-vs-kubernetes",
   "meta": {
-    "title": "Pulumi vs Kubernetes (2026): quelle solution choisir ?",
-    "description": "Comparez Pulumi et Kubernetes en 2026 : infrastructure as code vs orchestration de conteneurs. Découvrez leurs forces, limites et cas d’usage pour bien choisir."
+    "title": "Pulumi vs Kubernetes: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Pulumi et Kubernetes : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Pulumi"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst bucket = new aws.s3.Bucket(\"my-bucket\", {\n    acl: \"private\",\n});\n\nexport const bucketName = bucket.id;",
-    "tech2Snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: hello-world\nspec:\n  containers:\n  - name: hello\n    image: nginx:alpine\n    ports:\n    - containerPort: 80"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel outil choisir pour une stratégie multi-cloud ?",
       "a": "Pulumi est particulièrement adapté au multi-cloud car il fournit des providers pour de nombreux clouds et permet d’utiliser un langage commun pour décrire l’infrastructure. Kubernetes est également multi-cloud par conception, mais son déploiement et sa gestion varient selon les fournisseurs. Souvent, on utilise Pulumi pour provisionner des clusters Kubernetes sur différents clouds, puis Kubernetes pour orchestrer les applications de manière portable."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Pulumi et Kubernetes modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Pulumi convient mieux lorsque votre projet privilégie modèle de configuration et langages : Pulumi supporte plusieurs langages de programmation (TypeScript, JavaScript, Python, Go, C#, Java)…. Kubernetes est préférable lorsque votre projet privilégie écosystème et intégrations : Kubernetes bénéficie d’un écosystème très riche : CNCF, opérateurs, solutions de stockage, réseau,….",
+  "tradeoffs": [
+    {
+      "category": "Nature et objectif principal",
+      "toolA": "Son objectif est de provisionner et configurer des infrastructures de manière déclarative et reproductible, avec la puissance des langages généralistes.",
+      "toolB": "Son objectif est d’assurer la disponibilité, la résilience et l’équilibrage de charge des charges de travail conteneurisées, indépendamment du fournisseur cloud."
+    },
+    {
+      "category": "Modèle de configuration et langages",
+      "toolA": "Il propose également une approche déclarative via son moteur, avec un état géré et des prévisualisations (pulumi preview).",
+      "toolB": "Il existe des outils comme Helm ou Kustomize pour faciliter la gestion de configurations complexes, mais le langage de base reste déclaratif et spécifique à Kubernetes."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "Il s’intègre aux pipelines CI/CD et aux outils de gestion de secrets, et peut être utilisé pour gérer des ressources Kubernetes via le provider Kubernetes.",
+      "toolB": "Cependant, la gestion de l’infrastructure sous-jacente (nœuds, réseau) reste à la charge de l’utilisateur ou d’un service managé."
+    },
+    {
+      "category": "Courbe d’apprentissage et complexité",
+      "toolA": "La compréhension des concepts cloud et de l’état reste nécessaire, mais l’outil propose une CLI intuitive et une documentation fournie.",
+      "toolB": "Des services managés (EKS, AKS, GKE) réduisent la charge, mais la maîtrise de l’écosystème demande du temps."
+    },
+    {
+      "category": "Gestion de l’état et des dérives",
+      "toolA": "La gestion de l’état est centrale et doit être sécurisée.",
+      "toolB": "Il ne gère pas nativement l’infrastructure sous-jacente, mais des outils comme GitOps (Argo CD, Flux) permettent de synchroniser l’état des manifestes avec un dépôt Git."
+    },
+    {
+      "category": "Sécurité et gestion des secrets",
+      "toolA": "La sécurité dépend de la configuration du backend et des politiques d’accès.",
+      "toolB": "La sécurité nécessite une configuration attentive (politiques réseau, Pod Security Standards, chiffrement, etc.) et des bonnes pratiques."
+    }
+  ],
+  "introduction": "Pulumi et Kubernetes répondent à un besoin proche, mais diffèrent sur nature et objectif principal. Pulumi : Pulumi est une plateforme d’infrastructure as code (IaC) qui permet de définir et gérer des ressources cloud (AWS,… Kubernetes : Kubernetes est un orchestrateur de conteneurs open source qui automatise le déploiement, la mise à l’échelle et la… Le critère « Modèle de configuration et langages » met en évidence une autre différence pratique : Pulumi supporte plusieurs langages de programmation (TypeScript, JavaScript, Python, Go, C#, Java) et permet… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de configuration et langages : Pulumi supporte plusieurs langages de programmation (TypeScript, JavaScript, Python, Go, C#, Java)…",
+    "toolB": "votre projet privilégie écosystème et intégrations : Kubernetes bénéficie d’un écosystème très riche : CNCF, opérateurs, solutions de stockage, réseau,…"
+  }
 }

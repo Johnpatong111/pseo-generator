@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB (2026): welche Lösung passt besser?",
-    "description": "SQLite vs DuckDB im Vergleich 2026: OLTP gegen OLAP, Embedded-Datenbanken, SQL-Dialekte, Analyseleistung und Einsatzgebiete – mit klarer Empfehlung für Ihr Projekt."
+    "title": "SQLite vs DuckDB: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche SQLite und DuckDB: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "SQLite"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\nconn.execute(\"CREATE TABLE greeting (message TEXT)\")\nconn.execute(\"INSERT INTO greeting (message) VALUES (?)\", (\"Hallo, Welt!\",))\nmessage = conn.execute(\"SELECT message FROM greeting\").fetchone()[0]\nprint(message)\nconn.close()",
-    "tech2Snippet": "import duckdb\n\ncon = duckdb.connect(\":memory:\")\ncon.execute(\"CREATE TABLE greeting (message VARCHAR)\")\ncon.execute(\"INSERT INTO greeting VALUES (?)\", [\"Hallo, Welt!\"])\nmessage = con.execute(\"SELECT message FROM greeting\").fetchone()[0]\nprint(message)\ncon.close()"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Eignet sich eines der beiden Tools als Ersatz für einen Datenbankserver?",
       "a": "Beide sind einbettbare Datenbanken und ersetzen keinen zentralen Mehrbenutzer-Server mit Netzwerkzugriff und Rollenverwaltung. SQLite kann in manchen Fällen als leichtgewichtiger Speicher für Anwendungen dienen, die keinen Server benötigen, stößt aber bei verteiltem Zugriff an Grenzen. DuckDB ist primär für lokale Analyse gedacht; für mandantenfähige oder stark nebenläufige Serveranwendungen sind Client-Server-Systeme meist geeigneter."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen SQLite und DuckDB verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "SQLite passt besser, wenn dein Projekt priorisiert Transaktionen und Nebenläufigkeit: SQLite bietet vollständige ACID-Transaktionen und ein bewährtes Locking-Modell mit WAL-Modus für…. DuckDB ist geeigneter, wenn dein Projekt priorisiert Datenmodell und Abfrageparadigma: DuckDB verwendet ein spaltenorientiertes Speicherformat und eine vektorisierte Ausführungsengine,….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Abfrageparadigma",
+      "toolA": "Das Abfragemodell ist klassisches SQL mit vollständiger ACID-Unterstützung und eignet sich gut für Anwendungszustände.",
+      "toolB": "Aggregationen, Joins und Scans über große Tabellen profitieren typischerweise deutlich, wobei das Ergebnis von Arbeitslast und Konfiguration abhängt."
+    },
+    {
+      "category": "Einsatzszenario und Einbettung",
+      "toolA": "Es ist der De-facto-Standard für lokale Persistenz in mobilen und Desktop-Anwendungen.",
+      "toolB": "Es lässt sich gut mit Python, R und Arrow kombinieren, ersetzt aber keinen klassischen Anwendungsspeicher."
+    },
+    {
+      "category": "Transaktionen und Nebenläufigkeit",
+      "toolA": "Schreibvorgänge sind serialisiert, was für viele Anwendungsfälle ausreicht, aber bei hoher Schreiblast zum Engpass werden kann.",
+      "toolB": "Parallele Schreibzugriffe mehrerer Prozesse sind nicht vorgesehen, was die Einsatzgrenzen klar definiert."
+    },
+    {
+      "category": "Analytische Abfrageleistung",
+      "toolA": "Für kleine Datenmengen und indizierte Punktabfragen ist die Leistung jedoch sehr gut und vorhersehbar.",
+      "toolB": "Konkrete Geschwindigkeitsvorteile hängen stark von Datenmenge, Schema und Hardware ab und sollten nicht pauschal angenommen werden."
+    },
+    {
+      "category": "SQL-Funktionsumfang und Kompatibilität",
+      "toolA": "Die Kompatibilität zu anderen Datenbanken ist begrenzt, dafür ist das Verhalten stabil und gut dokumentiert.",
+      "toolB": "Das erleichtert die Übernahme analytischer Abfragen, ist aber kein vollständiger PostgreSQL-Ersatz."
+    },
+    {
+      "category": "Dateiformat und Ökosystem-Integration",
+      "toolA": "Viele Programmiersprachen und Betriebssysteme bringen bereits Bindings oder sogar die Bibliothek mit.",
+      "toolB": "Das macht es attraktiv für Data-Science-Workflows, ohne ein universelles Austauschformat zu sein."
+    }
+  ],
+  "introduction": "SQLite und DuckDB lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und abfrageparadigma. SQLite: SQLite speichert Daten zeilenorientiert in B-Tree-Strukturen und ist für kurze, punktuelle Transaktionen (OLTP)… DuckDB: DuckDB verwendet ein spaltenorientiertes Speicherformat und eine vektorisierte Ausführungsengine, die auf analytische… Das Kriterium einsatzszenario und einbettung zeigt einen weiteren praktischen Unterschied: SQLite ist als Bibliothek in nahezu jede Sprache und Plattform einbettbar und läuft ohne Serverprozess direkt in der… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Transaktionen und Nebenläufigkeit: SQLite bietet vollständige ACID-Transaktionen und ein bewährtes Locking-Modell mit WAL-Modus für…",
+    "toolB": "dein Projekt priorisiert Datenmodell und Abfrageparadigma: DuckDB verwendet ein spaltenorientiertes Speicherformat und eine vektorisierte Ausführungsengine,…"
+  }
 }

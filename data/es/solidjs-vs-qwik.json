@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik (2026): ¿Qué solución elegir?",
-    "description": "Comparativa de SolidJS y Qwik en 2026: reactividad, hidratación, rendimiento, ecosistema y casos de uso para elegir el framework adecuado."
+    "title": "SolidJS vs Qwik: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
+    "description": "Compara SolidJS y Qwik: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "SolidJS"
@@ -94,5 +94,49 @@
       "q": "¿Cómo puedo decidir entre SolidJS y Qwik sin basarme en opiniones?",
       "a": "Lo más fiable es construir un prototipo acotado con las dos opciones que reproduzca las pantallas y flujos más críticos, y medir métricas como tiempo hasta la interactividad, tamaño de JavaScript y fluidez de las actualizaciones en dispositivos representativos. No conviene extrapolar resultados de demostraciones genéricas ni de benchmarks ajenos al proyecto, porque dependen de la versión, la configuración y la carga de trabajo. Complementa la medición con una evaluación del equipo: curva de aprendizaje, disponibilidad de personal con experiencia y madurez de las integraciones que necesitas."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre SolidJS y Qwik cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la…. Qwik es preferible cuando tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de reactividad y actualización de la interfaz",
+      "toolA": "El resultado es un modelo mental cercano a React por la sintaxis de JSX, pero con semántica de ejecución distinta que conviene comprender antes de migrar código.",
+      "toolB": "Esto favorece una actualización muy localizada, aunque exige respetar restricciones sobre qué datos son serializables y cómo se organizan los controladores."
+    },
+    {
+      "category": "Estrategia de hidratación y tiempo hasta la interactividad",
+      "toolA": "En aplicaciones grandes, ese trabajo inicial puede notarse antes de que la página sea plenamente interactiva, y el impacto depende del tamaño del grafo y del trabajo por componente.",
+      "toolB": "Esta arquitectura puede reducir el JavaScript ejecutado en la carga inicial, aunque el beneficio real varía según el número de interacciones, el tamaño de los controladores y la configuración de precarga."
+    },
+    {
+      "category": "Rendimiento percibido según tipo de carga de trabajo",
+      "toolA": "El rendimiento inicial depende del bundle y del trabajo de hidratación, así que conviene medirlo con el perfil de página concreto y no extrapolar desde demostraciones sintéticas.",
+      "toolB": "En aplicaciones muy interactivas, la fragmentación en controladores puede añadir complejidad y latencia si no se planifica la precarga y la división del código con cuidado."
+    },
+    {
+      "category": "Curva de aprendizaje y modelo mental",
+      "toolA": "La documentación y los ejemplos ayudan, aunque el ecosistema de formación es más reducido y conviene revisar patrones antes de adoptarlo en equipo.",
+      "toolB": "A cambio, ese modelo encaja de forma natural en aplicaciones con contenido estático y mejoras interactivas incrementales, siempre que se respeten las reglas del compilador."
+    },
+    {
+      "category": "Ecosistema, integraciones y herramientas de desarrollo",
+      "toolA": "La disponibilidad de recursos y ejemplos es suficiente para proyectos estándar, aunque conviene comprobar la madurez de las integraciones específicas que necesite el producto.",
+      "toolB": "La variedad de bibliotecas de terceros es menor y algunas integraciones pueden requerir adaptaciones, por lo que es recomendable verificar la compatibilidad de las dependencias críticas antes de comprometerse."
+    },
+    {
+      "category": "Mantenimiento, depuración y complejidad operativa",
+      "toolA": "La depuración se vuelve más compleja en aplicaciones con muchos efectos y estados compartidos si no se aplican convenciones claras.",
+      "toolB": "La complejidad operativa depende mucho de la arquitectura de despliegue y de cómo se gestionen las fronteras de carga diferida."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { createMemo, For } from \"solid-js\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function ProductList(props: { products: Product[]; categoryId: string }) {\n  const visible = createMemo(() =>\n    props.products.filter(\n      (product) => product.active && product.categoryId === props.categoryId,\n    ),\n  );\n  return <ul><For each={visible()}>{(product) => <li>{product.name}</li>}</For></ul>;\n}",
+    "tech2Snippet": "type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nexport function listProducts(\n  products: Product[],\n  categoryId: string,\n): Product[] {\n  return products\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
+  },
+  "introduction": "SolidJS y Qwik responden a una necesidad similar, pero difieren en modelo de reactividad y actualización de la interfaz. SolidJS: SolidJS emplea un sistema de reactividad fina basado en señales y efectos, donde los componentes se ejecutan una seule… Qwik: Qwik se apoya en señales y en una granularidad similar a nivel de estado, pero su rasgo distintivo es la reanudación:… El criterio de estrategia de hidratación y tiempo hasta la interactividad añade otra diferencia práctica: SolidJS hidrata el HTML generado en el servidor ejecutando de nuevo los componentes para reconstruir el grafo… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la…",
+    "toolB": "tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a…"
+  }
 }

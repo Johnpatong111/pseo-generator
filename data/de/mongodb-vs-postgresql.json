@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-postgresql",
   "meta": {
-    "title": "MongoDB vs PostgreSQL (2026): welche Lösung passt besser?",
-    "description": "MongoDB und PostgreSQL im Vergleich 2026: Datenmodell, Abfragen, Skalierung, Transaktionen, JSON-Unterstützung und Betrieb. So treffen Sie die passende Wahl für Ihr Projekt."
+    "title": "MongoDB vs PostgreSQL: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche MongoDB und PostgreSQL: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "MongoDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const db = client.db('test');\n  const collection = db.collection('greetings');\n  await collection.insertOne({ message: 'Hallo, Welt!' });\n  const doc = await collection.findOne({ message: 'Hallo, Welt!' });\n  console.log(doc);\n  await client.close();\n}\n\nmain().catch(console.error);",
-    "tech2Snippet": "const { Client } = require('pg');\n\nasync function main() {\n  const client = new Client({ connectionString: 'postgresql://postgres:postgres@localhost:5432/postgres' });\n  await client.connect();\n  await client.query('CREATE TABLE IF NOT EXISTS greetings (id serial PRIMARY KEY, message text NOT NULL)');\n  await client.query('INSERT INTO greetings (message) VALUES ($1)', ['Hallo, Welt!']);\n  const res = await client.query('SELECT message FROM greetings LIMIT 1');\n  console.log(res.rows[0]);\n  await client.end();\n}\n\nmain().catch(console.error);"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Gibt es eine einfache Entscheidungsregel für die Wahl zwischen MongoDB und PostgreSQL?",
       "a": "Wenn Ihr Datenmodell dokumentorientiert ist, sich häufig ändert und Sie horizontale Skalierung sowie eine natürliche Abbildung verschachtelter Strukturen benötigen, spricht viel für MongoDB. Wenn relationale Integrität, komplexe SQL-Abfragen, ausgereifte Transaktionen und umfangreiche Erweiterbarkeit im Vordergrund stehen, ist PostgreSQL meist die bessere Wahl. In vielen Projekten ist PostgreSQL der sicherere Standard, während MongoDB bei klar dokumentzentrierten Workloads seine Stärken ausspielt; eine prototypische Evaluierung mit Ihrer realen Arbeitslast bleibt empfehlenswert."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen MongoDB und PostgreSQL verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "MongoDB passt besser, wenn dein Projekt priorisiert Datenmodell und Schemaflexibilität: MongoDB speichert Daten als BSON-Dokumente in Collections und erlaubt unterschiedliche Felder pro…. PostgreSQL ist geeigneter, wenn dein Projekt priorisiert Abfragesprache und Ausdrucksstärke: PostgreSQL bietet vollständiges SQL mit Joins, Unterabfragen, Fensterfunktionen, CTEs und einer….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Schemaflexibilität",
+      "toolA": "Schema-Regeln lassen sich optional über JSON Schema Validierung durchsetzen, sodass Flexibilität und Kontrolle kombiniert werden können; die konkrete Strenge hängt von der Konfiguration ab.",
+      "toolB": "Erweiterungen wie JSONB erlauben zwar die Speicherung halbstrukturierter Daten und Indizes darauf, ersetzen aber kein vollständig dokumentorientiertes Modell; die Schemaflexibilität ist daher bewusst begrenzter."
+    },
+    {
+      "category": "Abfragesprache und Ausdrucksstärke",
+      "toolA": "Für verschachtelte Dokumente sind Abfragen oft natürlich formuliert, während komplexe Joins über das Aggregationsframework oder $lookup abgebildet werden müssen, was je nach Datenmodell aufwendiger sein kann.",
+      "toolB": "Komplexe analytische Abfragen über mehrere Entitäten lassen sich in der Regel klar und effizient formulieren; die Lernkurve für fortgeschrittene SQL-Features kann jedoch höher sein."
+    },
+    {
+      "category": "Transaktionen und Konsistenz",
+      "toolA": "Für Single-Document-Operationen sind atomare Garantien standardmäßig gegeben, was viele Anwendungsfälle bereits abdeckt.",
+      "toolB": "Transaktionen über viele Tabellen sind ein Kernbestandteil des Systems und in der Praxis gut verstanden, wobei die tatsächliche Konsistenz von der gewählten Isolationsstufe abhängt."
+    },
+    {
+      "category": "Horizontale Skalierung und Verteilung",
+      "toolA": "Das ermöglicht hohe Durchsatzraten bei geeigneter Schlüsselwahl, erfordert aber sorgfältige Planung von Shard-Strategie, Balancer und Abfragemustern.",
+      "toolB": "Für viele Workloads reicht vertikale Skalierung kombiniert mit Replikation aus, während echtes Multi-Node-Sharding mehr betrieblichen Aufwand bedeutet."
+    },
+    {
+      "category": "JSON- und Dokumentunterstützung",
+      "toolA": "Abfragen, Indizes und Aggregationen arbeiten direkt auf Dokumenten, was die Arbeit mit JSON-ähnlichen Daten vereinfacht.",
+      "toolB": "Die JSON-Unterstützung ist ausgereift, bleibt aber ein zusätzliches Modell neben dem relationalen Kern und ist bei tief verschachtelten Dokumenten weniger naturel als in MongoDB."
+    },
+    {
+      "category": "Erweiterbarkeit und Ökosystem",
+      "toolA": "Erweiterbarkeit erfolgt vor allem über Anwendungscode und den verwalteten Dienst, weniger über Datenbank-Erweiterungen im klassischen Sinn.",
+      "toolB": "Das Ökosystem ist sehr breit und wird von vielen Anbietern und verwalteten Diensten unterstützt, was die Anpassung an spezielle Anforderungen erleichtert."
+    }
+  ],
+  "introduction": "MongoDB und PostgreSQL lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und schemaflexibilität. MongoDB: MongoDB speichert Daten als BSON-Dokumente in Collections und erlaubt unterschiedliche Felder pro Dokument, was sich… PostgreSQL: PostgreSQL ist ein relationales Datenbanksystem mit festen Tabellen und Spaltentypen, das über SQL ein klar… Das Kriterium abfragesprache und ausdrucksstärke zeigt einen weiteren praktischen Unterschied: MongoDB nutzt die MongoDB Query Language (MQL) mit dokumentorientierten Filtern, Aggregations-Pipelines und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Schemaflexibilität: MongoDB speichert Daten als BSON-Dokumente in Collections und erlaubt unterschiedliche Felder pro…",
+    "toolB": "dein Projekt priorisiert Abfragesprache und Ausdrucksstärke: PostgreSQL bietet vollständiges SQL mit Joins, Unterabfragen, Fensterfunktionen, CTEs und einer…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-autogen",
   "meta": {
-    "title": "LangChain vs AutoGen (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie LangChain i AutoGen w 2026 r.: architektura, agenci, narzędzia, integracje, dojrzałość i koszty. Sprawdź, które rozwiązanie pasuje do Twojego projektu."
+    "title": "LangChain vs AutoGen: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj LangChain i AutoGen: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "LangChain"
@@ -94,5 +94,49 @@
       "q": "Które narzędzie lepiej nadaje się do wdrożenia produkcyjnego?",
       "a": "LangChain ma szerszy ekosystem narzędzi do obserwowalności i wdrożeń, co ułatwia diagnostykę oraz integrację z platformami chmurowymi. AutoGen sprawdza się w systemach wieloagentowych, ale wymaga więcej własnej pracy nad monitoringiem i niezawodnością. W obu przypadkach należy zweryfikować stabilność wersji, politykę danych i przeprowadzić testy obciążeniowe."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między LangChain a AutoGen zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "LangChain będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma rozbudowany ekosystem integracji z modelami, bazami wektorowymi, narzędziami…. AutoGen sprawdzi się, gdy projekt stawia na kryterium „Orkiestracja agentów wieloagentowych”: AutoGen powstał z myślą o współpracy wielu agentów i oferuje mechanizmy konwersacji, ról oraz….",
+  "tradeoffs": [
+    {
+      "category": "Dojrzałość ekosystemu i integracje",
+      "toolA": "Dostępność konkretnych integracji zmienia się między wersjami, dlatego warto sprawdzić aktualną dokumentację i kompatybilność z wybranym stosem technologicznym.",
+      "toolB": "Dostępność konkretnych konektorów i ich stabilność zależą od wersji oraz konfiguracji, więc przed produkcją należy zweryfikować wymagane integracje."
+    },
+    {
+      "category": "Model programowania i abstrakcje",
+      "toolA": "Ułatwia to budowę aplikacji o zróżnicowanym przepływie, choć wymaga zrozumienia własnych konwencji biblioteki.",
+      "toolB": "Model programowania jest czytelny dla scenariuszy dialogowych, ale mniej naturalny dla prostych, liniowych potoków przetwarzania."
+    },
+    {
+      "category": "Orkiestracja agentów wieloagentowych",
+      "toolA": "Zakres wsparcia zależy od wersji i wybranego podejścia, więc należy zweryfikować dostępne mechanizmy przed projektowaniem architektury.",
+      "toolB": "To rozwiązanie naturalnie pasuje do scenariuszy, w których agenci dyskutują, weryfikują wyniki lub delegują podzadania, choć stabilność i wydajność zależą od konfiguracji oraz obciążenia."
+    },
+    {
+      "category": "Wykonywanie kodu i narzędzia",
+      "toolA": "Bezpieczeństwo zależy od sposobu uruchamiania kodu oraz od uprawnień przyznanych narzędziom, dlatego konieczne są kontrolę dostępu i walidacja danych wejściowych.",
+      "toolB": "Bezpieczeństwo zależy od konfiguracji wykonawcy i izolacji środowiska; nie należy zakładać domyślnej ochrony bez własnej weryfikacji i ograniczeń uprawnień."
+    },
+    {
+      "category": "Pamięć, RAG i przetwarzanie dokumentów",
+      "toolA": "To często wybierane rozwiązanie do aplikacji opartych na wiedzy, choć jakość zależy od doboru modeli, indeksowania i konfiguracji retrievery.",
+      "toolB": "Wymaga to więcej pracy projektowej niż w bibliotece z gotowymi komponentami RAG, a rezultat zależy od użytych integracji."
+    },
+    {
+      "category": "Krzywa uczenia się i złożoność",
+      "toolA": "Staranna dokumentacja i praktyka pomagają opanować bibliotekę, ale przed wyborem warto sprawdzić aktualne przewodniki migracji.",
+      "toolB": "Jednocześnie projektowanie niezawodnych interakcji i bezpiecznego wykonywania kodu bywa bardziej złożone niż w prostych potokach."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "LangChain i AutoGen odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i integracje. LangChain: LangChain ma rozbudowany ekosystem integracji z modelami, bazami wektorowymi, narzędziami wyszukiwania i platformami… AutoGen: AutoGen koncentruje się na wzorcach wieloagentowych i oferuje integracje z modelami oraz narzędziami wykonawczymi, ale… Kolejną istotną różnicę pokazuje kryterium „Model programowania i abstrakcje”: LangChain dostarcza abstrakcje takie jak łańcuchy, szablony promptów, retrievery i pamięć, a nowsze wersje kładą… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma rozbudowany ekosystem integracji z modelami, bazami wektorowymi, narzędziami…",
+    "toolB": "projekt stawia na kryterium „Orkiestracja agentów wieloagentowych”: AutoGen powstał z myślą o współpracy wielu agentów i oferuje mechanizmy konwersacji, ról oraz…"
+  }
 }

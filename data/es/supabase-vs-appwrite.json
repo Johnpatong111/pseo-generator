@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-appwrite",
   "meta": {
-    "title": "Supabase vs Appwrite (2026): ¿Qué solución elegir?",
-    "description": "Comparativa de Supabase y Appwrite en 2026: base de datos, autenticación, almacenamiento, tiempo real, despliegue y ecosistema para elegir el backend adecuado."
+    "title": "Supabase vs Appwrite: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Supabase y Appwrite: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Supabase"
@@ -94,5 +94,49 @@
       "q": "¿Qué opción ofrece más portabilidad y menos dependencia del proveedor?",
       "a": "Supabase se apoya en PostgreSQL estándar, lo que facilita exportar datos y migrar a otra infraestructura o a un PostgreSQL gestionado. Appwrite permite autohospedar la plataforma completa y mantener el control de los datos, aunque la lógica y los permisos están ligados a su modelo. La portabilidad real depende de cuánto se use la API propietaria de cada plataforma."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Supabase y Appwrite cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Supabase encaja mejor cuando tu proyecto prioriza modelo de datos y base de datos principal: Supabase se construye sobre PostgreSQL: el esquema es relacional y se gestiona con SQL estándar,…. Appwrite es preferible cuando tu proyecto prioriza autohospedaje y portabilidad: Appwrite se diseñó con el autohospedaje como opción de primer nivel y ofrece una instalación….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y base de datos principal",
+      "toolA": "La disponibilidad de extensiones concretas puede variar según el plan y el entorno gestionado, por lo que conviene revisar la documentación vigente.",
+      "toolB": "Las capacidades exactas de consulta y los límites de índices dependen de la versión y del plan, así que conviene comprobarlos antes de diseñar un esquema complejo."
+    },
+    {
+      "category": "Autenticación y gestión de usuarios",
+      "toolA": "La gestión de sesiones, los flujos de recuperación y las opciones de MFA han ido ampliándose con las versiones, de modo que las funciones disponibles dependen del plan y de la configuración del proyecto.",
+      "toolB": "Su enfoque es más de plataforma integral y abstrae los detalles del proveedor de identidad, aunque ciertas capacidades como MFA o proveedores adicionales pueden variar según la versión y el plan."
+    },
+    {
+      "category": "Almacenamiento de archivos y medios",
+      "toolA": "Se integra con las políticas de seguridad de la plataforma y admite archivos de gran tamaño con límites que dependen del plan contratado.",
+      "toolB": "El tamaño máximo por archivo, las transformaciones disponibles y las cuotas dependen del plan y de la versión autohospedada o en la nube."
+    },
+    {
+      "category": "Funciones sin servidor y lógica de backend",
+      "toolA": "También es posible usar funciones de PostgreSQL y webhooks para automatizaciones, aunque los límites de tiempo de ejecución, memoria y despliegue varían según el plan y la región.",
+      "toolB": "La plataforma gestiona el despliegue y los permisos de forma integrada, pero la lista de runtimes y los límites de recursos cambian entre versiones y deben verificarse en la documentación."
+    },
+    {
+      "category": "Tiempo real y suscripciones",
+      "toolA": "La latencia y el número de conexiones simultáneas dependen del plan y de la configuración del proyecto, por lo que conviene dimensionar la carga antes de lanzar una aplicación con muchos clientes conectados.",
+      "toolB": "Su modelo está integrado en la plataforma y resulta sencillo de usar, aunque el comportamiento y los límites de conexiones pueden variar según la versión y el plan."
+    },
+    {
+      "category": "Autohospedaje y portabilidad",
+      "toolA": "La portabilidad de los datos es alta gracias a que la base es PostgreSQL estándar, lo que facilita migraciones y copias de seguridad.",
+      "toolB": "Esto facilita mantener un entorno propio con control sobre los datos, aunque las actualizaciones y el dimensionamiento siguen requiriendo trabajo operativo y planificación."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\nconst db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);\nconst { data: products, error } = await db\n  .from(\"products\")\n  .select(\"id, name, price_cents\")\n  .eq(\"category_id\", categoryId)\n  .eq(\"active\", true)\n  .order(\"name\")\n  .limit(50);\n\nif (error) throw new Error(`Product query failed: ${error.message}`);",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Supabase y Appwrite responden a una necesidad similar, pero difieren en modelo de datos y base de datos principal. Supabase: Supabase se construye sobre PostgreSQL: el esquema es relacional y se gestiona con SQL estándar, lo que facilita… Appwrite: Appwrite incluye una base de datos documental propia, organizada en colecciones y documentos con atributos tipados y… El criterio de autenticación y gestión de usuarios añade otra diferencia práctica: Supabase Auth cubre registro, inicio de sesión con correo y contraseña, enlaces mágicos, OTP y proveedores OAuth,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza modelo de datos y base de datos principal: Supabase se construye sobre PostgreSQL: el esquema es relacional y se gestiona con SQL estándar,…",
+    "toolB": "tu proyecto prioriza autohospedaje y portabilidad: Appwrite se diseñó con el autohospedaje como opción de primer nivel y ofrece una instalación…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-crewai",
   "meta": {
-    "title": "Claude Fable 5.1 vs CrewAI (2026): quelle solution choisir ?",
-    "description": "Comparaison 2026 entre Claude Fable 5.1 et CrewAI : contexte, performances, tarifs API, latence, accès et cas d'usage. Analyse nuancée pour choisir la bonne approche."
+    "title": "Claude Fable 5.1 vs CrewAI: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Claude Fable 5.1 et CrewAI : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"VOTRE_CLE_API\")\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=256,\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}],\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from crewai import Agent, Task, Crew\n\nagent = Agent(\n    role=\"Assistant\",\n    goal=\"Répondre poliment\",\n    backstory=\"Tu es un assistant concis.\",\n    llm=\"claude-fable-5-1\",\n)\ntask = Task(\n    description=\"Dis bonjour, monde !\",\n    expected_output=\"Une phrase de salutation.\",\n    agent=agent,\n)\ncrew = Crew(agents=[agent], tasks=[task])\nprint(crew.kickoff())"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Quelles sont les limites de CrewAI ?",
       "a": "CrewAI est un framework et non un modèle : ses performances et sa sécurité dépendent des modèles et des outils que vous configurez. Il introduit une couche d'orchestration qui peut augmenter la latence et la complexité, et nécessite une maintenance active ainsi qu'une évaluation des intégrations tierces. Pour des tâches simples, un appel direct à un modèle peut être plus efficace et plus facile à sécuriser."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Claude Fable 5.1 et CrewAI modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Claude Fable 5.1 convient mieux lorsque votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale…. CrewAI est préférable lorsque votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte et sortie maximale",
+      "toolA": "Ces limites permettent de traiter des corpus volumineux ou des conversations longues sans découpage, même si la fenêtre réellement exploitable peut varier selon la configuration et les règles de facturation.",
+      "toolB": "Le framework peut transmettre un contexte long, mais la capacité effective reste celle du fournisseur de modèle choisi, ce qui impose de vérifier la configuration et les limites du modèle utilisé."
+    },
+    {
+      "category": "Performances et benchmarks publiés",
+      "toolA": "Sans chiffres officiels, toute affirmation de performance mesurée serait spéculative et doit être évitée.",
+      "toolB": "Les performances dépendent entièrement des modèles utilisés par les agents et de la qualité de leur configuration, ce qui rend toute comparaison chiffrée non pertinente à ce niveau."
+    },
+    {
+      "category": "Tarification API (prix par million de tokens)",
+      "toolA": "Les lectures de cache de prompt coûtent 0,25 $ par million de tokens, soit 97,5 % de moins que le prix d'entrée de base ; ces tarifs sont sensibles à la version et peuvent évoluer.",
+      "toolB": "Le coût total dépend donc du modèle choisi, du volume de tokens et de la plateforme d'exécution, et doit être vérifié au cas par cas."
+    },
+    {
+      "category": "Latence et temps de réponse",
+      "toolA": "Il est donc recommandé de mesurer la latence dans son propre environnement plutôt que de se fier à un chiffre générique.",
+      "toolB": "Une conception efficace et des modèles rapides peuvent réduire ce surcoût, mais la latence reste à évaluer selon l'architecture."
+    },
+    {
+      "category": "Accès, disponibilité et ouverture",
+      "toolA": "Il ne peut pas être auto-hébergé ni exécuté localement, ce qui limite la maîtrise de l'infrastructure.",
+      "toolB": "Il s'intègre à de nombreux fournisseurs de modèles, ce qui offre une grande flexibilité mais impose de gérer soi-même la sécurité, les mises à jour et l'exploitation."
+    },
+    {
+      "category": "Cas d'usage pratiques",
+      "toolA": "Son API directe convient aux intégrations applicatives où l'on souhaite un modèle unique et une tarification documentée.",
+      "toolB": "Il brille lorsque le problème se décompose en rôles et en outils, mais nécessite un modèle externe pour chaque agent et une conception rigoureuse."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 et CrewAI répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et sortie maximale. Claude Fable 5.1 : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale de 128K tokens,… CrewAI : CrewAI n'est pas un modèle et n'a donc pas de fenêtre de contexte propre : la limite dépend du modèle de langage… Le critère « Performances et benchmarks publiés » met en évidence une autre différence pratique : Pour Claude Fable 5.1, les scores MMLU et HumanEval ne sont pas fournis dans les spécifications vérifiées communiquées… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale…",
+    "toolB": "votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts…"
+  }
 }

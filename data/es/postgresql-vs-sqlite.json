@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite (2026): ¿Qué solución elegir?",
-    "description": "Comparamos PostgreSQL y SQLite en 2026: rendimiento, concurrencia, escalabilidad, seguridad y casos de uso. Descubre cuál conviene a tu proyecto."
+    "title": "PostgreSQL vs SQLite: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara PostgreSQL y SQLite: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -84,5 +84,49 @@
       "q": "¿Qué criterios debo priorizar al elegir entre PostgreSQL y SQLite?",
       "a": "Prioriza la concurrencia de escritura, el volumen de datos esperado, la necesidad de escalar horizontalmente y los requisitos de seguridad y control de acceso. Si la aplicación es local, de un solo usuario o con baja concurrencia, SQLite simplifica el despliegue y el mantenimiento. Si necesitas múltiples usuarios simultáneos, integridad compleja y crecimiento, PostgreSQL es la opción más sólida."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre PostgreSQL y SQLite cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de…. SQLite es preferible cuando tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único….",
+  "tradeoffs": [
+    {
+      "category": "Arquitectura y modelo de ejecución",
+      "toolA": "Su arquitectura permite separar la base de datos de la aplicación y escalar el servidor de forma independiente, aunque requiere instalación, configuración y mantenimiento continuo.",
+      "toolB": "Esta simplicidad reduce la operación y el despliegue, pero limita la base de datos a la aplicación que la incorpora y complica el acceso concurrente desde múltiples procesos o equipos."
+    },
+    {
+      "category": "Rendimiento y concurrencia",
+      "toolA": "Su rendimiento depende en gran medida de la configuración del servidor, el hardware y el diseño del esquema, y puede escalar vertical y horizontalmente con réplicas de lectura.",
+      "toolB": "Sin embargo, su modelo de bloqueo a nivel de archivo limita las escrituras concurrentes: en configuraciones típicas, un escritor bloquea a otros escritores, lo que puede convertirse en un cuello de botella en aplicaciones multiusuario con muchas escrituras simultáneas."
+    },
+    {
+      "category": "Escalabilidad y volumen de datos",
+      "toolA": "Admite particionamiento de tablas, réplicas de lectura, conexiones en paralelo y herramientas de replicación lógica y física, lo que facilita el crecimiento tanto vertical como horizontal.",
+      "toolB": "No ofrece réplica nativa ni escalado horizontal, por lo que su uso se circunscribe a aplicaciones locales o a entornos donde el tamaño y la concurrencia son acotados."
+    },
+    {
+      "category": "Integridad, transacciones y funciones SQL",
+      "toolA": "Su modelo de bloqueo y MVCC favorece la consistencia incluso con alta concurrencia.",
+      "toolB": "No obstante, carece de procedimientos almacenados, tipos de datos avanzados y algunas funciones analíticas presentes en PostgreSQL, lo que limita su expresividad en esquemas complejos."
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Su modelo cliente-servidor permite separar la base de datos de la aplicación y aplicar políticas de seguridad centralizadas.",
+      "toolB": "Al ser una biblioteca embebida, cualquier aplicación con acceso al archivo de base de datos puede leerlo o modificarlo, lo que exige confiar en el entorno de ejecución."
+    },
+    {
+      "category": "Facilidad de despliegue y mantenimiento",
+      "toolA": "Herramientas como Docker o los servicios gestionados en la nube simplifican la operación, pero sigue siendo un componente infraestructural que exige atención continuada.",
+      "toolB": "Las copias de seguridad se reducen a copiar el archivo, y no hay procesos que monitorizar ni configuraciones de red que ajustar, lo que simplifica enormemente el desarrollo y el despliegue en entornos locales o embebidos."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de ejecución. PostgreSQL: PostgreSQL es un sistema gestor de bases de datos relacional cliente-servidor que se ejecuta como un proceso… SQLite: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de… El criterio de rendimiento y concurrencia añade otra diferencia práctica: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de…",
+    "toolB": "tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único…"
+  }
 }

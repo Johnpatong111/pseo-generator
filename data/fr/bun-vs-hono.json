@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-hono",
   "meta": {
-    "title": "Bun vs Hono (2026): quelle solution choisir ?",
-    "description": "Comparaison détaillée entre Bun, runtime JavaScript tout-en-un, et Hono, framework web ultra-léger. Découvrez leurs forces, limites et le meilleur choix pour votre projet en 2026."
+    "title": "Bun vs Hono: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Bun et Hono : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Bun"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// Bun: serveur HTTP minimal\nconst server = Bun.serve({\n  port: 3000,\n  fetch(req) {\n    return new Response('Hello, World!');\n  },\n});\nconsole.log(`Serveur démarré sur http://localhost:${server.port}`);",
-    "tech2Snippet": "// Hono: application minimale\nimport { Hono } from 'hono';\n\nconst app = new Hono();\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -88,5 +89,44 @@
       "q": "Quelle est la différence de philosophie entre Bun et Hono ?",
       "a": "Bun est un runtime qui cherche à fournir un environnement complet et intégré pour JavaScript et TypeScript. Hono est un framework web qui se concentre sur la couche HTTP et laisse le choix du runtime. Bun est plus « tout-en-un », tandis que Hono est plus « modulaire » et s'adapte à différents environnements."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Bun et Hono modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Bun convient mieux lorsque votre projet privilégie expérience développeur : Bun offre une expérience unifiée avec un seul binaire pour exécuter, installer, bundler et tester. Hono est préférable lorsque votre projet privilégie écosystème et compatibilité : Hono est agnostique du runtime et fonctionne sur Bun, Node.js, Deno, Cloudflare Workers, Fastly….",
+  "tradeoffs": [
+    {
+      "category": "Rôle et positionnement",
+      "toolA": "Son périmètre couvre l'exécution de code, la gestion des dépendances et le build.",
+      "toolB": "Son objectif est de simplifier la création d'API et d'applications web avec une API minimaliste."
+    },
+    {
+      "category": "Performance et empreinte",
+      "toolA": "Les benchmarks publiés par l'équipe doivent être interprétés avec prudence.",
+      "toolB": "Aucune garantie de supériorité absolue n'est fournie."
+    },
+    {
+      "category": "Écosystème et compatibilité",
+      "toolA": "L'écosystème Bun s'enrichit progressivement mais reste moins mature que celui de Node.js.",
+      "toolB": "Sa compatibilité large en fait un choix flexible pour des déploiements multi-environnements."
+    },
+    {
+      "category": "Expérience développeur",
+      "toolA": "Cependant, la documentation et les retours de la communauté peuvent être moins abondants que pour des outils plus anciens.",
+      "toolB": "Les développeurs doivent s'appuyer sur des outils externes pour ces aspects."
+    },
+    {
+      "category": "Sécurité et stabilité",
+      "toolA": "Des audits indépendants ne sont pas systématiquement publiés, et les garanties de stabilité à long terme restent à confirmer.",
+      "toolB": "Hono est un framework léger avec une surface d'attaque réduite et une communauté active. Il suit les bonnes pratiques de sécurité pour le routage et les middlewares, mais la sécurité globale dépend aussi du runtime sous-jacent et de la configuration. Des mises à jour régulières sont publiées."
+    },
+    {
+      "category": "Courbe d'apprentissage et documentation",
+      "toolA": "La communauté grandit mais reste moins fournie que celle de Node.js.",
+      "toolB": "La documentation est régulièrement mise à jour."
+    }
+  ],
+  "introduction": "Bun et Hono répondent à un besoin proche, mais diffèrent sur rôle et positionnement. Bun : Bun est un runtime JavaScript et TypeScript qui intègre un gestionnaire de paquets, un bundler et un lanceur de tests. Hono : Hono est un framework web léger et rapide, inspiré de Koa et Express, qui se concentre sur le routage et les… Le critère « Performance et empreinte » met en évidence une autre différence pratique : Bun met en avant des performances élevées grâce à JavaScriptCore et des optimisations bas niveau, mais les résultats… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie expérience développeur : Bun offre une expérience unifiée avec un seul binaire pour exécuter, installer, bundler et tester.",
+    "toolB": "votre projet privilégie écosystème et compatibilité : Hono est agnostique du runtime et fonctionne sur Bun, Node.js, Deno, Cloudflare Workers, Fastly…"
+  }
 }

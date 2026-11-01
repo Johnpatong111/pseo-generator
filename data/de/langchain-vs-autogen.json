@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-autogen",
   "meta": {
-    "title": "LangChain vs AutoGen (2026): welche Lösung passt besser?",
-    "description": "LangChain vs AutoGen im Vergleich 2026: Architektur, Agenten, Tools, Kontrolle und Einsatzszenarien. So wählen Sie das passende Framework für Ihr Projekt."
+    "title": "LangChain vs AutoGen: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche LangChain und AutoGen: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from langchain_openai import ChatOpenAI\n\nllm = ChatOpenAI(model=\"gpt-4o-mini\")\nprint(llm.invoke(\"Hallo, Welt!\").content)",
-    "tech2Snippet": "import asyncio\nfrom autogen_agentchat.agents import AssistantAgent\nfrom autogen_ext.models.openai import OpenAIChatCompletionClient\n\nasync def main():\n    model_client = OpenAIChatCompletionClient(model=\"gpt-4o-mini\")\n    agent = AssistantAgent(name=\"assistant\", model_client=model_client)\n    result = await agent.run(task=\"Sage Hallo, Welt!\")\n    print(result.messages[-1].content)\n\nasyncio.run(main())"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wie sollte ich die Entscheidung praktisch absichern?",
       "a": "Am zuverlässigsten ist ein kleiner Prototyp mit der eigenen Arbeitslast, etwa mit denselben Modellen und Werkzeugen wie im Zielsystem. Dabei sollten Latenz, Kosten, Nachvollziehbarkeit und Wartbarkeit beobachtet werden, ohne daraus pauschale Benchmarks abzuleiten. Die Ergebnisse gelten jeweils nur für die getestete Konfiguration und Version."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen LangChain und AutoGen verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "LangChain passt besser, wenn dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken,…. AutoGen ist geeigneter, wenn dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür….",
+  "tradeoffs": [
+    {
+      "category": "Kernarchitektur und Programmiermodell",
+      "toolA": "Seit der Einführung von LangGraph können auch zyklische, zustandsbehaftete Abläufe abgebildet werden, was die Steuerung einzelner Schritte erleichtert.",
+      "toolB": "Der konkrete Funktionsumfang hängt von der verwendeten Version und Konfiguration ab."
+    },
+    {
+      "category": "Multi-Agenten-Unterstützung",
+      "toolA": "Diese Muster sind leistungsfähig, erfordern aber eine bewusste Modellierung des Kontrollflusses.",
+      "toolB": "Damit ist der Einstieg in Multi-Agenten-Szenarien häufig direkter."
+    },
+    {
+      "category": "Tool- und Modellintegrationen",
+      "toolA": "Die Qualität und Aktualität einzelner Integrationen kann je nach Version und Anbieter variieren.",
+      "toolB": "Für spezielle Dienste ist daher öfter eigener Anbindungscode nötig."
+    },
+    {
+      "category": "Kontrolle und Determinismus",
+      "toolA": "Prüfpunkte und Zustandsverwaltung unterstützen reproduzierbare Abläufe, sofern das Modell selbst deterministisch konfiguriert wird.",
+      "toolB": "Wie stark sich das auswirkt, hängt von der gewählten Konfiguration ab."
+    },
+    {
+      "category": "Lernkurve und Entwicklererfahrung",
+      "toolA": "Einsteiger müssen zunächst zentrale Konzepte wie Chains, Agents und LangGraph verstehen, finden aber viel Dokumentation und Beispiele.",
+      "toolB": "Die Lernkurve ist daher eher konzeptionell als API-lastig."
+    },
+    {
+      "category": "Eignung für klassische RAG-Pipelines",
+      "toolA": "Solche Pipelines lassen sich gut strukturiert aufbauen und mit Werkzeugen kombinieren.",
+      "toolB": "RAG ist dort eher ein Anwendungsfall der Agenten als ein Kernbaustein des Frameworks."
+    }
+  ],
+  "introduction": "LangChain und AutoGen lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernarchitektur und programmiermodell. LangChain: LangChain organisiert Anwendungen als komponierbare Bausteine, die sich zu Chains und Graphen verbinden lassen. AutoGen: AutoGen stellt die Interaktion zwischen mehreren Agenten in den Mittelpunkt, die über Nachrichten miteinander… Das Kriterium multi-agenten-unterstützung zeigt einen weiteren praktischen Unterschied: LangChain unterstützt Multi-Agenten-Muster primär über LangGraph, etwa durch mehrere Knoten, Supervisor-Muster oder… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken,…",
+    "toolB": "dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür…"
+  }
 }

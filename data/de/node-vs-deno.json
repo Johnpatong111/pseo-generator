@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-deno",
   "meta": {
-    "title": "Node.js vs Deno (2026): welche Lösung passt besser?",
-    "description": "Node.js vs Deno im Vergleich 2026: Laufzeit, Sicherheitsmodell, TypeScript, Ökosystem, Paketverwaltung, Tooling, Kompatibilität und Einsatzgebiete – mit klarer Empfehlung."
+    "title": "Node.js vs Deno: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Node.js und Deno: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Node.js"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const http = require(\"node:http\");\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { \"Content-Type\": \"text/plain; charset=utf-8\" });\n  res.end(\"Hallo, Welt!\");\n});\n\nserver.listen(3000, () => {\n  console.log(\"Server läuft auf http://localhost:3000\");\n});",
-    "tech2Snippet": "Deno.serve({ port: 8000 }, (req) => {\n  return new Response(\"Hallo, Welt!\", {\n    headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n  });\n});"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich schrittweise von Node.js zu Deno migrieren?",
       "a": "Eine schrittweise Migration ist häufig sinnvoll, indem Sie einzelne, klar abgegrenzte Dienste oder Skripte mit Deno umsetzen und den Rest zunächst auf Node.js belassen. Voraussetzung ist, dass die betroffenen Schnittstellen protokollbasiert sind und die benötigten Deno-Kompatibilitätsfunktionen für Ihre Version ausreichen. Planen Sie Tests für kritische Abhängigkeiten ein und behalten Sie eine Rückfalloption, bis der neue Dienst stabil im Betrieb ist."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Node.js und Deno verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Node.js passt besser, wenn dein Projekt priorisiert Reifegrad, Stabilität und Release-Politik: Node.js existiert seit 2009 und hat einen sehr hohen Reifegrad mit langjähriger, planbarer…. Deno ist geeigneter, wenn dein Projekt priorisiert Sicherheitsmodell und Berechtigungen: Deno integriert ein Berechtigungssystem, bei dem Zugriffe auf Dateien, Netzwerk, Umgebung und….",
+  "tradeoffs": [
+    {
+      "category": "Reifegrad, Stabilität und Release-Politik",
+      "toolA": "Welche Version Sie einsetzen dürfen, hängt jedoch von Support-Zeitraum, Sicherheitsanforderungen und Ihrer Infrastruktur ab, weshalb eine konkrete Versionsfestlegung nötig ist.",
+      "toolB": "Ob eine bestimmte Deno-Version für Ihren Produktiveinsatz freigegeben ist, hängt von Ihren internen Richtlinien und der Reife der von Ihnen genutzten Module ab."
+    },
+    {
+      "category": "Sicherheitsmodell und Berechtigungen",
+      "toolA": "Ein experimentelles Berechtigungsmodell ist in neueren Versionen vorhanden, dessen Verhalten und Stabilität sollten Sie für Ihre Version und Ihren Anwendungsfall gesondert prüfen.",
+      "toolB": "Die Details der Flags und Standardwerte können sich je nach Version ändern, daher ist ein Blick in die Dokumentation Ihrer eingesetzten Deno-Version erforderlich."
+    },
+    {
+      "category": "TypeScript-Unterstützung",
+      "toolA": "Für große Teams ist ein etablierter Build-Schritt oft ohnehin sinnvoll, weil er Typprüfung und Bundling bündelt.",
+      "toolB": "Da sich Standardeinstellungen und Empfehlungen zwischen Versionen verschieben können, sollten Sie die Typkonfiguration für Ihre konkrete Deno-Version prüfen."
+    },
+    {
+      "category": "Paket- und Abhängigkeitsverwaltung",
+      "toolA": "Das tatsächliche Verhalten hängt vom gewählten Paketmanager und dessen Konfiguration ab.",
+      "toolB": "Wie weit npm-Pakete problemlos funktionieren, hängt von deren verwendeten APIs und Ihrer Deno-Konfiguration ab."
+    },
+    {
+      "category": "Ökosystem, Bibliotheken und Kompatibilität",
+      "toolA": "Prüfen Sie daher Abhängigkeiten regelmäßig auf Wartungsstand und Sicherheitslücken.",
+      "toolB": "Ob ein bestimmtes Paket zuverlässig funktioniert, sollten Sie mit Ihrer Version und Ihrem Anwendungsfall konkret testen."
+    },
+    {
+      "category": "Standardbibliothek und Web-APIs",
+      "toolA": "Insgesamt ist die Plattform sehr vollständig, verlangt aber Aufmerksamkeit für API-Stabilität und moderne Alternativen.",
+      "toolB": "Der genaue API-Umfang und empfohlene Importpfade hängen von der Version ab."
+    }
+  ],
+  "introduction": "Node.js und Deno lösen ein ähnliches Problem, unterscheiden sich jedoch bei reifegrad, stabilität und release-politik. Node.js: Node.js existiert seit 2009 und hat einen sehr hohen Reifegrad mit langjähriger, planbarer Release-Kadenz: regelmäßige… Deno: Deno wird seit 2018 entwickelt und hat sich schnell stabilisiert, verfolgt aber eine schnellere Iteration mit… Das Kriterium sicherheitsmodell und berechtigungen zeigt einen weiteren praktischen Unterschied: Node.js führt JavaScript standardmäßig ohne granulare Laufzeit-Berechtigungen aus; abhängiger Code kann grundsätzlich… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Reifegrad, Stabilität und Release-Politik: Node.js existiert seit 2009 und hat einen sehr hohen Reifegrad mit langjähriger, planbarer…",
+    "toolB": "dein Projekt priorisiert Sicherheitsmodell und Berechtigungen: Deno integriert ein Berechtigungssystem, bei dem Zugriffe auf Dateien, Netzwerk, Umgebung und…"
+  }
 }

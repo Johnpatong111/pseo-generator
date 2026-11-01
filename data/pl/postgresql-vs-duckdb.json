@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie PostgreSQL i DuckDB w 2026: wydajność, zastosowania analityczne, transakcyjne, ekosystem, bezpieczeństwo i koszty. Sprawdź, które narzędzie wybrać."
+    "title": "PostgreSQL vs DuckDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj PostgreSQL i DuckDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -94,5 +94,49 @@
       "q": "Które rozwiązanie lepiej sprawdzi się w chmurze?",
       "a": "PostgreSQL ma szerokie wsparcie w chmurze — jest oferowany jako usługa zarządzana przez wielu dostawców, co ułatwia skalowanie i administrację. DuckDB nie jest typową bazą chmurową, ale może być używany w funkcjach bezserwerowych lub kontenerach do zadań analitycznych. Wybór zależy od modelu pracy: PostgreSQL lepiej pasuje do ciągłej obsługi wielu użytkowników, a DuckDB do analityki efemerycznej."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między PostgreSQL a DuckDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i…. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką….",
+  "tradeoffs": [
+    {
+      "category": "Model przetwarzania i główne zastosowanie",
+      "toolA": "Jego możliwości analityczne są wystarczające dla wielu zastosowań, ale nie jest optymalizowany wyłącznie pod zapytania OLAP.",
+      "toolB": "Świetnie nadaje się do analityki ad hoc, notebooków i osadzania w aplikacjach."
+    },
+    {
+      "category": "Wydajność zapytań analitycznych",
+      "toolA": "Wydajność zależy od konfiguracji, sprzętu i schematu danych.",
+      "toolB": "Jego wydajność może się różnić w zależności od rozmiaru danych i złożoności zapytań."
+    },
+    {
+      "category": "Współbieżność i obsługa wielu użytkowników",
+      "toolA": "Pozwala na precyzyjne zarządzanie uprawnieniami i bezpieczeństwem na poziomie ról.",
+      "toolB": "Do pracy zespołowej wymaga dodatkowych rozwiązań lub eksportu danych."
+    },
+    {
+      "category": "Ekosystem, rozszerzenia i integracje",
+      "toolA": "Jest też dostępny w licznych usługach zarządzanych.",
+      "toolB": "Wiele integracji z narzędziami BI i chmurowymi jest ograniczonych lub rozwijanych."
+    },
+    {
+      "category": "Bezpieczeństwo i kontrola dostępu",
+      "toolA": "Pozwala na wdrożenie szczegółowych polityk dostępu i jest regularnie aktualizowany pod kątem luk bezpieczeństwa.",
+      "toolB": "Bezpieczeństwo zależy w dużej mierze od środowiska, w którym jest osadzony."
+    },
+    {
+      "category": "Łatwość wdrożenia i utrzymania",
+      "toolA": "Wdrożenie jest bardziej złożone niż w przypadku DuckDB, ale zapewnia większą kontrolę i skalowalność.",
+      "toolB": "Utrzymanie jest minimalne, ale brakuje zaawansowanych narzędzi administracyjnych."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model przetwarzania i główne zastosowanie. PostgreSQL: PostgreSQL jest relacyjną bazą danych OLTP przeznaczoną do obsługi wielu równoległych transakcji, typowo w… DuckDB: DuckDB to wbudowany silnik OLAP działający w procesie aplikacji, zaprojektowany do szybkiego przetwarzania zapytań… Kolejną istotną różnicę pokazuje kryterium „Wydajność zapytań analitycznych”: PostgreSQL radzi sobie z zapytaniami analitycznymi, zwłaszcza po zastosowaniu indeksów, partycjonowania i rozszerzeń… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i…",
+    "toolB": "projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką…"
+  }
 }

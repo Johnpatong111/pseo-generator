@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MySQL y MongoDB en modelo de datos, consultas, escalabilidad, transacciones, ecosistema y operación para ayudarte a elegir la base de datos adecuada en 2026."
+    "title": "MySQL vs MongoDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MySQL y MongoDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "¿Se pueden usar ambas bases de datos en el mismo sistema?",
       "a": "Sí, es una arquitectura habitual: MySQL para datos transaccionales y relacionales, y MongoDB para documentos, catálogos flexibles o registros de eventos. Esta combinación aporta flexibilidad, pero aumenta la complejidad operativa, la duplicación de datos y los costes de formación. Solo merece la pena si cada motor resuelve un problema que el otro no cubre bien, y conviene definir claramente la fuente de verdad."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MySQL y MongoDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza lenguaje de consultas y capacidad analítica: qué se puede preguntar a los: MySQL usa SQL, un estándar muy extendido para filtros, agregaciones, subconsultas, JOIN entre…. MongoDB es preferible cuando tu proyecto prioriza escalabilidad y arquitectura distribuida: cómo crece con el volumen y la: MongoDB se diseñó para la escala horizontal: los shards reparten datos y el enrutador mongos….",
+  "tradeoffs": [
+    {
+      "category": "Modelo de datos y esquema: cómo representa la información y cuánta estructura",
+      "toolA": "El esquema estricto facilita la coherencia y la evolución controlada mediante migraciones.",
+      "toolB": "Se pueden aplicar validadores de esquema por colección para acotar esa flexibilidad."
+    },
+    {
+      "category": "Lenguaje de consultas y capacidad analítica: qué se puede preguntar a los",
+      "toolA": "La sintaxis exacta y las funciones disponibles dependen de la versión y del motor de almacenamiento.",
+      "toolB": "La expresión y los operadores varían entre versiones."
+    },
+    {
+      "category": "Transacciones y garantías de integridad: atomicidad y consistencia en",
+      "toolA": "Las garantías concretas dependen del motor de almacenamiento elegido y de la configuración.",
+      "toolB": "La idoneidad depende del patrón de escritura y del despliegue."
+    },
+    {
+      "category": "Escalabilidad y arquitectura distribuida: cómo crece con el volumen y la",
+      "toolA": "El resultado depende de la carga, del motor y del diseño del esquema.",
+      "toolB": "No es una solución mágica: una shard key mal elegida puede degradar el rendimiento y complicar la operación."
+    },
+    {
+      "category": "Rendimiento según el patrón de acceso: lectura, escritura y latencia en cargas",
+      "toolA": "No hay un resultado universal: conviene medir con la carga representativa.",
+      "toolB": "El rendimiento varía con la versión, la shard key y el modelado de documentos."
+    },
+    {
+      "category": "Ecosistema, herramientas y disponibilidad de profesionales: soporte, clientes",
+      "toolA": "La oferta de servicios gestionados y la licencia dependen del proveedor y de la edición elegida.",
+      "toolB": "Las capacidades y los términos de licencia varían según la edición y el despliegue."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL y MongoDB responden a una necesidad similar, pero difieren en modelo de datos y esquema: cómo representa la información y cuánta estructura. MySQL: MySQL es una base de datos relacional: los datos se organizan en tablas con filas y columnas, y el esquema define… MongoDB: MongoDB es una base de datos documental: almacena documentos BSON en colecciones, con esquemas flexibles por documento. El criterio de lenguaje de consultas y capacidad analítica: qué se puede preguntar a los añade otra diferencia práctica: MySQL usa SQL, un estándar muy extendido para filtros, agregaciones, subconsultas, JOIN entre tablas y funciones de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza lenguaje de consultas y capacidad analítica: qué se puede preguntar a los: MySQL usa SQL, un estándar muy extendido para filtros, agregaciones, subconsultas, JOIN entre…",
+    "toolB": "tu proyecto prioriza escalabilidad y arquitectura distribuida: cómo crece con el volumen y la: MongoDB se diseñó para la escala horizontal: los shards reparten datos y el enrutador mongos…"
+  }
 }

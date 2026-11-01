@@ -1,8 +1,8 @@
 {
   "slug": "aws-vs-gcp",
   "meta": {
-    "title": "AWS vs Google Cloud (2026): quelle solution choisir ?",
-    "description": "Comparatif AWS vs Google Cloud 2026 : forces respectives, calcul, données, Kubernetes, IA, réseau, tarifs et conformité pour choisir le cloud adapté à votre projet."
+    "title": "AWS vs Google Cloud: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez AWS et Google Cloud : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "AWS"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Exemple minimal AWS CLI : lister les régions disponibles\n# Prérequis : AWS CLI installée et identifiants configurés (aws configure)\naws ec2 describe-regions --query \"Regions[].RegionName\" --output table",
-    "tech2Snippet": "# Exemple minimal Google Cloud CLI : lister les projets accessibles\n# Prérequis : gcloud installé et authentifié (gcloud auth login)\ngcloud projects list --format=\"table(projectId,name)\""
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as gcp from \"@pulumi/gcp\";\n\nconst productsBucket = new gcp.storage.Bucket(\"products\", {\n  location: \"US\",\n  uniformBucketLevelAccess: true,\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "Quelles compétences prévoir pour chacun en 2026 ?",
       "a": "AWS demande souvent de maîtriser un vocabulaire riche et de nombreux services, avec un fort besoin d'architecture et d'optimisation des coûts. Google Cloud met davantage l'accent sur Kubernetes, la data et l'IA, avec des compétences très recherchées sur GKE, BigQuery et Vertex AI. Dans les deux cas, les certifications peuvent aider, mais l'expérience pratique et la veille sur les évolutions de tarifs et de services restent déterminantes."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre AWS et Google Cloud modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "AWS convient mieux lorsque votre projet privilégie étendue du catalogue et maturité des services : AWS propose un catalogue extrêmement large couvrant calcul, stockage, bases de données, réseau,…. Google Cloud est préférable lorsque votre projet privilégie calcul et conteneurs : Google Cloud s'appuie sur Compute Engine, Cloud Run pour les conteneurs serverless, GKE pour….",
+  "tradeoffs": [
+    {
+      "category": "Étendue du catalogue et maturité des services",
+      "toolA": "Cette maturité facilite la recherche de retours d'expérience et de profils certifiés, mais la profusion d'options équivalentes peut compliquer les choix d'architecture, surtout pour une équipe junior.",
+      "toolB": "Certains services spécialisés peuvent manquer ou arriver plus tardivement, ce qui demande de vérifier la disponibilité effective pour votre région et votre cas d'usage avant de concevoir l'architecture."
+    },
+    {
+      "category": "Calcul et conteneurs",
+      "toolA": "La granularité des familles d'instances et les options de placement sont très riches, mais le dimensionnement et l'optimisation des coûts demandent une vraie expertise.",
+      "toolB": "Cloud Run et GKE sont réputés pour leur simplicité opérationnelle et leur intégration native à Kubernetes, même si le choix de familles de machines et d'options réseau reste moins étendu qu'AWS."
+    },
+    {
+      "category": "Bases de données et analytique",
+      "toolA": "Aurora offre des performances et une résilience appréciables, mais les coûts peuvent grimper rapidement selon le dimensionnement et les options de stockage.",
+      "toolB": "BigQuery est particulièrement apprécié pour l'analytique serverless et Spanner pour la cohérence forte à l'échelle mondiale, ce qui en fait une plateforme data très cohérente, même si certains moteurs relationnels managés sont moins variés que chez AWS."
+    },
+    {
+      "category": "Kubernetes et orchestration",
+      "toolA": "Il reste toutefois plus opérationnellement exigeant que certaines alternatives, et la maîtrise des coûts du plan de contrôle et des nœuds demande de l'attention.",
+      "toolB": "Il est souvent perçu comme plus simple à démarrer pour les équipes Kubernetes, même si les configurations avancées restent complexes sur les deux plateformes."
+    },
+    {
+      "category": "IA et machine learning",
+      "toolA": "La couverture est large, mais l'expérience est plus fragmentée et dépend fortement des services choisis et des régions disponibles.",
+      "toolB": "L'intégration avec BigQuery et l'écosystème data est un atout majeur pour les projets IA, même si les tarifs et quotas varient selon les modèles et les régions."
+    },
+    {
+      "category": "Réseau et diffusion de contenu",
+      "toolA": "La richesse des options permet des architectures sophistiquées, mais la configuration réseau peut devenir complexe et source d'erreurs si elle n'est pas encadrée.",
+      "toolB": "Son modèle de VPC global simplifie certaines architectures multi-régions, même si le catalogue de services réseau spécialisés est un peu moins large que celui d'AWS."
+    }
+  ],
+  "introduction": "AWS et Google Cloud répondent à un besoin proche, mais diffèrent sur étendue du catalogue et maturité des services. AWS : AWS propose un catalogue extrêmement large couvrant calcul, stockage, bases de données, réseau, IoT, médias, satellite… Google Cloud : Google Cloud couvre l'essentiel des besoins avec des services très aboutis sur les données, Kubernetes et l'IA, mais… Le critère « Calcul et conteneurs » met en évidence une autre différence pratique : AWS propose EC2 pour les machines virtuelles, Lambda pour le serverless, ECS et EKS pour les conteneurs, ainsi que… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie étendue du catalogue et maturité des services : AWS propose un catalogue extrêmement large couvrant calcul, stockage, bases de données, réseau,…",
+    "toolB": "votre projet privilégie calcul et conteneurs : Google Cloud s'appuie sur Compute Engine, Cloud Run pour les conteneurs serverless, GKE pour…"
+  }
 }

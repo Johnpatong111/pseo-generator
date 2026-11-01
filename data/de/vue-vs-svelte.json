@@ -1,8 +1,8 @@
 {
   "slug": "vue-vs-svelte",
   "meta": {
-    "title": "Vue vs Svelte (2026): welche Lösung passt besser?",
-    "description": "Vue und Svelte im Vergleich 2026: Reaktivität, Bundle-Größe, Lernkurve, Ökosystem, Tooling und Einsatzgebiete – praxisnah und ausgewogen für Ihre Projektentscheidung."
+    "title": "Vue vs Svelte: welches 2026 wählen — Funktionen, Leistung und Ökosystem",
+    "description": "Vergleiche Vue und Svelte: Bewerte Architekturkompromisse bei Rendering, Routing und Datenladen und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Vue"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { createApp, ref } from 'vue'\n\ncreateApp({\n  setup() {\n    const message = ref('Hallo, Welt!')\n    return { message }\n  },\n  template: '<h1>{{ message }}</h1>'\n}).mount('#app')",
-    "tech2Snippet": "<script>\n  let message = 'Hallo, Welt!'\n</script>\n\n<h1>{message}</h1>"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\ntype Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n\nconst props = defineProps<{ products: Product[]; categoryId: string }>();\nconst visibleProducts = computed(() =>\n  props.products.filter(\n    (product) => product.active && product.categoryId === props.categoryId,\n  ),\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"product in visibleProducts\" :key=\"product.id\">{{ product.name }}</li>\n  </ul>\n</template>",
+    "tech2Snippet": "<script lang=\"ts\">\n  type Product = {\n  id: string;\n  name: string;\n  categoryId: string;\n  active: boolean;\n  priceCents: number;\n};\n  export let products: Product[];\n  export let categoryId: string;\n\n  $: visibleProducts = products.filter(\n    (product) => product.active && product.categoryId === categoryId,\n  );\n</script>\n\n<ul>\n  {#each visibleProducts as product (product.id)}\n    <li>{product.name}</li>\n  {/each}\n</ul>"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Was sollte ich bei der Wahl zwischen Vue und Svelte für 2026 beachten?",
       "a": "Prüfen Sie zunächst Team-Erfahrung, Projektgröße, Anforderungen an SEO und Serverseitiges Rendering sowie die gewünschte Langlebigkeit der Codebasis. Vue bietet ein breites, etabliertes Ökosystem und klare Muster für große Anwendungen, während Svelte mit einem schlanken, compilerbasierten Ansatz punktet. Da sich Versionen, Roadmaps und Tooling stetig weiterentwickeln, sollten Sie die offiziellen Dokumentationen und Release-Informationen zum Entscheidungszeitpunkt heranziehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Vue und Svelte verändert den Umgang mit Rendering der Oberfläche und Datenladen; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Vue passt besser, wenn dein Projekt priorisiert Ökosystem, Bibliotheken und langfristige Verbreitung: Vue verfügt über ein etabliertes Ökosystem mit offiziellen Begleitbibliotheken wie Vue Router und…. Svelte ist geeigneter, wenn dein Projekt priorisiert Reaktivitätsmodell und Programmiermodell: Svelte setzt auf einen Compiler, der Reaktivitätsbeziehungen bereits beim Build erkennt und in….",
+  "tradeoffs": [
+    {
+      "category": "Reaktivitätsmodell und Programmiermodell",
+      "toolA": "Das Modell bleibt zur Laufzeit aktiv und erfordert ein gewisses Verständnis von Reaktivitätsgrenzen, etwa beim Verlust der Reaktivität durch Destrukturierung ohne Hilfsmittel wie toRefs.",
+      "toolB": "Das Programmiermodell wirkt näher an reinem JavaScript, verlangt aber, dass Reaktivität über Zuweisungen sichtbar bleibt und nicht durch indirekte Mutationen umgangen wird."
+    },
+    {
+      "category": "Lernkurve und Einstieg für neue Teammitglieder",
+      "toolA": "Allerdings umfasst das Ökosystem viele Konzepte wie Router, Pinia, Slots und Lifecycle-Hooks, die schrittweise erlernt werden müssen.",
+      "toolB": "Für komplexere Architekturen sind dennoch Konzepte wie Stores, Slots und Lifecycle-Funktionen zu erlernen, wenngleich die Oberfläche des Frameworks insgesamt schlanker wirkt."
+    },
+    {
+      "category": "Ökosystem, Bibliotheken und langfristige Verbreitung",
+      "toolA": "Aussagen zur künftigen Entwicklung hängen jedoch von Version, Release-Zyklus und Maintainer-Aktivität ab und sollten vor einer Entscheidung anhand der offiziellen Roadmap geprüft werden.",
+      "toolB": "Die langfristige Verbreitung ist schwer prognostizierbar und sollte anhand aktueller Adoption, Unternehmensnutzung und Release-Aktivität bewertet werden."
+    },
+    {
+      "category": "Performance und Bundle-Größe",
+      "toolA": "Die tatsächliche Performance hängt stark von der Anwendung, dem Rendering-Muster und der Konfiguration ab, sodass pauschale Aussagen ohne Messung im konkreten Projekt unzuverlässig sind.",
+      "toolB": "Performanzgewinne sollten nicht als garantiert gelten, sondern im jeweiligen Projekt durch Messungen unter realistischer Arbeitslast überprüft werden."
+    },
+    {
+      "category": "Tooling, Entwicklungsumgebung und Debugging",
+      "toolA": "Die Qualität der Debugging-Erfahrung kann je nach Editor, Plugin-Version und Projektkonfiguration variieren und sollte im Team abgestimmt werden.",
+      "toolB": "Der Funktionsumfang der Werkzeuge hängt von der Version und den installierten Erweiterungen ab und ist nicht in jedem Editor identisch."
+    },
+    {
+      "category": "Strukturierung großer Anwendungen und Skalierbarkeit",
+      "toolA": "Die richtige Architektur entsteht jedoch nicht automatisch, sondern erfordert Konventionen, Code-Reviews und eine bewusste Entscheidung für Zustands- und Routingmuster.",
+      "toolB": "Bei sehr großen Teams und komplexen Anforderungen ist zu prüfen, ob das Ökosystem und die verfügbaren Muster den eigenen Bedürfnissen entsprechen."
+    }
+  ],
+  "introduction": "Vue und Svelte lösen ein ähnliches Problem, unterscheiden sich jedoch bei reaktivitätsmodell und programmiermodell. Vue: Vue nutzt ein reaktives System mit Proxy-basierten refs und reactive-Objekten, das zur Laufzeit Änderungen verfolgt… Svelte: Svelte setzt auf einen Compiler, der Reaktivitätsbeziehungen bereits beim Build erkennt und in effizienten… Das Kriterium lernkurve und einstieg für neue teammitglieder zeigt einen weiteren praktischen Unterschied: Vue bietet eine ausführliche, gut strukturierte Dokumentation und eine sanfte Progression von einfachen… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Ökosystem, Bibliotheken und langfristige Verbreitung: Vue verfügt über ein etabliertes Ökosystem mit offiziellen Begleitbibliotheken wie Vue Router und…",
+    "toolB": "dein Projekt priorisiert Reaktivitätsmodell und Programmiermodell: Svelte setzt auf einen Compiler, der Reaktivitätsbeziehungen bereits beim Build erkennt und in…"
+  }
 }

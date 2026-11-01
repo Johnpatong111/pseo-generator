@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-pulumi",
   "meta": {
-    "title": "Terraform vs Pulumi (2026): Which option should you choose?",
-    "description": "A practical 2026 comparison of Terraform and Pulumi covering languages, state management, ecosystems, testing, policy, and team fit to help you choose."
+    "title": "Terraform vs Pulumi: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
+    "description": "Compare Terraform and Pulumi architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "Terraform"
@@ -94,5 +94,49 @@
       "q": "How do we migrate from one tool to the other?",
       "a": "Migration is usually incremental: import existing resources into the target tool, reconcile state, and cut over one stack at a time with clear ownership. Both tools support importing existing infrastructure, but the effort depends on resource count, module complexity, and provider behavior. Plan for a period of parallel operation and avoid applying changes from both tools to the same resources."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between Terraform and Pulumi changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "Terraform is the better fit when your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS…. Pulumi is a stronger fit when your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on….",
+  "tradeoffs": [
+    {
+      "category": "Configuration language and learning curve",
+      "toolA": "Because HCL is declarative, reviewers can often understand a change without knowing a general-purpose programming language, which helps with cross-team governance.",
+      "toolB": "The learning curve depends heavily on the chosen language; developers usually adapt quickly, while operations-only teams may find HCL more approachable."
+    },
+    {
+      "category": "Provider and ecosystem breadth",
+      "toolA": "Coverage depth varies by provider, so verify the specific resources and version you need before committing.",
+      "toolB": "For unusual services, check the Pulumi Registry and provider changelogs for the exact resource support you require."
+    },
+    {
+      "category": "State management and collaboration",
+      "toolA": "Operations teams must still design backend security, locking, and state isolation carefully.",
+      "toolB": "Self-managed backends require you to configure locking and access controls appropriately, so review the documentation for your chosen backend."
+    },
+    {
+      "category": "Testing, validation, and software engineering practices",
+      "toolA": "This works well but can require more custom scaffolding for complex logic.",
+      "toolB": "Teams already practicing test-driven development often find this workflow more integrated than Terraform's."
+    },
+    {
+      "category": "Abstraction, reuse, and multi-team scaling",
+      "toolA": "Organizations often standardize on module libraries and policy checks to keep many teams consistent.",
+      "toolB": "Governance is important so abstraction does not obscure what infrastructure is actually being created."
+    },
+    {
+      "category": "Security, policy, and compliance",
+      "toolA": "Sentinel availability is tied to HashiCorp commercial offerings.",
+      "toolB": "Secrets are encrypted in Pulumi state, and self-managed backends rely on your own encryption and access controls."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
+  },
+  "introduction": "Terraform and Pulumi address a related need, but differ in configuration language and learning curve. Terraform: Terraform uses HCL, a purpose-built declarative language with a small surface area that is easy to read and review. Pulumi: Pulumi lets you write infrastructure in general-purpose languages such as TypeScript, Python, Go, C#, and Java, so… The provider and ecosystem breadth criterion adds another practical distinction: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS…",
+    "toolB": "your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-hono",
   "meta": {
-    "title": "NestJS vs Hono (2026): ¿Qué solución elegir?",
-    "description": "Comparamos NestJS y Hono en 2026: arquitectura, rendimiento, tipado, ecosistema y despliegue. Descubre qué framework encaja mejor con tu próximo proyecto."
+    "title": "NestJS vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
+    "description": "Compara NestJS y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "NestJS"
@@ -94,5 +94,49 @@
       "q": "¿Cómo influye el tamaño del bundle en la elección?",
       "a": "Un bundle más ligero, como el de Hono, puede reducir el arranque en frío en entornos serverless y el consumo de recursos en el edge. NestJS, con más abstracciones, tiende a generar artefactos mayores, aunque el impacto real depende del adaptador y de las dependencias. Si el despliegue es contenedorizado y el arranque no es crítico, esa diferencia puede ser menos relevante."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre NestJS y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "NestJS encaja mejor cuando tu proyecto prioriza arquitectura y organización del código: NestJS propone una arquitectura opinada inspirada en Angular: módulos, controladores, servicios e…. Hono es preferible cuando tu proyecto prioriza rendimiento y tamaño del bundle: Hono está diseñado para ser ligero y rápido, con soporte para múltiples entornos JavaScript y….",
+  "tradeoffs": [
+    {
+      "category": "Arquitectura y organización del código",
+      "toolA": "Esta estructura facilita separar responsabilidades en proyectos grandes, aunque añade abstracciones y archivos que pueden resultar excesivos en servicios pequeños.",
+      "toolB": "El equipo decide cómo estructurar el código, lo que agiliza prototipos pero exige más disciplina para mantener la coherencia al crecer."
+    },
+    {
+      "category": "Rendimiento y tamaño del bundle",
+      "toolA": "Las cifras concretas dependen de la versión, la configuración, la carga y el adaptador HTTP empleado, por lo que conviene medirlas en el escenario real.",
+      "toolB": "Su menor huella suele traducirse en arranques más rápidos y mejor rendimiento en entornos serverless, aunque los resultados varían según la lógica de negocio y el runtime."
+    },
+    {
+      "category": "Soporte de TypeScript y experiencia de desarrollo",
+      "toolA": "El CLI y el ecosistema de herramientas facilitan generar y mantener el proyecto.",
+      "toolB": "Su enfoque funcional resulta muy ergonómico, aunque el equipo debe montar su propia organización y utilidades al margen del framework."
+    },
+    {
+      "category": "Curva de aprendizaje",
+      "toolA": "Una vez asimilados, el patrón acelera el trabajo en equipo, pero los recién llegados pueden necesitar más tiempo para ser productivos.",
+      "toolB": "Para aprovecharlo bien en aplicaciones complejas, conviene conocer patrones de middleware y validación, ya que no impone una estructura."
+    },
+    {
+      "category": "Ecosistema y madurez",
+      "toolA": "La documentación oficial y los ejemplos disponibles reducen las decisiones de integración.",
+      "toolB": "Aunque es más joven, cubre las necesidades habituales de APIs, si bien algunas integraciones específicas pueden requerir más trabajo manual."
+    },
+    {
+      "category": "Despliegue y entornos de ejecución",
+      "toolA": "El soporte para entornos serverless o de borde existe, pero requiere adaptaciones y no es su escenario más natural.",
+      "toolB": "Esto simplifica desplegar la misma lógica en entornos serverless o de borde, aunque algunas APIs específicas pueden comportarse distinto según el runtime."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "NestJS y Hono responden a una necesidad similar, pero difieren en arquitectura y organización del código. NestJS: NestJS propone una arquitectura opinada inspirada en Angular: módulos, controladores, servicios e inyección de… Hono: Hono apuesta por un núcleo minimalista basado en middleware y un enrutador tipo Radix tree, sin imponer patrones de… El criterio de rendimiento y tamaño del bundle añade otra diferencia práctica: NestJS se apoya en Express por defecto (también admite Fastify) y su capa de abstracciones implica un consumo mayor… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza arquitectura y organización del código: NestJS propone una arquitectura opinada inspirada en Angular: módulos, controladores, servicios e…",
+    "toolB": "tu proyecto prioriza rendimiento y tamaño del bundle: Hono está diseñado para ser ligero y rápido, con soporte para múltiples entornos JavaScript y…"
+  }
 }

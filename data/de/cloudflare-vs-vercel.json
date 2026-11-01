@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-vercel",
   "meta": {
-    "title": "Cloudflare vs Vercel (2026): welche Lösung passt besser?",
-    "description": "Cloudflare vs Vercel im Vergleich 2026: Edge-Computing, Hosting, Preislogik, DX und Lock-in ehrlich eingeordnet – mit klarer Empfehlung für dein Projekt."
+    "title": "Cloudflare vs Vercel: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Cloudflare und Vercel: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "export default {\n  async fetch(request) {\n    return new Response(\"Hello, World!\");\n  },\n};\n\n// wrangler.toml\n// name = \"hello-worker\"\n// main = \"src/index.js\"\n// compatibility_date = \"2026-01-01\"",
-    "tech2Snippet": "// app/api/hello/route.ts\nexport async function GET() {\n  return Response.json({ message: \"Hello, World!\" });\n}\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Option passt zu kleinen Teams ohne eigene Plattform-Expertise?",
       "a": "Kleine Teams profitieren oft von Vercel, weil Deployments und Vorschauen ohne viel Infrastrukturwissen funktionieren. Cloudflare bietet mehr Kontrolle, verlangt aber Einarbeitung in Workers, Bindings und Limits. Wer wenig Betriebsaufwand will, sollte mit Vercel starten und Cloudflare gezielt für Netzwerk- und Sicherheitsfunktionen ergänzen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Cloudflare und Vercel verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Cloudflare passt besser, wenn dein Projekt priorisiert Edge-Computing und Laufzeitmodell: Cloudflare Workers laufen auf der eigenen V8-basierten Laufzeit und sind auf ein globales…. Vercel ist geeigneter, wenn dein Projekt priorisiert Framework-Unterstützung und Developer Experience: Vercel ist eng mit Next.js verzahnt und erkennt viele Framework-Konventionen automatisch, was….",
+  "tradeoffs": [
+    {
+      "category": "Edge-Computing und Laufzeitmodell",
+      "toolA": "Für kurze, latenzkritische Request-Verarbeitung ist das Modell naheliegend, während langlaufende oder stark CPU-intensiven Workloads je nach Tarif und Limits geprüft werden sollten.",
+      "toolB": "Das Modell ist stark auf Frontend- und Next.js-Workflows zugeschnitten und weniger als universelle Edge-Plattform für beliebige Backend-Dienste gedacht."
+    },
+    {
+      "category": "Framework-Unterstützung und Developer Experience",
+      "toolA": "Die Developer Experience ist solide, setzt jedoch mehr Grundverständnis für Routing, Bindings und Deployments voraus.",
+      "toolB": "Auch andere Frameworks werden unterstützt, die tiefste Integration bleibt aber das eigene Next.js-Ökosystem."
+    },
+    {
+      "category": "Preismodell und Kostenkontrolle",
+      "toolA": "Wer Limits und Architektur kennt, kann Kosten oft gut planen und gezielt skalieren.",
+      "toolB": "Bei hohem Traffic oder vielen Vorschau-Deployments sollten die aktuellen Preise und Limits vor dem Produktivstart geprüft werden."
+    },
+    {
+      "category": "Integrierte Plattformdienste",
+      "toolA": "Das erlaubt schlanke, edge-nahe Architekturen, erfordert aber Einarbeitung in die jeweiligen Dienste und deren Konsistenzmodelle.",
+      "toolB": "Das hält die Plattform übersichtlich, bedeutet für Backend-Dienste aber mehr externe Abhängigkeiten."
+    },
+    {
+      "category": "Sicherheit und DDoS-Schutz",
+      "toolA": "Sicherheitsfunktionen lassen sich auch unabhängig vom Hosting nutzen, was die Plattform für gemischte Setups attraktiv macht.",
+      "toolB": "Die Absicherung ist für typische Frontend-Deployments solide, ersetzt aber kein eigenes Sicherheitskonzept."
+    },
+    {
+      "category": "Skalierung und globale Latenz",
+      "toolA": "Die konkrete Performance hängt von Laufzeit, Region, Caching und Datenbankzugriffen ab und lässt sich nicht pauschal garantieren.",
+      "toolB": "Bei datenbanknahen oder regiongebundenen Backends kann die Platzierung jedoch zum begrenzenden Faktor werden."
+    }
+  ],
+  "introduction": "Cloudflare und Vercel lösen ein ähnliches Problem, unterscheiden sich jedoch bei edge-computing und laufzeitmodell. Cloudflare: Cloudflare Workers laufen auf der eigenen V8-basierten Laufzeit und sind auf ein globales Edge-Netz ausgelegt; die… Vercel: Vercel bietet Edge Functions sowie serverlose Funktionen mit Node.js-Laufzeit, wobei die konkreten Regionen,… Das Kriterium framework-unterstützung und developer experience zeigt einen weiteren praktischen Unterschied: Cloudflare unterstützt viele Frameworks über Adapter und Workers, die Integrationen sind aber teils explizit zu… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Edge-Computing und Laufzeitmodell: Cloudflare Workers laufen auf der eigenen V8-basierten Laufzeit und sind auf ein globales…",
+    "toolB": "dein Projekt priorisiert Framework-Unterstützung und Developer Experience: Vercel ist eng mit Next.js verzahnt und erkennt viele Framework-Konventionen automatisch, was…"
+  }
 }

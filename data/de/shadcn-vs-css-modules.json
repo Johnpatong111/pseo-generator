@@ -1,8 +1,8 @@
 {
   "slug": "shadcn-vs-css-modules",
   "meta": {
-    "title": "shadcn/ui vs CSS Modules (2026): welche Lösung passt besser?",
-    "description": "shadcn/ui und CSS Modules im Vergleich 2026: Komponentenarchitektur, Styling, Wartbarkeit, Barrierefreiheit, Flexibilität und Eignung für konkrete Projekte."
+    "title": "shadcn/ui vs CSS Modules: welches 2026 wählen — Styling, Komponenten und Entwickler-Workflow",
+    "description": "Vergleiche shadcn/ui und CSS Modules: Bewerte Architekturkompromisse bei Komponenten-APIs, Style-Isolation und Wartung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "shadcn/ui"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// app/page.tsx (Next.js App Router)\nimport { Button } from \"@/components/ui/button\";\n\nexport default function Page() {\n  return <Button>Hallo, Welt!</Button>;\n}",
-    "tech2Snippet": "/* Button.module.css */\n.button {\n  padding: 0.5rem 1rem;\n  border-radius: 0.5rem;\n  background: #111;\n  color: #fff;\n}\n\n// Button.tsx\nimport styles from \"./Button.module.css\";\n\nexport function Button() {\n  return <button className={styles.button}>Hallo, Welt!</button>;\n}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className=\"product-card\" aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich beide Ansätze in einem Projekt kombinieren?",
       "a": "Ja, eine Kombination ist technisch möglich: shadcn/ui liefert React-Komponenten mit Tailwind-Styling, während CSS Modules eigene, klar gekapselte Styles ergänzen können. Wichtig sind klare Regeln, welche Komponenten welchen Ansatz nutzen, um doppelte oder widersprüchliche Styles zu vermeiden. Zudem sollten Theme-Variablen und Design-Tokens gemeinsam gepflegt werden, damit das Erscheinungsbild konsistent bleibt."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen shadcn/ui und CSS Modules verändert den Umgang mit Style-Verwaltung und Oberflächenkomposition; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "shadcn/ui passt besser, wenn dein Projekt priorisiert Barrierefreiheit und Interaktionsmuster: Viele shadcn/ui-Komponenten basieren auf Radix UI und bringen dadurch durchdachte…. CSS Modules ist geeigneter, wenn dein Projekt priorisiert Styling-Kontrolle und Anpassbarkeit: CSS Modules geben volle Kontrolle über klassisches CSS, einschließlich verschachtelter Selektoren….",
+  "tradeoffs": [
+    {
+      "category": "Architektur und Bereitstellung",
+      "toolA": "Abhängigkeiten wie Radix UI und Tailwind CSS werden im Projekt installiert; konkrete Einrichtung und Verhalten hängen von Version und Konfiguration ab.",
+      "toolB": "Die Einrichtung hängt vom jeweiligen Bundler oder Framework ab und ist meist Teil der bestehenden Toolchain."
+    },
+    {
+      "category": "Styling-Kontrolle und Anpassbarkeit",
+      "toolA": "Wer Tailwind nicht einsetzen will, muss den kopierten Code entsprechend umbauen.",
+      "toolB": "Die Verantwortung für Konsistenz und Skalierung liegt stärker beim Team."
+    },
+    {
+      "category": "Barrierefreiheit und Interaktionsmuster",
+      "toolA": "Vollständige Barrierefreiheit erfordert dennoch eigene Prüfung und korrekte Nutzung.",
+      "toolB": "Das bietet maximale Kontrolle, erhöht aber den Aufwand und das Risiko von Fehlern."
+    },
+    {
+      "category": "Wartbarkeit und Aktualisierung",
+      "toolA": "Das kann langfristig aufwendiger sein als bei einer klassischen Abhängigkeit.",
+      "toolB": "Allerdings entstehen bei großen Projekten leicht viele kleine Dateien, was ohne Konventionen die Übersicht erschwert."
+    },
+    {
+      "category": "Framework- und Ökosystem-Kompatibilität",
+      "toolA": "Die genaue Kompatibilität hängt von Version und Framework-Konfiguration ab.",
+      "toolB": "Die konkrete Unterstützung richtet sich nach dem verwendeten Build-Tool."
+    },
+    {
+      "category": "Einarbeitungsaufwand und Lernkurve",
+      "toolA": "Die Dokumentation ist umfangreich, Details hängen jedoch von der Version ab.",
+      "toolB": "Für komplexe Interaktionen und Designsysteme ist dennoch zusätzliches Architekturwissen nötig."
+    }
+  ],
+  "introduction": "shadcn/ui und CSS Modules lösen ein ähnliches Problem, unterscheiden sich jedoch bei architektur und bereitstellung. shadcn/ui: shadcn/ui ist keine klassische npm-Bibliothek im Sinne eines versionierten Abhängigkeitspakets, sondern eine Sammlung… CSS Modules: CSS Modules sind eine Styling-Technik, die von Build-Tools wie Vite, Next.js oder Webpack unterstützt wird. Das Kriterium styling-kontrolle und anpassbarkeit zeigt einen weiteren praktischen Unterschied: shadcn/ui setzt konsequent auf Tailwind CSS sowie auf CSS-Variablen für Design-Tokens, etwa für Farben und Radien. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Barrierefreiheit und Interaktionsmuster: Viele shadcn/ui-Komponenten basieren auf Radix UI und bringen dadurch durchdachte…",
+    "toolB": "dein Projekt priorisiert Styling-Kontrolle und Anpassbarkeit: CSS Modules geben volle Kontrolle über klassisches CSS, einschließlich verschachtelter Selektoren…"
+  }
 }

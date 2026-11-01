@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-llama-3-3",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Llama 3.3 (2026): quelle solution choisir ?",
-    "description": "Comparatif 2026 entre Claude 3.7 Sonnet et Llama 3.3 : contexte, benchmarks, tarifs API, latence, accès et cas d'usage. Analyse nuancée pour choisir."
+    "title": "Claude 3.7 Sonnet vs Llama 3.3: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Claude 3.7 Sonnet et Llama 3.3 : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon…"
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"VOTRE_CLE_API\")\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, monde !\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id, device_map=\"auto\")\ninputs = tokenizer(\"Bonjour, monde !\", return_tensors=\"pt\").to(model.device)\noutputs = model.generate(**inputs, max_new_tokens=50)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Les extraits de code fournis mesurent-ils les performances ?",
       "a": "Non, les extraits de code sont uniquement des exemples minimaux d'initialisation et d'appel pour chaque modèle. Ils ne constituent pas des benchmarks et ne permettent pas de comparer les performances réelles. Pour évaluer la latence ou le débit, il faut réaliser des tests contrôlés dans des conditions représentatives de votre usage."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Claude 3.7 Sonnet et Llama 3.3 modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Claude 3.7 Sonnet convient mieux lorsque votre projet privilégie tarification api pour 1m de tokens en entrée/sortie : Claude 3.7 Sonnet est accessible via l'API Anthropic avec une tarification au token, généralement…. Llama 3.3 est préférable lorsque votre projet privilégie accès au modèle et caractère ouvert/fermé : Llama 3.3 est un modèle ouvert dont les poids sont téléchargeables et utilisables selon la licence….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte",
+      "toolA": "La valeur exacte dépend de la version et de l'offre ; il est recommandé de vérifier la limite officielle actuelle auprès d'Anthropic.",
+      "toolB": "Il faut consulter la documentation du modèle et de l'hébergeur pour connaître la valeur applicable."
+    },
+    {
+      "category": "Performances sur benchmarks (MMLU, HumanEval)",
+      "toolA": "Il est préférable de se référer à la fiche officielle du modèle pour des chiffres à jour et comparables.",
+      "toolB": "Une comparaison directe n'est pertinente que si les protocoles et les versions sont identiques, ce qui nécessite une vérification des publications officielles."
+    },
+    {
+      "category": "Tarification API pour 1M de tokens en entrée/sortie",
+      "toolA": "Les prix exacts évoluent et peuvent dépendre du niveau de service ou de la région ; il convient de consulter la grille tarifaire officielle d'Anthropic pour des montants à jour.",
+      "toolB": "Il n'y a donc pas de tarif officiel unique par million de tokens ; une comparaison quantitative exige de se référer aux offres des fournisseurs choisis."
+    },
+    {
+      "category": "Latence",
+      "toolA": "Anthropic ne garantit pas de latence fixe dans toutes les offres, et des mesures publiques précises doivent être vérifiées dans la documentation ou via des tests contrôlés.",
+      "toolB": "Elle peut être optimisée ou dégradée selon les choix techniques, ce qui rend toute valeur générique non fiable sans contexte de déploiement précis."
+    },
+    {
+      "category": "Accès au modèle et caractère ouvert/fermé",
+      "toolA": "Cela simplifie l'accès mais limite la possibilité d'héberger ou de modifier le modèle soi-même.",
+      "toolB": "Il peut être exécuté en local, sur cloud privé ou via des fournisseurs tiers, ce qui offre plus de contrôle mais implique de gérer l'infrastructure, la sécurité et la conformité."
+    },
+    {
+      "category": "Cas d'usage pratiques",
+      "toolA": "Il convient aux équipes qui veulent intégrer rapidement une API fiable et bénéficier des mises à jour du fournisseur.",
+      "toolB": "Il est également pertinent pour l'expérimentation et la recherche, à condition de disposer des compétences MLOps nécessaires."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet et Llama 3.3 répondent à un besoin proche, mais diffèrent sur fenêtre de contexte. Claude 3.7 Sonnet : Claude 3.7 Sonnet propose une fenêtre de contexte étendue, ce qui facilite le traitement de longs documents, de bases… Llama 3.3 : Llama 3.3 offre également une fenêtre de contexte généreuse dans ses versions récentes, mais la limite effective peut… Le critère « Performances sur benchmarks (MMLU, HumanEval) » met en évidence une autre différence pratique : Anthropic publie des résultats de benchmarks pour Claude 3.7 Sonnet, mais les scores exacts sur MMLU et HumanEval… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie tarification api pour 1m de tokens en entrée/sortie : Claude 3.7 Sonnet est accessible via l'API Anthropic avec une tarification au token, généralement…",
+    "toolB": "votre projet privilégie accès au modèle et caractère ouvert/fermé : Llama 3.3 est un modèle ouvert dont les poids sont téléchargeables et utilisables selon la licence…"
+  }
 }

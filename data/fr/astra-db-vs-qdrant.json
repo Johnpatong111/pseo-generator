@@ -1,8 +1,8 @@
 {
   "slug": "astra-db-vs-qdrant",
   "meta": {
-    "title": "Astra DB vs Qdrant (2026) : quelle solution choisir ?",
-    "description": "Comparaison détaillée d'Astra DB (base managée Cassandra avec recherche vectorielle) et de Qdrant (moteur vectoriel open source) : critères, verdict et exemples de code pour bien choisir en 2026."
+    "title": "Astra DB vs Qdrant: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Astra DB et Qdrant : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Astra DB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "from astrapy import DataAPIClient\n\nclient = DataAPIClient(\"VOTRE_TOKEN_ASTRA\")\ndatabase = client.get_database(\"VOTRE_ENDPOINT_ASTRA\")\ncollection = database.create_collection(\"demo\", dimension=3, metric=\"cosine\")\ncollection.insert_one({\"_id\": \"1\", \"$vector\": [0.1, 0.2, 0.3], \"texte\": \"Bonjour le monde\"})\nresultats = collection.find({}, sort={\"$vector\": [0.1, 0.2, 0.3]}, limit=1)\nprint(list(resultats))",
-    "tech2Snippet": "from qdrant_client import QdrantClient\nfrom qdrant_client.models import Distance, VectorParams, PointStruct\n\nclient = QdrantClient(\":memory:\")\nclient.create_collection(\n    collection_name=\"demo\",\n    vectors_config=VectorParams(size=3, distance=Distance.COSINE),\n)\nclient.upsert(\n    collection_name=\"demo\",\n    points=[PointStruct(id=1, vector=[0.1, 0.2, 0.3], payload={\"texte\": \"Bonjour le monde\"})],\n)\nresultats = client.search(collection_name=\"demo\", query_vector=[0.1, 0.2, 0.3], limit=1)\nprint(resultats)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quel choix privilégier si l'on veut démarrer rapidement un projet RAG ?",
       "a": "Si votre priorité est une base managée intégrant des données opérationnelles et une recherche vectorielle, Astra DB peut réduire la charge d'exploitation. Si votre besoin est centré sur la recherche sémantique et que vous acceptez de gérer un composant spécialisé, Qdrant offre un contrôle plus fin. Dans les deux cas, validez les intégrations et les limites de l'offre avant de démarrer."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Astra DB et Qdrant modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Astra DB convient mieux lorsque votre projet privilégie modèle de données et pertinence métier : Astra DB repose sur le modèle large-column d'Apache Cassandra : tables, partitions, clés primaires…. Qdrant est préférable lorsque votre projet privilégie recherche vectorielle et indexation : Qdrant est spécialisé dans la recherche vectorielle : il prend en charge plusieurs métriques de….",
+  "tradeoffs": [
+    {
+      "category": "Modèle de données et pertinence métier",
+      "toolA": "La recherche vectorielle y est proposée comme une capacité complémentaire, à vérifier selon l'offre et la version.",
+      "toolB": "Il est donc très pertinent pour la recherche sémantique et les architectures RAG, moins pour des données métier fortement structurées."
+    },
+    {
+      "category": "Recherche vectorielle et indexation",
+      "toolA": "L'intérêt principal est de combiner cette recherche avec les données Cassandra dans un même service managé.",
+      "toolB": "Les performances réelles varient selon la taille du jeu de données, le matériel et les paramètres d'index, et ne doivent pas être extrapolées sans mesure."
+    },
+    {
+      "category": "Modèle opérationnel et hébergement",
+      "toolA": "Les niveaux de service, régions et garanties de disponibilité doivent être vérifiés dans l'offre commerciale en vigueur.",
+      "toolB": "L'offre cloud réduit cette charge, avec des caractéristiques et des tarifs à vérifier selon la région et le plan choisis."
+    },
+    {
+      "category": "Intégrations et écosystème",
+      "toolA": "Il est recommandé de valider les intégrations nécessaires dans la documentation officielle avant de s'engager.",
+      "toolB": "Comme pour Astra DB, le support exact de chaque framework et de chaque fonctionnalité évolue avec les versions et doit être confirmé."
+    },
+    {
+      "category": "Sécurité et conformité",
+      "toolA": "La sécurité des applications reste à la charge de l'utilisateur, notamment la gestion des secrets et des rôles.",
+      "toolB": "En cloud, les garanties et certifications dépendent du plan et de la région, et doivent être consultées dans la documentation officielle."
+    },
+    {
+      "category": "Cas d'usage et adéquation à la charge",
+      "toolA": "Les charges très fortement orientées similarité peuvent toutefois être mieux servies par un moteur dédié.",
+      "toolB": "Le choix dépend donc de la place du vectoriel dans l'architecture et des compétences internes disponibles."
+    }
+  ],
+  "introduction": "Astra DB et Qdrant répondent à un besoin proche, mais diffèrent sur modèle de données et pertinence métier. Astra DB : Astra DB repose sur le modèle large-column d'Apache Cassandra : tables, partitions, clés primaires composées et… Qdrant : Qdrant est un moteur de base vectorielle : chaque point associe un vecteur à une charge utile JSON et à un identifiant. Le critère « Recherche vectorielle et indexation » met en évidence une autre différence pratique : Astra DB propose une recherche par similarité vectorielle intégrée, avec des index vectoriels à configurer selon la… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie modèle de données et pertinence métier : Astra DB repose sur le modèle large-column d'Apache Cassandra : tables, partitions, clés primaires…",
+    "toolB": "votre projet privilégie recherche vectorielle et indexation : Qdrant est spécialisé dans la recherche vectorielle : il prend en charge plusieurs métriques de…"
+  }
 }

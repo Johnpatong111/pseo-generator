@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-hono",
   "meta": {
-    "title": "Bun vs Hono (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Bun i Hono w 2026: środowisko uruchomieniowe a framework HTTP. Sprawdź wydajność, zgodność, ekosystem i dopasowanie do projektu."
+    "title": "Bun vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Bun i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "Od czego zacząć wybór między Bun a Hono?",
       "a": "Najpierw ustal, czy potrzebujesz środowiska uruchomieniowego i toolchainu (Bun), czy frameworka HTTP do routingu i middleware (Hono). Następnie sprawdź platformę docelową, wymagane biblioteki i ograniczenia wersji. Dopiero potem podejmij decyzję na podstawie testów zgodności i wydajności w warunkach zbliżonych do produkcji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Bun a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek…. Hono sprawdzi się, gdy projekt stawia na kryterium „Przenośność i zgodność ze środowiskami”: Hono powstało z myślą o przenośności między środowiskami opartymi na standardach webowych, m.in.",
+  "tradeoffs": [
+    {
+      "category": "Rola w stosie technologicznym (środowisko vs framework)",
+      "toolA": "Zakres funkcji i ich dojrzałość zależą od wersji Bun i konfiguracji projektu.",
+      "toolB": "Dostępność adapterów i funkcji zależy od wersji Hono oraz platformy docelowej."
+    },
+    {
+      "category": "Wydajność i charakterystyka obciążenia",
+      "toolA": "Nie należy zakładać uniwersalnej przewagi bez własnych pomiarów w docelowym środowisku.",
+      "toolB": "Sam framework nie gwarantuje konkretnych liczb; trzeba je weryfikować benchmarkami w warunkach zbliżonych do produkcji."
+    },
+    {
+      "category": "Przenośność i zgodność ze środowiskami",
+      "toolA": "Migracja z Node.js bywa prosta, lecz wymaga testów zgodności, zwłaszcza przy niszowych zależnościach.",
+      "toolB": "Pozwala współdzielić kod routingu i middleware, ale niektóre funkcje mogą wymagać adapterów lub warunkowej konfiguracji zależnie od platformy i wersji."
+    },
+    {
+      "category": "Ekosystem, biblioteki i dojrzałość",
+      "toolA": "Ekosystem narzędzi wokół Bun rozwija się dynamicznie, ale nie wszystkie narzędzia z ekosystemu Node.js działają bez zastrzeżeń.",
+      "toolB": "Dojrzałość integracji różni się między platformami i wersjami."
+    },
+    {
+      "category": "Bezpieczeństwo i utrzymanie",
+      "toolA": "Nie ma gwarancji, że każda biblioteka lub wzorzec z Node.js będzie równie bezpieczny bez audytu.",
+      "toolB": "Framework nie zastępuje audytu zależności ani polityk bezpieczeństwa operatora; należy weryfikować dokumentację dla używanej wersji."
+    },
+    {
+      "category": "Krzywa wejścia i doświadczenie deweloperskie",
+      "toolA": "Jednak przejście z Node.js może wymagać nauki różnic w konfiguracji, debugowaniu i zgodności zależności zależnie od wersji.",
+      "toolB": "Workers czy Node.js), bo obsługa błędów, strumieni i kontekstu może się różnić między środowiskami."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Bun i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze rola w stosie technologicznym (środowisko vs framework). Bun: Bun jest środowiskiem uruchomieniowym JavaScript/TypeScript oraz zestawem narzędzi: menedżerem pakietów, bundlerem i… Hono: Hono jest lekkim frameworkiem HTTP skupionym na routingu, middleware i obsłudze żądań/odpowiedzi. Kolejną istotną różnicę pokazuje kryterium „Wydajność i charakterystyka obciążenia”: Bun reklamuje wysoką wydajność startu i wykonywania kodu dzięki własnemu silnikowi JavaScriptCore; rzeczywiste wyniki… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek…",
+    "toolB": "projekt stawia na kryterium „Przenośność i zgodność ze środowiskami”: Hono powstało z myślą o przenośności między środowiskami opartymi na standardach webowych, m.in."
+  }
 }

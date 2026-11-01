@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-mistral",
   "meta": {
-    "title": "Ollama vs Mistral (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Ollama i Mistral w 2026 r.: lokalne uruchamianie modeli a platforma chmurowa, koszty, prywatność, skalowanie i wsparcie dla firm."
+    "title": "Ollama vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Ollama i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Ollama"
@@ -94,5 +94,49 @@
       "q": "Jak zweryfikować aktualne funkcje i ceny przed decyzją?",
       "a": "Najlepiej sprawdzić oficjalną dokumentację, cennik i warunki licencji zarówno Ollama, jak i Mistral, ponieważ oferta zmienia się wraz z wersjami i planami. Warto też przeprowadzić ograniczony pilotaż na reprezentatywnych danych, aby ocenić wydajność, koszty i zgodność z wymaganiami organizacji."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Ollama a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Ollama będzie lepszy, gdy projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co….",
+  "tradeoffs": [
+    {
+      "category": "Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa",
+      "toolA": "Działa w modelu lokalnym, więc nie wymaga zewnętrznego API do podstawowych zadań, a szczegóły obsługi różnych formatów modeli zależą od wersji.",
+      "toolB": "Nie jest to narzędzie do lokalnego hostingu modeli w takim sensie jak Ollama."
+    },
+    {
+      "category": "Prywatność i kontrola nad danymi",
+      "toolA": "Należy jednak pamiętać, że rzeczywisty poziom bezpieczeństwa zależy od konfiguracji, uprawnień i zabezpieczeń hosta, a nie tylko od samego narzędzia.",
+      "toolB": "Dostawca zwykle oferuje mechanizmy bezpieczeństwa i opcje enterprise, ale ich zakres zależy od planu i umowy."
+    },
+    {
+      "category": "Koszty i model rozliczeń",
+      "toolA": "Trzeba uwzględnić nakłady na GPU, pamięć i utrzymanie, zwłaszcza przy większych modelach; dokładne koszty są mocno zależne od konfiguracji.",
+      "toolB": "Model kosztowy bywa przewidywalny przy małym ruchu, ale przy dużym wolumenie koszty mogą rosnąć i wymagają analizy."
+    },
+    {
+      "category": "Skalowanie i gotowość produkcyjna",
+      "toolA": "Przy większym obciążeniu trzeba zadbać o wydajność, dostępność i zarządzanie wersjami modeli we własnym zakresie.",
+      "toolB": "Nadal jednak obowiązują limity planu, opóźnienia sieciowe i zależność od dostępności usługi, więc architektura powinna uwzględniać obsługę błędów."
+    },
+    {
+      "category": "Wybór modeli i możliwości",
+      "toolA": "Użytkownik może dobierać modele do sprzętu i zadania, ale jakość i zgodność zależą od konkretnego modelu oraz konfiguracji.",
+      "toolB": "Dostępność konkretnych modeli, kontekstu i funkcji trzeba sprawdzać w dokumentacji oraz cenniku, ponieważ zmienia się wraz z rozwojem platformy."
+    },
+    {
+      "category": "Łatwość startu i doświadczenie użytkownika",
+      "toolA": "Początkujący mogą napotkać trudności przy optymalizacji wydajności, doborze kwantyzacji i rozwiązywaniu problemów sprzętowych.",
+      "toolB": "Wymaga jednak podstaw programistycznych oraz rozumienia limitów, kosztów i obsługi błędów, a doświadczenie zależy od konkretnego planu i dokumentacji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "Ollama i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze model działania i architektura: lokalne uruchamianie kontra platforma chmurowa. Ollama: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym sprzęcie, w tym na stacjach… Mistral: Mistral to przede wszystkim dostawca modeli udostępnianych przez zarządzane API w chmurze oraz rozwiązania dla firm. Kolejną istotną różnicę pokazuje kryterium „Prywatność i kontrola nad danymi”: Przy pracy lokalnej dane mogą pozostać w infrastrukturze organizacji, co bywa kluczowe przy materiałach wrażliwych. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym…",
+    "toolB": "projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co…"
+  }
 }

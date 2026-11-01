@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-netlify",
   "meta": {
-    "title": "Cloudflare vs Netlify (2026): welche Lösung passt besser?",
-    "description": "Cloudflare und Netlify im Vergleich 2026: Funktionen, Preise, Performance, Entwicklererlebnis und Sicherheit – mit klarer Empfehlung für dein Projekt."
+    "title": "Cloudflare vs Netlify: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche Cloudflare und Netlify: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "export default {\n  async fetch(request, env, ctx) {\n    return new Response(\"Hello, World!\", {\n      headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n    });\n  },\n};",
-    "tech2Snippet": "export default async () => {\n  return new Response(\"Hello, World!\", {\n    headers: { \"content-type\": \"text/plain; charset=utf-8\" },\n  });\n};"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\n\nconst productsBucket = new cloudflare.R2Bucket(\"products\", {\n  name: \"product-catalog\",\n  location: \"WNAM\",\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich von Netlify zu Cloudflare wechseln, ohne meine Domain zu ändern?",
       "a": "Ja, ein Wechsel ist möglich, weil du deine Domain behalten und die DNS-Einträge auf Cloudflare umstellen kannst. Der Aufwand hängt davon ab, wie stark du Netlify-spezifische Funktionen wie Forms, Identity oder Functions nutzt, da diese beim Wechsel neu abgebildet werden müssen. Plane die Migration schrittweise und teste Deployments sowie Funktionen vor dem endgültigen Umzug."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Cloudflare und Netlify verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Cloudflare passt besser, wenn dein Projekt priorisiert Globale Performance und Edge-Netzwerk: Cloudflare betreibt ein sehr großes Anycast-Netz mit vielen Standorten und liefert statische…. Netlify ist geeigneter, wenn dein Projekt priorisiert Entwicklererlebnis und Einstieg: Netlify ist für seinen niedrigschwelligen Einstieg bekannt: Repository verbinden, Build-Befehl….",
+  "tradeoffs": [
+    {
+      "category": "Globale Performance und Edge-Netzwerk",
+      "toolA": "Workers und Pages lassen sich nah am Nutzer ausführen, wobei die tatsächliche Latenz von Tarif, Konfiguration und Arbeitslast abhängt.",
+      "toolB": "Das Netzwerk ist kleiner als das von Cloudflare, für viele Projekte aber mehr als ausreichend."
+    },
+    {
+      "category": "Funktionsumfang und Flexibilität",
+      "toolA": "Die Dienste lassen sich kombinieren, erfordern aber häufig mehr Einarbeitung und bewusste Architekturentscheidungen.",
+      "toolB": "Für klassische Frontend- und Jamstack-Projekte sind die nötigen Funktionen schnell verfügbar, sehr spezielle Backend-Anforderungen stoßen jedoch eher an Grenzen."
+    },
+    {
+      "category": "Entwicklererlebnis und Einstieg",
+      "toolA": "Die Lernkurve ist bei Workers und den zusätzlichen Diensten spürbar höher, besonders wenn man Edge-Runtime-Beschränkungen berücksichtigen muss.",
+      "toolB": "Deploy Previews, Formulare und Functions sind ohne viel Konfiguration nutzbar, was den Start und die Zusammenarbeit im Team erleichtert."
+    },
+    {
+      "category": "Preismodell und Kostenkontrolle",
+      "toolA": "Die Kosten können bei hoher Last und vielen Zusatzdiensten steigen, weshalb man Limits und Abrechnung genau prüfen sollte.",
+      "toolB": "Bei starkem Wachstum oder vielen Builds können Zusatzkosten entstehen; die konkrete Preisgestaltung sollte man vor dem Produktivbetrieb im aktuellen Tarif prüfen."
+    },
+    {
+      "category": "Sicherheit und Compliance",
+      "toolA": "Viele Schutzmechanismen sind direkt in das Netzwerk integriert, einzelne Features hängen jedoch vom Tarif ab.",
+      "toolB": "Für Enterprise-Anforderungen an Auditierung und Compliance sollte man die aktuellen Pläne und Zertifizierungen prüfen."
+    },
+    {
+      "category": "Unterstützte Frameworks und Build-Tools",
+      "toolA": "Bei serverseitigen Frameworks ist zu beachten, dass einige Funktionen über Workers abgebildet werden und nicht jede Node-API verfügbar ist.",
+      "toolB": "Next.js, Astro, Nuxt und ähnliche Projekte lassen sich meist ohne großen Aufwand deployen, wobei einzelne Features vom gewählten Adapter und Tarif abhängen."
+    }
+  ],
+  "introduction": "Cloudflare und Netlify lösen ein ähnliches Problem, unterscheiden sich jedoch bei globale performance und edge-netzwerk. Cloudflare: Cloudflare betreibt ein sehr großes Anycast-Netz mit vielen Standorten und liefert statische Assets über sein CDN aus. Netlify: Netlify setzt ebenfalls auf ein globales CDN mit Edge Functions, das für typische Frontend-Anwendungen solide… Das Kriterium funktionsumfang und flexibilität zeigt einen weiteren praktischen Unterschied: Cloudflare bietet mit Workers, Pages, R2, D1, KV, Queues und Durable Objects ein breites Baustein-Set für… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Globale Performance und Edge-Netzwerk: Cloudflare betreibt ein sehr großes Anycast-Netz mit vielen Standorten und liefert statische…",
+    "toolB": "dein Projekt priorisiert Entwicklererlebnis und Einstieg: Netlify ist für seinen niedrigschwelligen Einstieg bekannt: Repository verbinden, Build-Befehl…"
+  }
 }

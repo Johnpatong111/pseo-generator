@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-qdrant",
   "meta": {
-    "title": "LlamaIndex vs Qdrant (2026): Which option should you choose?",
-    "description": "LlamaIndex and Qdrant solve different problems in RAG and AI search. Compare their roles, features, strengths, and best-fit use cases for 2026."
+    "title": "LlamaIndex vs Qdrant: Which one to choose in 2026? (models, context & API pricing & code compared)",
+    "description": "Compare LlamaIndex and Qdrant architectural trade-offs, context windows, model APIs, and integration, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -94,5 +94,49 @@
       "q": "When is it clearly better to pick only one of them?",
       "a": "Choose LlamaIndex alone when you need a full LLM application framework and are comfortable with a simple or alternate vector backend. Choose Qdrant alone when search quality, latency, and filtered retrieval are the main requirements and your application logic is already handled elsewhere. If you need both orchestration and robust vector search, adopting both is usually the pragmatic answer."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between LlamaIndex and Qdrant changes how a project handles context retrieval and model integration, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "LlamaIndex is the better fit when your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files,…. Qdrant is a stronger fit when your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as….",
+  "tradeoffs": [
+    {
+      "category": "Core purpose and category",
+      "toolA": "It focuses on connecting data sources, structuring indexes, and orchestrating retrieval and reasoning pipelines rather than storing vectors itself as its primary job.",
+      "toolB": "It is infrastructure you query rather than a framework that assembles an application pipeline."
+    },
+    {
+      "category": "Data ingestion and connectors",
+      "toolA": "This built-in ingestion layer is one of its biggest strengths.",
+      "toolB": "It offers client libraries and integration examples, but it does not attempt to be a document-processing framework."
+    },
+    {
+      "category": "Retrieval orchestration beyond vector search",
+      "toolA": "These higher-level abstractions are central to how it composes retrieval and generation.",
+      "toolB": "It does not orchestrate multi-step reasoning, prompt construction, or query decomposition for you."
+    },
+    {
+      "category": "Performance and scalability of vector search",
+      "toolA": "It is not itself a specialized high-throughput vector engine.",
+      "toolB": "Actual throughput and latency depend on hardware, index configuration, dimensionality, and workload."
+    },
+    {
+      "category": "Storage flexibility and backend choice",
+      "toolA": "This flexibility suits projects that need portability or already have existing infrastructure.",
+      "toolB": "That focus gives consistency and control, but it means committing to one storage system rather than mixing backends."
+    },
+    {
+      "category": "Filtering, metadata, and payload handling",
+      "toolA": "It is a pass-through layer rather than a filtering engine of its own.",
+      "toolB": "This makes complex filtered retrieval more predictable and often more performant in production."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
+  },
+  "introduction": "LlamaIndex and Qdrant address a related need, but differ in core purpose and category. LlamaIndex: LlamaIndex is an open-source data framework for building retrieval-augmented generation, agents, and document-centric… Qdrant: Qdrant is a dedicated vector database and vector similarity search engine designed to store embeddings and payloads… The data ingestion and connectors criterion adds another practical distinction: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files,…",
+    "toolB": "your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-claude-3-7-sonnet",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs Claude 3.7 Sonnet (2026): Which option should you choose?",
-    "description": "Compare Claude 3.5 Sonnet and Claude 3.7 Sonnet on context window, benchmarks, API pricing, latency, availability, and use cases to pick the right model in 2026."
+    "title": "Claude 3.5 Sonnet vs Claude 3.7 Sonnet: Which one to choose in 2026? (models, context & API pricing & code compared)",
+    "description": "Compare Claude 3.5 Sonnet and Claude 3.7 Sonnet architectural trade-offs, context windows, model APIs, and integration, and review side-by-side TypeScript to choose the right stack."
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20241022\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"YOUR_API_KEY\")\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)"
+    "scenario": "Shared task: load and return products from the selected category.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "How do I access these models?",
       "a": "You can access both models via Anthropic's API, Amazon Bedrock, and Google Cloud Vertex AI, subject to your account permissions and regional availability. You will need an API key and must comply with Anthropic's usage policies. For the most current access methods and regions, refer to Anthropic's official documentation and cloud provider listings."
     }
-  ]
+  ],
+  "heroSubtitle": "Choosing between Claude 3.5 Sonnet and Claude 3.7 Sonnet changes how a project handles context retrieval and model integration, so data requirements, team skills, and deployment constraints matter.",
+  "quickVerdict": "Claude 3.5 Sonnet is the better fit when your project prioritizes api pricing (per 1m input/output tokens): Claude 3.5 Sonnet's API pricing is generally positioned as a mid-tier option, with per-token rates…. Claude 3.7 Sonnet is a stronger fit when your project prioritizes benchmark performance (mmlu and humaneval): Claude 3.7 Sonnet has reported improvements over 3.5 Sonnet on several benchmarks, including MMLU….",
+  "tradeoffs": [
+    {
+      "category": "Context Window",
+      "toolA": "The exact limit should be confirmed against the current Anthropic API documentation, as it may vary by model version and access tier.",
+      "toolB": "Users should verify the exact context handling in Anthropic's documentation for the specific API version and thinking budget configuration."
+    },
+    {
+      "category": "Benchmark Performance (MMLU and HumanEval)",
+      "toolA": "For the most current and comparable figures, consult Anthropic's official model cards and announcements.",
+      "toolB": "Users should verify the latest benchmark numbers from Anthropic and independent evaluations before drawing conclusions."
+    },
+    {
+      "category": "API Pricing (per 1M Input/Output Tokens)",
+      "toolA": "Volume discounts and enterprise agreements can also affect effective cost.",
+      "toolB": "Always check Anthropic's current pricing documentation for the latest per-million-token rates and any thinking-specific billing details."
+    },
+    {
+      "category": "Latency and Response Speed",
+      "toolA": "Anthropic does not publish guaranteed latency SLAs for all tiers, so users should benchmark in their own environment if latency is critical.",
+      "toolB": "As with any API, real-world latency varies with workload and configuration, so empirical testing is recommended."
+    },
+    {
+      "category": "Model Access and Open/Closed Availability",
+      "toolA": "Availability may differ by region and cloud provider, and some features may require specific access approvals.",
+      "toolB": "The extended thinking feature may have additional access requirements or be rolled out gradually, so users should check the provider's documentation for current availability."
+    },
+    {
+      "category": "Practical Use Cases",
+      "toolA": "It is also well-suited for educational and content-creation applications.",
+      "toolB": "However, the potential for higher token usage and latency means it may not be ideal for high-throughput, low-latency scenarios."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet and Claude 3.7 Sonnet address a related need, but differ in context window. Claude 3.5 Sonnet: Claude 3.5 Sonnet offers a 200K token context window according to Anthropic's published model documentation. Claude 3.7 Sonnet: Claude 3.7 Sonnet also provides a 200K token context window, matching its predecessor in raw input capacity. The benchmark performance (mmlu and humaneval) criterion adds another practical distinction: Anthropic has published benchmark results for Claude 3.5 Sonnet, including scores on MMLU and HumanEval, though exact… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "decisionFramework": {
+    "toolA": "your project prioritizes api pricing (per 1m input/output tokens): Claude 3.5 Sonnet's API pricing is generally positioned as a mid-tier option, with per-token rates…",
+    "toolB": "your project prioritizes benchmark performance (mmlu and humaneval): Claude 3.7 Sonnet has reported improvements over 3.5 Sonnet on several benchmarks, including MMLU…"
+  }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-hono",
   "meta": {
-    "title": "Bun vs Hono (2026): welche Lösung passt besser?",
-    "description": "Bun und Hono sind keine direkten Konkurrenten: Bun ist Runtime, Bundler und Paketmanager, Hono ein schlankes Web-Framework. Der Vergleich zeigt, wann sich welche Kombination lohnt."
+    "title": "Bun vs Hono: welches 2026 wählen — APIs, Leistung und Bereitstellung",
+    "description": "Vergleiche Bun und Hono: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "Bun"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// Bun: minimaler HTTP-Server\nconst server = Bun.serve({\n  port: 3000,\n  fetch(request) {\n    return new Response(\"Hello, World!\");\n  },\n});\n\nconsole.log(`Server läuft auf http://localhost:${server.port}`);",
-    "tech2Snippet": "// Hono: minimaler HTTP-Server (z. B. unter Bun ausführen)\nimport { Hono } from \"hono\";\n\nconst app = new Hono();\n\napp.get(\"/\", (c) => c.text(\"Hello, World!\"));\n\nexport default app;"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Sind Benchmarks zu Bun und Hono verlässlich?",
       "a": "Benchmarks zu Bun und Hono sind nur eingeschränkt verallgemeinerbar, weil Ergebnisse stark von Workload, Konfiguration, Hardware und Version abhängen. Veröffentlichte Zahlen können als Orientierung dienen, ersetzen aber keine eigene Messung im Zielumfeld. Für eine belastbare Entscheidung sollten Sie repräsentative Lasttests mit Ihrer tatsächlichen Anwendung durchführen. Vermeiden Sie es, einzelne Benchmark-Ergebnisse als allgemeingültige Leistungsgarantie zu interpretieren."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen Bun und Hono verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "Bun passt besser, wenn dein Projekt priorisiert Werkzeugkette: Paketmanager, Bundler und Test-Runner: Bun integriert Paketmanager, Bundler und Test-Runner in einer einzigen Binärdatei. Hono ist geeigneter, wenn dein Projekt priorisiert Laufzeitumgebungen und Portabilität: Hono ist darauf ausgelegt, auf mehreren Runtimes zu laufen, darunter Bun, Node.js, Deno und….",
+  "tradeoffs": [
+    {
+      "category": "Rolle und Architektur: Runtime versus Web-Framework",
+      "toolA": "Die Runtime ist das Fundament, auf dem Frameworks wie Hono laufen können.",
+      "toolB": "Hono ersetzt keine Runtime, sondern ergänzt sie."
+    },
+    {
+      "category": "Laufzeitumgebungen und Portabilität",
+      "toolA": "Die Portabilität auf andere Runtimes ist bei Nutzung proprietärer Bun-APIs eingeschränkt.",
+      "toolB": "Das macht Hono attraktiv für portable APIs und Multi-Cloud-Szenarien."
+    },
+    {
+      "category": "Routing, Middleware und HTTP-Funktionalität",
+      "toolA": "Für einfache Dienste ist das ausreichend, für komplexere APIs fehlt eine strukturierte Framework-Ebene.",
+      "toolB": "Das reduziert Boilerplate und strukturiert größere API-Projekte."
+    },
+    {
+      "category": "Werkzeugkette: Paketmanager, Bundler und Test-Runner",
+      "toolA": "Die Kompatibilität mit bestehenden Node.js-Werkzeugen ist weitgehend gegeben, kann aber je nach Ökosystem und Version variieren.",
+      "toolB": "Teams müssen ihre Werkzeugkette selbst zusammenstellen."
+    },
+    {
+      "category": "Ökosystem und Kompatibilität",
+      "toolA": "Die Kompatibilität hängt von Version, Paket und Konfiguration ab und sollte im Einzelfall geprüft werden.",
+      "toolB": "Hono profitiert von der breiten JavaScript-Community und lässt sich gut in bestehende Projekte integrieren."
+    },
+    {
+      "category": "Leistung und Skalierung",
+      "toolA": "Pauschale Leistungsaussagen sind ohne reproduzierbare Benchmarks nicht belastbar.",
+      "toolB": "In Edge-Umgebungen kann Hono von kurzen Kaltstartzeiten profitieren, was jedoch plattformabhängig ist."
+    }
+  ],
+  "introduction": "Bun und Hono lösen ein ähnliches Problem, unterscheiden sich jedoch bei rolle und architektur: runtime versus web-framework. Bun: Bun ist eine JavaScript- und TypeScript-Runtime, die auf JavaScriptCore basiert und zusätzlich einen Paketmanager,… Hono: Hono ist ein schlankes Web-Framework mit Fokus auf HTTP-Routing, Middleware und Webstandards wie Request und Response. Das Kriterium laufzeitumgebungen und portabilität zeigt einen weiteren praktischen Unterschied: Bun ist selbst eine Runtime und legt Nutzerinnen und Nutzer auf die Bun-Umgebung fest, sobald sie spezifische APIs wie… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Werkzeugkette: Paketmanager, Bundler und Test-Runner: Bun integriert Paketmanager, Bundler und Test-Runner in einer einzigen Binärdatei.",
+    "toolB": "dein Projekt priorisiert Laufzeitumgebungen und Portabilität: Hono ist darauf ausgelegt, auf mehreren Runtimes zu laufen, darunter Bun, Node.js, Deno und…"
+  }
 }

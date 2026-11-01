@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-deno",
   "meta": {
-    "title": "Bun vs Deno (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Bun i Deno w 2026: wydajność, kompatybilność, bezpieczeństwo, ekosystem i narzędzia. Sprawdź, które środowisko wybrać do swojego projektu."
+    "title": "Bun vs Deno: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Bun i Deno: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Bun"
@@ -94,5 +94,49 @@
       "q": "Które środowisko lepiej sprawdzi się w zespole ceniącym proste narzędzia?",
       "a": "Deno oferuje spójny zestaw wbudowanych narzędzi do formatowania, lintowania i testowania, co upraszcza konfigurację projektu. Bun również dostarcza wiele narzędzi w jednym pakiecie, ale niektóre z nich mogą być mniej dojrzałe. Oba środowiska redukują potrzebę zewnętrznych zależności, choć w różnym stopniu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Bun a Deno zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych…. Deno sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych….",
+  "tradeoffs": [
+    {
+      "category": "Wydajność i szybkość uruchamiania",
+      "toolA": "Rzeczywiste wyniki zależą jednak od wersji, platformy i charakteru obciążenia, dlatego warto je weryfikować we własnym środowisku.",
+      "toolB": "W wielu przypadkach osiąga wyniki porównywalne z Bun, ale różnice mogą się zmieniać wraz z wersjami i rodzajem aplikacji, więc nie należy traktować ich jako stałych."
+    },
+    {
+      "category": "Kompatybilność z ekosystemem Node.js i npm",
+      "toolA": "Poziom kompatybilności zależy od wersji Bun i konkretnej biblioteki, dlatego przed migracją warto sprawdzić kluczowe zależności.",
+      "toolB": "Nadal mogą występować różnice w zachowaniu niektórych modułów, szczególnie tych silnie związanych z API Node.js, więc testy integracyjne są zalecane."
+    },
+    {
+      "category": "Bezpieczeństwo i model uprawnień",
+      "toolA": "Bezpieczeństwo zależy więc od konfiguracji i praktyk programistycznych, a ewentualne piaskownice trzeba budować samodzielnie.",
+      "toolB": "To zwiększa bezpieczeństwo aplikacji, choć wymaga świadomego zarządzania flagami uprawnień w projektach."
+    },
+    {
+      "category": "Obsługa TypeScript i narzędzia wbudowane",
+      "toolA": "To upraszcza konfigurację projektu, ale niektóre funkcje mogą działać inaczej niż w dojrzałych narzędziach zewnętrznych.",
+      "toolB": "Dodatkowo promuje standardowe moduły ES i ogranicza potrzebę zewnętrznych zależności, co sprzyja spójności projektu."
+    },
+    {
+      "category": "Ekosystem i dojrzałość bibliotek",
+      "toolA": "Społeczność wokół Bun rośnie, jednak jego ekosystem natywnych narzędzi jest młodszy niż w przypadku Node.js.",
+      "toolB": "Ekosystem Deno jest mniejszy niż npm, choć dynamicznie się rozwija i obejmuje wiele nowoczesnych narzędzi."
+    },
+    {
+      "category": "Wsparcie dla modułów ES i standardów sieciowych",
+      "toolA": "Wsparcie dla standardów sieciowych, takich jak fetch, jest wbudowane, ale niektóre API mogą działać inaczej niż w przeglądarkach.",
+      "toolB": "To ułatwia tworzenie kodu przenośnego, choć może wymagać dostosowania istniejących projektów Node.js."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}"
+  },
+  "introduction": "Bun i Deno odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i szybkość uruchamiania. Bun: Bun został zaprojektowany z myślą o wysokiej wydajności dzięki silnikowi JavaScriptCore i natywnej implementacji wielu… Deno: Deno opiera się na silniku V8 i kładzie nacisk na szybkość dzięki optymalizacjom wbudowanych narzędzi oraz wydajnemu… Kolejną istotną różnicę pokazuje kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych modułów, choć nie… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych…",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych…"
+  }
 }

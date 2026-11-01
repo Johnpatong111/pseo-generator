@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite (2026): ¿Qué solución elegir?",
-    "description": "Comparamos MySQL y SQLite en 2026: arquitectura, concurrencia, escalabilidad, seguridad, copias de seguridad y casos de uso para elegir bien tu base de datos."
+    "title": "MySQL vs SQLite: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara MySQL y SQLite: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "MySQL"
@@ -94,5 +94,49 @@
       "q": "¿Qué debo evaluar antes de elegir entre MySQL y SQLite?",
       "a": "Evalúa el número de usuarios concurrentes, el volumen y tipo de escrituras, la necesidad de acceso remoto, los requisitos de permisos y las copias de seguridad. También conviene medir el rendimiento con una carga representativa y revisar la versión y la configuración de cada motor. No hay una respuesta universal: la decisión depende del contexto operativo y de las restricciones del proyecto."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre MySQL y SQLite cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia…. SQLite es preferible cuando tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y….",
+  "tradeoffs": [
+    {
+      "category": "Arquitectura y modelo de despliegue",
+      "toolA": "Este modelo permite centralizar datos, separar la capa de datos de la aplicación y escalar clientes sin redistribuir el motor.",
+      "toolB": "La base de datos es un archivo local, lo que simplifica el despliegue, pero limita el acceso concurrente y la distribución del almacenamiento."
+    },
+    {
+      "category": "Concurrencia y bloqueos",
+      "toolA": "El comportamiento concreto depende de la versión, la configuración y la carga.",
+      "toolB": "El modo WAL (write-ahead logging) mejora la concurrencia de lecturas y escrituras, pero sigue habiendo un único escritor."
+    },
+    {
+      "category": "Escalabilidad y rendimiento bajo carga",
+      "toolA": "El rendimiento depende de la configuración del servidor, el esquema, los índices y el tipo de consultas, por lo que no conviene asumir cifras sin medir la carga real.",
+      "toolB": "No está pensado para cargas de escritura concurrentes altas ni para escalado horizontal entre varios servidores."
+    },
+    {
+      "category": "Instalación, administración y mantenimiento",
+      "toolA": "Esa administración añade complejidad, pero ofrece herramientas y procedimientos consolidados para operar en producción.",
+      "toolB": "El mantenimiento se reduce a copias de seguridad y control de versiones del archivo, aunque esto también implica menos herramientas para operaciones avanzadas."
+    },
+    {
+      "category": "Seguridad y control de acceso",
+      "toolA": "Estas capacidades permiten separar roles y auditar accesos en un entorno multiusuario.",
+      "toolB": "Esto es adecuado para aplicaciones locales, pero no ofrece control de acceso granular por usuario de base de datos."
+    },
+    {
+      "category": "Copias de seguridad y recuperación",
+      "toolA": "La recuperación exige planificación y pruebas periódicas.",
+      "toolB": "Es sencillo para archivos pequeños, pero requiere cuidado con las escrituras concurrentes y no incluye réplica integrada."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "MySQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de despliegue. MySQL: MySQL funciona como un servidor de base de datos independiente al que los clientes se conectan por red, normalmente… SQLite: SQLite es una biblioteca embebida que se enlaza dentro de la propia aplicación; no hay proceso servidor ni puerto de… El criterio de concurrencia y bloqueos añade otra diferencia práctica: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia…",
+    "toolB": "tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y…"
+  }
 }

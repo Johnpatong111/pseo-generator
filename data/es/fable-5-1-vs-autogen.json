@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-autogen",
   "meta": {
-    "title": "Claude Fable 5.1 vs AutoGen (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Claude Fable 5.1 y AutoGen en contexto, rendimiento, precios, latencia, acceso y casos de uso para ayudarte a elegir la mejor opción en 2026."
+    "title": "Claude Fable 5.1 vs AutoGen: cuál elegir en 2026 — modelos, contexto y costes de API",
+    "description": "Compara Claude Fable 5.1 y AutoGen: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,8 +68,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TU_API_KEY\")\n\nresponse = client.messages.create(\n    model=\"claude-fable-5-1\",\n    max_tokens=1024,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, world!\"}]\n)\n\nprint(response.content[0].text)",
-    "tech2Snippet": "from autogen import AssistantAgent, UserProxyAgent\n\nassistant = AssistantAgent(\n    name=\"assistant\",\n    llm_config={\"config_list\": [{\"model\": \"gpt-4\", \"api_key\": \"TU_API_KEY\"}]}\n)\nuser = UserProxyAgent(name=\"user\", code_execution_config=False)\n\nuser.initiate_chat(assistant, message=\"Hello, world!\")"
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -104,5 +105,44 @@
       "q": "¿Puedo ejecutar AutoGen localmente sin conexión a Internet?",
       "a": "Sí, AutoGen puede ejecutarse localmente, pero los modelos de lenguaje que utilice los agentes pueden requerir conexión a Internet si se accede a APIs externas. Si se integran modelos locales (por ejemplo, a través de servidores compatibles), es posible funcionar sin conexión, aunque el rendimiento y las capacidades dependerán del modelo local elegido."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Claude Fable 5.1 y AutoGen cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Claude Fable 5.1 encaja mejor cuando tu proyecto prioriza ventana de contexto y capacidad de salida: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens y una salida máxima de 128K…. AutoGen es preferible cuando tu proyecto prioriza acceso y disponibilidad (modelo gestionado vs: AutoGen es un framework open source desarrollado por Microsoft, disponible en GitHub bajo licencia….",
+  "tradeoffs": [
+    {
+      "category": "Ventana de contexto y capacidad de salida",
+      "toolA": "Esto permite procesar documentos muy extensos o mantener conversaciones de gran longitud sin perder información relevante.",
+      "toolB": "Puede usar modelos con ventanas variables, desde unos pocos miles hasta millones de tokens, pero el límite real lo marca el proveedor del modelo subyacente y la implementación del framework."
+    },
+    {
+      "category": "Rendimiento en benchmarks (MMLU, HumanEval)",
+      "toolA": "El rendimiento puede variar según la versión, la configuración y la carga de trabajo, por lo que se recomienda realizar pruebas propias si estos benchmarks son críticos.",
+      "toolB": "No existen resultados de benchmark atribuibles al framework en sí."
+    },
+    {
+      "category": "Precio de API por millón de tokens (entrada/salida)",
+      "toolA": "Estos precios pueden cambiar y deben confirmarse en la documentación oficial.",
+      "toolB": "Por tanto, el gasto puede variar ampliamente según la configuración y el volumen de uso."
+    },
+    {
+      "category": "Latencia y rendimiento en tiempo de ejecución",
+      "toolA": "En general, los modelos grandes pueden presentar latencias mayores en comparación con modelos más pequeños, pero esto debe evaluarse con pruebas reales en el entorno de uso.",
+      "toolB": "No hay una latencia única, ya que depende de la arquitectura implementada."
+    },
+    {
+      "category": "Acceso y disponibilidad (modelo gestionado vs",
+      "toolA": "No es de código abierto y su disponibilidad puede variar según la región y el plan contratado.",
+      "toolB": "Se puede instalar y utilizar localmente o en la nube, y es compatible con múltiples proveedores de modelos, lo que facilita la portabilidad y la personalización."
+    },
+    {
+      "category": "Casos de uso prácticos y flexibilidad",
+      "toolA": "Su naturaleza de modelo gestionado simplifica la integración, pero limita la personalización interna.",
+      "toolB": "Es ideal para prototipos de investigación, automatización de flujos conversacionales y experimentación con arquitecturas de agentes, aunque requiere más trabajo de desarrollo y conocimiento técnico."
+    }
+  ],
+  "introduction": "Claude Fable 5.1 y AutoGen responden a una necesidad similar, pero difieren en ventana de contexto y capacidad de salida. Claude Fable 5.1: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens y una salida máxima de 128K tokens, según la… AutoGen: AutoGen no impone una ventana de contexto propia; la capacidad depende del modelo de lenguaje que se configure en cada… El criterio de rendimiento en benchmarks (mmlu, humaneval) añade otra diferencia práctica: Anthropic no publica de forma universal resultados de MMLU o HumanEval para Claude Fable 5.1 en su documentación… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza ventana de contexto y capacidad de salida: Claude Fable 5.1 ofrece una ventana de contexto de 1 millón de tokens y una salida máxima de 128K…",
+    "toolB": "tu proyecto prioriza acceso y disponibilidad (modelo gestionado vs: AutoGen es un framework open source desarrollado por Microsoft, disponible en GitHub bajo licencia…"
+  }
 }

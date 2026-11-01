@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-podman",
   "meta": {
-    "title": "Docker vs Podman (2026): quelle solution choisir ?",
-    "description": "Comparaison Docker vs Podman en 2026 : architecture, rootless, compatibilité CLI, Kubernetes, sécurité et workflows CI. Découvrez quel moteur de conteneurs choisir selon votre contexte."
+    "title": "Docker vs Podman: lequel choisir en 2026 — déploiement, évolutivité et coûts",
+    "description": "Comparez Docker et Podman : évaluez les compromis architecturaux liés à déploiement, mise à l’échelle et infrastructure et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Docker"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "FROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Build puis exécution :\n# docker build -t hello-docker .\n# docker run --rm hello-docker",
-    "tech2Snippet": "FROM alpine:3.20\nCMD [\"echo\", \"Hello, World!\"]\n\n# Build puis exécution :\n# podman build -t hello-podman .\n# podman run --rm hello-podman"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "La compatibilité des images est-elle totale entre Docker et Podman ?",
       "a": "Les deux outils manipulent des images OCI et peuvent utiliser des registres compatibles Docker, ce qui permet dans de nombreux cas d'exécuter les mêmes images. Les différences apparaissent plutôt dans les options de build, les réseaux rootless, les montages de volumes et certaines fonctions spécifiques à un moteur. Il faut donc vérifier les images et les manifestes dans l'environnement cible plutôt que de considérer la compatibilité comme garantie pour tous les usages."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Docker et Podman modifie la manière de gérer le déploiement et la responsabilité opérationnelle ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Docker convient mieux lorsque votre projet privilégie compatibilité cli et écosystème docker : Docker fournit une CLI largement documentée, Dockerfile, Docker Compose et une vaste bibliothèque…. Podman est préférable lorsque votre projet privilégie architecture et modèle d'exécution : Podman fonctionne sans démon : chaque commande lance directement les processus nécessaires, ce qui….",
+  "tradeoffs": [
+    {
+      "category": "Architecture et modèle d'exécution",
+      "toolA": "Selon la configuration, le démon s'exécute en root, ce qui élargit la surface d'attaque si l'accès à l'API est mal protégé.",
+      "toolB": "Cette conception simplifie l'isolation entre utilisateurs, mais certaines opérations système restent dépendantes de la configuration du noyau et des sous-UID/GID alloués."
+    },
+    {
+      "category": "Compatibilité CLI et écosystème Docker",
+      "toolA": "Docker dispose aussi du tooling de build historique, même si son écosystème évolue avec BuildKit et des alternatives dédiées.",
+      "toolB": "Toutefois, certaines fonctionnalités et options de Docker Compose ne sont pas identiques selon l'implémentation, ce qui demande des vérifications en cas de workflows spécifiques."
+    },
+    {
+      "category": "Sécurité et exécution sans privilèges",
+      "toolA": "La sécurité dépend donc largement de la configuration : API exposée, montage du socket Docker et privilèges du démon sont des points de vigilance.",
+      "toolB": "Podman n'est pas magiquement plus sûr : la sécurité dépend toujours des images, des capabilities et des règles système appliquées."
+    },
+    {
+      "category": "Intégration à Kubernetes et orchestration",
+      "toolA": "L'intégration native à Kubernetes est donc indirecte : on construit avec Docker, puis on déploie sur un runtime compatible CRI.",
+      "toolB": "Toutes les fonctionnalités de Kubernetes ne sont évidemment pas couvertes par Podman, qui reste un outil local et de machine unique."
+    },
+    {
+      "category": "Expérience développeur et quotidien",
+      "toolA": "En entreprise, cette maturité réduit souvent le temps d'intégration pour les nouveaux arrivants, même si les conditions de licence de Docker Desktop doivent être vérifiées selon l'usage.",
+      "toolB": "L'écosystème de tutoriels est plus restreint que celui de Docker, même s'il s'étoffe progressivement."
+    },
+    {
+      "category": "Construction d'images et formats",
+      "toolA": "La compatibilité avec de nombreux registres et pipelines CI en fait une option très répandue.",
+      "toolB": "Pour les builds complexes, il convient de tester les instructions et les options spécifiques plutôt que de supposer une équivalence totale."
+    }
+  ],
+  "introduction": "Docker et Podman répondent à un besoin proche, mais diffèrent sur architecture et modèle d'exécution. Docker : Docker repose sur un démon central (dockerd) qui reçoit les requêtes du client via une API et gère les conteneurs au… Podman : Podman fonctionne sans démon : chaque commande lance directement les processus nécessaires, ce qui correspond… Le critère « Compatibilité CLI et écosystème Docker » met en évidence une autre différence pratique : Docker fournit une CLI largement documentée, Dockerfile, Docker Compose et une vaste bibliothèque d'images et de… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie compatibilité cli et écosystème docker : Docker fournit une CLI largement documentée, Dockerfile, Docker Compose et une vaste bibliothèque…",
+    "toolB": "votre projet privilégie architecture et modèle d'exécution : Podman fonctionne sans démon : chaque commande lance directement les processus nécessaires, ce qui…"
+  }
 }

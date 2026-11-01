@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-cassandra",
   "meta": {
-    "title": "MongoDB vs Apache Cassandra (2026): welche Lösung passt besser?",
-    "description": "MongoDB und Apache Cassandra im Vergleich 2026: Datenmodell, Konsistenz, Skalierung, Betrieb und Eignung – eine sachliche Entscheidungshilfe für Ihr Projekt."
+    "title": "MongoDB vs Apache Cassandra: welches 2026 wählen — Datenmodelle, Leistung und Anwendungsfälle",
+    "description": "Vergleiche MongoDB und Apache Cassandra: Bewerte Architekturkompromisse bei Datenmodellierung, Abfragen und Indizierung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "MongoDB"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const { MongoClient } = require('mongodb');\n\nasync function main() {\n  const client = new MongoClient('mongodb://localhost:27017');\n  await client.connect();\n  const collection = client.db('test').collection('messages');\n  await collection.insertOne({ text: 'Hallo, Welt!' });\n  const doc = await collection.findOne({ text: 'Hallo, Welt!' });\n  console.log(doc);\n  await client.close();\n}\n\nmain().catch(console.error);",
-    "tech2Snippet": "-- In cqlsh auf einem laufenden Cassandra-Cluster ausführen\nCREATE KEYSPACE IF NOT EXISTS demo\n  WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};\n\nUSE demo;\n\nCREATE TABLE IF NOT EXISTS messages (\n  id uuid PRIMARY KEY,\n  text text\n);\n\nINSERT INTO messages (id, text) VALUES (uuid(), 'Hallo, Welt!');\n\nSELECT * FROM messages;"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Rolle spielen Managed-Services bei der Entscheidung?",
       "a": "Managed-Angebote für MongoDB und Cassandra können Betriebsaufwand reduzieren und Funktionen wie Backups, Monitoring und Skalierung vereinfachen. Die verfügbaren Funktionen und Preise unterscheiden sich je nach Anbieter, Region und Tarif und sollten individuell geprüft werden. Für Teams ohne spezialisiertes Datenbankpersonal kann ein Managed-Service die Entscheidung maßgeblich beeinflussen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen MongoDB und Apache Cassandra verändert den Umgang mit Datenmodellierung und Zugriffsmuster; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "MongoDB passt besser, wenn dein Projekt priorisiert Datenmodell und Flexibilität des Schemas: MongoDB speichert Dokumente im: MongoDB speichert Dokumente im BSON-Format, die verschachtelte Strukturen, Arrays und variierende…. Apache Cassandra ist geeigneter, wenn dein Projekt priorisiert Horizontale Skalierung und Schreibdurchsatz: MongoDB skaliert horizontal über: Cassandra wurde von Grund auf für verteilte, partitionsbasierte Skalierung entwickelt und verteilt….",
+  "tradeoffs": [
+    {
+      "category": "Datenmodell und Flexibilität des Schemas: MongoDB speichert Dokumente im",
+      "toolA": "Das erleichtert iterative Entwicklung und die Abbildung objektnaher Daten; ein festes Schema ist möglich, aber nicht zwingend.",
+      "toolB": "Spätere Änderungen sind möglich, aber aufwendiger und stark von der gewählten Tabellenstruktur abhängig."
+    },
+    {
+      "category": "Abfragemöglichkeiten: MongoDB unterstützt umfangreiche Abfragen mit Filtern,",
+      "toolA": "MongoDB unterstützt umfangreiche Abfragen mit Filtern, Projektionen, Sortierungen, Aggregationspipelines und Sekundärindizes, was Ad-hoc-Analysen und vielfältige Zugriffspfade erleichtert.",
+      "toolB": "Für analytische oder flexible Abfragen ist daher häufig ein zusätzliches System nötig."
+    },
+    {
+      "category": "Konsistenz und Verfügbarkeit: MongoDB bietet lesbare und schreibbare",
+      "toolA": "MongoDB bietet lesbare und schreibbare Konsistenzgarantien mit konfigurierbaren Read- und Write-Concerns sowie Transaktionen über mehrere Dokumente, abhängig von Replikatset-Konfiguration und Version.",
+      "toolB": "Welche Variante besser passt, hängt von den fachlichen Anforderungen an Konsistenz und Ausfalltoleranz ab."
+    },
+    {
+      "category": "Horizontale Skalierung und Schreibdurchsatz: MongoDB skaliert horizontal über",
+      "toolA": "MongoDB skaliert horizontal über Sharding, das je nach Version und Konfiguration eingerichtet und betrieben werden muss; die Verteilung erfolgt über einen Shard-Key.",
+      "toolB": "Genaue Durchsatzwerte sind stark von Hardware, Datenmodell und Arbeitslast abhängig und lassen sich nicht pauschal vergleichen."
+    },
+    {
+      "category": "Betrieb, Wartung und Reifegrad des Ökosystems: MongoDB bietet eine breite",
+      "toolA": "MongoDB bietet eine breite Treiber- und Tool-Landschaft, umfangreiche Dokumentation und Managed-Service-Angebote, die den Betrieb vereinfachen können.",
+      "toolB": "Der Betriebsaufwand ist in beiden Fällen von Team-Erfahrung, Größe des Clusters und Betriebsmodell abhängig."
+    },
+    {
+      "category": "Transaktionen und Mehrzeilen-Konsistenz: MongoDB unterstützt ab Version 4.0",
+      "toolA": "MongoDB unterstützt ab Version 4.0 mehrdokumentige ACID-Transaktionen in Replikatsets und ab Version 4.2 in Sharded Clustern, was Anwendungsfälle mit konsistenten Mehrschritt-Änderungen erleichtert.",
+      "toolB": "Für Anwendungen mit komplexen Konsistenzanforderungen ist das ein wesentlicher Unterschied."
+    }
+  ],
+  "introduction": "MongoDB und Apache Cassandra lösen ein ähnliches Problem, unterscheiden sich jedoch bei datenmodell und flexibilität des schemas: mongodb speichert dokumente im. MongoDB: MongoDB speichert Dokumente im BSON-Format, die verschachtelte Strukturen, Arrays und variierende Felder zulassen. Apache Cassandra: Cassandra verwendet ein tabellenbasiertes Modell mit partitionierten Zeilen und Spalten und erfordert ein im Voraus… Das Kriterium abfragemöglichkeiten: mongodb unterstützt umfangreiche abfragen mit filtern, zeigt einen weiteren praktischen Unterschied: MongoDB unterstützt umfangreiche Abfragen mit Filtern, Projektionen, Sortierungen, Aggregationspipelines und… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Datenmodell und Flexibilität des Schemas: MongoDB speichert Dokumente im: MongoDB speichert Dokumente im BSON-Format, die verschachtelte Strukturen, Arrays und variierende…",
+    "toolB": "dein Projekt priorisiert Horizontale Skalierung und Schreibdurchsatz: MongoDB skaliert horizontal über: Cassandra wurde von Grund auf für verteilte, partitionsbasierte Skalierung entwickelt und verteilt…"
+  }
 }

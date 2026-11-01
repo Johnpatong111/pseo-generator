@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-hono",
   "meta": {
-    "title": "NestJS vs Hono (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie NestJS i Hono w 2026 r.: architektura, wydajność, typowanie, ekosystem i wdrożenia edge. Sprawdź, które narzędzie pasuje do Twojego projektu."
+    "title": "NestJS vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj NestJS i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "NestJS"
@@ -94,5 +94,49 @@
       "q": "Na co uważać przy wyborze między NestJS a Hono?",
       "a": "Przed decyzją warto sprawdzić wymagania hostingu, wsparcie dla wybranego runtime'u, rozmiar zespołu oraz to, czy potrzebne integracje są dostępne w aktualnej wersji. Należy też zweryfikować politykę bezpieczeństwa i aktualizacji zależności, ponieważ zarówno gotowe mechanizmy, jak i ich brak wpływają na koszt utrzymania systemu."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między NestJS a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "NestJS będzie lepszy, gdy projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu…. Hono sprawdzi się, gdy projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym….",
+  "tradeoffs": [
+    {
+      "category": "Architektura i organizacja kodu",
+      "toolA": "Ramy te bywają jednak nadmiarowe w prostych aplikacjach, a pełne wykorzystanie możliwości wymaga zrozumienia koncepcji DI, providerów i cyklu życia modułów, co zależy od wersji frameworka.",
+      "toolB": "Daje to dużą swobodę i szybki start, ale w rozbudowanych projektach trzeba samodzielnie zadbać o konwencje i podział odpowiedzialności, inaczej rośnie ryzyko niespójności."
+    },
+    {
+      "category": "Wydajność i narzut runtime",
+      "toolA": "Framework wprowadza dodatkowy narzut związany z DI i warstwą abstrakcji, co zwykle jest akceptowalne w aplikacjach biznesowych, ale może być odczuwalne w scenariuszach skrajnie opóźnieniowrażliwych.",
+      "toolB": "Nie należy jednak traktować tego jako gwarancji szybszego działania w każdym scenariuszu — wynik zależy od wersji, runtime'u, użytych pośredników i profilu ruchu, dlatego warto mierzyć w środowisku docelowym."
+    },
+    {
+      "category": "Wsparcie dla TypeScript i typowanie",
+      "toolA": "Część mechanizmów opiera się na dekoratorach i odbiciach metadanych, więc konfiguracja kompilatora oraz wersje bibliotek mają znaczenie dla poprawnego działania typowania.",
+      "toolB": "Typowanie tras bywa bardziej bezpośrednie, ale zaawansowane wzorce walidacji i współdzielenia typów wymagają świadomego projektu, zależnego od używanych bibliotek i wersji."
+    },
+    {
+      "category": "Ekosystem i biblioteki",
+      "toolA": "Bogactwo to oznacza też więcej zależności i potencjalnych zmian między wersjami, dlatego należy śledzić politykę wydań i testować aktualizacje.",
+      "toolB": "W niestandardowych wymaganiach częściej trzeba sięgać po biblioteki niezależne od frameworka, co bywa elastyczne, lecz wymaga więcej pracy przy spójności rozwiązań."
+    },
+    {
+      "category": "Wsparcie dla środowisk edge i serverless",
+      "toolA": "W praktyce wymaga to często dodatkowej optymalizacji i uważnego doboru integracji, zwłaszcza przy ograniczeniach platformy.",
+      "toolB": "Obsługa wielu runtime'ów jest jednym z jego atutów, ale rzeczywista zgodność zależy od konkretnego dostawcy, wersji i używanych API, więc przed wdrożeniem trzeba sprawdzić dokumentację platformy."
+    },
+    {
+      "category": "Krzywa nauki i produktywność zespołu",
+      "toolA": "W dłuższej perspektywie spójne wzorce ułatwiają wdrażanie nowych osób i utrzymanie kodu, o ile zespół stosuje się do przyjętych konwencji.",
+      "toolB": "W miarę rozwoju projektu rośnie jednak potrzeba samodzielnego wypracowania standardów, więc korzyść zależy od doświadczenia zespołu i skali aplikacji."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "NestJS i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i organizacja kodu. NestJS: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu zależności, co… Hono: Hono stawia na minimalizm i kompozycję: aplikację buduje się z lekkich routerów i pośredników, bez wymuszonego… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut runtime”: NestJS działa na Node.js i domyślnie korzysta z Express, a alternatywnie z Fastify; rzeczywista wydajność zależy od… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu…",
+    "toolB": "projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym…"
+  }
 }

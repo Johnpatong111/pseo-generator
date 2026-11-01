@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-mongoose",
   "meta": {
-    "title": "TypeORM vs Mongoose (2026): quelle solution choisir ?",
-    "description": "Comparez TypeORM et Mongoose en 2026 : modélisation, typage TypeScript, migrations, relations, écosystème et cas d'usage pour choisir votre ORM ou ODM Node.js."
+    "title": "TypeORM vs Mongoose: lequel choisir en 2026 — modèles de données, performances et usages",
+    "description": "Comparez TypeORM et Mongoose : évaluez les compromis architecturaux liés à modélisation des données, requêtes et indexation et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "TypeORM"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import { DataSource, Entity, PrimaryGeneratedColumn, Column } from \"typeorm\";\n\n@Entity()\nclass User {\n  @PrimaryGeneratedColumn()\n  id: number;\n\n  @Column()\n  name: string;\n}\n\nconst dataSource = new DataSource({\n  type: \"sqlite\",\n  database: \"db.sqlite\",\n  entities: [User],\n  synchronize: true,\n});\n\nawait dataSource.initialize();\nconst repo = dataSource.getRepository(User);\nconst user = await repo.save(repo.create({ name: \"Hello\" }));\nconsole.log(user);",
-    "tech2Snippet": "import mongoose from \"mongoose\";\n\nconst userSchema = new mongoose.Schema({ name: { type: String, required: true } });\nconst User = mongoose.model(\"User\", userSchema);\n\nawait mongoose.connect(\"mongodb://127.0.0.1:27017/hello\");\nconst user = await User.create({ name: \"Hello\" });\nconsole.log(user);"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nconst products = await AppDataSource.getRepository(Product).find({\n  where: { categoryId, active: true },\n  select: { id: true, name: true, priceCents: true },\n  order: { name: \"ASC\" },\n  take: 50,\n});",
+    "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nconst products = await ProductModel.find({\n  categoryId,\n  active: true,\n})\n  .select({ name: 1, priceCents: 1 })\n  .sort({ name: 1 })\n  .limit(50)\n  .lean()\n  .exec();"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Quelles sont les limites respectives de TypeORM et Mongoose ?",
       "a": "TypeORM est moins pertinent pour un usage purement documentaire et son support MongoDB est moins abouti que celui de Mongoose. Mongoose, de son côté, ne gère pas les bases SQL, propose des migrations applicatives limitées et demande de la rigueur pour l'intégrité des données. Dans les deux cas, les performances et la sécurité dépendent de la configuration, de la version et de la charge réelle, qu'il convient de tester dans votre contexte."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre TypeORM et Mongoose modifie la manière de gérer la modélisation des données et les modes d’accès ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "TypeORM convient mieux lorsque votre projet privilégie migrations et évolution du schéma : TypeORM intègre un système de migrations versionnées avec CLI, génération de migrations à partir…. Mongoose est préférable lorsque votre projet privilégie écosystème, documentation et communauté : Mongoose est très largement utilisé avec MongoDB, dispose d'une documentation abondante, de….",
+  "tradeoffs": [
+    {
+      "category": "Type de base de données et modèle de données",
+      "toolA": "Il repose sur un modèle entités/colonnes adapté aux schémas SQL et aux contraintes de clés étrangères.",
+      "toolB": "Il ne gère pas les bases SQL, ce qui en fait un choix naturel uniquement dans un contexte NoSQL orienté documents."
+    },
+    {
+      "category": "Typage TypeScript et expérience développeur",
+      "toolA": "La qualité de l'inférence dépend de la configuration (décorateurs, options strictes de tsconfig) et certaines signatures restent perfectibles.",
+      "toolB": "Le typage des documents et des requêtes est généralement solide, mais il faut parfois annoter manuellement pour éviter les types trop larges."
+    },
+    {
+      "category": "Migrations et évolution du schéma",
+      "toolA": "Ce mécanisme est adapté aux environnements de production relationnels où le schéma doit être audité.",
+      "toolB": "Des outils externes ou des scripts manuels sont nécessaires pour des migrations de données structurées, ce qui demande plus de discipline."
+    },
+    {
+      "category": "Relations et requêtes",
+      "toolA": "Le QueryBuilder est puissant mais verbeux, et les performances dépendent fortement de la façon dont les relations sont chargées.",
+      "toolB": "Ce modèle est simple pour des agrégats de documents, mais les jointures complexes passent par des agrégations MongoDB, moins intuitives pour des profils SQL."
+    },
+    {
+      "category": "Validation et intégrité des données",
+      "toolA": "L'intégrité est surtout garantie par le SGBD, ce qui est un atout en production.",
+      "toolB": "Cette validation est pratique, mais elle ne remplace pas les contraintes fortes au niveau du stockage."
+    },
+    {
+      "category": "Écosystème, documentation et communauté",
+      "toolA": "Le support communautaire est actif mais la maintenance a connu des périodes de ralentissement.",
+      "toolB": "Son rythme de publication est régulier, avec des évolutions parfois breaking entre versions majeures."
+    }
+  ],
+  "introduction": "TypeORM et Mongoose répondent à un besoin proche, mais diffèrent sur type de base de données et modèle de données. TypeORM : TypeORM est un ORM orienté bases relationnelles : il prend en charge PostgreSQL, MySQL, MariaDB, SQLite, SQL Server,… Mongoose : Mongoose est un ODM conçu pour MongoDB : il modélise des documents BSON avec des schémas flexibles, des sous-documents… Le critère « Typage TypeScript et expérience développeur » met en évidence une autre différence pratique : TypeORM est écrit en TypeScript et expose des décorateurs, des types génériques de repository et un support des… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie migrations et évolution du schéma : TypeORM intègre un système de migrations versionnées avec CLI, génération de migrations à partir…",
+    "toolB": "votre projet privilégie écosystème, documentation et communauté : Mongoose est très largement utilisé avec MongoDB, dispose d'une documentation abondante, de…"
+  }
 }

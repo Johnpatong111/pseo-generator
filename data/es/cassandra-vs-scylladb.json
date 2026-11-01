@@ -1,8 +1,8 @@
 {
   "slug": "cassandra-vs-scylladb",
   "meta": {
-    "title": "Apache Cassandra vs ScyllaDB (2026): ¿Qué solución elegir?",
-    "description": "Comparamos Apache Cassandra y ScyllaDB en 2026: arquitectura, rendimiento, operación, compatibilidad, ecosistema y costes para elegir la base de datos distribuida adecuada."
+    "title": "Apache Cassandra vs ScyllaDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
+    "description": "Compara Apache Cassandra y ScyllaDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
   },
   "toolA": {
     "name": "Apache Cassandra"
@@ -94,5 +94,49 @@
       "q": "¿Qué criterios debería usar para elegir en 2026?",
       "a": "Conviene evaluar la carga real con pruebas propias, la compatibilidad con el stack existente, las competencias del equipo, el modelo de soporte y el coste total a varios años. También es recomendable revisar la hoja de ruta y la versión concreta de cada proyecto, ya que las funciones y el comportamiento pueden cambiar y ninguna comparación genérica sustituye una validación en el entorno de destino."
     }
-  ]
+  ],
+  "heroSubtitle": "Elegir entre Apache Cassandra y ScyllaDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
+  "quickVerdict": "Apache Cassandra encaja mejor cuando tu proyecto prioriza compatibilidad y migración: Apache Cassandra define el protocolo CQL y el ecosistema de referencia, por lo que controladores,…. ScyllaDB es preferible cuando tu proyecto prioriza rendimiento y eficiencia de recursos: ScyllaDB está diseñada para reducir la sobrecarga por operación y aprovechar núcleos y….",
+  "tradeoffs": [
+    {
+      "category": "Arquitectura y modelo de datos",
+      "toolA": "Su arquitectura sin nodo maestro favorece la tolerancia a fallos y la escalabilidad horizontal, aunque exige un diseño cuidadoso de las claves de partición para evitar puntos calientes.",
+      "toolB": "Esta orientación busca aprovechar mejor los servidores modernos con muchos núcleos y discos NVMe, aunque el detalle de implementación puede variar según la versión."
+    },
+    {
+      "category": "Rendimiento y eficiencia de recursos",
+      "toolA": "Su consumo de recursos depende en gran medida de la JVM, la configuración de memoria y la compactación, por lo que ajustar el recolector de basura y el tamaño del heap resulta relevante en cargas exigentes.",
+      "toolB": "Los resultados concretos dependen de la carga, el esquema, la versión y la configuración, por lo que conviene validarlos con pruebas propias en lugar de asumir cifras generales."
+    },
+    {
+      "category": "Compatibilidad y migración",
+      "toolA": "Migrar desde Cassandra a otra tecnología compatible exige revisar características específicas, como ciertas funciones CQL, tipos o comportamientos de consistencia.",
+      "toolB": "Aun así, la compatibilidad no es total en todos los casos y conviene verificar las diferencias de versión, las funciones no soportadas y las particularidades del driver antes de migrar."
+    },
+    {
+      "category": "Operación y mantenimiento",
+      "toolA": "Su amplia comunidad y documentación ayudan a resolver problemas, aunque la operación diaria puede ser intensiva en conocimiento especializado.",
+      "toolB": "No obstante, sigue siendo un sistema distribuido que exige planificación, monitorización y conocimientos de tuning, y algunas utilidades y flujos operativos difieren de los de Cassandra."
+    },
+    {
+      "category": "Ecosistema, comunidad y soporte",
+      "toolA": "Esto facilita encontrar personal con experiencia y recursos ante problemas, aunque la calidad del soporte empresarial depende del proveedor elegido.",
+      "toolB": "Su ecosistema es más reducido que el de Cassandra, por lo que la disponibilidad de terceros y de profesionales experimentados puede ser menor según la región."
+    },
+    {
+      "category": "Costes y modelo de despliegue",
+      "toolA": "El coste real depende del dimensionamiento, del personal necesario para operarla y del soporte que se contrate, no solo de la licencia.",
+      "toolB": "Al comparar costes conviene incluir licencias, soporte, horas de operación y el número de nodos necesario, ya que una mayor eficiencia por nodo puede compensar un precio distinto."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Tarea común: cargar y devolver los productos de la categoría seleccionada.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "Apache Cassandra y ScyllaDB responden a una necesidad similar, pero difieren en arquitectura y modelo de datos. Apache Cassandra: Apache Cassandra es una base de datos distribuida de código abierto basada en un modelo de almacén de columnas amplio,… ScyllaDB: ScyllaDB parte de un modelo de datos y una API compatibles con Cassandra, pero reescribe el motor con una arquitectura… El criterio de rendimiento y eficiencia de recursos añade otra diferencia práctica: Apache Cassandra ofrece un rendimiento sólido y predecible en clústeres bien dimensionados, con mejoras continuas en… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "decisionFramework": {
+    "toolA": "tu proyecto prioriza compatibilidad y migración: Apache Cassandra define el protocolo CQL y el ecosistema de referencia, por lo que controladores,…",
+    "toolB": "tu proyecto prioriza rendimiento y eficiencia de recursos: ScyllaDB está diseñada para reducir la sobrecarga por operación y aprovechar núcleos y…"
+  }
 }

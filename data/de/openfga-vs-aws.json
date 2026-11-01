@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS (2026): welche Lösung passt besser?",
-    "description": "OpenFGA vs AWS: Ein detaillierter Vergleich für 2026 zu Autorisierung, Betrieb, Sicherheit, Kosten und mehr. Erfahren Sie, welche Lösung für Ihr Projekt geeignet ist."
+    "title": "OpenFGA vs AWS: welches 2026 wählen — Bereitstellung, Skalierung und Kosten",
+    "description": "Vergleiche OpenFGA und AWS: Bewerte Architekturkompromisse bei Bereitstellung, Skalierung und Infrastruktur und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "// OpenFGA: Minimales Setup mit dem JavaScript SDK\n// Voraussetzung: npm install @openfga/sdk\nconst { OpenFgaClient } = require('@openfga/sdk');\n\nasync function main() {\n  const fga = new OpenFgaClient({\n    apiUrl: 'http://localhost:8080',\n    storeId: '01H...', // Ihre Store-ID\n  });\n\n  try {\n    await fga.write({\n      writes: [\n        {\n          user: 'user:anne',\n          relation: 'viewer',\n          object: 'document:roadmap',\n        },\n      ],\n    });\n    console.log('Beziehung erfolgreich geschrieben.');\n  } catch (error) {\n    console.error('Fehler:', error);\n  }\n}\n\nmain();",
-    "tech2Snippet": "// AWS: Minimales IAM-Beispiel mit dem AWS SDK for JavaScript v3\n// Voraussetzung: npm install @aws-sdk/client-iam\nconst { IAMClient, CreateUserCommand } = require('@aws-sdk/client-iam');\n\nasync function main() {\n  const client = new IAMClient({ region: 'us-east-1' });\n  try {\n    const command = new CreateUserCommand({ UserName: 'HelloWorldUser' });\n    const response = await client.send(command);\n    console.log('Benutzer erstellt:', response.User.UserName);\n  } catch (error) {\n    console.error('Fehler:', error);\n  }\n}\n\nmain();"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;",
+    "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst productsBucket = new aws.s3.BucketV2(\"products\", {\n  versioning: { enabled: true },\n  tags: { purpose: \"product-catalog\" },\n});\n\nexport const productStorageId = productsBucket.id;"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Kann ich OpenFGA und AWS IAM gemeinsam nutzen?",
       "a": "Ja, es ist möglich, OpenFGA für die Anwendungsautorisierung und AWS IAM für die Infrastrukturautorisierung zu kombinieren. Beispielsweise können Sie OpenFGA einsetzen, um den Zugriff auf Anwendungsfunktionen zu steuern, während IAM den Zugriff auf AWS-Ressourcen wie S3-Buckets oder Datenbanken regelt. Dies erfordert jedoch eine sorgfältige Integration und Synchronisation der beiden Systeme. In der Praxis kann dies die Komplexität erhöhen, bietet aber maximale Flexibilität."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen OpenFGA und AWS verändert den Umgang mit Bereitstellung und Betriebsverantwortung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "OpenFGA passt besser, wenn dein Projekt priorisiert Autorisierungsmodell und Ausdrucksstärke: OpenFGA implementiert ein Relationship-Based Access Control (ReBAC)-Modell, das auf dem…. AWS ist geeigneter, wenn dein Projekt priorisiert Betriebsmodell und Verwaltung: AWS ist ein vollständig verwalteter Cloud-Anbieter mit einer einheitlichen Konsole, CLI und SDKs.",
+  "tradeoffs": [
+    {
+      "category": "Autorisierungsmodell und Ausdrucksstärke",
+      "toolA": "Die Autorisierungslogik wird in einer domänenspezifischen Sprache (DSL) deklarativ beschrieben, was feingranulare und kontextabhängige Entscheidungen erlaubt.",
+      "toolB": "Für komplexe, objektbasierte Autorisierung innerhalb einer Anwendung müssen Sie zusätzliche Dienste oder eigene Logik einsetzen."
+    },
+    {
+      "category": "Betriebsmodell und Verwaltung",
+      "toolA": "Die Verwaltung erfolgt über eine API oder CLI, und es gibt keine zentrale Konsole für alle Aspekte.",
+      "toolB": "Allerdings sind Sie an die AWS-Umgebung gebunden und haben weniger Einfluss auf die zugrundeliegende Infrastruktur."
+    },
+    {
+      "category": "Integration und Ökosystem",
+      "toolA": "Die Integration erfordert jedoch eigene Anpassungen, da es kein vorgefertigtes Ökosystem wie AWS gibt.",
+      "toolB": "Für anwendungsspezifische Autorisierung müssen Sie jedoch oft auf zusätzliche Lösungen zurückgreifen."
+    },
+    {
+      "category": "Sicherheit und Compliance",
+      "toolA": "Als selbst betriebene Lösung liegt die Verantwortung für Patches und Sicherheitsupdates jedoch bei Ihnen.",
+      "toolB": "Als Managed Service profitiert man von den Sicherheitsmaßnahmen des Anbieters, bleibt aber von dessen Sicherheitsmodell abhängig."
+    },
+    {
+      "category": "Skalierbarkeit und Leistung",
+      "toolA": "Es wurden Benchmarks veröffentlicht, die eine niedrige Latenz bei hoher Last zeigen, aber die tatsächliche Leistung variiert je nach Arbeitslast.",
+      "toolB": "Die Skalierbarkeit ist durch die Servicegrenzen von AWS definiert."
+    },
+    {
+      "category": "Kosten",
+      "toolA": "Bei Selbstbetrieb können die Kosten niedrig sein, erfordern aber Investitionen in Personal und Wartung.",
+      "toolB": "Die Kosten können bei umfangreicher Nutzung schwer vorherzusagen sein, bieten aber Flexibilität."
+    }
+  ],
+  "introduction": "OpenFGA und AWS lösen ein ähnliches Problem, unterscheiden sich jedoch bei autorisierungsmodell und ausdrucksstärke. OpenFGA: OpenFGA implementiert ein Relationship-Based Access Control (ReBAC)-Modell, das auf dem Zanzibar-Papier von Google… AWS: AWS bietet mit IAM ein rollenbasiertes Zugriffsmodell (RBAC) mit Richtlinien, das für die Steuerung von AWS-Ressourcen… Das Kriterium betriebsmodell und verwaltung zeigt einen weiteren praktischen Unterschied: OpenFGA ist eine Open-Source-Software, die Sie selbst betreiben oder als Managed Service beziehen können. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Autorisierungsmodell und Ausdrucksstärke: OpenFGA implementiert ein Relationship-Based Access Control (ReBAC)-Modell, das auf dem…",
+    "toolB": "dein Projekt priorisiert Betriebsmodell und Verwaltung: AWS ist ein vollständig verwalteter Cloud-Anbieter mit einer einheitlichen Konsole, CLI und SDKs."
+  }
 }

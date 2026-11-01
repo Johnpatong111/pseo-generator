@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-nestjs",
   "meta": {
-    "title": "Gin vs NestJS (2026): quelle solution choisir ?",
-    "description": "Comparaison Gin vs NestJS en 2026 : performances, écosystème, typage, sécurité et cas d’usage. Découvrez quel framework backend choisir selon votre équipe et votre projet."
+    "title": "Gin vs NestJS: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Gin et NestJS : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Gin"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "package main\n\nimport (\n\t\"net/http\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\nfunc main() {\n\tr := gin.Default()\n\tr.GET(\"/\", func(c *gin.Context) {\n\t\tc.String(http.StatusOK, \"Hello, World!\")\n\t})\n\tr.Run(\":8080\")\n}",
-    "tech2Snippet": "import { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\n\n@Controller()\nclass AppController {\n  @Get()\n  getHello(): string {\n    return 'Hello, World!';\n  }\n}\n\n@Module({ controllers: [AppController] })\nclass AppModule {}\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  await app.listen(3000);\n}\n\nbootstrap();"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import type { IncomingMessage, ServerResponse } from \"node:http\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\nexport async function listProducts(\n  request: IncomingMessage,\n  response: ServerResponse,\n): Promise<void> {\n  const categoryId = new URL(request.url ?? \"/\", \"http://localhost\").searchParams.get(\"category\");\n  if (!categoryId) {\n    response.statusCode = 400;\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  response.setHeader(\"content-type\", \"application/json\");\n  response.end(JSON.stringify({ products }));\n}",
+    "tech2Snippet": "import { Controller, Get, Query, BadRequestException } from \"@nestjs/common\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  @Get()\n  async list(@Query(\"category\") categoryId?: string): Promise<{ products: Product[] }> {\n    if (!categoryId) throw new BadRequestException(\"category is required\");\n    const products = await productRepository.listActiveByCategory(categoryId);\n    return { products };\n  }\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles sont les limites de NestJS en 2026 ?",
       "a": "NestJS ajoute des abstractions, des décorateurs et un conteneur d’injection qui augmentent la quantité de code et le temps d’apprentissage initial. L’application dépend aussi de l’écosystème Node.js et de la compatibilité de ses paquets avec les versions successives du framework, ce qui exige une veille régulière. Enfin, la structure imposée ne dispense pas d’une bonne architecture : mal utilisée, elle peut produire des modules confus et des dépendances circulaires difficiles à déboguer."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Gin et NestJS modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Gin convient mieux lorsque votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec…. NestJS est préférable lorsque votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et….",
+  "tradeoffs": [
+    {
+      "category": "Langage et courbe d’apprentissage",
+      "toolA": "En revanche, il faut déjà être à l’aise avec la gestion d’erreurs explicite de Go, les interfaces et la concurrence par goroutines.",
+      "toolB": "La courbe est plus douce pour un profil JS/TS et plus abrupte pour quelqu’un qui découvre simultanément TypeScript et le framework."
+    },
+    {
+      "category": "Architecture et structuration du code",
+      "toolA": "Cette liberté exige en contrepartie de définir soi-même ses conventions, sous peine de voir la dette structurelle apparaître à mesure que le projet grossit.",
+      "toolB": "Elle peut néanmoins sembler verbeuse ou superflue pour une API très simple, et elle suppose d’accepter les abstractions du framework."
+    },
+    {
+      "category": "Performances et empreinte à l’exécution",
+      "toolA": "Sur des services à forte concurrence ou des contraintes de ressources, Go et Gin constituent souvent un choix pragmatique.",
+      "toolB": "En pratique, l’empreinte mémoire et le débit dépendent fortement du code, des dépendances et du profil de charge, sans que NestJS soit intrinsèquement inadapté à la production."
+    },
+    {
+      "category": "Écosystème et intégrations",
+      "toolA": "Cette approche demande de choisir et de maintenir ses dépendances avec discernement.",
+      "toolB": "La contrepartie est une dépendance plus forte au framework et à la cadence de ses mises à jour."
+    },
+    {
+      "category": "Typage, validation et contrats d’API",
+      "toolA": "La rigueur du contrat d’API dépend donc des choix explicites de l’équipe.",
+      "toolB": "Il faut toutefois configurer correctement ces mécanismes et ne pas confondre typage de compilation et validation à l’exécution."
+    },
+    {
+      "category": "Tests et expérience de développement",
+      "toolA": "Le rechargement à chaud n’est pas inclus et nécessite un outil externe comme Air ou CompileDaemon.",
+      "toolB": "La CLI propose un mode watch natif, mais les tests complets restent tributaires de la qualité de la configuration du projet."
+    }
+  ],
+  "introduction": "Gin et NestJS répondent à un besoin proche, mais diffèrent sur langage et courbe d’apprentissage. Gin : Gin repose sur Go, un langage compilé au typage statique et à la syntaxe volontairement réduite. NestJS : NestJS s’écrit en TypeScript ou en JavaScript et s’inspire fortement d’Angular : modules, décorateurs, services… Le critère « Architecture et structuration du code » met en évidence une autre différence pratique : Gin fournit un routeur HTTP et des utilitaires de contexte, mais laisse l’organisation du projet entièrement à l’équipe. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec…",
+    "toolB": "votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et…"
+  }
 }

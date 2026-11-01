@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-7-sonnet-vs-llama-3-3",
   "meta": {
-    "title": "Claude 3.7 Sonnet vs Llama 3.3 (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Claude 3.7 Sonnet i Llama 3.3 pod kątem kontekstu, wydajności, cen API, dostępności i zastosowań. Sprawdź, który model lepiej pasuje do Twojego projektu w 2026 roku."
+    "title": "Claude 3.7 Sonnet vs Llama 3.3: co wybrać w 2026 — modele, kontekst i koszty API",
+    "description": "Porównaj Claude 3.7 Sonnet i Llama 3.3: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Claude 3.7 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"TWOJ_KLUCZ_API\")\n\nresponse = client.messages.create(\n    model=\"claude-3-7-sonnet-20250219\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Hello, World!\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\nmodel_id = \"meta-llama/Llama-3.3-70B-Instruct\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(model_id)\n\ninputs = tokenizer(\"Hello, World!\", return_tensors=\"pt\")\noutputs = model.generate(**inputs, max_new_tokens=20)\nprint(tokenizer.decode(outputs[0], skip_special_tokens=True))"
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Jakie są ryzyka związane z korzystaniem z Llama 3.3?",
       "a": "Korzystanie z Llama 3.3 wiąże się z koniecznością zapewnienia bezpieczeństwa danych i zgodności z licencją, a także z odpowiedzialnością za jakość i aktualizacje modelu. Ponadto, jako model otwarty, może być podatny na modyfikacje przez osoby trzecie, co wymaga starannego doboru źródła wag. Claude 3.7 Sonnet przenosi te obowiązki na dostawcę, ale ogranicza kontrolę nad modelem."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Claude 3.7 Sonnet a Llama 3.3 zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Claude 3.7 Sonnet będzie lepszy, gdy projekt stawia na kryterium „Okno kontekstowe”: Claude 3.7 Sonnet oferuje okno kontekstowe o rozmiarze 200 tys. Llama 3.3 sprawdzi się, gdy projekt stawia na kryterium „Dostępność modelu i otwartość”: Llama 3.3 jest modelem otwartym, udostępnianym na licencji umożliwiającej pobranie wag i….",
+  "tradeoffs": [
+    {
+      "category": "Okno kontekstowe",
+      "toolA": "Wartość ta jest aktualna na podstawie oficjalnej dokumentacji Anthropic i może się zmieniać wraz z wersjami modelu; przed wdrożeniem należy zweryfikować limity w dokumentacji dostawcy.",
+      "toolB": "Należy pamiętać, że rzeczywiste limity mogą zależeć od implementacji i dostawcy hostingu; oficjalne parametry należy potwierdzić w dokumentacji Meta."
+    },
+    {
+      "category": "Wydajność w benchmarkach (MMLU, HumanEval)",
+      "toolA": "Ocena wydajności opiera się na testach społecznościowych i może zależeć od wersji modelu oraz sposobu ewaluacji; użytkownik powinien przeprowadzić własne testy na reprezentatywnym zbiorze danych.",
+      "toolB": "Są to jednak dane deklarowane przez producenta, a rzeczywista jakość może się różnić w zależności od konfiguracji i dostawcy; zaleca się weryfikację na własnych zadaniach."
+    },
+    {
+      "category": "Ceny API (za 1 mln tokenów wejściowych/wyjściowych)",
+      "toolA": "Ze względu na zmienność cen należy sprawdzić aktualny cennik na stronie Anthropic przed oszacowaniem kosztów.",
+      "toolB": "Ceny są zmienne i wymagają weryfikacji u wybranego dostawcy."
+    },
+    {
+      "category": "Opóźnienia (latencja)",
+      "toolA": "W zastosowaniach czasu rzeczywistego należy przeprowadzić testy wydajnościowe w docelowym środowisku.",
+      "toolB": "Rzeczywiste opóźnienia zależą od konfiguracji sprzętowej i implementacji; nie ma jednej oficjalnej wartości dla wszystkich wdrożeń."
+    },
+    {
+      "category": "Dostępność modelu i otwartość",
+      "toolA": "Nie można go pobrać ani uruchomić lokalnie, co ogranicza możliwości dostosowania, ale zapewnia gotową infrastrukturę i wsparcie producenta.",
+      "toolB": "Daje to większą elastyczność i kontrolę nad danymi, ale wiąże się z koniecznością zarządzania infrastrukturą i odpowiedzialnością za wdrożenie."
+    },
+    {
+      "category": "Zastosowania praktyczne",
+      "toolA": "Dzięki gotowemu API i wsparciu Anthropic nadaje się do szybkiego prototypowania i wdrożeń produkcyjnych bez konieczności utrzymywania własnej infrastruktury.",
+      "toolB": "Sprawdza się również jako baza do budowy własnych rozwiązań, choć wymaga nakładu pracy na konfigurację i utrzymanie."
+    }
+  ],
+  "introduction": "Claude 3.7 Sonnet i Llama 3.3 odpowiadają na podobną potrzebę, ale różnią się w obszarze okno kontekstowe. Claude 3.7 Sonnet: Claude 3.7 Sonnet oferuje okno kontekstowe o rozmiarze 200 tys. Llama 3.3: Llama 3.3 jest dostępna w wariancie 70B z oknem kontekstowym wynoszącym 128 tys. Kolejną istotną różnicę pokazuje kryterium „Wydajność w benchmarkach (MMLU, HumanEval)”: Anthropic nie publikuje w oficjalnych materiałach wyników MMLU ani HumanEval dla Claude 3.7 Sonnet, dlatego nie można… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Okno kontekstowe”: Claude 3.7 Sonnet oferuje okno kontekstowe o rozmiarze 200 tys.",
+    "toolB": "projekt stawia na kryterium „Dostępność modelu i otwartość”: Llama 3.3 jest modelem otwartym, udostępnianym na licencji umożliwiającej pobranie wag i…"
+  }
 }

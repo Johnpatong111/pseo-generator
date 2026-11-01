@@ -1,8 +1,8 @@
 {
   "slug": "styled-components-vs-css-modules",
   "meta": {
-    "title": "styled-components vs CSS Modules (2026): welche Lösung passt besser?",
-    "description": "styled-components vs CSS Modules im Vergleich 2026: Stärken, Grenzen, Kompatibilität und Codebeispiele – für eine fundierte Wahl zwischen CSS-in-JS und modularem CSS."
+    "title": "styled-components vs CSS Modules: welches 2026 wählen — Styling, Komponenten und Entwickler-Workflow",
+    "description": "Vergleiche styled-components und CSS Modules: Bewerte Architekturkompromisse bei Komponenten-APIs, Style-Isolation und Wartung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "styled-components"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import styled from 'styled-components';\n\nconst Button = styled.button`\n  padding: 0.5rem 1rem;\n  border: none;\n  border-radius: 4px;\n  background: #2563eb;\n  color: white;\n`;\n\nexport default function App() {\n  return <Button>Hello, World!</Button>;\n}",
-    "tech2Snippet": "/* Button.module.css */\n.button {\n  padding: 0.5rem 1rem;\n  border: none;\n  border-radius: 4px;\n  background: #2563eb;\n  color: white;\n}\n\n/* App.jsx */\nimport styles from './Button.module.css';\n\nexport default function App() {\n  return <button className={styles.button}>Hello, World!</button>;\n}"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "import styled from \"styled-components\";\n\nconst ProductCardShell = styled.article`\n  display: grid;\n  gap: 0.75rem;\n  padding: 1rem;\n  border: 1px solid #cbd5e1;\n  border-radius: 0.75rem;\n`;\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <ProductCardShell aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </ProductCardShell>\n  );\n}",
+    "tech2Snippet": "import styles from \"./ProductCard.module.css\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport function ProductCard({ product }: { product: Product }) {\n  return (\n    <article className={styles.productCard} aria-label={product.name}>\n      <h2>{product.name}</h2>\n      <data value={(product.priceCents / 100).toFixed(2)}>\n        ${(product.priceCents / 100).toFixed(2)}\n      </data>\n    </article>\n  );\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Welche Option ist für Teams ohne tiefes JavaScript-Wissen empfehlenswerter?",
       "a": "CSS Modules sind für Teams mit klassischem CSS-Hintergrund oft leichter zugänglich, weil die Styles in gewohnter Syntax bleiben und nur der Klassenimport neu ist. styled-components verlangen mehr Vertrautheit mit JavaScript-Ausdrücken, Komponentenmustern und Template-Literalen. Das bedeutet nicht, dass styled-components schwer zu lernen sind, aber die Einstiegshürde ist für CSS-orientierte Teams meist niedriger. Entscheidend ist letztlich, welche Fähigkeiten im Team bereits vorhanden sind und welche Konventionen gepflegt werden können."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen styled-components und CSS Modules verändert den Umgang mit Style-Verwaltung und Oberflächenkomposition; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "styled-components passt besser, wenn dein Projekt priorisiert Dynamische Styles und Theming: styled-components kann Props, Theme-Kontexte und berechnete Werte unmittelbar in die…. CSS Modules ist geeigneter, wenn dein Projekt priorisiert Laufzeit und Build-Integration: CSS Modules werden typischerweise vollständig zur Build-Zeit verarbeitet und benötigen zur….",
+  "tradeoffs": [
+    {
+      "category": "Styling-Modell und Kapselung",
+      "toolA": "Klassennamen werden zur Laufzeit generiert, sodass Styles standardmäßig gekapselt sind, ohne dass globale Namenskonventionen nötig sind.",
+      "toolB": "Die Kapselung entsteht bereits beim Build, wodurch globales CSS-Überschreiben vermieden wird, sofern nicht bewusst auf globale Selektoren zurückgegriffen wird."
+    },
+    {
+      "category": "Dynamische Styles und Theming",
+      "toolA": "Das macht Varianten und Theming sehr ausdrucksstark, erfordert aber Aufmerksamkeit für Performance, weil dynamische Werte in der Regel zur Laufzeit aufgelöst werden.",
+      "toolB": "Reine Werteabhängigkeiten von Props müssen explizit über Inline-Styles, CSS-Variablen oder Klassenwechsel abgebildet werden, was mehr Struktur verlangt, aber weniger JavaScript-Logik im Styling belässt."
+    },
+    {
+      "category": "Laufzeit und Build-Integration",
+      "toolA": "In modernen Bundlern ist die Integration üblich, sollte aber je nach Framework und Server-Rendering-Setup geprüft werden.",
+      "toolB": "Sie integrieren sich in gängige Bundler wie webpack, Vite oder Next.js über die jeweilige CSS-Pipeline, deren Details von der Konfiguration abhängen."
+    },
+    {
+      "category": "Ökosystem und Framework-Kompatibilität",
+      "toolA": "Die Nutzung mit React Server Components, Streaming und bestimmten Meta-Frameworks ist versions- und konfigurationsabhängig und sollte vor der Architekturentscheidung anhand der aktuellen Dokumentation geprüft werden.",
+      "toolB": "Gerade in Kombination mit modernen React-Setups und Server Components gelten sie oft als unkompliziert, weil sie keine spezielle Laufzeit voraussetzen."
+    },
+    {
+      "category": "Lernkurve und Lesbarkeit",
+      "toolA": "Die Stilverwaltung kann bei großen Projekten unübersichtlich werden, wenn Komponenten und Stilvarianten nicht diszipliniert strukturiert werden.",
+      "toolB": "Für Teams mit klassischem CSS-Hintergrund ist der Einstieg oft niedrigschwellig, während die Trennung von Styles und Komponentenlogik bewusst gepflegt werden muss."
+    },
+    {
+      "category": "Typsicherheit und Tooling",
+      "toolA": "Die Qualität der Typprüfung hängt von den Typdefinitionen und der Projektkonfiguration ab; dynamische Template-Ausdrücke sind nicht in jedem Fall vollständig statisch prüfbar.",
+      "toolB": "Ohne zusätzliche Tooling-Schritte bleiben CSS-Klassen jedoch oft untypisiert, was je nach Setup zu Tippfehlern führen kann."
+    }
+  ],
+  "introduction": "styled-components und CSS Modules lösen ein ähnliches Problem, unterscheiden sich jedoch bei styling-modell und kapselung. styled-components: styled-components erzeugt Styles direkt in JavaScript über Template-Literale und verknüpft sie fest mit einer… CSS Modules: CSS Modules kompilieren normale CSS-Dateien und erzeugen lokal eindeutige Klassennamen, die als Objekt importiert… Das Kriterium dynamische styles und theming zeigt einen weiteren praktischen Unterschied: styled-components kann Props, Theme-Kontexte und berechnete Werte unmittelbar in die Stildefinition einbeziehen. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Dynamische Styles und Theming: styled-components kann Props, Theme-Kontexte und berechnete Werte unmittelbar in die…",
+    "toolB": "dein Projekt priorisiert Laufzeit und Build-Integration: CSS Modules werden typischerweise vollständig zur Build-Zeit verarbeitet und benötigen zur…"
+  }
 }

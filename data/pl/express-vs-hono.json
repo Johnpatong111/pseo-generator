@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-hono",
   "meta": {
-    "title": "Express vs Hono (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie Express i Hono w 2026: wydajność, wsparcie środowisk, TypeScript, middleware i ekosystem. Sprawdź, które narzędzie wybrać do swojego projektu."
+    "title": "Express vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
+    "description": "Porównaj Express i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "Express"
@@ -94,5 +94,49 @@
       "q": "Czy warto migrować istniejącą aplikację Express do Hono?",
       "a": "Migracja ma sens głównie wtedy, gdy celem jest przeniesienie na platformy brzegowe lub uproszczenie kodu dzięki typowaniu. W przeciwnym razie koszt przepisania middleware i testów może przewyższyć korzyści. Decyzję warto poprzedzić analizą zależności, pokrycia testami i planem stopniowego wdrażania."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między Express a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "Express będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość i stabilność ekosystemu”: Express jest jednym z najstarszych i najszerzej stosowanych frameworków HTTP dla Node.js. Hono sprawdzi się, gdy projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono od początku projektowano jako framework wielozakresowy, działający m.in.",
+  "tradeoffs": [
+    {
+      "category": "Dojrzałość i stabilność ekosystemu",
+      "toolA": "Tempo zmian jest ostrożne, a aktualizacje major wersji wymagają zwykle przeglądu kodu.",
+      "toolB": "Należy liczyć się z ewolucją API między wersjami i z mniejszą liczbą gotowych przykładów w starszych materiałach."
+    },
+    {
+      "category": "Wsparcie środowisk uruchomieniowych",
+      "toolA": "W typowym wdrożeniu node-owym działa bez dodatkowej konfiguracji.",
+      "toolB": "Dzięki temu ten sam kod można wdrażać na różnych platformach brzegowych, choć rzeczywiste wsparcie zależy od wersji i konkretnego dostawcy."
+    },
+    {
+      "category": "Wydajność i narzut frameworku",
+      "toolA": "Rzeczywiste wyniki silnie zależą od konfiguracji, middleware i profilu obciążenia.",
+      "toolB": "Nie należy traktować deklaracji wydajności jako gwarancji dla każdego wdrożenia."
+    },
+    {
+      "category": "Obsługa TypeScript i typowanie",
+      "toolA": "Express dostarcza definicje typów w pakiecie @types/express, a typowanie jest możliwe, lecz wymaga ręcznego opisywania żądań i odpowiedzi. Wsparcie dla typowanego routingu i walidacji nie jest wbudowane i często opiera się na zewnętrznych bibliotekach. Jakość typów zależy od wersji pakietów.",
+      "toolB": "Funkcje typowania zależą od wersji biblioteki i konfiguracji projektu."
+    },
+    {
+      "category": "Middleware i model rozszerzania",
+      "toolA": "Kolejność middleware trzeba świadomie projektować.",
+      "toolB": "Przenośność wymaga sprawdzenia zgodności z docelową platformą."
+    },
+    {
+      "category": "Bezpieczeństwo i utrzymanie",
+      "toolA": "Bezpieczeństwo należy budować przez aktualizacje, walidację wejścia i nagłówki ochronne.",
+      "toolB": "Bezpieczeństwo zależy od wersji, konfiguracji i poprawnego użycia middleware."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
+  },
+  "introduction": "Express i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość i stabilność ekosystemu. Express: Express jest jednym z najstarszych i najszerzej stosowanych frameworków HTTP dla Node.js. Hono: Hono powstało później i rozwija się dynamicznie, jednak jego ekosystem jest młodszyszy i mniejszy niż Express. Kolejną istotną różnicę pokazuje kryterium „Wsparcie środowisk uruchomieniowych”: Express był projektowany z myślą o Node.js i jest z nim ściśle powiązany. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Dojrzałość i stabilność ekosystemu”: Express jest jednym z najstarszych i najszerzej stosowanych frameworków HTTP dla Node.js.",
+    "toolB": "projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono od początku projektowano jako framework wielozakresowy, działający m.in."
+  }
 }

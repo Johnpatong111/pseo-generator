@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-hono",
   "meta": {
-    "title": "Express vs Hono (2026): quelle solution choisir ?",
-    "description": "Comparatif Express vs Hono en 2026 : performances, écosystème, TypeScript, déploiement edge et sécurité. Découvrez quel framework Node.js choisir selon votre projet."
+    "title": "Express vs Hono: lequel choisir en 2026 — API, performances et déploiement",
+    "description": "Comparez Express et Hono : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Express"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hello, World!');\n});\n\napp.listen(3000, () => {\n  console.log('Express écoute sur le port 3000');\n});",
-    "tech2Snippet": "import { Hono } from 'hono';\n\nconst app = new Hono();\n\napp.get('/', (c) => c.text('Hello, World!'));\n\nexport default app;"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import express from \"express\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = express();\n\napp.get(\"/api/products\", async (request, response, next) => {\n  try {\n    const categoryId = String(request.query.category ?? \"\");\n    if (!categoryId) return response.status(400).json({ error: \"category is required\" });\n    const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
+    "tech2Snippet": "import { Hono } from \"hono\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean };\nconst app = new Hono();\n\napp.get(\"/api/products\", async (context) => {\n  const categoryId = context.req.query(\"category\");\n  if (!categoryId) return context.json({ error: \"category is required\" }, 400);\n  const products: Product[] = await productRepository.listActiveByCategory(categoryId);\n  return context.json({ products });\n});"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Quelles sont les limites respectives d’Express et de Hono ?",
       "a": "Express peut montrer des limites sur les déploiements edge, le typage TypeScript avancé et la surcharge de middlewares historiques. Hono dispose d’un écosystème tiers plus restreint et peut nécessiter des adaptations pour les modules Node.js spécifiques ou les middlewares Express. Dans les deux cas, la compatibilité avec votre plateforme et vos dépendances doit être validée avant adoption."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Express et Hono modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Express convient mieux lorsque votre projet privilégie maturité et écosystème : Express bénéficie de plus d’une décennie d’existence, d’une documentation abondante et d’un très…. Hono est préférable lorsque votre projet privilégie performances et empreinte : Hono est conçu autour d’un routeur léger et d’une API basée sur les standards Web….",
+  "tradeoffs": [
+    {
+      "category": "Maturité et écosystème",
+      "toolA": "La compatibilité avec Express 5 constitue un point d’attention pour les projets anciens.",
+      "toolB": "La qualité et la maintenance des modules disponibles varient selon les cas."
+    },
+    {
+      "category": "Performances et empreinte",
+      "toolA": "Express reste généralement suffisant pour la majorité des API et applications web classiques.",
+      "toolB": "Il ne faut pas généraliser des benchmarks isolés à toutes les charges de production."
+    },
+    {
+      "category": "Support TypeScript et expérience développeur",
+      "toolA": "Les versions récentes d’Express et des types communautaires améliorent progressivement la situation.",
+      "toolB": "La courbe d’apprentissage reste raisonnable, mais elle diffère du modèle middleware historique d’Express."
+    },
+    {
+      "category": "Déploiement et compatibilité runtime",
+      "toolA": "La compatibilité dépend de la version de Node.js et des API utilisées par les middlewares.",
+      "toolB": "Toutefois, toutes les fonctionnalités Node.js ne sont pas disponibles sur les runtimes edge, et la compatibilité doit être vérifiée au cas par cas."
+    },
+    {
+      "category": "Sécurité et bonnes pratiques",
+      "toolA": "Il est recommandé de suivre les bonnes pratiques OWASP et de maintenir les dépendances à jour.",
+      "toolB": "Comme pour tout framework, il convient de vérifier la couverture réelle des middlewares et les recommandations de sécurité de la version utilisée."
+    },
+    {
+      "category": "Courbe d’apprentissage et migration",
+      "toolA": "Les équipes existantes peuvent généralement réutiliser leurs compétences et leurs middlewares.",
+      "toolB": "Elle est plus simple pour les nouveaux projets que pour les bases de code existantes."
+    }
+  ],
+  "introduction": "Express et Hono répondent à un besoin proche, mais diffèrent sur maturité et écosystème. Express : Express bénéficie de plus d’une décennie d’existence, d’une documentation abondante et d’un très large catalogue de… Hono : Hono est un framework plus récent, avec un écosystème de middlewares officiels en croissance et une API moderne pensée… Le critère « Performances et empreinte » met en évidence une autre différence pratique : Express s’appuie sur le routeur historique de Node.js et un modèle middleware linéaire, ce qui peut introduire une… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie maturité et écosystème : Express bénéficie de plus d’une décennie d’existence, d’une documentation abondante et d’un très…",
+    "toolB": "votre projet privilégie performances et empreinte : Hono est conçu autour d’un routeur léger et d’une API basée sur les standards Web…"
+  }
 }

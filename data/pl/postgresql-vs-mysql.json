@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-mysql",
   "meta": {
-    "title": "PostgreSQL vs MySQL (2026): które rozwiązanie wybrać?",
-    "description": "Porównanie PostgreSQL i MySQL w 2026 roku: funkcje, wydajność, replikacja, bezpieczeństwo i koszty. Sprawdź, która baza danych lepiej pasuje do Twojego projektu."
+    "title": "PostgreSQL vs MySQL: co wybrać w 2026 — modele danych, wydajność i zastosowania",
+    "description": "Porównaj PostgreSQL i MySQL: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -94,5 +94,49 @@
       "q": "Czy można łatwo przenieść aplikację z MySQL do PostgreSQL lub odwrotnie?",
       "a": "Migracja jest możliwa, ale rzadko bywa bezproblemowa, ponieważ oba systemy różnią się dialektem SQL, zachowaniem typów, obsługą JSON i mechanizmami replikacji. W praktyce trzeba przeanalizować zapytania, procedury składowane, uprawnienia i sposób działania aplikacji, a następnie przeprowadzić testy na kopii danych. Skala trudności zależy od złożoności schematu i wersji obu baz, dlatego warto zaplanować etapowe wdrożenie i weryfikację."
     }
-  ]
+  ],
+  "heroSubtitle": "Wybór między PostgreSQL a MySQL zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Zgodność ze standardem SQL i bogactwo funkcji językowych”: PostgreSQL w dużym stopniu przestrzega standardu SQL i oferuje zaawansowane konstrukcje, takie jak…. MySQL sprawdzi się, gdy projekt stawia na kryterium „Replikacja, wysoka dostępność i klastry”: MySQL oferuje replikację asynchroniczną i półsynchroniczną, a także rozwiązania takie jak Group….",
+  "tradeoffs": [
+    {
+      "category": "Zgodność ze standardem SQL i bogactwo funkcji językowych",
+      "toolA": "Dialekt jest jednak rozszerzalny, więc część składni może różnić się między wersjami i wymaga sprawdzenia w dokumentacji wybranej wersji.",
+      "toolB": "W praktyce wiele zapytań przenosi się bez zmian, lecz zapytania analityczne i zaawansowane wymagają często przepisania."
+    },
+    {
+      "category": "Obsługa danych JSON i półstrukturalnych",
+      "toolA": "Funkcje JSON są rozbudowane, a ich dokładny zestaw zależy od wersji serwera.",
+      "toolB": "Model ten jest wystarczający dla wielu zastosowań, ale mniej elastyczny niż jsonb w scenariuszach złożonych zapytań po dokumentach."
+    },
+    {
+      "category": "Wydajność i skalowanie pod obciążeniem",
+      "toolA": "Rzeczywista wydajność silnie zależy od konfiguracji, sprzętu, schematu i charakteru obciążenia, dlatego nie da się podać uniwersalnych liczb bez własnych testów.",
+      "toolB": "Przy złożonych zapytaniach analitycznych i dużych zbiorach może wymagać starannego projektowania indeksów oraz testów wydajnościowych, a wyniki zależą od wersji i konfiguracji."
+    },
+    {
+      "category": "Replikacja, wysoka dostępność i klastry",
+      "toolA": "Narzędzia do automatycznego przełączania awaryjnego i klastrowania są dostępne jako rozwiązania zewnętrzne, więc konfiguracja wysokiej dostępności wymaga zwykle dodatkowego komponentu i wiedzy operacyjnej.",
+      "toolB": "Zakres funkcji i ich dojrzałość zależą od wersji oraz wydania (Community lub komercyjnego), co należy zweryfikować przed wdrożeniem produkcyjnym."
+    },
+    {
+      "category": "Bezpieczeństwo i model uprawnień",
+      "toolA": "Bezpieczeństwo zależy jednak od poprawnej konfiguracji, aktualizacji i polityk dostępu, a nie wyłącznie od samego silnika.",
+      "toolB": "Część funkcji zaawansowanych może być dostępna tylko w wydaniach komercyjnych, dlatego trzeba sprawdzić macierz funkcji dla konkretnej wersji."
+    },
+    {
+      "category": "Rozszerzalność i ekosystem dodatków",
+      "toolA": "Dostępność i zgodność rozszerzeń zależą od wersji serwera oraz sposobu hostingu, zwłaszcza w usługach zarządzanych.",
+      "toolB": "Rozszerzalność jest mniejsza niż w PostgreSQL, ponieważ MySQL nie oferuje równie szerokiego mechanizmu instalowanych rozszerzeń."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Wspólne zadanie: pobierz i zwróć produkty z aktywnej kategorii.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean };\ntype ProductDatabase = {\n  query<T>(sql: string, values: readonly unknown[]): Promise<{ rows: T[] }>;\n};\n\nexport async function listProducts(database: ProductDatabase, categoryId: string) {\n  const result = await database.query<Product>(\n    \"SELECT id, name, category_id AS \\\"categoryId\\\", active FROM products WHERE category_id = $1 AND active = TRUE ORDER BY name LIMIT 50\",\n    [categoryId],\n  );\n  return result.rows;\n}"
+  },
+  "introduction": "PostgreSQL i MySQL odpowiadają na podobną potrzebę, ale różnią się w obszarze zgodność ze standardem sql i bogactwo funkcji językowych. PostgreSQL: PostgreSQL w dużym stopniu przestrzega standardu SQL i oferuje zaawansowane konstrukcje, takie jak okna funkcji,… MySQL: MySQL obsługuje podstawowy standard SQL oraz własne rozszerzenia, ale historycznie część konstrukcji (np. Kolejną istotną różnicę pokazuje kryterium „Obsługa danych JSON i półstrukturalnych”: PostgreSQL oferuje typy json i jsonb, przy czym jsonb przechowuje dane w formie binarnej i pozwala indeksować je za… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "decisionFramework": {
+    "toolA": "projekt stawia na kryterium „Zgodność ze standardem SQL i bogactwo funkcji językowych”: PostgreSQL w dużym stopniu przestrzega standardu SQL i oferuje zaawansowane konstrukcje, takie jak…",
+    "toolB": "projekt stawia na kryterium „Replikacja, wysoka dostępność i klastry”: MySQL oferuje replikację asynchroniczną i półsynchroniczną, a także rozwiązania takie jak Group…"
+  }
 }

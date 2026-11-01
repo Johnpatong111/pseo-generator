@@ -1,8 +1,8 @@
 {
   "slug": "claude-3-5-sonnet-vs-gemini-2-5-pro",
   "meta": {
-    "title": "Claude 3.5 Sonnet vs Gemini 2.5 Pro (2026): quelle solution choisir ?",
-    "description": "Comparez Claude 3.5 Sonnet et Gemini 2.5 Pro en 2026 : contexte, benchmarks, tarifs API, latence, accès et cas d'usage. Conseils pour choisir selon votre projet."
+    "title": "Claude 3.5 Sonnet vs Gemini 2.5 Pro: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Claude 3.5 Sonnet et Gemini 2.5 Pro : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le…"
   },
   "toolA": {
     "name": "Claude 3.5 Sonnet"
@@ -56,8 +56,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import anthropic\n\nclient = anthropic.Anthropic(api_key=\"VOTRE_CLE_API\")\nresponse = client.messages.create(\n    model=\"claude-3-5-sonnet-20241022\",\n    max_tokens=100,\n    messages=[{\"role\": \"user\", \"content\": \"Bonjour, comment allez-vous ?\"}]\n)\nprint(response.content[0].text)",
-    "tech2Snippet": "import google.generativeai as genai\n\ngenai.configure(api_key=\"VOTRE_CLE_API\")\nmodel = genai.GenerativeModel(\"gemini-2.5-pro\")\nresponse = model.generate_content(\"Bonjour, comment allez-vous ?\")\nprint(response.text)"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\nconst response = await client.messages.create({\n  model: process.env.ANTHROPIC_MODEL!,\n  max_tokens: 512,\n  system: \"Summarize product data accurately.\",\n  messages: [{ role: \"user\", content: JSON.stringify(products) }],\n});\nconst summary = response.content\n  .filter((block) => block.type === \"text\")\n  .map((block) => block.text)\n  .join(\"\");",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -92,5 +93,44 @@
       "q": "Comment choisir entre Claude 3.5 Sonnet et Gemini 2.5 Pro pour un projet d'entreprise ?",
       "a": "Évaluez d'abord vos besoins : si vous traitez de grands volumes de documents ou des médias riches, Gemini 2.5 Pro offre un avantage grâce à son contexte étendu et sa multimodalité. Si la qualité rédactionnelle, la conformité aux instructions et l'intégration avec des outils comme Amazon Bedrock sont prioritaires, Claude 3.5 Sonnet est un choix solide. Tenez compte du budget, de la latence attendue et de l'écosystème cloud existant, puis testez les deux modèles avec des cas représentatifs avant de décider."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Claude 3.5 Sonnet et Gemini 2.5 Pro modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Claude 3.5 Sonnet convient mieux lorsque votre projet privilégie tarification de l'api par million de tokens en entrée et en sortie : La tarification de Claude 3.5 Sonnet via l'API Anthropic est généralement de l'ordre de 3 $ par…. Gemini 2.5 Pro est préférable lorsque votre projet privilégie fenêtre de contexte : Gemini 2.5 Pro est annoncé avec une fenêtre de contexte pouvant atteindre 1 million de tokens,….",
+  "tradeoffs": [
+    {
+      "category": "Fenêtre de contexte",
+      "toolA": "Cela permet de traiter des documents longs, des bases de code ou des historiques de conversation étendus, mais reste en deçà des offres les plus généreuses du marché.",
+      "toolB": "Cette capacité exceptionnelle facilite l'analyse de corpus massifs, de vidéos longues ou de dépôts de code entiers, sous réserve de vérifier les limites exactes et les éventuels surcoûts auprès de Google."
+    },
+    {
+      "category": "Performances aux benchmarks (MMLU, HumanEval) lorsque des résultats publiés et",
+      "toolA": "Ces chiffres sont indicatifs et dépendent des conditions d'évaluation ; il convient de se référer aux rapports officiels les plus récents.",
+      "toolB": "Les évaluations ne sont pas toujours directement comparables en raison de méthodologies différentes ; une vérification des benchmarks publics et des rapports techniques est recommandée avant de tirer des conclusions définitives."
+    },
+    {
+      "category": "Tarification de l'API par million de tokens en entrée et en sortie",
+      "toolA": "Des tarifs réduits existent pour le batch et le cache de prompt, mais les montants exacts doivent être vérifiés sur la page officielle d'Anthropic.",
+      "toolB": "Les prix publics indiqués en 2025 sont compétitifs pour les contextes courts, mais augmentent pour les contextes très longs ; il est indispensable de consulter la grille tarifaire officielle de Google Cloud pour une estimation précise."
+    },
+    {
+      "category": "Latence et débit",
+      "toolA": "Les performances peuvent varier selon la charge du service et la région ; aucune mesure officielle de latence n'est garantie, et il est conseillé de réaliser ses propres tests dans l'environnement cible.",
+      "toolB": "Une évaluation en conditions réelles est recommandée."
+    },
+    {
+      "category": "Accès au modèle et disponibilité ouverte ou fermée",
+      "toolA": "La disponibilité peut varier selon les régions et les partenaires cloud.",
+      "toolB": "Aucune version open source n'est officiellement disponible pour ce modèle à ce jour."
+    },
+    {
+      "category": "Multimodalité et capacités d'analyse de documents",
+      "toolA": "Cependant, il ne traite pas nativement l'audio ou la vidéo, ce qui limite certains cas d'usage multimédias.",
+      "toolB": "Cette polyvalence est un atout majeur pour les applications nécessitant l'intégration de plusieurs types de médias, sous réserve de vérifier les limites de taille et les coûts associés."
+    }
+  ],
+  "introduction": "Claude 3.5 Sonnet et Gemini 2.5 Pro répondent à un besoin proche, mais diffèrent sur fenêtre de contexte. Claude 3.5 Sonnet : Claude 3.5 Sonnet propose une fenêtre de contexte de 200 000 tokens selon la documentation officielle d'Anthropic… Gemini 2.5 Pro : Gemini 2.5 Pro est annoncé avec une fenêtre de contexte pouvant atteindre 1 million de tokens, voire 2 millions pour… Le critère « Performances aux benchmarks (MMLU, HumanEval) lorsque des résultats publiés et » met en évidence une autre différence pratique : Anthropic publie des résultats pour Claude 3.5 Sonnet sur des benchmarks comme MMLU et HumanEval, avec des scores… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie tarification de l'api par million de tokens en entrée et en sortie : La tarification de Claude 3.5 Sonnet via l'API Anthropic est généralement de l'ordre de 3 $ par…",
+    "toolB": "votre projet privilégie fenêtre de contexte : Gemini 2.5 Pro est annoncé avec une fenêtre de contexte pouvant atteindre 1 million de tokens,…"
+  }
 }

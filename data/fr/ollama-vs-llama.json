@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-llama",
   "meta": {
-    "title": "Ollama vs Llama (2026): quelle solution choisir ?",
-    "description": "Ollama et Llama ne jouent pas le même rôle : l'un simplifie l'exécution locale de modèles, l'autre désigne une famille de modèles. Comparatif 2026, critères, exemples de code et conseils."
+    "title": "Ollama vs Llama: lequel choisir en 2026 — modèles, contexte et tarifs API",
+    "description": "Comparez Ollama et Llama : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
   },
   "toolA": {
     "name": "Ollama"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "# Installation : https://ollama.com/download\n# Puis dans un terminal :\nollama run llama3\n\n# Exemple d'appel à l'API locale en Python\nimport requests\n\nreponse = requests.post(\n    \"http://localhost:11434/api/generate\",\n    json={\"model\": \"llama3\", \"prompt\": \"Bonjour, qui es-tu ?\", \"stream\": False},\n)\nprint(reponse.json()[\"response\"])",
-    "tech2Snippet": "# Exemple illustratif : charger un modèle Llama avec transformers\n# Le nom exact du dépôt dépend de la version et du format publiés.\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\nnom_modele = \"meta-llama/Llama-3.2-1B\"\ntokenizer = AutoTokenizer.from_pretrained(nom_modele)\nmodel = AutoModelForCausalLM.from_pretrained(nom_modele)\n\nentrees = tokenizer(\"Bonjour, qui es-tu ?\", return_tensors=\"pt\")\nsortie = model.generate(**entrees, max_new_tokens=50)\nprint(tokenizer.decode(sortie[0], skip_special_tokens=True))"
+    "scenario": "Tâche commune : charger et renvoyer les produits de la catégorie sélectionnée.",
+    "tech1Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({\n  baseURL: \"http://localhost:11434/v1\",\n  apiKey: process.env.LOCAL_LLM_API_KEY ?? \"local-development\",\n});\n\nconst response = await client.chat.completions.create({\n  model: process.env.MODEL_NAME!,\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";",
+    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Peut-on passer d'Ollama à une autre solution plus tard ?",
       "a": "Oui, à condition de ne pas coupler excessivement votre application à une API ou à un format propriétaire. En isolant la couche d'appel au modèle, vous pourrez changer de moteur d'inférence ou de modèle avec moins d'effort. Il faut toutefois prévoir des tests de régression, car les paramètres et les formats de réponse peuvent différer."
     }
-  ]
+  ],
+  "heroSubtitle": "Choisir entre Ollama et Llama modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
+  "quickVerdict": "Ollama convient mieux lorsque votre projet privilégie simplicité de prise en main : Ollama vise une expérience de démarrage rapide : l'installation, le téléchargement d'un modèle et…. Llama est préférable lorsque votre projet privilégie contrôle, personnalisation et réglages avancés : Travailler directement avec les poids Llama offre un contrôle étendu sur la tokenisation, la….",
+  "tradeoffs": [
+    {
+      "category": "Nature de l'offre : outil d'exécution contre famille de modèles",
+      "toolA": "Il s'agit donc d'une brique d'infrastructure, indépendante du modèle précis que vous choisissez d'y charger.",
+      "toolB": "Llama n'est pas en soi un serveur ni un orchestrateur : il faut un environnement d'exécution pour l'utiliser."
+    },
+    {
+      "category": "Simplicité de prise en main",
+      "toolA": "Cette simplicité réduit la barrière technique pour tester un modèle localement sur un poste de travail.",
+      "toolB": "La courbe d'apprentissage dépend fortement de l'outillage choisi autour du modèle."
+    },
+    {
+      "category": "Compatibilité matérielle et exécution locale",
+      "toolA": "Les performances réelles varient selon la mémoire disponible, le modèle et la quantification retenue.",
+      "toolB": "L'exécution locale reste toutefois conditionnée par la mémoire vive ou la mémoire GPU disponible, et les très grands modèles exigent un matériel conséquent ou une infrastructure cloud."
+    },
+    {
+      "category": "API et intégration dans une application",
+      "toolA": "Le format des requêtes est généralement simple et documenté, avec une compatibilité partielle avec des schémas d'API de type OpenAI selon les versions.",
+      "toolB": "Cette souplesse permet d'adapter l'intégration, mais elle implique de choisir et de maintenir vous-même la couche serveur."
+    },
+    {
+      "category": "Contrôle, personnalisation et réglages avancés",
+      "toolA": "Pour des besoins très spécifiques, il peut être nécessaire de sortir du cadre de l'outil et de passer à une pile d'inférence plus fine.",
+      "toolB": "Cette liberté s'accompagne d'une complexité opérationnelle plus élevée, à réserver aux équipes techniques expérimentées."
+    },
+    {
+      "category": "Écosystème et communauté",
+      "toolA": "La communauté est dynamique, mais la qualité et la fraîcheur des modèles disponibles dépendent du rythme de publication.",
+      "toolB": "Cet écosystème est toutefois réparti entre plusieurs frameworks et plateformes, ce qui demande de recouper les sources."
+    }
+  ],
+  "introduction": "Ollama et Llama répondent à un besoin proche, mais diffèrent sur nature de l'offre : outil d'exécution contre famille de modèles. Ollama : Ollama est un logiciel d'exécution et de gestion de modèles qui télécharge, lance et expose des modèles via une… Llama : Llama est le nom d'une famille de modèles de langage développée par Meta, dont les poids sont publiés sous conditions… Le critère « Simplicité de prise en main » met en évidence une autre différence pratique : Ollama vise une expérience de démarrage rapide : l'installation, le téléchargement d'un modèle et le lancement d'une… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "decisionFramework": {
+    "toolA": "votre projet privilégie simplicité de prise en main : Ollama vise une expérience de démarrage rapide : l'installation, le téléchargement d'un modèle et…",
+    "toolB": "votre projet privilégie contrôle, personnalisation et réglages avancés : Travailler directement avec les poids Llama offre un contrôle étendu sur la tokenisation, la…"
+  }
 }

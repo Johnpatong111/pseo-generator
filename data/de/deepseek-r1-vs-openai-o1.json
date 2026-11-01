@@ -1,8 +1,8 @@
 {
   "slug": "deepseek-r1-vs-openai-o1",
   "meta": {
-    "title": "DeepSeek R1 vs OpenAI o1 (2026): welche Lösung passt besser?",
-    "description": "DeepSeek R1 und OpenAI o1 im sachlichen Vergleich 2026: Offenheit, Reasoning, API-Preise, Kontext, Latenz und Einsatzszenarien für eine fundierte Wahl."
+    "title": "DeepSeek R1 vs OpenAI o1: welches 2026 wählen — Modelle, Kontext und API-Kosten",
+    "description": "Vergleiche DeepSeek R1 und OpenAI o1: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
   },
   "toolA": {
     "name": "DeepSeek R1"
@@ -62,8 +62,9 @@
     }
   ],
   "codeExamples": {
-    "tech1Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=os.environ[\"DEEPSEEK_API_KEY\"],\n    base_url=\"https://api.deepseek.com\"\n)\n\nresponse = client.chat.completions.create(\n    model=\"deepseek-reasoner\",\n    messages=[{\"role\": \"user\", \"content\": \"Sag Hallo in einem Satz.\"}]\n)\nprint(response.choices[0].message.content)",
-    "tech2Snippet": "import os\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n\nresponse = client.chat.completions.create(\n    model=\"o1\",\n    messages=[{\"role\": \"user\", \"content\": \"Sag Hallo in einem Satz.\"}]\n)\nprint(response.choices[0].message.content)"
+    "scenario": "Gemeinsame Aufgabe: Produkte der ausgewählten Kategorie laden und zurückgeben.",
+    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype ModelClient = {\n  summarize(input: { instruction: string; data: Product[] }): Promise<string>;\n};\n\nexport async function summarizeProducts(\n  client: ModelClient,\n  products: Product[],\n  categoryId: string,\n): Promise<string> {\n  return client.summarize({\n    instruction: \"Summarize this product list using only the supplied facts.\",\n    data: products.filter((product) => product.categoryId === categoryId),\n  });\n}",
+    "tech2Snippet": "import OpenAI from \"openai\";\n\nconst client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst response = await client.chat.completions.create({\n  model: process.env.OPENAI_MODEL ?? \"gpt-4o-mini\",\n  messages: [\n    { role: \"system\", content: \"Summarize product data accurately.\" },\n    { role: \"user\", content: JSON.stringify(products) },\n  ],\n  temperature: 0.2,\n});\nconst summary = response.choices[0]?.message.content ?? \"\";"
   },
   "faq": [
     {
@@ -98,5 +99,44 @@
       "q": "Wann sollte man eher OpenAI o1 wählen?",
       "a": "OpenAI o1 ist sinnvoll, wenn ein verwalteter Dienst mit breiter Plattformintegration, geringem Betriebsaufwand und zentralen Updates gewünscht ist. Die Entscheidung sollte dennoch die Datenschutzbedingungen, die Kostenstruktur und die eigenen Compliance-Vorgaben einbeziehen."
     }
-  ]
+  ],
+  "heroSubtitle": "Die Wahl zwischen DeepSeek R1 und OpenAI o1 verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
+  "quickVerdict": "DeepSeek R1 passt besser, wenn dein Projekt priorisiert Verfügbarkeit und Offenheit des Modells: DeepSeek R1 wird als offenes Modell mit veröffentlichten Gewichten bereitgestellt, sodass es…. OpenAI o1 ist geeigneter, wenn dein Projekt priorisiert Praktische Einsatzszenarien: OpenAI o1 passt zu Organisationen, die einen verwalteten Dienst mit etablierter Plattform,….",
+  "tradeoffs": [
+    {
+      "category": "Verfügbarkeit und Offenheit des Modells",
+      "toolA": "Zusätzlich ist R1 über verschiedene Anbieter und APIs zugänglich, deren Funktionsumfang und Preisgestaltung sich unterscheiden.",
+      "toolB": "Der Zugriff erfolgt über die OpenAI-API sowie über ChatGPT-Tarife, wobei Modellversion, Rate Limits und Funktionsumfang vom jeweiligen Tarif und Zeitpunkt abhängen."
+    },
+    {
+      "category": "Reasoning- und Benchmark-Leistung",
+      "toolA": "Ein direkter Vergleich mit o1 ist nur sinnvoll, wenn identische Benchmark-Versionen, Prompting-Strategien und Auswertungsskripte verwendet werden.",
+      "toolB": "Da MMLU und HumanEval in unterschiedlichen Varianten und Auswertungen existieren, sollten Zahlen nur bei nachweislich gleicher Methodik gegenübergestellt werden; andernfalls ist eine qualitative Einordnung angemessener."
+    },
+    {
+      "category": "Kontextfenster und Eingabegrenzen",
+      "toolA": "Bei eigenem Hosting bestimmen zudem Speicher, Inferenz-Stack und Quantisierung, welche Kontextlängen praktisch realisierbar sind.",
+      "toolB": "Verbindliche Werte sollten der aktuellen OpenAI-Dokumentation entnommen werden, da ältere Angaben schnell veralten."
+    },
+    {
+      "category": "API-Preise pro 1 Mio",
+      "toolA": "Belastbare Kostenvergleiche erfordern daher die tagesaktuelle Preisliste des konkret genutzten Anbieters und ein realistisches Nutzungsprofil.",
+      "toolB": "Da Reasoning-Token die Abrechnung beeinflussen können, sollte die Kostenkalkulation die tatsächliche Token-Nutzung messen statt von einer einzelnen Preisangabe auszugehen."
+    },
+    {
+      "category": "Latenz und Antwortverhalten",
+      "toolA": "Beim Selbsthosting hängt die Latenz stark von GPU-Ausstattung, Batch-Größe, Quantisierung und Inferenz-Framework ab.",
+      "toolB": "Die konkrete Latenz ist von Modellversion, Tarif, Auslastung und Aufgabenkomplexität abhängig und sollte nicht als feste Kennzahl angenommen, sondern im eigenen Szenario gemessen werden."
+    },
+    {
+      "category": "Praktische Einsatzszenarien",
+      "toolA": "Voraussetzung sind allerdings geeignete Hardware, MLOps-Kompetenz und ein sorgfältiger Umgang mit Lizenz- und Sicherheitsfragen.",
+      "toolB": "Die Eignung für sensible Daten hängt vom gewählten Tarif, den vereinbarten Datenschutzbedingungen und den internen Compliance-Anforderungen ab und ist individuell zu prüfen."
+    }
+  ],
+  "introduction": "DeepSeek R1 und OpenAI o1 lösen ein ähnliches Problem, unterscheiden sich jedoch bei verfügbarkeit und offenheit des modells. DeepSeek R1: DeepSeek R1 wird als offenes Modell mit veröffentlichten Gewichten bereitgestellt, sodass es grundsätzlich selbst… OpenAI o1: OpenAI o1 ist ein ausschließlich über die OpenAI-Plattform und ausgewählte Partner verfügbares, proprietàres Modell… Das Kriterium reasoning- und benchmark-leistung zeigt einen weiteren praktischen Unterschied: Für DeepSeek R1 werden in den offiziellen Modellberichten Ergebnisse auf Reasoning- und Coding-Benchmarks… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "decisionFramework": {
+    "toolA": "dein Projekt priorisiert Verfügbarkeit und Offenheit des Modells: DeepSeek R1 wird als offenes Modell mit veröffentlichten Gewichten bereitgestellt, sodass es…",
+    "toolB": "dein Projekt priorisiert Praktische Einsatzszenarien: OpenAI o1 passt zu Organisationen, die einen verwalteten Dienst mit etablierter Plattform,…"
+  }
 }
