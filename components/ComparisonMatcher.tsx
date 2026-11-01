@@ -43,6 +43,41 @@ function matchesPriority(category: string, priority: Priority): boolean {
   return priorityPatterns[priority].test(heading);
 }
 
+function calculateMatchScore(
+  criteria: ComparisonCriterion[],
+  weights: Record<Priority, number>,
+): number | null {
+  let weightedScore = 0;
+  let totalWeight = 0;
+
+  for (const priority of priorities) {
+    const weight = weights[priority];
+    if (weight === 0) continue;
+
+    const matchingCriteria = criteria.filter((criterion) =>
+      matchesPriority(criterion.category, priority),
+    );
+    if (matchingCriteria.length === 0) continue;
+
+    const priorityScore =
+      matchingCriteria.reduce(
+        (score, criterion) =>
+          score +
+          (criterion.winner === "toolA"
+            ? 100
+            : criterion.winner === "tie"
+              ? 50
+              : 0),
+        0,
+      ) / matchingCriteria.length;
+
+    weightedScore += priorityScore * weight;
+    totalWeight += weight;
+  }
+
+  return totalWeight === 0 ? null : Math.round(weightedScore / totalWeight);
+}
+
 export default function ComparisonMatcher({
   toolA,
   toolB,
@@ -57,49 +92,11 @@ export default function ComparisonMatcher({
   });
 
   const result = useMemo(() => {
-    const evidence: Record<Priority, ComparisonCriterion[]> = {
-      performance: criteria.filter((criterion) =>
-        matchesPriority(criterion.category, "performance"),
-      ),
-      cost: criteria.filter((criterion) =>
-        matchesPriority(criterion.category, "cost"),
-      ),
-      deployment: criteria.filter((criterion) =>
-        matchesPriority(criterion.category, "deployment"),
-      ),
+    const toolAScore = calculateMatchScore(criteria, weights);
+    return {
+      toolAScore,
+      toolBScore: toolAScore === null ? null : 100 - toolAScore,
     };
-
-    const availablePriorities = priorities.filter(
-      (priority) => evidence[priority].length > 0 && weights[priority] > 0,
-    );
-    const totalWeight = availablePriorities.reduce(
-      (total, priority) => total + weights[priority],
-      0,
-    );
-
-    if (totalWeight === 0) {
-      return { toolAScore: null, toolBScore: null };
-    }
-
-    const toolAScore = Math.round(
-      availablePriorities.reduce((total, priority) => {
-        const criteriaForPriority = evidence[priority];
-        const average =
-          criteriaForPriority.reduce(
-            (score, criterion) =>
-              score +
-              (criterion.winner === "toolA"
-                ? 100
-                : criterion.winner === "tie"
-                  ? 50
-                  : 0),
-            0,
-          ) / criteriaForPriority.length;
-        return total + average * weights[priority];
-      }, 0) / totalWeight,
-    );
-
-    return { toolAScore, toolBScore: 100 - toolAScore };
   }, [criteria, weights]);
 
   const recommendation =
@@ -143,13 +140,15 @@ export default function ComparisonMatcher({
               max="100"
               step="5"
               value={weights[priority]}
-              onChange={(event) =>
+              onInput={(event) => {
+                const value = Number(event.currentTarget.value);
                 setWeights((current) => ({
                   ...current,
-                  [priority]: Number(event.target.value),
-                }))
-              }
+                  [priority]: value,
+                }));
+              }}
               aria-label={labels[priority]}
+              aria-valuetext={`${weights[priority]}%`}
               className="h-11 w-full cursor-pointer touch-pan-y accent-indigo-600"
             />
             {criteria.every(
@@ -192,7 +191,7 @@ export default function ComparisonMatcher({
                   className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                 >
                   <span
-                    className={`block h-full ${color}`}
+                    className={`block h-full ${color} transition-[width] duration-300 ease-out`}
                     style={{ width: `${score}%` }}
                   />
                 </div>

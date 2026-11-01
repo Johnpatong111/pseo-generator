@@ -1050,10 +1050,10 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
     { id: "quick-verdict", label: text.quickVerdict },
     { id: "score-chart", label: text.chartTitle },
     { id: "comparison-details", label: text.details },
-    { id: "decision-framework-heading", label: text.decision },
     ...(codeExamples
       ? [{ id: "code-examples", label: text.codeExamples }]
       : []),
+    { id: "decision-framework-heading", label: text.decision },
     { id: "faq", label: text.faq },
   ];
   const matcherLabels = {
@@ -1469,6 +1469,22 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               </section>
             )}
 
+            {codeExamples && (
+              <CodeComparison
+                toolA={comparison.toolA.name}
+                toolB={comparison.toolB.name}
+                scenario={codeExamples.scenario}
+                tech1Snippet={codeExamples.tech1Snippet}
+                tech2Snippet={codeExamples.tech2Snippet}
+                labels={{
+                  title: text.codeExamples,
+                  copy: text.copyCode,
+                  copied: text.copiedCode,
+                  copyError: text.copyCodeError,
+                }}
+              />
+            )}
+
             <section
               id="decision-framework"
               aria-labelledby="decision-framework-heading"
@@ -1489,22 +1505,6 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               toolB={comparison.toolB.name}
               locale={locale}
             />
-
-            {codeExamples && (
-              <CodeComparison
-                toolA={comparison.toolA.name}
-                toolB={comparison.toolB.name}
-                scenario={codeExamples.scenario}
-                tech1Snippet={codeExamples.tech1Snippet}
-                tech2Snippet={codeExamples.tech2Snippet}
-                labels={{
-                  title: text.codeExamples,
-                  copy: text.copyCode,
-                  copied: text.copiedCode,
-                  copyError: text.copyCodeError,
-                }}
-              />
-            )}
 
             <AffiliateBanner
               locale={locale}
