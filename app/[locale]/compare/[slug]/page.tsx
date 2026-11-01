@@ -8,6 +8,7 @@ import ComparisonMatcher from "../../../../components/ComparisonMatcher";
 import ComparisonTableOfContents from "../../../../components/ComparisonTableOfContents";
 import ComparisonViewToggle from "../../../../components/ComparisonViewToggle";
 import ComparisonActions from "../../../../components/ComparisonActions";
+import FeedbackWidget from "../../../../components/FeedbackWidget";
 import {
   getComparisonCodeExamples,
   getComparisonBySlug,
@@ -94,6 +95,12 @@ const copy = {
     copyError: "Nie udało się skopiować podsumowania.",
     shareX: "Udostępnij w X",
     shareLinkedIn: "Udostępnij na LinkedIn",
+    feedbackQuestion: "Czy to porównanie było pomocne?",
+    feedbackHelpful: "Pomocne",
+    feedbackNotHelpful: "Niepomocne",
+    feedbackThankYou: "Dziękujemy za opinię! 🙏",
+    feedbackStorageWarning: "Nie udało się zapisać opinii na tym urządzeniu.",
+    editOnGitHub: "Zaproponuj zmianę na GitHubie",
   },
   en: {
     category: "Technology comparison",
@@ -153,6 +160,12 @@ const copy = {
     copyError: "Could not copy the summary.",
     shareX: "Share on X",
     shareLinkedIn: "Share on LinkedIn",
+    feedbackQuestion: "Was this comparison helpful?",
+    feedbackHelpful: "Helpful",
+    feedbackNotHelpful: "Not helpful",
+    feedbackThankYou: "Thank you for your feedback! 🙏",
+    feedbackStorageWarning: "Your feedback could not be saved on this device.",
+    editOnGitHub: "Edit this page on GitHub",
   },
   es: {
     category: "Comparativa de tecnologías",
@@ -212,6 +225,12 @@ const copy = {
     copyError: "No se pudo copiar el resumen.",
     shareX: "Compartir en X",
     shareLinkedIn: "Compartir en LinkedIn",
+    feedbackQuestion: "¿Te ha resultado útil esta comparativa?",
+    feedbackHelpful: "Útil",
+    feedbackNotHelpful: "No útil",
+    feedbackThankYou: "¡Gracias por tus comentarios! 🙏",
+    feedbackStorageWarning: "No se pudieron guardar tus comentarios en este dispositivo.",
+    editOnGitHub: "Sugiere una edición en GitHub",
   },
   de: {
     category: "Technologievergleich",
@@ -271,6 +290,12 @@ const copy = {
     copyError: "Die Zusammenfassung konnte nicht kopiert werden.",
     shareX: "Auf X teilen",
     shareLinkedIn: "Auf LinkedIn teilen",
+    feedbackQuestion: "War dieser Vergleich hilfreich?",
+    feedbackHelpful: "Hilfreich",
+    feedbackNotHelpful: "Nicht hilfreich",
+    feedbackThankYou: "Vielen Dank für dein Feedback! 🙏",
+    feedbackStorageWarning: "Dein Feedback konnte auf diesem Gerät nicht gespeichert werden.",
+    editOnGitHub: "Diese Seite auf GitHub bearbeiten",
   },
   fr: {
     category: "Comparatif de technologies",
@@ -330,6 +355,12 @@ const copy = {
     copyError: "Impossible de copier le résumé.",
     shareX: "Partager sur X",
     shareLinkedIn: "Partager sur LinkedIn",
+    feedbackQuestion: "Ce comparatif vous a-t-il été utile ?",
+    feedbackHelpful: "Utile",
+    feedbackNotHelpful: "Pas utile",
+    feedbackThankYou: "Merci pour votre retour ! 🙏",
+    feedbackStorageWarning: "Votre avis n’a pas pu être enregistré sur cet appareil.",
+    editOnGitHub: "Proposer une modification sur GitHub",
   },
 } satisfies Record<
   Locale,
@@ -389,6 +420,12 @@ const copy = {
     copyError: string;
     shareX: string;
     shareLinkedIn: string;
+    feedbackQuestion: string;
+    feedbackHelpful: string;
+    feedbackNotHelpful: string;
+    feedbackThankYou: string;
+    feedbackStorageWarning: string;
+    editOnGitHub: string;
   }
 >;
 
@@ -1033,6 +1070,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
   const focusedFaq = getFocusedFaq(comparison, locale);
   const comparisonCriteria = getComparisonCriteria(comparison, locale);
   const codeExamples = getComparisonCodeExamples(comparison);
+  const githubEditUrl = `https://github.com/Johnpatong111/psoe-generator/blob/main/data/${locale}/${slug}.json`;
   const primaryCategory = getComparisonCategories(slug)[0];
   const category = primaryCategory
     ? {
@@ -1602,6 +1640,39 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             </ul>
           </section>
         )}
+
+        <section
+          aria-label={text.feedbackQuestion}
+          className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800"
+        >
+          <FeedbackWidget
+            storageKey={`comparison-feedback:${locale}:${slug}`}
+            labels={{
+              question: text.feedbackQuestion,
+              helpful: text.feedbackHelpful,
+              notHelpful: text.feedbackNotHelpful,
+              thankYou: text.feedbackThankYou,
+              storageWarning: text.feedbackStorageWarning,
+            }}
+          />
+          <div className="mt-5 flex justify-end">
+            <a
+              href={githubEditUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-600 underline-offset-4 transition hover:text-indigo-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 16 16"
+                className="size-4 fill-current"
+              >
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+              {text.editOnGitHub}
+            </a>
+          </div>
+        </section>
             </>
           }
         />
