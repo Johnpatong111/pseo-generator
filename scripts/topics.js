@@ -109,6 +109,7 @@ const categories = {
     "vite-vs-webpack",
   ],
   "Backend & Runtimes": [
+    "temporal-vs-inngest",
     "bun-vs-node",
     "node-vs-deno",
     "bun-vs-deno",
@@ -133,6 +134,7 @@ const categories = {
     "python-vs-javascript",
   ],
   "Databases & ORMs": [
+    "clickhouse-vs-duckdb",
     "postgresql-vs-mysql",
     "mongodb-vs-postgresql",
     "mysql-vs-mongodb",
@@ -159,6 +161,7 @@ const categories = {
     "supabase-vs-firebase",
   ],
   "DevOps & Cloud": [
+    "turborepo-vs-nx",
     "docker-vs-kubernetes",
     "docker-vs-podman",
     "kubernetes-vs-nomad",

@@ -1,0 +1,131 @@
+{
+  "slug": "turborepo-vs-nx",
+  "meta": {
+    "title": "Turborepo vs Nx: 2026 comparison",
+    "description": "Compare Turborepo and Nx architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
+  },
+  "toolA": {
+    "name": "Turborepo"
+  },
+  "toolB": {
+    "name": "Nx"
+  },
+  "verdict": "Choose Turborepo when you want a lightweight, configuration-first task runner that layers caching and filtering onto your existing package manager workspaces with minimal framework opinion. Choose Nx when you need a documented project graph, affected-target reasoning, generators, and a broader plugin ecosystem that spans many frameworks and languages. Cache hit rates and wall-clock savings in either tool depend on correct inputs, remote-cache setup, runner capacity, and repository shape rather than the tool alone.",
+  "introduction": "Both tools speed up monorepo CI, but they model the repository differently. Turborepo treats your package manager workspaces as the source of truth and adds a task pipeline plus content-hashed caching on top. Nx builds an explicit project graph from plugins and derives affected targets from it. That architectural difference shapes how each tool decides what is affected, what can be cached, and how much setup you own.",
+  "heroSubtitle": "An affected CI build in a monorepo needs a correct dependency model before caching can help, and Turborepo and Nx obtain that model in fundamentally different ways.",
+  "quickVerdict": "Pick Turborepo if your workspaces are already structured and you want caching with a small config. Pick Nx if affected-target computation, code generation, and multi-framework plugins justify a larger, opinionated toolchain.",
+  "decisionFramework": {
+    "toolA": "Prefer Turborepo when the repository already uses package manager workspaces, the team wants a small config surface, and the main goal is cached, filtered task runs in CI without adopting a broader platform.",
+    "toolB": "Prefer Nx when affected-target precision across many projects and frameworks matters, and the team will use the project graph, generators, and plugins enough to justify the added configuration and learning curve."
+  },
+  "comparison": [
+    {
+      "category": "Performance: affected build behavior and its dependencies",
+      "toolA": "Turborepo runs tasks defined in a pipeline and can scope execution with package filters, so an affected build depends on how accurately filters and task dependencies reflect real dependencies. Wall-clock gains are not guaranteed by the tool alone and vary with input declaration accuracy, cache hit rate, remote-cache availability, runner capacity, and repository shape.",
+      "toolB": "Nx computes affected projects from its project graph and then runs their targets, so accuracy depends on how completely plugins capture dependencies between projects. Reported speedups depend on graph correctness, cache configuration, distributed execution setup, and machine capacity, and should be treated as context-dependent rather than fixed.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cost / pricing: license and infrastructure implications",
+      "toolA": "Turborepo is open source, and its remote caching can be self-hosted or used with hosted offerings whose terms and pricing vary by plan and should be checked at the time of adoption. CI cost is driven mainly by runner minutes and cache storage, which depend on workload and repository size.",
+      "toolB": "Nx is open source, with commercial offerings and hosted cache options whose features and pricing change over time and must be verified against current documentation. Because distributed task execution can spread work across machines, infrastructure cost scales with the execution strategy you configure.",
+      "winner": "tie"
+    },
+    {
+      "category": "Deployment / integration: CI and platform fit",
+      "toolA": "Turborepo integrates with common CI providers through its CLI and supports remote caching, so pipelines are usually adjusted rather than rebuilt. Integration effort depends on the provider, authentication setup for the remote cache, and how tasks are currently scripted.",
+      "toolB": "Nx ships CI-oriented commands and can integrate with common providers, and its graph-based affected commands plug into pipelines that already follow Nx conventions. Effort is generally higher if the repository must be restructured to satisfy plugin-driven project definitions.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Runtime / architecture: dependency model",
+      "toolA": "Turborepo leans on the package manager's workspace graph and a declarative task pipeline, adding caching and filtering rather than a separate project model. This keeps the architecture close to standard JavaScript tooling but means dependency metadata comes largely from workspace structure.",
+      "toolB": "Nx maintains a project graph assembled by plugins, which can represent dependencies across languages and frameworks beyond package manager relationships. This richer model enables precision but introduces an additional layer to keep accurate as the repository evolves.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Scaling: large and heterogeneous repositories",
+      "toolA": "Turborepo scales with repository size mainly through caching and parallelism, and its package filters let CI target subsets of packages. Effectiveness at scale depends on correct task inputs, remote-cache reliability, and enough runners to parallelize work.",
+      "toolB": "Nx scales through affected computation and, where configured, distributed task execution across multiple machines. That can help large, heterogeneous repositories, but the benefit depends on graph quality, cache configuration, and available infrastructure.",
+      "winner": "tie"
+    },
+    {
+      "category": "Security and compatibility considerations",
+      "toolA": "Remote caching requires attention to access control and secrets management, and configuration specifics vary by hosting choice. Compatibility is broad because Turborepo works with existing package manager workspaces rather than imposing a plugin layer.",
+      "toolB": "Nx plugins and generators execute code and should be reviewed, and hosted or self-managed caching requires equivalent access controls. Compatibility across frameworks is a selling point, but plugin versions and framework versions must be kept aligned.",
+      "winner": "tie"
+    },
+    {
+      "category": "Developer experience and ecosystem",
+      "toolA": "Turborepo offers a focused CLI and configuration, with a smaller set of concepts to learn and quick adoption in existing workspaces. It is framework-agnostic, which keeps it neutral but means fewer built-in scaffolds.",
+      "toolB": "Nx provides generators, plugins, and editor tooling that can accelerate scaffolding and consistency across projects. The trade-off is a larger conceptual footprint and more configuration to maintain.",
+      "winner": "toolB"
+    }
+  ],
+  "tradeoffs": [
+    {
+      "category": "Setup and mental model",
+      "toolA": "Configuration lives mostly in turbo.json plus your existing workspace definitions, so there is less new vocabulary to learn.",
+      "toolB": "You adopt a project graph, plugins, and target configuration, which is more to learn but yields explicit dependency metadata."
+    },
+    {
+      "category": "Affected detection",
+      "toolA": "Package filters and changed-package detection rely on the workspace layout and git comparisons, and filtering syntax must be understood to scope tasks correctly.",
+      "toolB": "Affected targets are computed from the project graph, so dependencies tracked through plugins factor into what reruns."
+    },
+    {
+      "category": "Caching",
+      "toolA": "Content-hashed task caching is central and can be shared through a remote cache, with correctness depending on declared inputs and outputs.",
+      "toolB": "Caching and distributed task execution are available, with correctness likewise depending on accurate target inputs and outputs."
+    },
+    {
+      "category": "Ecosystem and frameworks",
+      "toolA": "Framework-agnostic and works with the package manager you already use, without an opinionated plugin layer.",
+      "toolB": "Plugins, generators, and integrations cover many frameworks and languages, which helps heterogeneous repositories."
+    },
+    {
+      "category": "Operational weight",
+      "toolA": "Smaller surface area to operate and reason about, which suits teams wanting incremental adoption.",
+      "toolB": "More moving parts and configuration, which suits teams that will use the graph, generators, and plugins heavily."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Run a CI build only for a changed application and its dependency graph, comparing Turborepo's package filters and remote cache with Nx affected-project graph execution.",
+    "tech1Snippet": "import { execFileSync } from \"node:child_process\";\n\nconst baseRevision = process.env.BASE_REVISION;\nif (!baseRevision) throw new Error(\"BASE_REVISION is required for an affected build\");\nconst changedPackagesFilter = \"...[\" + baseRevision + \"]\";\n\nexecFileSync(\n  \"turbo\",\n  [\"run\", \"build\", \"--filter\", changedPackagesFilter, \"--concurrency=4\"],\n  { stdio: \"inherit\", env: { ...process.env, TURBO_TELEMETRY_DISABLED: \"1\" } },\n);",
+    "tech2Snippet": "import { execFileSync } from \"node:child_process\";\n\nconst baseRevision = process.env.BASE_REVISION;\nif (!baseRevision) throw new Error(\"BASE_REVISION is required for an affected build\");\n\nexecFileSync(\n  \"nx\",\n  [\"affected\", \"-t\", \"build\", \"--base\", baseRevision, \"--head\", \"HEAD\", \"--parallel=3\"],\n  { stdio: \"inherit\", env: { ...process.env, NX_DAEMON: \"false\" } },\n);"
+  },
+  "faq": [
+    {
+      "q": "Does Turborepo or Nx make an affected CI build faster by default?",
+      "a": "Neither tool guarantees faster builds purely by being installed, because gains depend on correct inputs, cache hit rates, remote-cache setup, runner capacity, and repository shape. Turborepo relies on a declared task pipeline and package filters, while Nx derives affected projects from its project graph; each approach only pays off when the dependency information is accurate."
+    },
+    {
+      "q": "How does affected detection differ between Turborepo and Nx?",
+      "a": "Turborepo scopes execution through package filters and task dependencies defined around your package manager workspaces, so you control what runs. Nx computes affected projects from its project graph, which plugins populate with dependency relationships, so accuracy depends on how completely those plugins model your projects."
+    },
+    {
+      "q": "Is remote caching available in both tools?",
+      "a": "Both tools support sharing caches across machines and CI, though configuration details and hosting options differ and should be verified against current documentation. In both cases, cache correctness hinges on declaring task inputs and outputs accurately and on securing access to the cache."
+    },
+    {
+      "q": "Which tool is better for a repository using several frameworks and languages?",
+      "a": "Nx is often the more natural fit for heterogeneous repositories because its plugin ecosystem can model dependencies across frameworks and languages in a single project graph. Turborepo remains framework-agnostic and works through your package manager workspaces, which can be sufficient when most projects share a common toolchain."
+    },
+    {
+      "q": "What does adopting Nx require compared with Turborepo?",
+      "a": "Adopting Nx typically means accepting a project graph, plugins, and target configuration, which is more conceptual overhead than Turborepo's pipeline-focused setup. Turborepo tends to be quicker to layer onto an existing workspace, while Nx offers more built-in tooling in exchange for that larger footprint."
+    },
+    {
+      "q": "Can I estimate cost before committing?",
+      "a": "CI cost is driven mainly by runner minutes, cache storage, and any hosted cache plan, so model it from your own workload rather than assuming a fixed figure. Because hosted offerings and pricing change, check current terms for both tools and account for whether distributed execution would require additional machines."
+    },
+    {
+      "q": "Do either of these tools lock me into a specific CI provider?",
+      "a": "Both are usable across common CI providers, though the exact integration steps and authentication for remote caching differ. Verify current provider-specific guidance when planning migration, since integration details can change between releases."
+    },
+    {
+      "q": "What should a small team choose first?",
+      "a": "A small team with conventional workspaces and a narrow goal of cached task runs often finds Turborepo's smaller configuration surface easier to adopt. A team that expects many projects, multiple frameworks, and a need for generated scaffolding may get more value from Nx's graph and plugins despite the added setup."
+    }
+  ]
+}

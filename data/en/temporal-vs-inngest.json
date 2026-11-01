@@ -1,0 +1,142 @@
+{
+  "slug": "temporal-vs-inngest",
+  "meta": {
+    "title": "Temporal vs Inngest: 2026 comparison",
+    "description": "Compare Temporal and Inngest architectural trade-offs, API design, runtime behavior, and request handling, and review side-by-side TypeScript to choose the right stack."
+  },
+  "toolA": {
+    "name": "Temporal"
+  },
+  "toolB": {
+    "name": "Inngest"
+  },
+  "verdict": "Choose Temporal when you need a general-purpose durable execution platform with explicit workflow semantics, full replay-based determinism, self-hosting options, and control over workers and history storage. Choose Inngest when you want event-triggered, step-based durable functions that integrate quickly with an existing stack, require less workflow orchestration boilerplate, and prefer a managed event-and-step model over running your own cluster and workers.",
+  "introduction": "Both tools can make an order pipeline survive crashes, but they solve it differently. Temporal records a deterministic workflow history and replays it on workers you operate; Inngest persists each step of an event-triggered function and resumes from the last completed step. That difference shapes retries, idempotency, latency, and how much infrastructure you own.",
+  "heroSubtitle": "A recoverable order pipeline needs durable state across inventory reservation, idempotent payment capture, retries, and fulfillment, and the core question is whether that state lives in a replayed workflow history or in persisted event-driven steps.",
+  "quickVerdict": "Pick Temporal if you need replay-deterministic orchestration, self-hosting, and fine-grained worker control for complex multi-service orders; pick Inngest if you want event-triggered durable steps with less orchestration code and a managed-first operating model.",
+  "decisionFramework": {
+    "toolA": "Choose Temporal for a project profile that needs a general durable-execution substrate across many services, requires self-hosting or data-residency control, and can staff engineers to operate a cluster and worker fleet with replay-aware code review.",
+    "toolB": "Choose Inngest for a project profile that is event-centric, wants durable steps with minimal orchestration infrastructure, values fast integration into an existing TypeScript or serverless stack, and accepts managed-platform concurrency limits per plan."
+  },
+  "comparison": [
+    {
+      "category": "Performance: latency and scaling dependencies for an order workflow",
+      "toolA": "End-to-end latency depends on worker availability, activity scheduling, and history growth; each activity transition is persisted, and replay cost grows with history length, so very long-lived orders with many steps can become heavier to replay. Scaling is a function of worker fleet size and cluster capacity, which you size and monitor yourself.",
+      "toolB": "Latency is shaped by event ingestion, step scheduling, and platform concurrency; because steps persist outputs and resume without replay, long workflows do not incur replay cost in the same way, but throughput is bounded by plan-level concurrency and function limits. Exact latency figures are workload- and plan-dependent and should be measured for your traffic pattern.",
+      "winner": "tie"
+    },
+    {
+      "category": "Cost / pricing: licensing and cost drivers",
+      "toolA": "The core is open source under a permissive license, so self-hosted cost is dominated by compute, storage for history, and engineering time to operate the cluster and workers; managed Temporal Cloud shifts cost to a usage-based model. Always verify current license terms and cloud pricing on official sources.",
+      "toolB": "Proprietary managed offering with tiered plans that meter executions or events and concurrency, so cost tracks order volume and step count within plan limits; self-hosting is not the standard path. Confirm current plan limits and pricing directly with Inngest.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Deployment / integration: runtime and infrastructure model",
+      "toolA": "You deploy and operate the Temporal server (or use Temporal Cloud) and run workers in your own runtime, connecting via the SDK; integration effort includes cluster provisioning, namespaces, task queues, and worker deployment pipelines.",
+      "toolB": "You register functions with the Inngest SDK and send events through its API or integrations; deployment focuses on hosting the function endpoints, with the platform managing orchestration state. Integration effort is often lower but ties you to its event and step conventions.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Retries and idempotent payment capture",
+      "toolA": "Retry policies are configured per activity with backoff and maximum attempts, and replay lets a workflow resume after worker failure; idempotency for payment capture must be implemented in activity code, typically with an idempotency key sent to the payment processor so retries do not double-charge.",
+      "toolB": "Each step has retry behavior and its result is persisted, so a retried function resumes after the last successful step; capturing payment in a dedicated step with an idempotency key keeps retries safe, and step memoization avoids re-running completed work.",
+      "winner": "tie"
+    },
+    {
+      "category": "Order workflow modeling: inventory, payment, fulfillment",
+      "toolA": "A single workflow can model reservation, payment, and fulfillment as activities with explicit compensation logic for rollback, giving strong control over partial failures and long-running states, at the cost of writing and testing deterministic orchestration code.",
+      "toolB": "Functions can be triggered by order events and split into steps for reservation, payment, and fulfillment, with fan-out and waits expressed as steps; modeling multi-stage compensation is possible but can require more explicit event design across functions.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Security and data handling",
+      "toolA": "Supports namespaces, mTLS and TLS in self-hosted deployments, and access controls depending on configuration and edition; you are responsible for securing the cluster, worker credentials, and payload encryption choices. Verify current security features for your version and hosting plan.",
+      "toolB": "Security controls, encryption, and data retention depend on the managed plan and configuration; review its current trust and compliance documentation for your region and tier before sending payment-related payloads.",
+      "winner": "tie"
+    },
+    {
+      "category": "Observability and debugging",
+      "toolA": "Workflow history and the Temporal Web UI show event-by-event execution, and workers expose metrics; debugging relies on understanding replay, which is powerful but requires ramp-up.",
+      "toolB": "The dashboard exposes event and step-level run history with inputs and outputs, which is approachable for debugging order flows, and it supports forwarding to external observability tools depending on plan.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Compatibility and ecosystem",
+      "toolA": "SDKs exist for multiple languages including TypeScript, Go, Java, and Python, with a mature ecosystem; version compatibility between server and SDKs should be checked against current release notes.",
+      "toolB": "SDK support centers on TypeScript and selected languages, with framework integrations for popular serverless and Node runtimes; confirm framework and runtime compatibility for your stack against current docs.",
+      "winner": "toolA"
+    }
+  ],
+  "tradeoffs": [
+    {
+      "category": "Programming model",
+      "toolA": "Workflows and activities are explicit code artifacts with deterministic replay constraints; business logic must avoid non-deterministic calls inside workflow code.",
+      "toolB": "Functions are triggered by events and composed of steps that persist results, so retries resume from the last completed step without a replay-determinism discipline."
+    },
+    {
+      "category": "Operational ownership",
+      "toolA": "Typically requires running a Temporal cluster (self-hosted or Temporal Cloud) plus your own worker fleet and history storage.",
+      "toolB": "Primarily consumed as a managed service, with the event ingestion and step state handled by the platform depending on plan."
+    },
+    {
+      "category": "Retry and idempotency",
+      "toolA": "Retries are configured per activity with policies, and idempotency is your responsibility inside activities, often via idempotency keys to the payment provider.",
+      "toolB": "Steps carry their own retry behavior and persisted outputs, and idempotency still depends on how you key payment capture calls within a step."
+    },
+    {
+      "category": "Scaling profile",
+      "toolA": "Throughput depends on worker capacity, history size, and cluster sizing; long histories and high activity counts influence performance.",
+      "toolB": "Scaling is largely abstracted by the platform, but concurrency limits and plan tiers can constrain bursty order volume."
+    },
+    {
+      "category": "Observability",
+      "toolA": "Workflow history, event history, and worker metrics are first-class; visibility tooling and the web UI expose execution state.",
+      "toolB": "Event and run history plus step-level logs are exposed in its dashboard, with integrations for external observability tooling."
+    },
+    {
+      "category": "Lock-in and portability",
+      "toolA": "Open-source core with self-hosting options provides portability, though replay semantics tie logic to the Temporal SDK.",
+      "toolB": "Proprietary managed platform; step semantics and event schema tie logic to Inngest's model."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Process an order through inventory reservation, idempotent payment capture, and fulfillment while comparing Temporal's durable workflow history with Inngest's persisted event steps.",
+    "tech1Snippet": "import { proxyActivities, workflowInfo } from \"@temporalio/workflow\";\n\ntype Order = { id: string; customerId: string; totalCents: number };\ntype OrderActivities = {\n  reserveInventory(input: { orderId: string }): Promise<{ reservationId: string }>;\n  capturePayment(input: { orderId: string; idempotencyKey: string; amountCents: number }): Promise<void>;\n  markFulfilled(input: { orderId: string; reservationId: string }): Promise<void>;\n};\nconst activities = proxyActivities<OrderActivities>({\n  startToCloseTimeout: \"2 minutes\",\n  retry: { initialInterval: \"1 second\", maximumAttempts: 5 },\n});\n\nexport async function processOrder(order: Order): Promise<{ reservationId: string }> {\n  const reservation = await activities.reserveInventory({ orderId: order.id });\n  await activities.capturePayment({\n    orderId: order.id,\n    idempotencyKey: workflowInfo().workflowId,\n    amountCents: order.totalCents,\n  });\n  await activities.markFulfilled({ orderId: order.id, reservationId: reservation.reservationId });\n  return reservation;\n}",
+    "tech2Snippet": "import { Inngest } from \"inngest\";\nimport { capturePayment, markFulfilled, reserveInventory } from \"./order-activities\";\n\ntype OrderCreated = { id: string; customerId: string; totalCents: number };\nexport const inngest = new Inngest({ id: \"storefront\" });\n\nfunction parseOrderCreated(value: unknown): OrderCreated {\n  if (!value || typeof value !== \"object\") throw new TypeError(\"Invalid order event\");\n  const record = value as Record<string, unknown>;\n  if (\n    typeof record.id !== \"string\" ||\n    typeof record.customerId !== \"string\" ||\n    typeof record.totalCents !== \"number\" ||\n    !Number.isSafeInteger(record.totalCents) ||\n    record.totalCents < 0\n  ) {\n    throw new TypeError(\"Invalid order event\");\n  }\n  return { id: record.id, customerId: record.customerId, totalCents: record.totalCents };\n}\n\nexport const processOrder = inngest.createFunction(\n  { id: \"process-order\", retries: 5 },\n  { event: \"orders/created\" },\n  async ({ event, step }) => {\n    const order = parseOrderCreated(event.data);\n    const reservation = await step.run(\"reserve-inventory\", () =>\n      reserveInventory({ orderId: order.id }),\n    );\n    await step.run(\"capture-payment\", () =>\n      capturePayment({\n        orderId: order.id,\n        idempotencyKey: event.id,\n        amountCents: order.totalCents,\n      }),\n    );\n    await step.run(\"mark-fulfilled\", () =>\n      markFulfilled({ orderId: order.id, reservationId: reservation.reservationId }),\n    );\n    return { orderId: order.id, reservationId: reservation.reservationId };\n  },\n);"
+  },
+  "faq": [
+    {
+      "q": "Can both tools guarantee exactly-once payment capture?",
+      "a": "Neither tool can guarantee exactly-once side effects at the external provider by itself; durable execution gives you at-least-once activity or step execution and lets you make effects idempotent. In practice you pass an idempotency key to the payment processor and structure capture as a single activity in Temporal or a single step in Inngest so retries reuse the same key. Verify your processor's idempotency semantics, since that is what actually prevents double charges."
+    },
+    {
+      "q": "Which tool is easier to operate for a small team?",
+      "a": "Inngest generally reduces operational surface because orchestration state is managed by the platform and you mainly host and register functions, though plan concurrency limits apply. Temporal typically requires running a cluster or subscribing to Temporal Cloud plus operating a worker fleet, which is more work but gives deeper control. A small team without platform engineers usually reaches production faster with Inngest."
+    },
+    {
+      "q": "How does Temporal's replay model affect long-running orders?",
+      "a": "Temporal reconstructs workflow state by replaying history on a worker, so very long histories with many activities increase replay work and history size, and code must remain deterministic across deployments. Patterns like continue-as-new help bound history length for orders that wait days or weeks. The practical impact depends on your step count and versioning discipline, so validate against your expected order lifetime."
+    },
+    {
+      "q": "Does Inngest replace the need for a message queue?",
+      "a": "Inngest provides event ingestion and durable step execution, which can cover many queue-like use cases for order events, but it is not a drop-in replacement for every messaging pattern such as high-throughput streaming or strict ordering guarantees across arbitrary consumers. Evaluate ordering, delivery, and retention requirements against current documentation for your plan. Many teams still keep a broker for other traffic."
+    },
+    {
+      "q": "Which option scales better for bursty order spikes?",
+      "a": "Temporal scales with the worker capacity and cluster resources you provision, so you can add workers to absorb bursts, but you must plan and monitor history storage and task queue load. Inngest abstracts scaling but constrains concurrency by plan, so sudden spikes may queue behind limits unless you upgrade. Neither can be declared universally faster; test with your own traffic shape."
+    },
+    {
+      "q": "What does each tool cost for an order-processing workload?",
+      "a": "Temporal self-hosted has no license fee for the open-source core but incurs infrastructure and engineering cost, while Temporal Cloud is usage-based. Inngest uses tiered plans metered on executions and concurrency, so cost grows with order and step volume. Because pricing and limits change, check the official pricing pages and your expected monthly events before deciding."
+    },
+    {
+      "q": "How much engineering effort goes into making workflow code deterministic?",
+      "a": "In Temporal, workflow code must avoid non-deterministic operations such as direct clock reads, random values, or unversioned external calls, which requires discipline and code review; activities handle those concerns instead. Inngest step functions are ordinary functions where non-determinism is less of a structural concern because completed steps are not re-executed on resume. The determinism burden is therefore concentrated in Temporal."
+    },
+    {
+      "q": "Can I migrate an existing order pipeline between these tools?",
+      "a": "Migration is non-trivial because the orchestration models differ: Temporal workflows encode logic with replay semantics, while Inngest functions encode discrete persisted steps triggered by events. A realistic path is to re-implement the pipeline against the target model, keep idempotency keys stable at the payment boundary, and run both systems in parallel during cutover. Plan for dual-write or reconciliation windows rather than a mechanical port."
+    }
+  ]
+}

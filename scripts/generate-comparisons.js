@@ -10,53 +10,6 @@ loadEnvConfig(projectRoot);
 
 const dataDirectory = path.join(projectRoot, "data");
 const currentYear = new Date().getFullYear();
-const titleFocus = {
-  pl: {
-    frontend: "funkcje, wydajność i ekosystem",
-    backend: "API, wydajność i wdrożenie",
-    databases: "modele danych, wydajność i zastosowania",
-    "ai-models": "modele, kontekst i koszty API",
-    devops: "wdrożenie, skalowanie i koszty",
-    css: "stylowanie, komponenty i workflow",
-    general: "funkcje i zastosowania",
-  },
-  en: {
-    frontend: "features, performance & ecosystem",
-    backend: "APIs, performance & deployment",
-    databases: "data models, performance & use cases",
-    "ai-models": "models, context & API pricing",
-    devops: "deployment, scaling & costs",
-    css: "styling, components & developer workflow",
-    general: "features and use cases",
-  },
-  es: {
-    frontend: "funciones, rendimiento y ecosistema",
-    backend: "API, rendimiento e implementación",
-    databases: "modelos de datos, rendimiento y usos",
-    "ai-models": "modelos, contexto y costes de API",
-    devops: "despliegue, escalabilidad y costes",
-    css: "estilos, componentes y flujo de desarrollo",
-    general: "funciones y casos de uso",
-  },
-  de: {
-    frontend: "Funktionen, Leistung und Ökosystem",
-    backend: "APIs, Leistung und Bereitstellung",
-    databases: "Datenmodelle, Leistung und Anwendungsfälle",
-    "ai-models": "Modelle, Kontext und API-Kosten",
-    devops: "Bereitstellung, Skalierung und Kosten",
-    css: "Styling, Komponenten und Entwickler-Workflow",
-    general: "Funktionen und Anwendungsfälle",
-  },
-  fr: {
-    frontend: "fonctionnalités, performances et écosystème",
-    backend: "API, performances et déploiement",
-    databases: "modèles de données, performances et usages",
-    "ai-models": "modèles, contexte et tarifs API",
-    devops: "déploiement, évolutivité et coûts",
-    css: "styles, composants et flux de développement",
-    general: "fonctionnalités et cas d’usage",
-  },
-};
 const deepDiveRequirements = {
   pl: `Napisz unikalny wstęp (180–500 znaków) opisujący konkretną różnicę, synergię lub konflikt architektoniczny między narzędziami, oparty na ich rzeczywistych cechach. Dodaj "decisionFramework" z osobną rekomendacją dla każdego narzędzia (80–400 znaków): wskaż profil projektu, wymaganie lub kompromis, dla którego ta opcja jest lepsza. Uwzględnij w kryteriach macierzy parametry takie jak wydajność, koszt, łatwość integracji, licencja i środowisko uruchomieniowe tylko wtedy, gdy mają zastosowanie; nie zgaduj nieznanych wartości ani nie powtarzaj generycznych treści.`,
   en: `Write a unique introduction (180–500 characters) explaining a concrete difference, synergy, or architectural trade-off between these tools, grounded in their actual characteristics. Add "decisionFramework" with a separate recommendation for each tool (80–400 characters): identify the project profile, requirement, or trade-off for which that option is preferable. Include matrix criteria such as performance, cost, integration effort, license, and runtime only where applicable; do not guess unknown values or repeat generic copy.`,
@@ -170,6 +123,8 @@ const locales = {
 
 const knownToolNames = {
   'actix-web': 'Actix Web', angular: 'Angular', anthropic: 'Anthropic', astro: 'Astro',
+  clickhouse: 'ClickHouse', inngest: 'Inngest', nx: 'Nx',
+  temporal: 'Temporal', turborepo: 'Turborepo',
   autogen: 'AutoGen', aws: 'AWS', azure: 'Microsoft Azure', bootstrap: 'Bootstrap', bun: 'Bun',
   cassandra: 'Apache Cassandra', 'chakra-ui': 'Chakra UI', chroma: 'Chroma', cloudflare: 'Cloudflare',
   crewai: 'CrewAI', 'css-modules': 'CSS Modules', deno: 'Deno', drizzle: 'Drizzle ORM', duckdb: 'DuckDB',
@@ -419,19 +374,19 @@ function getApiClient() {
 }
 
 function getComparisonTitle(slug, toolA, toolB, locale) {
-  const categoryId = getCategoryId(slug);
-  const topic = titleFocus[locale][categoryId];
-  if (locale === "en") {
-    return `${toolA} vs ${toolB}: Which one to choose in ${currentYear}? (${topic} & code compared)`;
-  }
-
-  const localizedQuestion = {
-    pl: `co wybrać w ${currentYear}`,
-    es: `cuál elegir en ${currentYear}`,
-    de: `welches ${currentYear} wählen`,
-    fr: `lequel choisir en ${currentYear}`,
+  const suffix = {
+    pl: `: porównanie ${currentYear}`,
+    en: `: ${currentYear} comparison`,
+    es: `: comparativa ${currentYear}`,
+    de: `: Vergleich ${currentYear}`,
+    fr: ` : comparatif ${currentYear}`,
   }[locale];
-  return `${toolA} vs ${toolB}: ${localizedQuestion} — ${topic}`;
+  const title = `${toolA} vs ${toolB}${suffix}`;
+  if (title.length <= 60) return title;
+
+  const compactTitle = `${toolA} vs ${toolB}`;
+  if (compactTitle.length <= 60) return compactTitle;
+  throw new RangeError(`Comparison title exceeds 60 characters for "${slug}".`);
 }
 
 function getCategoryId(slug) {
@@ -531,6 +486,17 @@ function getMetaDescription(slug, toolA, toolB, locale) {
 function buildPrompt(slug, toolA, toolB, locale) {
  const language = locales[locale];
  const title = getComparisonTitle(slug, toolA, toolB, locale);
+ const nicheRequirements = {
+   "clickhouse-vs-duckdb": `
+
+Focus this niche comparison on an identical analytical workload: daily revenue aggregation over a bounded order-date range. Explain ClickHouse as a server-based columnar OLAP system and DuckDB as an embedded analytical engine; do not imply one is universally faster. Discuss deployment topology, data locality, concurrency, scaling, ingestion, and operational cost drivers without inventing cold-start times, memory usage, throughput, or prices. Include explicit comparison criteria whose category labels begin with "Performance", "Cost / pricing", and "Deployment / integration" so the page's priority calculator uses evidence aligned with the verdict. The verdict must be a technically grounded recommendation, not a claim of hands-on testing.`,
+   "temporal-vs-inngest": `
+
+Focus this niche comparison on a recoverable order-processing workflow with inventory reservation, idempotent payment capture, retries, and fulfillment. Contrast Temporal's workflow-history/replay and worker model with Inngest's event-triggered persisted steps; qualify features by current product version and hosting plan. Explain latency and scaling trade-offs qualitatively; never invent cold-start, memory, throughput, or pricing numbers. Include explicit comparison criteria whose category labels begin with "Performance", "Cost / pricing", and "Deployment / integration" so the priority calculator uses evidence aligned with the verdict. Do not claim original testing or sign the content as a real person.`,
+   "turborepo-vs-nx": `
+
+Focus this niche comparison on an affected CI build for a monorepo application and its dependency graph. Contrast Turborepo's task pipeline, package filters, and cache model with Nx's project graph, affected targets, and task execution. Explain that cache hit rates and wall-clock improvements depend on correct inputs, remote-cache setup, runner capacity, and repository shape; do not invent timings, memory figures, or plan prices. Include explicit comparison criteria whose category labels begin with "Performance", "Cost / pricing", and "Deployment / integration" so the priority calculator uses evidence aligned with the verdict. Vary the explanation around these tools' distinct workflows; do not claim original testing.`,
+ }[slug] ?? "";
  const aiModelRequirements = aiModelComparisonSlugs.has(slug)
    ? `
 
@@ -591,6 +557,7 @@ ${language.verdictMinimum}
 ${language.descriptionMinimum}
 ${deepDiveRequirements[locale]}
 ${technicalMatrixRequirements[locale]}
+${nicheRequirements}
 ${aiModelRequirements}
 ${fableRequirements}
 ${astraDbRequirements}

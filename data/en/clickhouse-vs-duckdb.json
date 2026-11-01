@@ -1,0 +1,136 @@
+{
+  "slug": "clickhouse-vs-duckdb",
+  "meta": {
+    "title": "ClickHouse vs DuckDB: 2026 comparison",
+    "description": "Compare ClickHouse and DuckDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+  },
+  "toolA": {
+    "name": "ClickHouse"
+  },
+  "toolB": {
+    "name": "DuckDB"
+  },
+  "verdict": "Choose ClickHouse when many users or applications must query a shared, continuously growing dataset concurrently and you can operate a server (or use a managed service). Choose DuckDB when analytics run inside a single process over local or object-storage files, with modest concurrent-writer needs. Both execute the same daily revenue aggregation well; the deciding factors are topology, concurrency, and operations rather than a universal speed ranking.",
+  "introduction": "The same daily revenue aggregation can be answered by two very different architectures: ClickHouse runs as a networked columnar OLAP server that many clients query concurrently, while DuckDB is an embedded engine that runs inside your application process and reads local or object-storage data directly. The real decision is about deployment topology, data locality, and concurrency, not a blanket claim about which engine is faster.",
+  "heroSubtitle": "One workload, two architectures: a shared columnar server versus an in-process analytical engine, each with different locality, concurrency, and operational trade-offs.",
+  "quickVerdict": "Use ClickHouse if multiple services or users need concurrent access to a large, always-on dataset behind a network endpoint; use DuckDB if one process should analyze files or a local database with minimal infrastructure and no server to operate.",
+  "decisionFramework": {
+    "toolA": "Pick ClickHouse when the analytical workload is shared, long-running, and growing, and when concurrent users, replication, or a network API justify operating a server or paying for a managed service.",
+    "toolB": "Pick DuckDB when analytics are embedded in one application or notebook, data sits in files or object storage, and you want no server to manage and minimal infrastructure overhead."
+  },
+  "comparison": [
+    {
+      "category": "Performance for a bounded daily revenue aggregation",
+      "toolA": "ClickHouse is a columnar OLAP engine built for scanning large fact tables and aggregating by date and dimension, and it parallelizes queries across cores and, in cluster setups, across nodes. Actual latency depends on table schema, partitioning, primary key and skip indexes, data compression, and available hardware, so results are workload-specific rather than universal.",
+      "toolB": "DuckDB is also a columnar, vectorized analytical engine and executes GROUP BY aggregations over a date range efficiently, especially when data is in columnar formats such as Parquet or its own database file. Performance depends on file layout, row-group and zone-map pruning, available memory, and whether data is local or remote, so it should be evaluated against your specific dataset.",
+      "winner": "tie"
+    },
+    {
+      "category": "Performance under concurrency and multi-user access",
+      "toolA": "ClickHouse is architected for many simultaneous readers and parallel query execution against a shared dataset, and clustered deployments add distributed query processing. Concurrency still consumes server resources, so capacity planning and query limits matter for predictable behavior.",
+      "toolB": "DuckDB is oriented toward a single-process analytical workload; patterns that open the same database file from multiple processes for concurrent writes are constrained, and the recommended approach is usually one writer with readers via the application. This is a design characteristic, not a defect, but it shapes multi-user architectures.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Cost / pricing and licensing",
+      "toolA": "ClickHouse is open source under Apache 2.0 for the core, and commercial managed offerings are available with their own pricing that changes over time. Total cost is driven by server or cluster provisioning, storage, replication, and operational effort, so it should be estimated from current vendor documentation for your region and plan.",
+      "toolB": "DuckDB is open source under the MIT license with no server component, so licensing cost is typically zero and infrastructure cost reduces to the compute and storage your application already uses. At very large scale, the cost of the host machine and the engineering effort around file management become the relevant drivers.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Deployment / integration and operational effort",
+      "toolA": "Deployment means running a server, configuring storage and users, and handling upgrades, backups, monitoring, and security, or delegating that to a managed service. Integration is broad because clients connect over standard network protocols and many language drivers and BI tools exist.",
+      "toolB": "Deployment is a library dependency inside your application, with no daemon, ports, or cluster to operate, which simplifies local development, CI, and embedded analytics. Integration centers on language bindings and file or object-storage readers rather than a shared network service.",
+      "winner": "toolB"
+    },
+    {
+      "category": "Ingestion and data freshness",
+      "toolA": "ClickHouse supports high-throughput batch and streaming ingestion into MergeTree-family tables and is suited to continuously updated analytical datasets with scheduled or streaming loads. Freshness depends on how often you load and how you model tables, not on an automatic guarantee.",
+      "toolB": "DuckDB reads and ingests files and DataFrames efficiently and can query remote object storage directly, which suits batch and file-based pipelines. Serving continuously updated data to many independent clients is not its primary model.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Scaling and high availability",
+      "toolA": "ClickHouse offers replication and distributed tables, allowing horizontal scaling and cluster-level fault tolerance when properly configured and operated. Those capabilities add operational complexity and should be validated against your topology and version.",
+      "toolB": "DuckDB scales with the resources of the process that hosts it; it does not provide a built-in distributed cluster or replication service. Very large or highly available shared workloads generally require a different architecture.",
+      "winner": "toolA"
+    },
+    {
+      "category": "Ecosystem, SQL compatibility, and security model",
+      "toolA": "ClickHouse exposes a SQL dialect with analytical extensions and a broad connector ecosystem, and it includes user management, access control, and encryption options whose specifics depend on version and edition. Security is a server concern that must be configured and maintained.",
+      "toolB": "DuckDB supports a large subset of standard SQL with analytical features and integrates with common data formats and language ecosystems. As an embedded engine, access control largely inherits the host application's filesystem and process permissions rather than a network authentication layer.",
+      "winner": "tie"
+    }
+  ],
+  "tradeoffs": [
+    {
+      "category": "Architecture and topology",
+      "toolA": "Runs as a client/server system with a persistent daemon that clients reach over the network, so compute is decoupled from the calling application.",
+      "toolB": "Runs in-process as an embedded library with no separate server to deploy, so compute happens wherever your application executes."
+    },
+    {
+      "category": "Concurrency",
+      "toolA": "Designed for many concurrent readers and parallel query execution across a shared dataset.",
+      "toolB": "Optimized for a single-process workload; concurrent access to the same database file from multiple processes is restricted and should be validated for your version and usage pattern."
+    },
+    {
+      "category": "Data locality",
+      "toolA": "Data lives in server-managed storage, which can be local disks or object storage depending on configuration and engine.",
+      "toolB": "Queries read local files, in-memory data, or remote object storage directly, so data can stay next to the application without a load step."
+    },
+    {
+      "category": "Scaling model",
+      "toolA": "Can scale vertically and horizontally, including distributed and replicated cluster configurations.",
+      "toolB": "Scales primarily with the resources of the host process; very large workloads depend on machine capacity and efficient file formats."
+    },
+    {
+      "category": "Operational cost drivers",
+      "toolA": "Ongoing cost is driven by server provisioning, storage, replication, and operational or managed-service overhead.",
+      "toolB": "Cost is largely the compute and storage already used by the host application, with little dedicated database infrastructure."
+    },
+    {
+      "category": "Ingestion",
+      "toolA": "Supports high-volume batched ingestion and streaming integrations, with tables designed for append-heavy analytical loads.",
+      "toolB": "Ingests from files and DataFrames efficiently; it is well suited to batch and file-based pipelines rather than as a multi-client ingestion service."
+    }
+  ],
+  "codeExamples": {
+    "scenario": "Calculate daily order revenue for a bounded date range: compare ClickHouse's distributed columnar query service with DuckDB's embedded analytical execution and parameter-binding model.",
+    "tech1Snippet": "import { createClient } from \"@clickhouse/client\";\n\ntype DailyRevenue = { day: string; revenue_cents: string };\nconst clickhouseUrl = process.env.CLICKHOUSE_URL;\nif (!clickhouseUrl) throw new Error(\"CLICKHOUSE_URL is required\");\nconst client = createClient({ url: clickhouseUrl });\n\nexport async function getDailyRevenue(start: Date, end: Date): Promise<DailyRevenue[]> {\n  if (start >= end) throw new RangeError(\"start must be earlier than end\");\n  const result = await client.query({\n    query: \"SELECT toDate(created_at) AS day, toString(sum(total_cents)) AS revenue_cents FROM orders WHERE created_at >= parseDateTimeBestEffort({start:String}) AND created_at < parseDateTimeBestEffort({end:String}) GROUP BY day ORDER BY day\",\n    query_params: { start: start.toISOString(), end: end.toISOString() },\n    format: \"JSONEachRow\",\n  });\n  return result.json<DailyRevenue[]>();\n}",
+    "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype DailyRevenue = { day: string; revenue_cents: bigint };\nconst instance = await DuckDBInstance.create(process.env.ANALYTICS_DB_PATH ?? \"analytics.db\");\nconst connection = await instance.connect();\n\nexport async function getDailyRevenue(start: Date, end: Date): Promise<DailyRevenue[]> {\n  if (start >= end) throw new RangeError(\"start must be earlier than end\");\n  const statement = await connection.prepare(\n    \"SELECT CAST(CAST(created_at AS DATE) AS VARCHAR) AS day, sum(total_cents) AS revenue_cents FROM orders WHERE created_at >= CAST($start AS TIMESTAMPTZ) AND created_at < CAST($end AS TIMESTAMPTZ) GROUP BY day ORDER BY day\",\n  );\n  statement.bindVarchar(\"start\", start.toISOString());\n  statement.bindVarchar(\"end\", end.toISOString());\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as DailyRevenue[];\n}"
+  },
+  "faq": [
+    {
+      "q": "Which tool should I use for a daily revenue aggregation over a bounded order-date range?",
+      "a": "Both engines can compute this aggregation correctly and efficiently, so the deciding factors are how the data is stored and who queries it. Choose ClickHouse if many users or services need concurrent access to a shared, growing dataset behind a network endpoint. Choose DuckDB if a single application or notebook should aggregate files or a local database with minimal infrastructure. Benchmark on your own schema and hardware rather than assuming a universal winner."
+    },
+    {
+      "q": "Is ClickHouse always faster than DuckDB?",
+      "a": "No, and that claim should be treated with skepticism. Both are columnar, vectorized analytical engines, and relative performance for a GROUP BY over a date range depends on schema design, partitioning or file layout, compression, data locality, concurrency, and hardware. The honest answer is that results are workload-specific, so evaluate both against your actual data and query pattern."
+    },
+    {
+      "q": "Can DuckDB handle concurrent users like a database server?",
+      "a": "DuckDB is designed as an embedded engine for a single-process workload, and concurrent access to the same database file from multiple processes is restricted; the common pattern is one writer process with application-level coordination. If your requirement is many independent clients querying a shared dataset concurrently, a server-based system such as ClickHouse fits that model more naturally. Verify concurrency behavior against the DuckDB version you plan to use."
+    },
+    {
+      "q": "What are the main operational differences between the two?",
+      "a": "ClickHouse requires you to run and maintain a server or cluster, or pay for a managed service, including upgrades, backups, monitoring, and access control. DuckDB ships as a library with no daemon, so operational effort shifts to your application and its file or object-storage management. The trade-off is control and shared access versus simplicity and low overhead."
+    },
+    {
+      "q": "How does data locality affect the comparison?",
+      "a": "ClickHouse stores data in server-managed storage, which may be local disks or object storage depending on configuration, and clients query it over the network. DuckDB can read local files, in-memory data, or remote object storage directly in the same process, avoiding a separate load and network hop. If your data already lives as Parquet files next to your application, DuckDB's locality advantage is practical; if data must be shared and continuously updated, a server model is often preferable."
+    },
+    {
+      "q": "Which option has lower total cost of ownership?",
+      "a": "DuckDB typically has the lower infrastructure and licensing overhead because it is MIT-licensed and embedded, so cost is largely the compute and storage your application already uses. ClickHouse is Apache 2.0 at its core but adds server or cluster provisioning, storage, replication, and operational or managed-service costs. For large shared workloads, ClickHouse's efficiency and scaling options may offset that overhead, so estimate total cost from current vendor documentation and your own operational constraints."
+    },
+    {
+      "q": "Do both support standard SQL for this aggregation?",
+      "a": "Both support SQL with analytical extensions, and a query such as selecting an order date and summing revenue with GROUP BY and a date range filter is straightforward in each. Dialect details, date functions, and type handling differ, so validate your exact query and expected results during evaluation. Neither requires you to abandon SQL for this workload."
+    },
+    {
+      "q": "When should I consider running both together?",
+      "a": "A common pattern is using DuckDB for local development, file-based exploration, and CI checks, while ClickHouse serves the production, shared analytical workload. This lets teams iterate quickly without infrastructure and still provide concurrent, always-on access in production. The combination adds a second system to maintain, so adopt it only when both needs genuinely exist."
+    }
+  ]
+}
