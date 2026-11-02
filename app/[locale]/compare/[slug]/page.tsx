@@ -894,6 +894,7 @@ function getLocalizedSlug(locale: Locale, slug: string): string | undefined {
 }
 
 export const dynamic = "force-static";
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return LOCALES.flatMap((locale) =>

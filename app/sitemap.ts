@@ -3,6 +3,8 @@ import { getComparisons, isIndexableComparison, LOCALES } from "../lib/compariso
 import { CATEGORY_IDS, getComparisonCategories } from "../lib/taxonomy";
 import { SITE_URL } from "../lib/site-url";
 
+export const dynamic = "force-static";
+
 const trustPages = ["methodology", "privacy", "disclaimer"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

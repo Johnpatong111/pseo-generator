@@ -29,14 +29,6 @@ const copy = {
     noResults: "Nie znaleziono porównań dla tej nazwy technologii.",
     resultCountLabel: "Liczba pasujących porównań:",
     notFound: "Nie znaleziono porównania:",
-    generateCta: "Kliknij, aby wygenerować raport AI",
-    generateTitle: "Wygeneruj porównanie technologii",
-    tech1Label: "Technologia 1",
-    tech2Label: "Technologia 2",
-    generate: "Wygeneruj porównanie",
-    generating: "Generowanie porównania…",
-    close: "Zamknij",
-    generateError: "Nie udało się wygenerować porównania. Spróbuj ponownie.",
   },
   en: {
     title: "Compare backend technologies and databases",
@@ -55,14 +47,6 @@ const copy = {
     noResults: "No comparisons match that technology.",
     resultCountLabel: "Matching comparisons:",
     notFound: "No comparison found:",
-    generateCta: "Generate an AI report",
-    generateTitle: "Generate a technology comparison",
-    tech1Label: "Technology 1",
-    tech2Label: "Technology 2",
-    generate: "Generate comparison",
-    generating: "Generating comparison…",
-    close: "Close",
-    generateError: "Could not generate the comparison. Please try again.",
   },
   es: {
     title: "Compara tecnologías backend y bases de datos",
@@ -81,14 +65,6 @@ const copy = {
     noResults: "No hay comparativas para esa tecnología.",
     resultCountLabel: "Comparativas coincidentes:",
     notFound: "No se encontró la comparativa:",
-    generateCta: "Generar un informe con IA",
-    generateTitle: "Genera una comparativa de tecnologías",
-    tech1Label: "Tecnología 1",
-    tech2Label: "Tecnología 2",
-    generate: "Generar comparativa",
-    generating: "Generando comparativa…",
-    close: "Cerrar",
-    generateError: "No se pudo generar la comparativa. Inténtalo de nuevo.",
   },
   de: {
     title: "Technologien für Backend und Datenbanken vergleichen",
@@ -107,14 +83,6 @@ const copy = {
     noResults: "Keine Vergleiche für diese Technologie gefunden.",
     resultCountLabel: "Passende Vergleiche:",
     notFound: "Kein Vergleich gefunden:",
-    generateCta: "KI-Bericht erstellen",
-    generateTitle: "Technologievergleich erstellen",
-    tech1Label: "Technologie 1",
-    tech2Label: "Technologie 2",
-    generate: "Vergleich erstellen",
-    generating: "Vergleich wird erstellt…",
-    close: "Schließen",
-    generateError: "Der Vergleich konnte nicht erstellt werden. Bitte versuche es erneut.",
   },
   fr: {
     title: "Comparez les technologies backend et les bases de données",
@@ -133,14 +101,6 @@ const copy = {
     noResults: "Aucun comparatif ne correspond à cette technologie.",
     resultCountLabel: "Comparatifs correspondants :",
     notFound: "Aucun comparatif trouvé :",
-    generateCta: "Générer un rapport IA",
-    generateTitle: "Générer un comparatif de technologies",
-    tech1Label: "Technologie 1",
-    tech2Label: "Technologie 2",
-    generate: "Générer le comparatif",
-    generating: "Génération du comparatif…",
-    close: "Fermer",
-    generateError: "Impossible de générer le comparatif. Veuillez réessayer.",
   },
 } satisfies Record<
   Locale,
@@ -160,14 +120,6 @@ const copy = {
     noResults: string;
     resultCountLabel: string;
     notFound: string;
-    generateCta: string;
-    generateTitle: string;
-    tech1Label: string;
-    tech2Label: string;
-    generate: string;
-    generating: string;
-    close: string;
-    generateError: string;
   }
 >;
 
