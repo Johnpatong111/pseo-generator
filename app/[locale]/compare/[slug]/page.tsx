@@ -893,6 +893,8 @@ function getLocalizedSlug(locale: Locale, slug: string): string | undefined {
   return getComparisonBySlug(`${toolB}-vs-${toolA}`, locale)?.slug;
 }
 
+export const dynamic = "force-static";
+
 export function generateStaticParams() {
   return LOCALES.flatMap((locale) =>
     getComparisons(locale).map(({ slug }) => ({ locale, slug })),
@@ -1079,6 +1081,10 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
       }
     : undefined;
   const contextCriteria = comparisonCriteria.slice(0, 2);
+  const matcherCriteria = comparisonCriteria.map(({ category, winner }) => ({
+    category,
+    winner,
+  }));
   const scores = getScores(comparison);
   const structuredData = JSON.stringify(
     getStructuredData(comparison, locale, category, focusedFaq),
@@ -1111,7 +1117,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
     <ComparisonMatcher
       toolA={comparison.toolA.name}
       toolB={comparison.toolB.name}
-      criteria={comparisonCriteria}
+      criteria={matcherCriteria}
       labels={matcherLabels}
     />
   );
@@ -1138,93 +1144,6 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
         </article>
       );
     });
-  const quickContent = (
-    <div className="space-y-8">
-      <section
-        aria-labelledby="quick-summary-heading"
-        className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-6 dark:border-indigo-900 dark:bg-indigo-950/30 sm:p-8"
-      >
-        <h2
-          id="quick-summary-heading"
-          className="text-xl font-semibold text-slate-900 dark:text-white"
-        >
-          {text.quickVerdict}
-        </h2>
-        <p className="mt-4 text-base leading-7 text-slate-700 dark:text-slate-200">
-          {comparison.quickVerdict ?? comparison.verdict}
-        </p>
-      </section>
-
-      <section aria-labelledby="quick-key-criteria-heading">
-        <h2
-          id="quick-key-criteria-heading"
-          className="mb-4 text-xl font-semibold text-slate-900 dark:text-white"
-        >
-          {text.details}
-        </h2>
-        <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 dark:border-slate-800">
-          <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
-            <thead className="bg-slate-100 dark:bg-slate-900">
-              <tr>
-                <th scope="col" className="p-3 font-semibold sm:p-4">
-                  {text.criterion}
-                </th>
-                <th scope="col" className="p-3 font-semibold sm:p-4">
-                  {comparison.toolA.name}
-                </th>
-                <th scope="col" className="p-3 font-semibold sm:p-4">
-                  {comparison.toolB.name}
-                </th>
-                <th scope="col" className="p-3 font-semibold sm:p-4">
-                  {text.advantage}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonCriteria.slice(0, 4).map((criterion, index) => (
-                <tr
-                  key={criterion.category}
-                  className="border-t border-slate-200 align-top dark:border-slate-800"
-                >
-                  <th scope="row" className="p-3 font-medium sm:p-4">
-                    {criterion.category}
-                  </th>
-                  <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
-                    {criterion.toolA}
-                  </td>
-                  <td className="p-3 leading-6 text-slate-600 sm:p-4 dark:text-slate-300">
-                    {criterion.toolB}
-                  </td>
-                  <td className="p-3 font-medium text-indigo-700 sm:p-4 dark:text-indigo-300">
-                    {criterion.winner === "tie"
-                      ? text.tie
-                      : criterion.winner === "toolA"
-                        ? comparison.toolA.name
-                        : comparison.toolB.name}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section
-        aria-labelledby="quick-decision-heading"
-        className="scroll-mt-24"
-      >
-        <h2
-          id="quick-decision-heading"
-          className="mb-5 text-xl font-semibold text-slate-900 dark:text-white"
-        >
-          {text.decision}
-        </h2>
-        <div className="grid gap-5 md:grid-cols-2">{decisionCards()}</div>
-        <div className="mt-6">{renderMatcher()}</div>
-      </section>
-    </div>
-  );
-
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
       <script
@@ -1279,7 +1198,25 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
             quick: text.quickView,
             deep: text.deepView,
           }}
-          quickContent={quickContent}
+          quickContent={{
+            summary: comparison.quickVerdict ?? comparison.verdict,
+            toolA: comparison.toolA.name,
+            toolB: comparison.toolB.name,
+            criteria: comparisonCriteria.slice(0, 4),
+            matcherCriteria,
+            decisionA: getDecisionCopy(comparison, "toolA", locale),
+            decisionB: getDecisionCopy(comparison, "toolB", locale),
+            labels: {
+              quickVerdict: text.quickVerdict,
+              details: text.details,
+              decision: text.decision,
+              chooseIf: text.chooseIf,
+              criterion: text.criterion,
+              advantage: text.advantage,
+              tie: text.tie,
+            },
+            matcherLabels,
+          }}
           deepContent={
             <>
         <section

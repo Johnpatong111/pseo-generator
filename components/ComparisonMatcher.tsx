@@ -4,11 +4,12 @@ import { useId, useMemo, useState } from "react";
 import type { ComparisonCriterion } from "../lib/comparisons";
 
 type Priority = "performance" | "cost" | "deployment";
+type MatchCriterion = Pick<ComparisonCriterion, "category" | "winner">;
 
 interface ComparisonMatcherProps {
   toolA: string;
   toolB: string;
-  criteria: ComparisonCriterion[];
+  criteria: MatchCriterion[];
   labels: {
     title: string;
     description: string;
@@ -44,7 +45,7 @@ function matchesPriority(category: string, priority: Priority): boolean {
 }
 
 function calculateMatchScore(
-  criteria: ComparisonCriterion[],
+  criteria: MatchCriterion[],
   weights: Record<Priority, number>,
 ): number | null {
   let weightedScore = 0;
