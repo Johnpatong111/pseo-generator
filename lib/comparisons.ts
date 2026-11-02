@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createCodeExamples, scenarios } from "./snippet-catalog.cjs";
+import { validateComparisonData } from "./comparison-validation.cjs";
 import { getComparisonCategories } from "./taxonomy";
 import { LOCALES, type Locale } from "./locales";
 
@@ -78,7 +79,14 @@ export function isLocale(value: string): value is Locale {
   return LOCALES.some((locale) => locale === value);
 }
 
+const reportedInvalidComparisons = new Set<string>();
+
 function parseComparison(value: unknown, fileName: string, locale: Locale): Comparison {
+  const issues = validateComparisonData(value, fileName);
+  if (issues.length > 0) {
+    throw new TypeError(issues.join(" "));
+  }
+
   if (!isRecord(value) || !isRecord(value.meta) || !isRecord(value.toolA) || !isRecord(value.toolB)) {
     throw new TypeError(`Invalid comparison data in ${fileName}.`);
   }
@@ -229,22 +237,36 @@ function readComparisons(directory: string, locale: Locale): Comparison[] {
     return [];
   }
 
-  return readdirSync(directory)
+  const comparisons: Comparison[] = [];
+  const fileNames = readdirSync(directory)
     .filter((fileName) => fileName.endsWith(".json"))
-    .sort()
-    .map((fileName) => {
-      const comparison = parseComparison(
-        JSON.parse(readFileSync(join(directory, fileName), "utf8")) as unknown,
-        fileName,
-        locale,
+    .sort();
+
+  for (const fileName of fileNames) {
+    const filePath = join(directory, fileName);
+    try {
+      comparisons.push(
+        parseComparison(
+          JSON.parse(readFileSync(filePath, "utf8")) as unknown,
+          fileName,
+          locale,
+        ),
       );
-
-      if (comparison.slug !== fileName.slice(0, -".json".length)) {
-        throw new TypeError(`Comparison slug does not match filename ${fileName}.`);
+    } catch (error) {
+      const key = `${locale}:${filePath}`;
+      if (reportedInvalidComparisons.has(key)) {
+        continue;
       }
+      reportedInvalidComparisons.add(key);
 
-      return comparison;
-    });
+      const reason = error instanceof Error ? error.message : String(error);
+      console.error(
+        `[pSEO data] Skipping invalid ${locale} comparison "${fileName}": ${reason}`,
+      );
+    }
+  }
+
+  return comparisons;
 }
 
 export function getComparisons(locale: Locale = "en"): Comparison[] {
