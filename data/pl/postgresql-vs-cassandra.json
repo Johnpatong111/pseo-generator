@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj PostgreSQL i Apache Cassandra: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "PostgreSQL vs Apache Cassandra: co wybrać w 2026?",
+    "description": "Porównanie PostgreSQL vs Apache Cassandra: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między PostgreSQL a Apache Cassandra zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi,…. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do….",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i rozszerzeniami. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do klastra bez przestojów, z automatycznym podziałem danych na partycje i replikacją.",
   "tradeoffs": [
     {
       "category": "Model danych i język zapytań",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "PostgreSQL i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i język zapytań. PostgreSQL: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i… Apache Cassandra: Apache Cassandra to rozproszona baza szerokokolumnowa (ang. Kolejną istotną różnicę pokazuje kryterium „Skalowanie i wydajność przy dużym obciążeniu”: PostgreSQL skaluje się w górę (scale-up) oraz przez replikację odczytu i partycjonowanie, a w nowszych wersjach także… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "PostgreSQL i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i język zapytań. PostgreSQL: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i rozszerzeniami. Apache Cassandra: Apache Cassandra to rozproszona baza szerokokolumnowa (ang. Kolejną istotną różnicę pokazuje kryterium „Skalowanie i wydajność przy dużym obciążeniu”: PostgreSQL skaluje się w górę (scale-up) oraz przez replikację odczytu i partycjonowanie, a w nowszych wersjach także przez funkcje równoległego przetwarzania zapytań. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi,…",
-    "toolB": "projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do…"
+    "toolA": "projekt stawia na kryterium „Model danych i język zapytań”: PostgreSQL to relacyjna baza danych z pełnym wsparciem SQL, transakcjami ACID, kluczami obcymi, widokami, funkcjami i rozszerzeniami.",
+    "toolB": "projekt stawia na kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Cassandra została zaprojektowana do skalowania poziomego (scale-out) poprzez dodawanie węzłów do klastra bez przestojów, z automatycznym podziałem danych na partycje i replikacją."
   }
 }

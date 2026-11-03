@@ -1,8 +1,8 @@
 {
   "slug": "fable-5-1-vs-crewai",
   "meta": {
-    "title": "Claude Fable 5.1 vs CrewAI: lequel choisir en 2026 — modèles, contexte et tarifs API",
-    "description": "Comparez Claude Fable 5.1 et CrewAI : évaluez les compromis architecturaux liés à fenêtres de contexte, API des modèles et intégration et consultez des exemples TypeScript pour choisir le bon stack."
+    "title": "Claude Fable 5.1 vs CrewAI : que choisir en 2026 ?",
+    "description": "Comparatif Claude Fable 5.1 vs CrewAI : fenêtres de contexte, tarifs API, latence et compromis d’architecture pour les ingénieurs IA."
   },
   "toolA": {
     "name": "Claude Fable 5.1"
@@ -68,9 +68,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Produisez une réponse étayée sur le catalogue : récupérez les éléments pertinents et synthétisez uniquement les faits du contexte. L’exemple TypeScript appelle un adaptateur HTTP applicatif pour le framework d’agents ; l’agent s’exécute dans son environnement natif.",
+    "scenario": "Produisez une réponse étayée sur le catalogue : récupérez les éléments pertinents et synthétisez uniquement les faits du contexte.",
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype Fable51CatalogueClient = {\n  summarize(input: {\n    instruction: string;\n    products: readonly Product[];\n    maxOutputTokens: number;\n  }): Promise<{ text: string }>;\n};\n\nexport async function summarizeCatalogue(\n  client: Fable51CatalogueClient,\n  products: readonly Product[],\n): Promise<string> {\n  const result = await client.summarize({\n    instruction: \"Summarize only facts present in the supplied product data.\",\n    products,\n    maxOutputTokens: 512,\n  });\n  if (!result.text.trim()) throw new Error(\"The model returned an empty summary\");\n  return result.text.trim();\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype AgentAnswer = { answer: string };\n\nexport async function answerProductQuestion(\n  serviceUrl: string,\n  question: string,\n  categoryId: string,\n  products: readonly Product[],\n): Promise<string> {\n  const response = await fetch(new URL(\"/api/agents/crewai/answer\", serviceUrl), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", accept: \"application/json\" },\n    body: JSON.stringify({ question, categoryId, products }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Agent service failed: ${response.status}`);\n  const result = (await response.json()) as AgentAnswer;\n  if (!result.answer.trim()) throw new Error(\"The agent returned an empty answer\");\n  return result.answer;\n}"
+    "tech2Snippet": "from crewai import Agent, Crew, Process, Task\n\n\ncatalogue_agent = Agent(\n    role=\"Product catalogue analyst\",\n    goal=\"Answer questions using only the supplied product facts\",\n    backstory=\"You never invent products, prices, or availability.\",\n    allow_delegation=False,\n)\n\n\ndef answer_product_question(\n    question: str,\n    products: list[dict[str, object]],\n) -> str:\n    task = Task(\n        description=(\n            f\"Answer '{question}' using only this product data: {products}. \"\n            \"If the data is insufficient, say so explicitly.\"\n        ),\n        expected_output=\"A concise answer grounded in the supplied product data.\",\n        agent=catalogue_agent,\n    )\n    crew = Crew(\n        agents=[catalogue_agent],\n        tasks=[task],\n        process=Process.sequential,\n    )\n    return str(crew.kickoff()).strip()"
   },
   "faq": [
     {
@@ -107,7 +107,7 @@
     }
   ],
   "heroSubtitle": "Choisir entre Claude Fable 5.1 et CrewAI modifie la manière de gérer la récupération du contexte et l’intégration des modèles ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
-  "quickVerdict": "Claude Fable 5.1 convient mieux lorsque votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale…. CrewAI est préférable lorsque votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts….",
+  "quickVerdict": "Claude Fable 5.1 convient mieux lorsque votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale de 128K tokens, selon la documentation officielle Anthropic. CrewAI est préférable lorsque votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts proviennent des modèles externes appelés par les agents et des éventuelles offres d'hébergement ou de support.",
   "tradeoffs": [
     {
       "category": "Fenêtre de contexte et sortie maximale",
@@ -140,9 +140,9 @@
       "toolB": "Il brille lorsque le problème se décompose en rôles et en outils, mais nécessite un modèle externe pour chaque agent et une conception rigoureuse."
     }
   ],
-  "introduction": "Claude Fable 5.1 et CrewAI répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et sortie maximale. Claude Fable 5.1 : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale de 128K tokens,… CrewAI : CrewAI n'est pas un modèle et n'a donc pas de fenêtre de contexte propre : la limite dépend du modèle de langage… Le critère « Performances et benchmarks publiés » met en évidence une autre différence pratique : Pour Claude Fable 5.1, les scores MMLU et HumanEval ne sont pas fournis dans les spécifications vérifiées communiquées… Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "introduction": "Claude Fable 5. 1 et CrewAI répondent à un besoin proche, mais diffèrent sur fenêtre de contexte et sortie maximale.  Claude Fable 5. 1 : Claude Fable 5. 1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale de 128K tokens, selon la documentation officielle Anthropic.  CrewAI : CrewAI n'est pas un modèle et n'a donc pas de fenêtre de contexte propre : la limite dépend du modèle de langage sous-jacent configuré pour chaque agent.  Le critère « Performances et benchmarks publiés » met en évidence une autre différence pratique : Pour Claude Fable 5.",
   "decisionFramework": {
-    "toolA": "votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale…",
-    "toolB": "votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts…"
+    "toolA": "votre projet privilégie fenêtre de contexte et sortie maximale : Claude Fable 5.1 dispose d'une fenêtre de contexte de 1 million de tokens et d'une sortie maximale de 128K tokens, selon la documentation officielle Anthropic.",
+    "toolB": "votre projet privilégie tarification api (prix par million de tokens) : CrewAI est un framework open source et ne facture pas directement les tokens ; les coûts proviennent des modèles externes appelés par les agents et des éventuelles offres d'hébergement ou de support."
   }
 }

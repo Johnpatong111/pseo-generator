@@ -1,8 +1,8 @@
 {
   "slug": "qdrant-vs-weaviate",
   "meta": {
-    "title": "Qdrant vs Weaviate: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Qdrant y Weaviate: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Qdrant vs Weaviate: ¿cuál elegir en 2026?",
+    "description": "Comparativa Qdrant vs Weaviate: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Qdrant"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Qdrant y Weaviate cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Qdrant encaja mejor cuando tu proyecto prioriza filtrado y consultas con metadatos: Qdrant pone un énfasis notable en el filtrado combinado con la búsqueda vectorial, con soporte de…. Weaviate es preferible cuando tu proyecto prioriza búsqueda híbrida y recuperación: Weaviate incorpora de forma nativa opciones de búsqueda híbrida que mezclan resultados vectoriales….",
+  "quickVerdict": "Qdrant encaja mejor cuando tu proyecto prioriza filtrado y consultas con metadatos: Qdrant pone un énfasis notable en el filtrado combinado con la búsqueda vectorial, con soporte de condiciones sobre payloads y estrategias para mantener la eficiencia en consultas filtradas. Weaviate es preferible cuando tu proyecto prioriza búsqueda híbrida y recuperación: Weaviate incorpora de forma nativa opciones de búsqueda híbrida que mezclan resultados vectoriales y léxicos, con parámetros para ajustar la ponderación.",
   "tradeoffs": [
     {
       "category": "Arquitectura y enfoque del motor",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}",
     "tech2Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}"
   },
-  "introduction": "Qdrant y Weaviate responden a una necesidad similar, pero difieren en arquitectura y enfoque del motor. Qdrant: Qdrant es una base de datos vectorial escrita en Rust y diseñada principalmente alrededor de la búsqueda por… Weaviate: Weaviate se presenta como una base de datos vectorial con módulos que añaden vectorización y otras capacidades sobre… El criterio de búsqueda híbrida y recuperación añade otra diferencia práctica: Qdrant permite combinar búsqueda vectorial con condiciones de filtrado y ofrece mecanismos de consulta que pueden… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Qdrant y Weaviate responden a una necesidad similar, pero difieren en arquitectura y enfoque del motor. Qdrant: Qdrant es una base de datos vectorial escrita en Rust y diseñada principalmente alrededor de la búsqueda por similitud, con almacenamiento persistente y una API orientada a colecciones y puntos. Weaviate: Weaviate se presenta como una base de datos vectorial con módulos que añaden vectorización y otras capacidades sobre el núcleo de búsqueda. El criterio de búsqueda híbrida y recuperación añade otra diferencia práctica: Qdrant permite combinar búsqueda vectorial con condiciones de filtrado y ofrece mecanismos de consulta que pueden integrarse con señales léxicas externas. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza filtrado y consultas con metadatos: Qdrant pone un énfasis notable en el filtrado combinado con la búsqueda vectorial, con soporte de…",
-    "toolB": "tu proyecto prioriza búsqueda híbrida y recuperación: Weaviate incorpora de forma nativa opciones de búsqueda híbrida que mezclan resultados vectoriales…"
+    "toolA": "tu proyecto prioriza filtrado y consultas con metadatos: Qdrant pone un énfasis notable en el filtrado combinado con la búsqueda vectorial, con soporte de condiciones sobre payloads y estrategias para mantener la eficiencia en consultas filtradas.",
+    "toolB": "tu proyecto prioriza búsqueda híbrida y recuperación: Weaviate incorpora de forma nativa opciones de búsqueda híbrida que mezclan resultados vectoriales y léxicos, con parámetros para ajustar la ponderación."
   }
 }

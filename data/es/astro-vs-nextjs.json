@@ -1,8 +1,8 @@
 {
   "slug": "astro-vs-nextjs",
   "meta": {
-    "title": "Astro vs Next.js: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara Astro y Next.js: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Astro vs Next.js: ¿cuál elegir en 2026?",
+    "description": "Comparativa Astro vs Next.js: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "Astro"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Astro y Next.js cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Astro encaja mejor cuando tu proyecto prioriza rendimiento y peso del javascript enviado: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de…. Next.js es preferible cuando tu proyecto prioriza experiencia de desarrollo y curva de aprendizaje: Next.js se apoya en React, con un modelo mental más amplio: componentes de servidor y cliente,….",
+  "quickVerdict": "Astro encaja mejor cuando tu proyecto prioriza rendimiento y peso del javascript enviado: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de contenido, algo que puede traducirse en mejoras de carga y de métricas como LCP o INP cuando la interactividad es limitada. Next.js es preferible cuando tu proyecto prioriza experiencia de desarrollo y curva de aprendizaje: Next.js se apoya en React, con un modelo mental más amplio: componentes de servidor y cliente, hooks, estado y convenciones del enrutador.",
   "tradeoffs": [
     {
       "category": "Modelo de renderizado y arquitectura",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { GetStaticPaths } from \"astro\";\nimport { productRepository } from \"../lib/products\";\n\nexport const getStaticPaths: GetStaticPaths = async () => {\n  const categories = await productRepository.listCategories();\n  return Promise.all(\n    categories.map(async ({ id }) => ({\n      params: { category: id },\n      props: {\n        products: await productRepository.listActiveByCategory({\n          categoryId: id,\n          orderBy: \"name\",\n          limit: 50,\n        }),\n      },\n    })),\n  );\n};",
     "tech2Snippet": "import { notFound } from \"next/navigation\";\nimport { productRepository } from \"@/lib/products\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport default async function CategoryPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) notFound();\n\n  const products: Product[] = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}"
   },
-  "introduction": "Astro y Next.js responden a una necesidad similar, pero difieren en modelo de renderizado y arquitectura. Astro: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos marcados como islas, lo que reduce… Next.js: Next.js integra React con renderizado en servidor, generación estática, streaming y rutas del lado del servidor según… El criterio de rendimiento y peso del javascript enviado añade otra diferencia práctica: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de contenido, algo que puede… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Astro y Next. js responden a una necesidad similar, pero difieren en modelo de renderizado y arquitectura.  Astro: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos marcados como islas, lo que reduce el JavaScript enviado al navegador en páginas principalmente informativas.  Next. js: Next. js integra React con renderizado en servidor, generación estática, streaming y rutas del lado del servidor según la configuración y la versión.  El criterio de rendimiento y peso del javascript enviado añade otra diferencia práctica: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de contenido, algo que puede traducirse en mejoras de carga y de métricas como LCP o INP cuando la interactividad es limitada.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y peso del javascript enviado: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de…",
-    "toolB": "tu proyecto prioriza experiencia de desarrollo y curva de aprendizaje: Next.js se apoya en React, con un modelo mental más amplio: componentes de servidor y cliente,…"
+    "toolA": "tu proyecto prioriza rendimiento y peso del javascript enviado: Al hidratar solo las islas interactivas, Astro suele entregar menos JavaScript en páginas de contenido, algo que puede traducirse en mejoras de carga y de métricas como LCP o INP cuando la interactividad es limitada.",
+    "toolB": "tu proyecto prioriza experiencia de desarrollo y curva de aprendizaje: Next.js se apoya en React, con un modelo mental más amplio: componentes de servidor y cliente, hooks, estado y convenciones del enrutador."
   }
 }

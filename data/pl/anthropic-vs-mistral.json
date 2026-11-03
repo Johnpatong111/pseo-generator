@@ -1,8 +1,8 @@
 {
   "slug": "anthropic-vs-mistral",
   "meta": {
-    "title": "Anthropic vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Anthropic i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Anthropic vs Mistral: co wybrać w 2026?",
+    "description": "Porównanie Anthropic vs Mistral: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Anthropic"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Anthropic a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Anthropic będzie lepszy, gdy projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we….",
+  "quickVerdict": "Anthropic będzie lepszy, gdy projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu ostrożności, co bywa atutem w zastosowaniach wrażliwych, takich jak obsługa klienta czy analiza dokumentów. Mistral sprawdzi się, gdy projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we własnej infrastrukturze lub u dostawców chmury, co sprzyja suwerenności danych i wdrożeniom lokalnym.",
   "tradeoffs": [
     {
       "category": "Jakość modeli w zadaniach rozumowania i generowania tekstu",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import Anthropic from \"@anthropic-ai/sdk\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst apiKey = process.env.ANTHROPIC_API_KEY;\nif (!apiKey) throw new Error(\"ANTHROPIC_API_KEY is required\");\nconst client = new Anthropic({ apiKey });\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.messages.create({\n    model: process.env.ANTHROPIC_MODEL ?? \"anthropic\",\n    max_tokens: 512,\n    temperature: 0.2,\n    system: \"Summarize only facts present in the supplied product data.\",\n    messages: [{ role: \"user\", content: JSON.stringify(products) }],\n  });\n  const summary = response.content\n    .filter((block) => block.type === \"text\")\n    .map((block) => block.text)\n    .join(\"\")\n    .trim();\n  if (!summary) throw new Error(\"The model returned an empty summary\");\n  return summary;\n}",
     "tech2Snippet": "import { Mistral } from \"@mistralai/mistralai\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst apiKey = process.env.MISTRAL_API_KEY;\nif (!apiKey) throw new Error(\"MISTRAL_API_KEY is required\");\nconst client = new Mistral({ apiKey });\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.chat.complete({\n    model: process.env.MISTRAL_MODEL ?? \"mistral-small-latest\",\n    temperature: 0.2,\n    messages: [\n      { role: \"system\", content: \"Summarize only facts present in the supplied product data.\" },\n      { role: \"user\", content: JSON.stringify(products) },\n    ],\n  });\n  const summary = response.choices?.[0]?.message?.content;\n  if (typeof summary !== \"string\" || !summary.trim()) {\n    throw new Error(\"The model returned an empty summary\");\n  }\n  return summary.trim();\n}"
   },
-  "introduction": "Anthropic i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze jakość modeli w zadaniach rozumowania i generowania tekstu. Anthropic: Anthropic rozwija rodzinę modeli Claude, która jest kojarzona z mocnymi wynikami w zadaniach rozumowania, analizy… Mistral: Mistral oferuje zróżnicowaną rodzinę modeli — od mniejszych, lekkich modeli po większe modele ogólnego przeznaczenia —… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu ostrożności, co bywa… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Anthropic i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze jakość modeli w zadaniach rozumowania i generowania tekstu.  Anthropic: Anthropic rozwija rodzinę modeli Claude, która jest kojarzona z mocnymi wynikami w zadaniach rozumowania, analizy długich dokumentów i pracy z kodem, choć dokładne rezultaty zależą od konkretnej wersji modelu, konfiguracji i charakteru zadania.  Mistral: Mistral oferuje zróżnicowaną rodzinę modeli — od mniejszych, lekkich modeli po większe modele ogólnego przeznaczenia — a ich jakość w rozumowaniu i generowaniu tekstu zależy od wybranej wersji i trybu użycia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu…",
-    "toolB": "projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we…"
+    "toolA": "projekt stawia na kryterium „Bezpieczeństwo, ostrożność odpowiedzi i zgodność z zasadami”: Anthropic przykłada dużą wagę do badań nad bezpieczeństwem AI i do projektowania modeli w duchu ostrożności, co bywa atutem w zastosowaniach wrażliwych, takich jak obsługa klienta czy analiza dokumentów.",
+    "toolB": "projekt stawia na kryterium „Prywatność danych i opcje wdrożeń lokalnych”: Mistral wyróżnia się na tle konkurencji dostępnością modeli open-weight, które można uruchamiać we własnej infrastrukturze lub u dostawców chmury, co sprzyja suwerenności danych i wdrożeniom lokalnym."
   }
 }

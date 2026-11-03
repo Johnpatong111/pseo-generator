@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara ScyllaDB y MongoDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "ScyllaDB vs MongoDB: ¿cuál elegir en 2026?",
+    "description": "Comparativa ScyllaDB vs MongoDB: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre ScyllaDB y MongoDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "ScyllaDB encaja mejor cuando tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura…. MongoDB es preferible cuando tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar….",
+  "quickVerdict": "ScyllaDB encaja mejor cuando tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura shared-nothing y un motor sin bloqueos, lo que puede ofrecer una latencia muy baja y un alto rendimiento en cargas de escritura y lectura distribuidas. MongoDB es preferible cuando tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar estructuras anidadas y variar campos entre documentos.",
   "tradeoffs": [
     {
       "category": "Modelo de datos y flexibilidad del esquema",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}",
     "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
-  "introduction": "ScyllaDB y MongoDB responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad del esquema. ScyllaDB: ScyllaDB utiliza un modelo orientado a columnas amplias (wide-column) con tablas y familias de columnas, similar a… MongoDB: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar estructuras anidadas y… El criterio de rendimiento y latencia en cargas exigentes añade otra diferencia práctica: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura shared-nothing y un… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "ScyllaDB y MongoDB responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad del esquema.  ScyllaDB: ScyllaDB utiliza un modelo orientado a columnas amplias (wide-column) con tablas y familias de columnas, similar a Apache Cassandra.  MongoDB: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar estructuras anidadas y variar campos entre documentos.  El criterio de rendimiento y latencia en cargas exigentes añade otra diferencia práctica: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura shared-nothing y un motor sin bloqueos, lo que puede ofrecer una latencia muy baja y un alto rendimiento en cargas de escritura y lectura distribuidas.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura…",
-    "toolB": "tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar…"
+    "toolA": "tu proyecto prioriza rendimiento y latencia en cargas exigentes: ScyllaDB está diseñada para aprovechar al máximo el hardware moderno mediante una arquitectura shared-nothing y un motor sin bloqueos, lo que puede ofrecer una latencia muy baja y un alto rendimiento en cargas de escritura y lectura distribuidas.",
+    "toolB": "tu proyecto prioriza modelo de datos y flexibilidad del esquema: MongoDB emplea un modelo de documentos BSON con esquema flexible, lo que permite almacenar estructuras anidadas y variar campos entre documentos."
   }
 }

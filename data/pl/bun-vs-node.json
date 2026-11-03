@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-node",
   "meta": {
-    "title": "Bun vs Node: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Bun i Node: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Bun vs Node: co wybrać w 2026?",
+    "description": "Porównanie Bun vs Node: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Bun a Node zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada…. Node sprawdzi się, gdy projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego….",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada się na krótki czas startu procesu oraz szybkie uruchamianie skryptów i narzędzi CLI. Node sprawdzi się, gdy projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego istniejący kod zwykle działa bez modyfikacji, a problemy z kompatybilnością są rzadkie.",
   "tradeoffs": [
     {
       "category": "Zgodność z ekosystemem i istniejącym kodem",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));"
   },
-  "introduction": "Bun i Node odpowiadają na podobną potrzebę, ale różnią się w obszarze zgodność z ekosystemem i istniejącym kodem. Bun: Bun dąży do zgodności z Node API i potrafi uruchamiać wiele popularnych pakietów z rejestru npm, ale część niszowych… Node: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego istniejący kod zwykle działa… Kolejną istotną różnicę pokazuje kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada się na krótki czas… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Bun i Node odpowiadają na podobną potrzebę, ale różnią się w obszarze zgodność z ekosystemem i istniejącym kodem.  Bun: Bun dąży do zgodności z Node API i potrafi uruchamiać wiele popularnych pakietów z rejestru npm, ale część niszowych bibliotek, natywnych rozszerzeń lub zaawansowanych mechanizmów Node może działać inaczej albo wymagać obejść.  Node: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego istniejący kod zwykle działa bez modyfikacji, a problemy z kompatybilnością są rzadkie.  Kolejną istotną różnicę pokazuje kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada się na krótki czas startu procesu oraz szybkie uruchamianie skryptów i narzędzi CLI.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada…",
-    "toolB": "projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego…"
+    "toolA": "projekt stawia na kryterium „Wydajność uruchamiania i czasu startu”: Bun opiera się na silniku JavaScriptCore i natywnym runtime, co w wielu scenariuszach przekłada się na krótki czas startu procesu oraz szybkie uruchamianie skryptów i narzędzi CLI.",
+    "toolB": "projekt stawia na kryterium „Zgodność z ekosystemem i istniejącym kodem”: Node jest środowiskiem referencyjnym dla npm i zdecydowanej większości bibliotek, dlatego istniejący kod zwykle działa bez modyfikacji, a problemy z kompatybilnością są rzadkie."
   }
 }

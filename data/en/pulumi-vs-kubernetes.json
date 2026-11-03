@@ -1,8 +1,8 @@
 {
   "slug": "pulumi-vs-kubernetes",
   "meta": {
-    "title": "Pulumi vs Kubernetes: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
-    "description": "Compare Pulumi and Kubernetes architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
+    "title": "Pulumi vs Kubernetes: Which to Choose in 2026?",
+    "description": "Pulumi vs Kubernetes comparison: deployment, scaling, cost, and architecture trade-offs for platform teams."
   },
   "toolA": {
     "name": "Pulumi"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Pulumi and Kubernetes changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Pulumi is the better fit when your project prioritizes scope of infrastructure management: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and…. Kubernetes is a stronger fit when your project prioritizes runtime operations and workload lifecycle: Kubernetes is built for day-two operations, with controllers that restart failed pods, horizontal….",
+  "quickVerdict": "Pulumi is the better fit when your project prioritizes scope of infrastructure management: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and Kubernetes itself through dedicated providers. Kubernetes is a stronger fit when your project prioritizes runtime operations and workload lifecycle: Kubernetes is built for day-two operations, with controllers that restart failed pods, horizontal pod autoscaling, rolling updates, and service discovery.",
   "tradeoffs": [
     {
       "category": "Core purpose and primary abstraction",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Pulumi and Kubernetes address a related need, but differ in core purpose and primary abstraction. Pulumi: Pulumi is an infrastructure-as-code platform that lets teams define cloud resources, including Kubernetes objects,… Kubernetes: Kubernetes is a container orchestration system that schedules pods, manages networking and storage abstractions, and… The scope of infrastructure management criterion adds another practical distinction: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and Kubernetes itself through… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Pulumi and Kubernetes address a related need, but differ in core purpose and primary abstraction. Pulumi: Pulumi is an infrastructure-as-code platform that lets teams define cloud resources, including Kubernetes objects, using general-purpose languages such as TypeScript, Python, Go, and .NET. Kubernetes: Kubernetes is a container orchestration system that schedules pods, manages networking and storage abstractions, and reconciles the declared state of workloads on a cluster. The scope of infrastructure management criterion adds another practical distinction: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and Kubernetes itself through dedicated providers. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes scope of infrastructure management: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and…",
-    "toolB": "your project prioritizes runtime operations and workload lifecycle: Kubernetes is built for day-two operations, with controllers that restart failed pods, horizontal…"
+    "toolA": "your project prioritizes scope of infrastructure management: Pulumi can manage a broad range of providers, including major clouds, SaaS services, and Kubernetes itself through dedicated providers.",
+    "toolB": "your project prioritizes runtime operations and workload lifecycle: Kubernetes is built for day-two operations, with controllers that restart failed pods, horizontal pod autoscaling, rolling updates, and service discovery."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara OpenFGA y AWS: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "OpenFGA vs AWS: ¿cuál elegir en 2026?",
+    "description": "Comparativa OpenFGA vs AWS: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -92,7 +92,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre OpenFGA y AWS cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "OpenFGA encaja mejor cuando tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que…. AWS es preferible cuando tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de….",
+  "quickVerdict": "OpenFGA encaja mejor cuando tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que permite expresar permisos jerárquicos y contextuales con un lenguaje de modelado propio. AWS es preferible cuando tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de forma nativa con Lambda, API Gateway, S3 y otros.",
   "tradeoffs": [
     {
       "category": "Modelo de autorización y expresividad",
@@ -130,9 +130,9 @@
     "tech1Snippet": "import { OpenFgaClient } from \"@openfga/sdk\";\n\nconst authorization = new OpenFgaClient({\n  apiUrl: process.env.OPENFGA_API_URL!,\n  storeId: process.env.OPENFGA_STORE_ID!,\n  authorizationModelId: process.env.OPENFGA_MODEL_ID!,\n});\n\nexport async function canListProducts(userId: string, categoryId: string): Promise<boolean> {\n  const result = await authorization.check({\n    user: `user:${userId}`,\n    relation: \"viewer\",\n    object: `category:${categoryId}`,\n  });\n  return result.allowed;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n});\nconst accessPolicy = new aws.iam.Policy(\"product-image-reader\", {\n  description: \"Allow the product catalogue service to read product images\",\n  policy: productImages.arn.apply((bucketArn) => JSON.stringify({\n    Version: \"2012-10-17\",\n    Statement: [{\n      Effect: \"Allow\",\n      Action: [\"s3:GetObject\"],\n      Resource: [`${bucketArn}/*`],\n    }],\n  })),\n});\nexport const productImagePolicyArn = accessPolicy.arn;"
   },
-  "introduction": "OpenFGA y AWS responden a una necesidad similar, pero difieren en modelo de autorización y expresividad. OpenFGA: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que permite expresar… AWS: AWS ofrece varios enfoques: IAM para permisos de recursos, Verified Permissions (basado en Cedar) para autorización de… El criterio de flexibilidad y portabilidad añade otra diferencia práctica: OpenFGA es de código abierto y se puede desplegar en cualquier nube o entorno local, lo que evita dependencias de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "OpenFGA y AWS responden a una necesidad similar, pero difieren en modelo de autorización y expresividad. OpenFGA: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que permite expresar permisos jerárquicos y contextuales con un lenguaje de modelado propio. AWS: AWS ofrece varios enfoques: IAM para permisos de recursos, Verified Permissions (basado en Cedar) para autorización de aplicaciones y Cognito para identidad. El criterio de flexibilidad y portabilidad añade otra diferencia práctica: OpenFGA es de código abierto y se puede desplegar en cualquier nube o entorno local, lo que evita dependencias de proveedor y facilita migraciones. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que…",
-    "toolB": "tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de…"
+    "toolA": "tu proyecto prioriza modelo de autorización y expresividad: OpenFGA implementa el modelo ReBAC (relaciones basadas en objetos) similar a Zanzibar, lo que permite expresar permisos jerárquicos y contextuales con un lenguaje de modelado propio.",
+    "toolB": "tu proyecto prioriza integración con el ecosistema y servicios gestionados: AWS proporciona servicios gestionados como Verified Permissions, Cognito e IAM que se integran de forma nativa con Lambda, API Gateway, S3 y otros."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara Redis y Memcached: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Redis vs Memcached: ¿cuál elegir en 2026?",
+    "description": "Comparativa Redis vs Memcached: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "Redis"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Redis y Memcached cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Redis encaja mejor cuando tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados,…. Memcached es preferible cuando tu proyecto prioriza facilidad de operación y mantenimiento: Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración.",
+  "quickVerdict": "Redis encaja mejor cuando tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs, bitmaps, streams y estructuras geoespaciales. Memcached es preferible cuando tu proyecto prioriza facilidad de operación y mantenimiento: Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración.",
   "tradeoffs": [
     {
       "category": "Modelo de datos y estructuras soportadas",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
     "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\ntype MemcachedReader = {\n  get(key: string): Promise<string | null>;\n};\n\nexport async function listProducts(cache: MemcachedReader, productIds: readonly string[], categoryId: string) {\n  const values = await Promise.all(\n    productIds.slice(0, 50).map((id) => cache.get(`product:${id}`)),\n  );\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "Redis y Memcached responden a una necesidad similar, pero difieren en modelo de datos y estructuras soportadas. Redis: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs,… Memcached: Memcached está diseñado como una caché clave-valor pura: almacena blobs opacos asociados a una clave y no interpreta… El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: Redis ofrece persistencia mediante RDB (instantáneas) y AOF (registro de operaciones), con distintos niveles de fsync… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Redis y Memcached responden a una necesidad similar, pero difieren en modelo de datos y estructuras soportadas. Redis: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs, bitmaps, streams y estructuras geoespaciales. Memcached: Memcached está diseñado como una caché clave-valor pura: almacena blobs opacos asociados a una clave y no interpreta su contenido. El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: Redis ofrece persistencia mediante RDB (instantáneas) y AOF (registro de operaciones), con distintos niveles de fsync configurables. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados,…",
+    "toolA": "tu proyecto prioriza modelo de datos y estructuras soportadas: Redis no es solo un almacén clave-valor: ofrece cadenas, listas, conjuntos, conjuntos ordenados, hashes, hiperloglogs, bitmaps, streams y estructuras geoespaciales.",
     "toolB": "tu proyecto prioriza facilidad de operación y mantenimiento: Memcached es más fácil de desplegar y operar porque hace menos cosas y tiene menos configuración."
   }
 }

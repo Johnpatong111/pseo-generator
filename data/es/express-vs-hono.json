@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-hono",
   "meta": {
-    "title": "Express vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Express y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Express vs Hono: ¿cuál elegir en 2026?",
+    "description": "Comparativa Express vs Hono: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Express"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Express y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Express encaja mejor cuando tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware,…. Hono es preferible cuando tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor….",
+  "quickVerdict": "Express encaja mejor cuando tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware, tutoriales y soluciones documentadas. Hono es preferible cuando tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor latencia y mayor throughput en pruebas comparativas publicadas por terceros.",
   "tradeoffs": [
     {
       "category": "Rendimiento y eficiencia en peticiones",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "Express y Hono responden a una necesidad similar, pero difieren en rendimiento y eficiencia en peticiones. Express: Express es un framework consolidado sobre Node.js cuyo rendimiento, aunque correcto, no está optimizado para… Hono: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor latencia y mayor… El criterio de sistema de tipos y experiencia de desarrollo añade otra diferencia práctica: Express tiene tipados disponibles mediante @types/express, pero su API se concibió en JavaScript y el tipado es menos… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Express y Hono responden a una necesidad similar, pero difieren en rendimiento y eficiencia en peticiones. Express: Express es un framework consolidado sobre Node.js cuyo rendimiento, aunque correcto, no está optimizado para escenarios de altísima concurrencia. Hono: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor latencia y mayor throughput en pruebas comparativas publicadas por terceros. El criterio de sistema de tipos y experiencia de desarrollo añade otra diferencia práctica: Express tiene tipados disponibles mediante @types/express, pero su API se concibió en JavaScript y el tipado es menos estricto. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware,…",
-    "toolB": "tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor…"
+    "toolA": "tu proyecto prioriza ecosistema y madurez: Express cuenta con años de recorrido, una comunidad enorme y una gran cantidad de middleware, tutoriales y soluciones documentadas.",
+    "toolB": "tu proyecto prioriza rendimiento y eficiencia en peticiones: Hono está diseñado con un enrutador ligero y un enfoque minimalista que suele ofrecer menor latencia y mayor throughput en pruebas comparativas publicadas por terceros."
   }
 }

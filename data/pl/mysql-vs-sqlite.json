@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj MySQL i SQLite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "MySQL vs SQLite: co wybrać w 2026?",
+    "description": "Porównanie MySQL vs SQLite: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między MySQL a SQLite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji…. SQLite sprawdzi się, gdy projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: SQLite nie wymaga instalacji ani konfiguracji – wystarczy dołączyć bibliotekę do aplikacji.",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji transakcji. SQLite sprawdzi się, gdy projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: SQLite nie wymaga instalacji ani konfiguracji – wystarczy dołączyć bibliotekę do aplikacji.",
   "tradeoffs": [
     {
       "category": "Model architektury i sposób działania",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "MySQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób działania. MySQL: MySQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć lub gniazdo lokalne. SQLite: SQLite to wbudowana biblioteka, która przechowuje całą bazę w jednym pliku i działa w procesie aplikacji, bez… Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji transakcji. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "MySQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób działania. MySQL: MySQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć lub gniazdo lokalne. SQLite: SQLite to wbudowana biblioteka, która przechowuje całą bazę w jednym pliku i działa w procesie aplikacji, bez odrębnego serwera. Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji transakcji. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji…",
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów dzięki modelowi połączeń i mechanizmom izolacji transakcji.",
     "toolB": "projekt stawia na kryterium „Łatwość wdrożenia i utrzymania”: SQLite nie wymaga instalacji ani konfiguracji – wystarczy dołączyć bibliotekę do aplikacji."
   }
 }

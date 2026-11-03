@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-memcached",
   "meta": {
-    "title": "SQLite vs Memcached: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara SQLite y Memcached: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "SQLite vs Memcached: ¿cuál elegir en 2026?",
+    "description": "Comparativa SQLite vs Memcached: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "SQLite"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre SQLite y Memcached cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de…. Memcached es preferible cuando tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y….",
+  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la información sobrevive a reinicios del proceso o del dispositivo. Memcached es preferible cuando tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y un protocolo sencillo sobre TCP o UDP.",
   "tradeoffs": [
     {
       "category": "Modelo y propósito fundamental",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}",
     "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\ntype MemcachedReader = {\n  get(key: string): Promise<string | null>;\n};\n\nexport async function listProducts(cache: MemcachedReader, productIds: readonly string[], categoryId: string) {\n  const values = await Promise.all(\n    productIds.slice(0, 50).map((id) => cache.get(`product:${id}`)),\n  );\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "SQLite y Memcached responden a una necesidad similar, pero difieren en modelo y propósito fundamental. SQLite: SQLite es un motor de base de datos relacional embebido que se ejecuta dentro del propio proceso de la aplicación y… Memcached: Memcached es un sistema de almacenamiento clave-valor en memoria, distribuido y sin persistencia, cuyo objetivo es… El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "SQLite y Memcached responden a una necesidad similar, pero difieren en modelo y propósito fundamental. SQLite: SQLite es un motor de base de datos relacional embebido que se ejecuta dentro del propio proceso de la aplicación y guarda los datos en un único archivo en disco. Memcached: Memcached es un sistema de almacenamiento clave-valor en memoria, distribuido y sin persistencia, cuyo objetivo es reducir la latencia de lecturas costosas. El criterio de persistencia y durabilidad de los datos añade otra diferencia práctica: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la información sobrevive a reinicios del proceso o del dispositivo. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de…",
-    "toolB": "tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y…"
+    "toolA": "tu proyecto prioriza persistencia y durabilidad de los datos: SQLite escribe los datos en disco y aplica transacciones ACID con modos de journal como WAL, de modo que la información sobrevive a reinicios del proceso o del dispositivo.",
+    "toolB": "tu proyecto prioriza rendimiento y latencia: Memcached está optimizado para lecturas y escrituras en memoria con latencias de microsegundos y un protocolo sencillo sobre TCP o UDP."
   }
 }

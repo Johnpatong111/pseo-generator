@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-svelte",
   "meta": {
-    "title": "SolidJS vs Svelte: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara SolidJS y Svelte: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "SolidJS vs Svelte: ¿cuál elegir en 2026?",
+    "description": "Comparativa SolidJS vs Svelte: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "SolidJS"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre SolidJS y Svelte cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola…. Svelte es preferible cuando tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su….",
+  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola vez: las actualizaciones afectan directamente al DOM mediante seguimiento fino de dependencias. Svelte es preferible cuando tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su sintaxis declarativa y a la reducción de código repetitivo.",
   "tradeoffs": [
     {
       "category": "Modelo de reactividad y gestión del estado",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { createResource } from \"solid-js\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nasync function loadProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50&sort=name`,\n  );\n  if (!response.ok) throw new Error(`Product request failed: ${response.status}`);\n  return (await response.json()) as Product[];\n}\n\nexport function createCategoryProducts(categoryId: () => string) {\n  return createResource(categoryId, loadProducts);\n}",
     "tech2Snippet": "import type { PageServerLoad } from \"./$types\";\nimport { productRepository } from \"$lib/server/products\";\n\nexport const load: PageServerLoad = async ({ url }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) return { products: [], error: \"category is required\" };\n\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n};"
   },
-  "introduction": "SolidJS y Svelte responden a una necesidad similar, pero difieren en modelo de reactividad y gestión del estado. SolidJS: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola vez: las… Svelte: Svelte compila los componentes y genera código reactivo optimizado; en sus versiones recientes (Svelte 5) introduce… El criterio de rendimiento y tamaño del paquete en producción añade otra diferencia práctica: SolidJS suele producir paquetes pequeños y un rendimiento notable porque evita el trabajo de reconciliación de un DOM… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "SolidJS y Svelte responden a una necesidad similar, pero difieren en modelo de reactividad y gestión del estado.  SolidJS: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola vez: las actualizaciones afectan directamente al DOM mediante seguimiento fino de dependencias.  Svelte: Svelte compila los componentes y genera código reactivo optimizado; en sus versiones recientes (Svelte 5) introduce runas como $state y $derived que formalizan un modelo de señales.  El criterio de rendimiento y tamaño del paquete en producción añade otra diferencia práctica: SolidJS suele producir paquetes pequeños y un rendimiento notable porque evita el trabajo de reconciliación de un DOM virtual y actualiza directamente lo necesario.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola…",
-    "toolB": "tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su…"
+    "toolA": "tu proyecto prioriza modelo de reactividad y gestión del estado: SolidJS emplea reactividad granular basada en señales donde los componentes se ejecutan una sola vez: las actualizaciones afectan directamente al DOM mediante seguimiento fino de dependencias.",
+    "toolB": "tu proyecto prioriza curva de aprendizaje y experiencia de desarrollo: Svelte se percibe habitualmente como una de las opciones más fáciles de aprender gracias a su sintaxis declarativa y a la reducción de código repetitivo."
   }
 }

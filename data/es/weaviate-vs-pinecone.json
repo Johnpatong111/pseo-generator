@@ -1,8 +1,8 @@
 {
   "slug": "weaviate-vs-pinecone",
   "meta": {
-    "title": "Weaviate vs Pinecone: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Weaviate y Pinecone: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Weaviate vs Pinecone: ¿cuál elegir en 2026?",
+    "description": "Comparativa Weaviate vs Pinecone: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Weaviate"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Weaviate y Pinecone cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Weaviate encaja mejor cuando tu proyecto prioriza modelo de licencia y apertura: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar,…. Pinecone es preferible cuando tu proyecto prioriza despliegue y modelo operativo: Pinecone se ofrece como servicio en la nube totalmente gestionado: el proveedor se encarga del….",
+  "quickVerdict": "Weaviate encaja mejor cuando tu proyecto prioriza modelo de licencia y apertura: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar, modificar y ejecutar en tu propia infraestructura, además de ofrecer una versión gestionada en la nube. Pinecone es preferible cuando tu proyecto prioriza despliegue y modelo operativo: Pinecone se ofrece como servicio en la nube totalmente gestionado: el proveedor se encarga del aprovisionamiento, las actualizaciones y el escalado, y tú interactúas principalmente mediante API.",
   "tradeoffs": [
     {
       "category": "Modelo de licencia y apertura",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}",
     "tech2Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}"
   },
-  "introduction": "Weaviate y Pinecone responden a una necesidad similar, pero difieren en modelo de licencia y apertura. Weaviate: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar, modificar y ejecutar en tu… Pinecone: Pinecone es un servicio propietario y cerrado que se consume como producto gestionado, sin acceso al código fuente ni… El criterio de búsqueda híbrida y filtrado añade otra diferencia práctica: Weaviate incorpora de forma nativa búsqueda vectorial y léxica combinadas, con módulos de vectorización y filtros… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Weaviate y Pinecone responden a una necesidad similar, pero difieren en modelo de licencia y apertura.  Weaviate: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar, modificar y ejecutar en tu propia infraestructura, además de ofrecer una versión gestionada en la nube.  Pinecone: Pinecone es un servicio propietario y cerrado que se consume como producto gestionado, sin acceso al código fuente ni opción de autoalojamiento oficial.  El criterio de búsqueda híbrida y filtrado añade otra diferencia práctica: Weaviate incorpora de forma nativa búsqueda vectorial y léxica combinadas, con módulos de vectorización y filtros sobre propiedades de los objetos que se aplican junto con la consulta vectorial.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de licencia y apertura: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar,…",
-    "toolB": "tu proyecto prioriza despliegue y modelo operativo: Pinecone se ofrece como servicio en la nube totalmente gestionado: el proveedor se encarga del…"
+    "toolA": "tu proyecto prioriza modelo de licencia y apertura: Weaviate es un proyecto de código abierto con licencia permisiva que puedes inspeccionar, modificar y ejecutar en tu propia infraestructura, además de ofrecer una versión gestionada en la nube.",
+    "toolB": "tu proyecto prioriza despliegue y modelo operativo: Pinecone se ofrece como servicio en la nube totalmente gestionado: el proveedor se encarga del aprovisionamiento, las actualizaciones y el escalado, y tú interactúas principalmente mediante API."
   }
 }

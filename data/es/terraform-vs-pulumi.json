@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-pulumi",
   "meta": {
-    "title": "Terraform vs Pulumi: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Terraform y Pulumi: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Terraform vs Pulumi: ¿cuál elegir en 2026?",
+    "description": "Comparativa Terraform vs Pulumi: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Terraform"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Terraform y Pulumi cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Terraform encaja mejor cuando tu proyecto prioriza ecosistema de proveedores y cobertura: Terraform cuenta con un registro de proveedores muy amplio y mantiene compatibilidad con muchos…. Pulumi es preferible cuando tu proyecto prioriza lenguajes y modelo de programación: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript,….",
+  "quickVerdict": "Terraform encaja mejor cuando tu proyecto prioriza ecosistema de proveedores y cobertura: Terraform cuenta con un registro de proveedores muy amplio y mantiene compatibilidad con muchos recursos mediante su protocolo de plugins. Pulumi es preferible cuando tu proyecto prioriza lenguajes y modelo de programación: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript, Python, Go, C# y Java, además de YAML.",
   "tradeoffs": [
     {
       "category": "Lenguajes y modelo de programación",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { App, TerraformStack } from \"cdktf\";\nimport { S3Bucket } from \"@cdktf/provider-aws/lib/s3-bucket\";\nimport { S3BucketPublicAccessBlock } from \"@cdktf/provider-aws/lib/s3-bucket-public-access-block\";\nimport { Construct } from \"constructs\";\n\nclass ProductMediaStack extends TerraformStack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n    const bucket = new S3Bucket(this, \"productImages\", {\n      bucketPrefix: \"product-catalog-images-\",\n      forceDestroy: false,\n    });\n    new S3BucketPublicAccessBlock(this, \"privateImages\", {\n      bucket: bucket.id,\n      blockPublicAcls: true,\n      blockPublicPolicy: true,\n      ignorePublicAcls: true,\n      restrictPublicBuckets: true,\n    });\n  }\n}\n\nnew ProductMediaStack(new App(), \"product-media\");",
     "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Terraform y Pulumi responden a una necesidad similar, pero difieren en lenguajes y modelo de programación. Terraform: Terraform utiliza HCL, un lenguaje declarativo específico de dominio que resulta legible y predecible para describir… Pulumi: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript, Python, Go, C# y Java,… El criterio de gestión de estado y colaboración añade otra diferencia práctica: Terraform guarda el estado en backends remotos como S3, Azure Blob o Terraform Cloud, y ofrece bloqueo de estado según… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Terraform y Pulumi responden a una necesidad similar, pero difieren en lenguajes y modelo de programación. Terraform: Terraform utiliza HCL, un lenguaje declarativo específico de dominio que resulta legible y predecible para describir infraestructura. Pulumi: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript, Python, Go, C# y Java, además de YAML. El criterio de gestión de estado y colaboración añade otra diferencia práctica: Terraform guarda el estado en backends remotos como S3, Azure Blob o Terraform Cloud, y ofrece bloqueo de estado según el backend. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema de proveedores y cobertura: Terraform cuenta con un registro de proveedores muy amplio y mantiene compatibilidad con muchos…",
-    "toolB": "tu proyecto prioriza lenguajes y modelo de programación: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript,…"
+    "toolA": "tu proyecto prioriza ecosistema de proveedores y cobertura: Terraform cuenta con un registro de proveedores muy amplio y mantiene compatibilidad con muchos recursos mediante su protocolo de plugins.",
+    "toolB": "tu proyecto prioriza lenguajes y modelo de programación: Pulumi permite definir infraestructura con lenguajes de programación generales como TypeScript, Python, Go, C# y Java, además de YAML."
   }
 }

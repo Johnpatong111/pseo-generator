@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Bun i Express: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Bun vs Express: co wybrać w 2026?",
+    "description": "Porównanie Bun vs Express: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Bun a Express zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu…. Express sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co….",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu scenariuszach przekłada się na niższe opóźnienia i wyższą przepustowość niż rozwiązania oparte na Node.js. Express sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co ułatwia znalezienie sprawdzonych wzorców i bibliotek.",
   "tradeoffs": [
     {
       "category": "Wydajność i przepustowość żądań",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
-  "introduction": "Bun i Express odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i przepustowość żądań. Bun: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu scenariuszach przekłada się… Express: Express działa jako stosunkowo cienka warstwa na serwerze HTTP Node.js, a jego wydajność zależy głównie od wersji… Kolejną istotną różnicę pokazuje kryterium „Dojrzałość ekosystemu i bibliotek”: Bun stara się zachować kompatybilność z dużą częścią ekosystemu npm i wbudowuje menedżer pakietów, bundler oraz runner… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Bun i Express odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i przepustowość żądań.  Bun: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu scenariuszach przekłada się na niższe opóźnienia i wyższą przepustowość niż rozwiązania oparte na Node. js.  Express: Express działa jako stosunkowo cienka warstwa na serwerze HTTP Node. js, a jego wydajność zależy głównie od wersji Node. js, konfiguracji i kodu aplikacji.  Kolejną istotną różnicę pokazuje kryterium „Dojrzałość ekosystemu i bibliotek”: Bun stara się zachować kompatybilność z dużą częścią ekosystemu npm i wbudowuje menedżer pakietów, bundler oraz runner testów, co upraszcza konfigurację nowego projektu.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu…",
-    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co…"
+    "toolA": "projekt stawia na kryterium „Wydajność i przepustowość żądań”: Bun wykorzystuje silnik JavaScriptCore oraz własną implementację serwera HTTP, co w wielu scenariuszach przekłada się na niższe opóźnienia i wyższą przepustowość niż rozwiązania oparte na Node.js.",
+    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu i bibliotek”: Express ma długą historię i bardzo szeroki ekosystem middleware oraz gotowych rozwiązań, co ułatwia znalezienie sprawdzonych wzorców i bibliotek."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Docker y Kubernetes: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Docker vs Kubernetes: ¿cuál elegir en 2026?",
+    "description": "Comparativa Docker vs Kubernetes: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Docker"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Docker y Kubernetes cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Docker encaja mejor cuando tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un…. Kubernetes es preferible cuando tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler….",
+  "quickVerdict": "Docker encaja mejor cuando tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener un servicio en marcha en minutos. Kubernetes es preferible cuando tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler y para la reprogramación de cargas cuando un nodo falla.",
   "tradeoffs": [
     {
       "category": "Propósito principal y modelo de uso",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Docker\" },\n  });\n  await container.start();\n}",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Docker y Kubernetes responden a una necesidad similar, pero difieren en propósito principal y modelo de uso. Docker: Docker es una plataforma de contenedores centrada en construir imágenes, empaquetar dependencias y ejecutar procesos… Kubernetes: Kubernetes es un orquestador de contenedores diseñado para gestionar cargas de trabajo distribuidas en clústeres de… El criterio de curva de aprendizaje y complejidad operativa añade otra diferencia práctica: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Docker y Kubernetes responden a una necesidad similar, pero difieren en propósito principal y modelo de uso. Docker: Docker es una plataforma de contenedores centrada en construir imágenes, empaquetar dependencias y ejecutar procesos aislados en uno o varios hosts. Kubernetes: Kubernetes es un orquestador de contenedores diseñado para gestionar cargas de trabajo distribuidas en clústeres de varios nodos, con reconciliación continua del estado deseado. El criterio de curva de aprendizaje y complejidad operativa añade otra diferencia práctica: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener un servicio en marcha en minutos. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un…",
-    "toolB": "tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler…"
+    "toolA": "tu proyecto prioriza curva de aprendizaje y complejidad operativa: Docker es rápido de aprender para quien ya trabaja con línea de comandos; un Dockerfile y un docker run permiten tener un servicio en marcha en minutos.",
+    "toolB": "tu proyecto prioriza escalado y alta disponibilidad: Kubernetes está diseñado para el escalado horizontal automático mediante Horizontal Pod Autoscaler y para la reprogramación de cargas cuando un nodo falla."
   }
 }

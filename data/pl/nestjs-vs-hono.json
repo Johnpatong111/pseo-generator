@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-hono",
   "meta": {
-    "title": "NestJS vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj NestJS i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "NestJS vs Hono: co wybrać w 2026?",
+    "description": "Porównanie NestJS vs Hono: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "NestJS"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między NestJS a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "NestJS będzie lepszy, gdy projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu…. Hono sprawdzi się, gdy projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym….",
+  "quickVerdict": "NestJS będzie lepszy, gdy projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu zależności, co ułatwia pracę w większych zespołach i utrzymanie długotrwałych projektów. Hono sprawdzi się, gdy projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym rozmiarem oraz szybkim startem.",
   "tradeoffs": [
     {
       "category": "Architektura i organizacja kodu",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "NestJS i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i organizacja kodu. NestJS: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu zależności, co… Hono: Hono stawia na minimalizm i kompozycję: aplikację buduje się z lekkich routerów i pośredników, bez wymuszonego… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut runtime”: NestJS działa na Node.js i domyślnie korzysta z Express, a alternatywnie z Fastify; rzeczywista wydajność zależy od… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "NestJS i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i organizacja kodu. NestJS: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu zależności, co ułatwia pracę w większych zespołach i utrzymanie długotrwałych projektów. Hono: Hono stawia na minimalizm i kompozycję: aplikację buduje się z lekkich routerów i pośredników, bez wymuszonego kontenera DI ani sztywnej struktury katalogów. Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut runtime”: NestJS działa na Node.js i domyślnie korzysta z Express, a alternatywnie z Fastify; rzeczywista wydajność zależy od adaptera, konfiguracji i charakteru obciążenia. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu…",
-    "toolB": "projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym…"
+    "toolA": "projekt stawia na kryterium „Architektura i organizacja kodu”: NestJS narzuca uporządkowaną strukturę opartą na modułach, kontrolerach, serwisach i wstrzykiwaniu zależności, co ułatwia pracę w większych zespołach i utrzymanie długotrwałych projektów.",
+    "toolB": "projekt stawia na kryterium „Wydajność i narzut runtime”: Hono powstało z myślą o lekkich środowiskach, w tym edge i serverless, i cechuje się małym rozmiarem oraz szybkim startem."
   }
 }

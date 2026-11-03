@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara MySQL y SQLite: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "MySQL vs SQLite: ¿cuál elegir en 2026?",
+    "description": "Comparativa MySQL vs SQLite: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre MySQL y SQLite cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia…. SQLite es preferible cuando tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y….",
+  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y niveles de aislamiento configurables, lo que permite muchas conexiones simultáneas con lecturas y escrituras. SQLite es preferible cuando tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y abrir un archivo.",
   "tradeoffs": [
     {
       "category": "Arquitectura y modelo de despliegue",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "MySQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de despliegue. MySQL: MySQL funciona como un servidor de base de datos independiente al que los clientes se conectan por red, normalmente… SQLite: SQLite es una biblioteca embebida que se enlaza dentro de la propia aplicación; no hay proceso servidor ni puerto de… El criterio de concurrencia y bloqueos añade otra diferencia práctica: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "MySQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de despliegue. MySQL: MySQL funciona como un servidor de base de datos independiente al que los clientes se conectan por red, normalmente con el protocolo nativo o mediante conectores. SQLite: SQLite es una biblioteca embebida que se enlaza dentro de la propia aplicación; no hay proceso servidor ni puerto de escucha. El criterio de concurrencia y bloqueos añade otra diferencia práctica: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y niveles de aislamiento configurables, lo que permite muchas conexiones simultáneas con lecturas y escrituras. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia…",
-    "toolB": "tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y…"
+    "toolA": "tu proyecto prioriza concurrencia y bloqueos: MySQL, con el motor InnoDB por defecto, ofrece transacciones ACID, control de concurrencia multiversión (MVCC) y niveles de aislamiento configurables, lo que permite muchas conexiones simultáneas con lecturas y escrituras.",
+    "toolB": "tu proyecto prioriza instalación, administración y mantenimiento: SQLite no requiere instalación ni administración de servidor: basta con incluir la biblioteca y abrir un archivo."
   }
 }

@@ -4,6 +4,7 @@ import { createCodeExamples, scenarios } from "./snippet-catalog.cjs";
 import { validateComparisonData } from "./comparison-validation.cjs";
 import { getComparisonCategories } from "./taxonomy";
 import { LOCALES, type Locale } from "./locales";
+import { completeSentence } from "./text";
 
 export { LOCALES };
 export type { Locale };
@@ -101,8 +102,8 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     }
 
     return {
-      q: requireString(item.q, `faq[${index}].q`, fileName),
-      a: requireString(item.a, `faq[${index}].a`, fileName),
+      q: completeSentence(requireString(item.q, `faq[${index}].q`, fileName)),
+      a: completeSentence(requireString(item.a, `faq[${index}].a`, fileName)),
     };
   });
 
@@ -118,9 +119,11 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
       }
 
       return {
-        category: requireString(item.category, `tradeoffs[${index}].category`, fileName),
-        toolA: requireString(item.toolA, `tradeoffs[${index}].toolA`, fileName),
-        toolB: requireString(item.toolB, `tradeoffs[${index}].toolB`, fileName),
+        category: completeSentence(
+          requireString(item.category, `tradeoffs[${index}].category`, fileName),
+        ),
+        toolA: completeSentence(requireString(item.toolA, `tradeoffs[${index}].toolA`, fileName)),
+        toolB: completeSentence(requireString(item.toolB, `tradeoffs[${index}].toolB`, fileName)),
       };
     });
   }
@@ -140,9 +143,15 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
       }
 
       return {
-        category: requireString(item.category, `comparison[${index}].category`, fileName),
-        toolA: requireString(item.toolA, `comparison[${index}].toolA`, fileName),
-        toolB: requireString(item.toolB, `comparison[${index}].toolB`, fileName),
+        category: completeSentence(
+          requireString(item.category, `comparison[${index}].category`, fileName),
+        ),
+        toolA: completeSentence(
+          requireString(item.toolA, `comparison[${index}].toolA`, fileName),
+        ),
+        toolB: completeSentence(
+          requireString(item.toolB, `comparison[${index}].toolB`, fileName),
+        ),
         winner: item.winner,
       };
     });
@@ -179,15 +188,19 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     }
 
     decisionFramework = {
-      toolA: requireString(
-        value.decisionFramework.toolA,
-        "decisionFramework.toolA",
-        fileName,
+      toolA: completeSentence(
+        requireString(
+          value.decisionFramework.toolA,
+          "decisionFramework.toolA",
+          fileName,
+        ),
       ),
-      toolB: requireString(
-        value.decisionFramework.toolB,
-        "decisionFramework.toolB",
-        fileName,
+      toolB: completeSentence(
+        requireString(
+          value.decisionFramework.toolB,
+          "decisionFramework.toolB",
+          fileName,
+        ),
       ),
     };
   }
@@ -205,27 +218,39 @@ function parseComparison(value: unknown, fileName: string, locale: Locale): Comp
     toolB: {
       name: requireString(value.toolB.name, "toolB.name", fileName),
     },
-    verdict: requireString(value.verdict, "verdict", fileName),
+    verdict: completeSentence(requireString(value.verdict, "verdict", fileName)),
     introduction:
       value.introduction === undefined
         ? undefined
-        : requireString(value.introduction, "introduction", fileName),
+        : completeSentence(
+            requireString(value.introduction, "introduction", fileName),
+          ),
     heroSubtitle:
       value.heroSubtitle === undefined
-        ? requireString(value.introduction ?? value.meta.description, "heroSubtitle", fileName)
-        : requireString(value.heroSubtitle, "heroSubtitle", fileName),
+        ? completeSentence(
+            requireString(
+              value.introduction ?? value.meta.description,
+              "heroSubtitle",
+              fileName,
+            ),
+          )
+        : completeSentence(
+            requireString(value.heroSubtitle, "heroSubtitle", fileName),
+          ),
     quickVerdict:
       value.quickVerdict === undefined
-        ? requireString(value.verdict, "quickVerdict", fileName)
-        : requireString(value.quickVerdict, "quickVerdict", fileName),
+        ? completeSentence(requireString(value.verdict, "quickVerdict", fileName))
+        : completeSentence(
+            requireString(value.quickVerdict, "quickVerdict", fileName),
+          ),
     decisionFramework,
     comparison,
     tradeoffs:
       tradeoffs ??
       (comparison ?? []).map(({ category, toolA, toolB }) => ({
         category,
-        toolA: toolA.split(/(?<=[.!?])\s+/u)[0],
-        toolB: toolB.split(/(?<=[.!?])\s+/u)[0],
+        toolA: completeSentence(toolA.split(/(?<=[.!?])\s+/u)[0] ?? toolA),
+        toolB: completeSentence(toolB.split(/(?<=[.!?])\s+/u)[0] ?? toolB),
       })),
     codeExamples,
     faq,
@@ -270,15 +295,26 @@ function readComparisons(directory: string, locale: Locale): Comparison[] {
 }
 
 export function getComparisons(locale: Locale = "en"): Comparison[] {
-  return readComparisons(join(process.cwd(), "data", locale), locale).sort(
-    (left, right) => left.slug.localeCompare(right.slug),
-  );
+  return getCachedComparisons(join(process.cwd(), "data", locale), locale);
 }
 
 export function getLocalizedComparisons(locale: Locale): Comparison[] {
-  return readComparisons(join(process.cwd(), "data", locale), locale).sort(
-    (left, right) => left.slug.localeCompare(right.slug),
+  return getCachedComparisons(join(process.cwd(), "data", locale), locale);
+}
+
+const comparisonCache = new Map<string, Comparison[]>();
+
+function getCachedComparisons(directory: string, locale: Locale): Comparison[] {
+  const cached = comparisonCache.get(directory);
+  if (cached) {
+    return cached;
+  }
+
+  const comparisons = readComparisons(directory, locale).sort((left, right) =>
+    left.slug.localeCompare(right.slug),
   );
+  comparisonCache.set(directory, comparisons);
+  return comparisons;
 }
 
 export function getComparisonBySlug(

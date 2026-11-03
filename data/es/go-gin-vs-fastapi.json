@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-fastapi",
   "meta": {
-    "title": "Gin vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Gin y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Gin vs FastAPI: ¿cuál elegir en 2026?",
+    "description": "Comparativa Gin vs FastAPI: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Gin"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Gin y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Gin encaja mejor cuando tu proyecto prioriza lenguaje y modelo de concurrencia: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia. FastAPI es preferible cuando tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de….",
+  "quickVerdict": "Gin encaja mejor cuando tu proyecto prioriza lenguaje y modelo de concurrencia: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia. FastAPI es preferible cuando tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de forma declarativa.",
   "tradeoffs": [
     {
       "category": "Lenguaje y modelo de concurrencia",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados. Como uno de los backends no usa TypeScript, su ejemplo es un cliente HTTP tipado; el servidor sigue escrito en el lenguaje nativo del framework.",
-    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromGoGin(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`Go Gin product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromFastapi(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`fastapi product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}"
+    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados.",
+    "tech1Snippet": "package main\n\nimport (\n\t\"database/sql\"\n\t\"net/http\"\n\t\"strconv\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\ntype Product struct {\n\tID         string `json:\"id\"`\n\tName       string `json:\"name\"`\n\tPriceCents int64  `json:\"priceCents\"`\n}\n\nfunc listActiveProducts(db *sql.DB, categoryID string, limit int) ([]Product, error) {\n\trows, err := db.Query(\n\t\t\"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active ORDER BY name LIMIT $2\",\n\t\tcategoryID,\n\t\tlimit,\n\t)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tdefer rows.Close()\n\n\tproducts := make([]Product, 0, limit)\n\tfor rows.Next() {\n\t\tvar product Product\n\t\tif err := rows.Scan(&product.ID, &product.Name, &product.PriceCents); err != nil {\n\t\t\treturn nil, err\n\t\t}\n\t\tproducts = append(products, product)\n\t}\n\treturn products, rows.Err()\n}\n\nfunc registerProductRoutes(router *gin.Engine, db *sql.DB) {\n\trouter.GET(\"/api/products\", func(c *gin.Context) {\n\t\tcategoryID := c.Query(\"category\")\n\t\tif categoryID == \"\" {\n\t\t\tc.JSON(http.StatusBadRequest, gin.H{\"error\": \"category is required\"})\n\t\t\treturn\n\t\t}\n\t\tlimit, err := strconv.Atoi(c.DefaultQuery(\"limit\", \"50\"))\n\t\tif err != nil || limit < 1 || limit > 50 {\n\t\t\tc.JSON(http.StatusBadRequest, gin.H{\"error\": \"limit must be between 1 and 50\"})\n\t\t\treturn\n\t\t}\n\t\tproducts, err := listActiveProducts(db, categoryID, limit)\n\t\tif err != nil {\n\t\t\tc.JSON(http.StatusInternalServerError, gin.H{\"error\": \"could not load products\"})\n\t\t\treturn\n\t\t}\n\t\tc.JSON(http.StatusOK, gin.H{\"products\": products})\n\t})\n}",
+    "tech2Snippet": "from fastapi import FastAPI, HTTPException, Query\nfrom pydantic import BaseModel\n\nfrom app.repositories.products import product_repository\n\n\nclass Product(BaseModel):\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\napp = FastAPI()\n\n\n@app.get(\"/api/products\", response_model=list[Product])\nasync def list_products(\n    category: str = Query(min_length=1),\n    limit: int = Query(default=50, ge=1, le=50),\n) -> list[Product]:\n    products = await product_repository.list_active_by_category(\n        category_id=category,\n        limit=limit,\n    )\n    if products is None:\n        raise HTTPException(status_code=500, detail=\"could not load products\")\n    return products"
   },
   "introduction": "Gin y FastAPI responden a una necesidad similar, pero difieren en lenguaje y modelo de concurrencia. Gin: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia. FastAPI: FastAPI usa Python y aprovecha el modelo asíncrono de asyncio en el servicio ASGI. El criterio de rendimiento y carga de trabajo añade otra diferencia práctica: Gin es conocido por su bajo consumo de recursos y su capacidad de respuesta en servicios de alta concurrencia. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
     "toolA": "tu proyecto prioriza lenguaje y modelo de concurrencia: Gin se apoya en Go, un lenguaje compilado con goroutines y canales como base de concurrencia.",
-    "toolB": "tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de…"
+    "toolB": "tu proyecto prioriza tipado, validación y documentación automática: FastAPI usa anotaciones de tipo de Python y modelos de Pydantic para validar entradas y salidas de forma declarativa."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-express",
   "meta": {
-    "title": "Node.js vs Express: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Node.js y Express: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Node.js vs Express: ¿cuál elegir en 2026?",
+    "description": "Comparativa Node.js vs Express: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Node.js"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Node.js y Express cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad…. Express es preferible cuando tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y….",
+  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad periódicas; la política concreta depende de la versión mayor. Express es preferible cuando tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y respuestas JSON con menos líneas de código.",
   "tradeoffs": [
     {
       "category": "Naturaleza y propósito: ¿son herramientas del mismo tipo",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));",
     "tech2Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
-  "introduction": "Node.js y Express responden a una necesidad similar, pero difieren en naturaleza y propósito: ¿son herramientas del mismo tipo. Node.js: Node.js es un entorno de ejecución de JavaScript basado en el motor V8 que permite ejecutar código fuera del navegador. Express: Express es una biblioteca de aplicación web minimalista que se ejecuta sobre Node.js y añade abstracciones para rutas,… El criterio de facilidad de uso y curva de aprendizaje añade otra diferencia práctica: Node.js exige comprender su modelo asíncrono, los módulos nativos, la gestión de dependencias con npm y el manejo de… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Node.js y Express responden a una necesidad similar, pero difieren en naturaleza y propósito: ¿son herramientas del mismo tipo. Node.js: Node.js es un entorno de ejecución de JavaScript basado en el motor V8 que permite ejecutar código fuera del navegador. Express: Express es una biblioteca de aplicación web minimalista que se ejecuta sobre Node.js y añade abstracciones para rutas, middleware y gestión de peticiones y respuestas. El criterio de facilidad de uso y curva de aprendizaje añade otra diferencia práctica: Node.js exige comprender su modelo asíncrono, los módulos nativos, la gestión de dependencias con npm y el manejo de errores. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad…",
-    "toolB": "tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y…"
+    "toolA": "tu proyecto prioriza seguridad y mantenimiento a largo plazo: Node.js publica versiones con soporte a largo plazo (LTS) y actualizaciones de seguridad periódicas; la política concreta depende de la versión mayor.",
+    "toolB": "tu proyecto prioriza facilidad de uso y curva de aprendizaje: Express simplifica tareas comunes con un API concisa: rutas, middleware, parámetros de ruta y respuestas JSON con menos líneas de código."
   }
 }

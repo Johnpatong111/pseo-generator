@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-autogen",
   "meta": {
-    "title": "LangChain vs AutoGen: welches 2026 wählen — Modelle, Kontext und API-Kosten",
-    "description": "Vergleiche LangChain und AutoGen: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
+    "title": "LangChain vs AutoGen: Was wählen in 2026?",
+    "description": "Vergleich LangChain vs AutoGen: Kontextfenster, API-Preise, Latenz und Architekturkompromisse für AI-Engineers."
   },
   "toolA": {
     "name": "LangChain"
@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Erstelle eine beleggestützte Katalogantwort: Rufe passende Datensätze ab und fasse nur Fakten aus dem Kontext zusammen. Das TypeScript-Beispiel ruft einen eigenen HTTP-Adapter für das Agenten-Framework auf; die Agentenimplementierung läuft in dessen nativer Umgebung.",
+    "scenario": "Erstelle eine beleggestützte Katalogantwort: Rufe passende Datensätze ab und fasse nur Fakten aus dem Kontext zusammen.",
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  invoke(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.invoke({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype AgentAnswer = { answer: string };\n\nexport async function answerProductQuestion(\n  serviceUrl: string,\n  question: string,\n  categoryId: string,\n  products: readonly Product[],\n): Promise<string> {\n  const response = await fetch(new URL(\"/api/agents/autogen/answer\", serviceUrl), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", accept: \"application/json\" },\n    body: JSON.stringify({ question, categoryId, products }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Agent service failed: ${response.status}`);\n  const result = (await response.json()) as AgentAnswer;\n  if (!result.answer.trim()) throw new Error(\"The agent returned an empty answer\");\n  return result.answer;\n}"
+    "tech2Snippet": "import asyncio\n\nfrom autogen_agentchat.agents import AssistantAgent\nfrom autogen_ext.models.openai import OpenAIChatCompletionClient\n\n\nasync def answer_product_question(\n    question: str,\n    products: list[dict[str, object]],\n) -> str:\n    model_client = OpenAIChatCompletionClient(model=\"gpt-4o-mini\")\n    agent = AssistantAgent(\n        name=\"catalogue_agent\",\n        model_client=model_client,\n        system_message=(\n            \"Answer only from the supplied product data. \"\n            \"Say explicitly when the data is insufficient.\"\n        ),\n    )\n    try:\n        result = await agent.run(\n            task=f\"Question: {question}\\nProduct data: {products}\"\n        )\n        return str(result.messages[-1].content).strip()\n    finally:\n        await model_client.close()\n\n\nif __name__ == \"__main__\":\n    asyncio.run(answer_product_question(\"Which products are active?\", []))"
   },
   "faq": [
     {
@@ -101,7 +101,7 @@
     }
   ],
   "heroSubtitle": "Die Wahl zwischen LangChain und AutoGen verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
-  "quickVerdict": "LangChain passt besser, wenn dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken,…. AutoGen ist geeigneter, wenn dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür….",
+  "quickVerdict": "LangChain passt besser, wenn dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken, Werkzeuge und Dokumentenlader. AutoGen ist geeigneter, wenn dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür fertige Konversationsmuster.",
   "tradeoffs": [
     {
       "category": "Kernarchitektur und Programmiermodell",
@@ -134,9 +134,9 @@
       "toolB": "RAG ist dort eher ein Anwendungsfall der Agenten als ein Kernbaustein des Frameworks."
     }
   ],
-  "introduction": "LangChain und AutoGen lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernarchitektur und programmiermodell. LangChain: LangChain organisiert Anwendungen als komponierbare Bausteine, die sich zu Chains und Graphen verbinden lassen. AutoGen: AutoGen stellt die Interaktion zwischen mehreren Agenten in den Mittelpunkt, die über Nachrichten miteinander… Das Kriterium multi-agenten-unterstützung zeigt einen weiteren praktischen Unterschied: LangChain unterstützt Multi-Agenten-Muster primär über LangGraph, etwa durch mehrere Knoten, Supervisor-Muster oder… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "introduction": "LangChain und AutoGen lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernarchitektur und programmiermodell. LangChain: LangChain organisiert Anwendungen als komponierbare Bausteine, die sich zu Chains und Graphen verbinden lassen. AutoGen: AutoGen stellt die Interaktion zwischen mehreren Agenten in den Mittelpunkt, die über Nachrichten miteinander kommunizieren. Das Kriterium multi-agenten-unterstützung zeigt einen weiteren praktischen Unterschied: LangChain unterstützt Multi-Agenten-Muster primär über LangGraph, etwa durch mehrere Knoten, Supervisor-Muster oder geteilte Zustände. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
   "decisionFramework": {
-    "toolA": "dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken,…",
-    "toolB": "dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür…"
+    "toolA": "dein Projekt priorisiert Tool- und Modellintegrationen: LangChain bietet ein sehr breites Ökosystem an Integrationen für Sprachmodelle, Vektordatenbanken, Werkzeuge und Dokumentenlader.",
+    "toolB": "dein Projekt priorisiert Multi-Agenten-Unterstützung: AutoGen wurde ausdrücklich für die Zusammenarbeit mehrerer Agenten entworfen und bietet dafür fertige Konversationsmuster."
   }
 }

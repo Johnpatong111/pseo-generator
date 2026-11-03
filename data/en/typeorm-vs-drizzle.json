@@ -1,8 +1,8 @@
 {
   "slug": "typeorm-vs-drizzle",
   "meta": {
-    "title": "TypeORM vs Drizzle ORM: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare TypeORM and Drizzle ORM architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "TypeORM vs Drizzle ORM: Which to Choose in 2026?",
+    "description": "TypeORM vs Drizzle ORM comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "TypeORM"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between TypeORM and Drizzle ORM changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "TypeORM is the better fit when your project prioritizes ecosystem, maturity, and learning curve: TypeORM is a long-standing project with broad adoption, many tutorials, integrations with…. Drizzle ORM is a stronger fit when your project prioritizes schema definition and modeling style: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and….",
+  "quickVerdict": "TypeORM is the better fit when your project prioritizes ecosystem, maturity, and learning curve: TypeORM is a long-standing project with broad adoption, many tutorials, integrations with frameworks such as NestJS, and support for multiple databases including PostgreSQL, MySQL, MariaDB, SQLite, and others depending on version and driver. Drizzle ORM is a stronger fit when your project prioritizes schema definition and modeling style: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and relations.",
   "tradeoffs": [
     {
       "category": "Schema definition and modeling style",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { AppDataSource } from \"./data-source\";\nimport { Product } from \"./entities/product\";\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  return AppDataSource.getRepository(Product).find({\n    where: { categoryId, active: true },\n    select: { id: true, name: true, priceCents: true },\n    order: { name: \"ASC\" },\n    take: 50,\n  });\n}",
     "tech2Snippet": "import { and, asc, eq } from \"drizzle-orm\";\nimport { db } from \"./db\";\nimport { products } from \"./schema\";\n\nexport async function listProducts(categoryId: string) {\n  return db\n    .select({ id: products.id, name: products.name, priceCents: products.priceCents })\n    .from(products)\n    .where(and(eq(products.categoryId, categoryId), eq(products.active, true)))\n    .orderBy(asc(products.name))\n    .limit(50);\n}"
   },
-  "introduction": "TypeORM and Drizzle ORM address a related need, but differ in schema definition and modeling style. TypeORM: TypeORM models tables as decorated entity classes using @Entity, @Column, and relation decorators, optionally combined… Drizzle ORM: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and relations. The typescript type safety and inference criterion adds another practical distinction: TypeORM provides typed repositories and query builders, but entity typing relies on decorators and metadata, and some… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "TypeORM and Drizzle ORM address a related need, but differ in schema definition and modeling style. TypeORM: TypeORM models tables as decorated entity classes using @Entity, @Column, and relation decorators, optionally combined with the Data Mapper or Active Record pattern. Drizzle ORM: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and relations. The typescript type safety and inference criterion adds another practical distinction: TypeORM provides typed repositories and query builders, but entity typing relies on decorators and metadata, and some query shapes return broader or looser types that require casting or partial selectors. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes ecosystem, maturity, and learning curve: TypeORM is a long-standing project with broad adoption, many tutorials, integrations with…",
-    "toolB": "your project prioritizes schema definition and modeling style: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and…"
+    "toolA": "your project prioritizes ecosystem, maturity, and learning curve: TypeORM is a long-standing project with broad adoption, many tutorials, integrations with frameworks such as NestJS, and support for multiple databases including PostgreSQL, MySQL, MariaDB, SQLite, and others depending on version and driver.",
+    "toolB": "your project prioritizes schema definition and modeling style: Drizzle ORM defines schemas as plain TypeScript objects using functions like pgTable, varchar, and relations."
   }
 }

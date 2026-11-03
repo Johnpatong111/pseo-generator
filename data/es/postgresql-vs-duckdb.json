@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara PostgreSQL y DuckDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "PostgreSQL vs DuckDB: ¿cuál elegir en 2026?",
+    "description": "Comparativa PostgreSQL vs DuckDB: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre PostgreSQL y DuckDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza rendimiento en cargas transaccionales (oltp): PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite…. DuckDB es preferible cuando tu proyecto prioriza rendimiento en cargas analíticas (olap): DuckDB utiliza un almacenamiento columnar y un motor de ejecución vectorizado, lo que le permite….",
+  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza rendimiento en cargas transaccionales (oltp): PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite lecturas y escrituras concurrentes sin bloqueos excesivos. DuckDB es preferible cuando tu proyecto prioriza rendimiento en cargas analíticas (olap): DuckDB utiliza un almacenamiento columnar y un motor de ejecución vectorizado, lo que le permite procesar consultas analíticas complejas con agregaciones, joins y filtros sobre grandes conjuntos de datos de forma muy eficiente.",
   "tradeoffs": [
     {
       "category": "Modelo de arquitectura y despliegue",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL y DuckDB responden a una necesidad similar, pero difieren en modelo de arquitectura y despliegue. PostgreSQL: PostgreSQL sigue una arquitectura cliente-servidor, donde un proceso servidor central gestiona las conexiones de… DuckDB: DuckDB es un motor embebido (in-process) que se ejecuta dentro de la propia aplicación, sin necesidad de un servidor… El criterio de rendimiento en cargas transaccionales (oltp) añade otra diferencia práctica: PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite lecturas y escrituras… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "PostgreSQL y DuckDB responden a una necesidad similar, pero difieren en modelo de arquitectura y despliegue. PostgreSQL: PostgreSQL sigue una arquitectura cliente-servidor, donde un proceso servidor central gestiona las conexiones de múltiples clientes y coordina el acceso concurrente a los datos. DuckDB: DuckDB es un motor embebido (in-process) que se ejecuta dentro de la propia aplicación, sin necesidad de un servidor separado ni de un proceso demonio. El criterio de rendimiento en cargas transaccionales (oltp) añade otra diferencia práctica: PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite lecturas y escrituras concurrentes sin bloqueos excesivos. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento en cargas transaccionales (oltp): PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite…",
-    "toolB": "tu proyecto prioriza rendimiento en cargas analíticas (olap): DuckDB utiliza un almacenamiento columnar y un motor de ejecución vectorizado, lo que le permite…"
+    "toolA": "tu proyecto prioriza rendimiento en cargas transaccionales (oltp): PostgreSQL está diseñado para cargas OLTP, con un motor de almacenamiento MVCC que permite lecturas y escrituras concurrentes sin bloqueos excesivos.",
+    "toolB": "tu proyecto prioriza rendimiento en cargas analíticas (olap): DuckDB utiliza un almacenamiento columnar y un motor de ejecución vectorizado, lo que le permite procesar consultas analíticas complejas con agregaciones, joins y filtros sobre grandes conjuntos de datos de forma muy eficiente."
   }
 }

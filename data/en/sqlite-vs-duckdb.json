@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare SQLite and DuckDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "SQLite vs DuckDB: Which to Choose in 2026?",
+    "description": "SQLite vs DuckDB comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "SQLite"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between SQLite and DuckDB changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "SQLite is the better fit when your project prioritizes concurrency and multi-client access: SQLite supports multiple readers and, depending on journaling mode, a single writer at a time;…. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB uses vectorized execution, columnar storage, and parallel query processing, which generally….",
+  "quickVerdict": "SQLite is the better fit when your project prioritizes concurrency and multi-client access: SQLite supports multiple readers and, depending on journaling mode, a single writer at a time; write transactions are serialized. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB uses vectorized execution, columnar storage, and parallel query processing, which generally delivers strong performance on aggregations and joins over large datasets, especially when data fits on a single machine.",
   "tradeoffs": [
     {
       "category": "Primary workload and data model",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "SQLite and DuckDB address a related need, but differ in primary workload and data model. SQLite: SQLite is a row-oriented relational engine built for online transaction processing: many small reads and writes,… DuckDB: DuckDB is a column-oriented analytical engine designed for online analytical processing: scans, aggregations, joins,… The analytical query performance criterion adds another practical distinction: SQLite executes analytical queries correctly but is not optimized for wide scans or large aggregations; performance on… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "SQLite and DuckDB address a related need, but differ in primary workload and data model.  SQLite: SQLite is a row-oriented relational engine built for online transaction processing: many small reads and writes, frequent inserts and updates, and low-latency point lookups.  DuckDB: DuckDB is a column-oriented analytical engine designed for online analytical processing: scans, aggregations, joins, and grouping over large tables.  The analytical query performance criterion adds another practical distinction: SQLite executes analytical queries correctly but is not optimized for wide scans or large aggregations; performance on multi-million-row grouping and join workloads tends to be modest and can degrade as data grows.",
   "decisionFramework": {
-    "toolA": "your project prioritizes concurrency and multi-client access: SQLite supports multiple readers and, depending on journaling mode, a single writer at a time;…",
-    "toolB": "your project prioritizes analytical query performance: DuckDB uses vectorized execution, columnar storage, and parallel query processing, which generally…"
+    "toolA": "your project prioritizes concurrency and multi-client access: SQLite supports multiple readers and, depending on journaling mode, a single writer at a time; write transactions are serialized.",
+    "toolB": "your project prioritizes analytical query performance: DuckDB uses vectorized execution, columnar storage, and parallel query processing, which generally delivers strong performance on aggregations and joins over large datasets, especially when data fits on a single machine."
   }
 }

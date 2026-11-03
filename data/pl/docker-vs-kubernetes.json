@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Docker i Kubernetes: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Docker vs Kubernetes: co wybrać w 2026?",
+    "description": "Porównanie Docker vs Kubernetes: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Docker"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Docker a Kubernetes zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Docker będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają…. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i dostępność”: Kubernetes automatycznie skaluje liczbę replik, rozdziela ruch między Pody i zastępuje niezdrowe….",
+  "quickVerdict": "Docker będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają uruchomić kontener w krótkim czasie. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i dostępność”: Kubernetes automatycznie skaluje liczbę replik, rozdziela ruch między Pody i zastępuje niezdrowe instancje zgodnie z konfiguracją.",
   "tradeoffs": [
     {
       "category": "Rola i zakres działania",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Docker\" },\n  });\n  await container.start();\n}",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Docker i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i zakres działania. Docker: Docker to platforma do budowania, pakowania i uruchamiania aplikacji w kontenerach, obejmująca silnik kontenerów,… Kubernetes: Kubernetes to system orkiestracji kontenerów, który zarządza cyklem życia aplikacji w klastrze wielu węzłów. Kolejną istotną różnicę pokazuje kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają uruchomić kontener w… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Docker i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i zakres działania. Docker: Docker to platforma do budowania, pakowania i uruchamiania aplikacji w kontenerach, obejmująca silnik kontenerów, obrazy, rejestry oraz narzędzia takie jak Docker Compose. Kubernetes: Kubernetes to system orkiestracji kontenerów, który zarządza cyklem życia aplikacji w klastrze wielu węzłów. Kolejną istotną różnicę pokazuje kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają uruchomić kontener w krótkim czasie. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają…",
-    "toolB": "projekt stawia na kryterium „Skalowanie i dostępność”: Kubernetes automatycznie skaluje liczbę replik, rozdziela ruch między Pody i zastępuje niezdrowe…"
+    "toolA": "projekt stawia na kryterium „Krzywa nauki i złożoność operacyjna”: Docker jest stosunkowo prosty do rozpoczęcia: podstawowe polecenia i plik Dockerfile pozwalają uruchomić kontener w krótkim czasie.",
+    "toolB": "projekt stawia na kryterium „Skalowanie i dostępność”: Kubernetes automatycznie skaluje liczbę replik, rozdziela ruch między Pody i zastępuje niezdrowe instancje zgodnie z konfiguracją."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj MySQL i DuckDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "MySQL vs DuckDB: co wybrać w 2026?",
+    "description": "Porównanie MySQL vs DuckDB: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między MySQL a DuckDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach…. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i….",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach produkcyjnych z wieloma aplikacjami. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i wektoryzowanym wykonywaniem zapytań.",
   "tradeoffs": [
     {
       "category": "Model pracy i architektura",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "MySQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model pracy i architektura. MySQL: MySQL działa jako samodzielny serwer bazy danych, do którego łączą się klienci przez sieć, co pozwala współdzielić… DuckDB: DuckDB działa jako wbudowana baza danych uruchamiana w procesie aplikacji, bez odrębnego serwera. Kolejną istotną różnicę pokazuje kryterium „Profil obciążenia: OLTP vs OLAP”: MySQL jest projektowany przede wszystkim pod obciążenia transakcyjne OLTP: krótkie zapytania, częste wstawianie i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "MySQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model pracy i architektura. MySQL: MySQL działa jako samodzielny serwer bazy danych, do którego łączą się klienci przez sieć, co pozwala współdzielić dane między wieloma użytkownikami i aplikacjami. DuckDB: DuckDB działa jako wbudowana baza danych uruchamiana w procesie aplikacji, bez odrębnego serwera. Kolejną istotną różnicę pokazuje kryterium „Profil obciążenia: OLTP vs OLAP”: MySQL jest projektowany przede wszystkim pod obciążenia transakcyjne OLTP: krótkie zapytania, częste wstawianie i aktualizacje oraz wysoka współbieżność. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach…",
-    "toolB": "projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i…"
+    "toolA": "projekt stawia na kryterium „Współbieżność i scenariusze wielu użytkowników”: MySQL obsługuje wielu równoczesnych klientów i jest przystosowany do pracy w środowiskach produkcyjnych z wieloma aplikacjami.",
+    "toolB": "projekt stawia na kryterium „Profil obciążenia: OLTP vs OLAP”: DuckDB jest zoptymalizowany pod analitykę OLAP, z kolumnowym przechowywaniem danych i wektoryzowanym wykonywaniem zapytań."
   }
 }

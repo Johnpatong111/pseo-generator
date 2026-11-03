@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-qdrant",
   "meta": {
-    "title": "LlamaIndex vs Qdrant: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj LlamaIndex i Qdrant: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "LlamaIndex vs Qdrant: co wybrać w 2026?",
+    "description": "Porównanie LlamaIndex vs Qdrant: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między LlamaIndex a Qdrant zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "LlamaIndex będzie lepszy, gdy projekt stawia na kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery,…. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Skalowalność i wydajność”: Qdrant powstał z myślą o wydajnym wyszukiwaniu wektorów i obsłudze rosnących zbiorów, m.in.",
+  "quickVerdict": "LlamaIndex będzie lepszy, gdy projekt stawia na kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery, rerankery i syntezę odpowiedzi. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Skalowalność i wydajność”: Qdrant powstał z myślą o wydajnym wyszukiwaniu wektorów i obsłudze rosnących zbiorów, m.in.",
   "tradeoffs": [
     {
       "category": "Rola i kategoria narzędzia",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  query(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.query({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "LlamaIndex i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i kategoria narzędzia. LlamaIndex: LlamaIndex to framework programistyczny do łączenia modeli językowych z danymi zewnętrznymi, obejmujący indeksowanie,… Qdrant: Qdrant to baza danych wektorowych zaprojektowana do przechowywania i przeszukiwania osadzeń (embeddingów) z… Kolejną istotną różnicę pokazuje kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery, rerankery i syntezę… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "LlamaIndex i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i kategoria narzędzia. LlamaIndex: LlamaIndex to framework programistyczny do łączenia modeli językowych z danymi zewnętrznymi, obejmujący indeksowanie, retrievval, agenty i pipeline'y RAG. Qdrant: Qdrant to baza danych wektorowych zaprojektowana do przechowywania i przeszukiwania osadzeń (embeddingów) z filtrowaniem po metadanych. Kolejną istotną różnicę pokazuje kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery, rerankery i syntezę odpowiedzi. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery,…",
+    "toolA": "projekt stawia na kryterium „Zastosowanie w RAG”: LlamaIndex jest zaprojektowany właśnie pod RAG: oferuje podział dokumentów, indeksy, retrievery, rerankery i syntezę odpowiedzi.",
     "toolB": "projekt stawia na kryterium „Skalowalność i wydajność”: Qdrant powstał z myślą o wydajnym wyszukiwaniu wektorów i obsłudze rosnących zbiorów, m.in."
   }
 }

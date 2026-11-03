@@ -1,8 +1,8 @@
 {
   "slug": "chroma-vs-qdrant",
   "meta": {
-    "title": "Chroma vs Qdrant: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Chroma y Qdrant: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Chroma vs Qdrant: ¿cuál elegir en 2026?",
+    "description": "Comparativa Chroma vs Qdrant: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Chroma"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Chroma y Qdrant cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Chroma encaja mejor cuando tu proyecto prioriza facilidad de uso y experiencia de desarrollo: Chroma ofrece una API muy directa y una integración natural con Python, lo que reduce el tiempo…. Qdrant es preferible cuando tu proyecto prioriza arquitectura y modelo de despliegue: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de….",
+  "quickVerdict": "Chroma encaja mejor cuando tu proyecto prioriza facilidad de uso y experiencia de desarrollo: Chroma ofrece una API muy directa y una integración natural con Python, lo que reduce el tiempo hasta la primera consulta. Qdrant es preferible cuando tu proyecto prioriza arquitectura y modelo de despliegue: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de forma dedicada y escalar en clúster.",
   "tradeoffs": [
     {
       "category": "Arquitectura y modelo de despliegue",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "Chroma y Qdrant responden a una necesidad similar, pero difieren en arquitectura y modelo de despliegue. Chroma: Chroma se ofrece como biblioteca integrada que puede ejecutarse en proceso o como servidor ligero, lo que simplifica… Qdrant: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de forma dedicada y… El criterio de escalabilidad y rendimiento bajo carga añade otra diferencia práctica: Chroma resulta ágil en colecciones pequeñas y medianas y en cargas de trabajo de desarrollo o de un solo nodo. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Chroma y Qdrant responden a una necesidad similar, pero difieren en arquitectura y modelo de despliegue. Chroma: Chroma se ofrece como biblioteca integrada que puede ejecutarse en proceso o como servidor ligero, lo que simplifica mucho las primeras pruebas. Qdrant: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de forma dedicada y escalar en clúster. El criterio de escalabilidad y rendimiento bajo carga añade otra diferencia práctica: Chroma resulta ágil en colecciones pequeñas y medianas y en cargas de trabajo de desarrollo o de un solo nodo. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza facilidad de uso y experiencia de desarrollo: Chroma ofrece una API muy directa y una integración natural con Python, lo que reduce el tiempo…",
-    "toolB": "tu proyecto prioriza arquitectura y modelo de despliegue: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de…"
+    "toolA": "tu proyecto prioriza facilidad de uso y experiencia de desarrollo: Chroma ofrece una API muy directa y una integración natural con Python, lo que reduce el tiempo hasta la primera consulta.",
+    "toolB": "tu proyecto prioriza arquitectura y modelo de despliegue: Qdrant está concebido como un servicio independiente con API propia, pensado para ejecutarse de forma dedicada y escalar en clúster."
   }
 }

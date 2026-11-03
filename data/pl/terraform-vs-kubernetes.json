@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-kubernetes",
   "meta": {
-    "title": "Terraform vs Kubernetes: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Terraform i Kubernetes: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Terraform vs Kubernetes: co wybrać w 2026?",
+    "description": "Porównanie Terraform vs Kubernetes: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Terraform"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Terraform a Kubernetes zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Terraform będzie lepszy, gdy projekt stawia na kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy…. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu, integracje i przenośność”: Kubernetes ma duży ekosystem narzędzi i operatorów oraz jest dostępny jako zarządzana usługa u….",
+  "quickVerdict": "Terraform będzie lepszy, gdy projekt stawia na kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy danych, magazyny, polityki IAM i inne usługi dostawców. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Dojrzałość ekosystemu, integracje i przenośność”: Kubernetes ma duży ekosystem narzędzi i operatorów oraz jest dostępny jako zarządzana usługa u wielu dostawców.",
   "tradeoffs": [
     {
       "category": "Cel i model działania: czym narzędzie zarządza i jaki problem rozwiązuje",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { App, TerraformStack } from \"cdktf\";\nimport { S3Bucket } from \"@cdktf/provider-aws/lib/s3-bucket\";\nimport { S3BucketPublicAccessBlock } from \"@cdktf/provider-aws/lib/s3-bucket-public-access-block\";\nimport { Construct } from \"constructs\";\n\nclass ProductMediaStack extends TerraformStack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n    const bucket = new S3Bucket(this, \"productImages\", {\n      bucketPrefix: \"product-catalog-images-\",\n      forceDestroy: false,\n    });\n    new S3BucketPublicAccessBlock(this, \"privateImages\", {\n      bucket: bucket.id,\n      blockPublicAcls: true,\n      blockPublicPolicy: true,\n      ignorePublicAcls: true,\n      restrictPublicBuckets: true,\n    });\n  }\n}\n\nnew ProductMediaStack(new App(), \"product-media\");",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Terraform i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze cel i model działania: czym narzędzie zarządza i jaki problem rozwiązuje. Terraform: Terraform to narzędzie do infrastruktury jako kodu (IaC), które deklaratywnie opisuje zasoby u dostawców chmury i w… Kubernetes: Kubernetes to platforma orkiestracji kontenerów, która utrzymuje pożądany stan obciążeń na klastrze węzłów. Kolejną istotną różnicę pokazuje kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy danych, magazyny,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Terraform i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze cel i model działania: czym narzędzie zarządza i jaki problem rozwiązuje.  Terraform: Terraform to narzędzie do infrastruktury jako kodu (IaC), które deklaratywnie opisuje zasoby u dostawców chmury i w innych systemach za pomocą dostawców (providerów).  Kubernetes: Kubernetes to platforma orkiestracji kontenerów, która utrzymuje pożądany stan obciążeń na klastrze węzłów.  Kolejną istotną różnicę pokazuje kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy danych, magazyny, polityki IAM i inne usługi dostawców.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy…",
-    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu, integracje i przenośność”: Kubernetes ma duży ekosystem narzędzi i operatorów oraz jest dostępny jako zarządzana usługa u…"
+    "toolA": "projekt stawia na kryterium „Zakres zarządzania: infrastruktura bazowa versus obciążenia aplikacyjne”: Terraform obejmuje szeroki zakres zasobów: sieci, maszyny wirtualne, klastry Kubernetes, bazy danych, magazyny, polityki IAM i inne usługi dostawców.",
+    "toolB": "projekt stawia na kryterium „Dojrzałość ekosystemu, integracje i przenośność”: Kubernetes ma duży ekosystem narzędzi i operatorów oraz jest dostępny jako zarządzana usługa u wielu dostawców."
   }
 }

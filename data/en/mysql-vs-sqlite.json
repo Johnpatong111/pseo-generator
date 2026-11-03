@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-sqlite",
   "meta": {
-    "title": "MySQL vs SQLite: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare MySQL and SQLite architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "MySQL vs SQLite: Which to Choose in 2026?",
+    "description": "MySQL vs SQLite comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "MySQL"
@@ -86,7 +86,7 @@
     }
   ],
   "heroSubtitle": "Choosing between MySQL and SQLite changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "MySQL is the better fit when your project prioritizes concurrency and write throughput: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the…. SQLite is a stronger fit when your project prioritizes operational complexity and maintenance: SQLite requires no server setup or administration; the database is a single file that can be….",
+  "quickVerdict": "MySQL is the better fit when your project prioritizes concurrency and write throughput: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the default storage engine) to allow simultaneous reads and writes across different rows. SQLite is a stronger fit when your project prioritizes operational complexity and maintenance: SQLite requires no server setup or administration; the database is a single file that can be copied, backed up, and versioned like any other file.",
   "tradeoffs": [
     {
       "category": "Architecture and deployment model",
@@ -124,9 +124,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "MySQL and SQLite address a related need, but differ in architecture and deployment model. MySQL: MySQL is a client-server relational database management system. SQLite: SQLite is an embedded, serverless database engine that stores the entire database in a single cross-platform file. The concurrency and write throughput criterion adds another practical distinction: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the default storage engine) to… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "MySQL and SQLite address a related need, but differ in architecture and deployment model. MySQL: MySQL is a client-server relational database management system. SQLite: SQLite is an embedded, serverless database engine that stores the entire database in a single cross-platform file. The concurrency and write throughput criterion adds another practical distinction: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the default storage engine) to allow simultaneous reads and writes across different rows. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes concurrency and write throughput: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the…",
-    "toolB": "your project prioritizes operational complexity and maintenance: SQLite requires no server setup or administration; the database is a single file that can be…"
+    "toolA": "your project prioritizes concurrency and write throughput: MySQL supports many concurrent client connections and uses row-level locking in InnoDB (the default storage engine) to allow simultaneous reads and writes across different rows.",
+    "toolB": "your project prioritizes operational complexity and maintenance: SQLite requires no server setup or administration; the database is a single file that can be copied, backed up, and versioned like any other file."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "podman-vs-kubernetes",
   "meta": {
-    "title": "Podman vs Kubernetes: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Podman i Kubernetes: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Podman vs Kubernetes: co wybrać w 2026?",
+    "description": "Porównanie Podman vs Kubernetes: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Podman"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Podman a Kubernetes zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Podman będzie lepszy, gdy projekt stawia na kryterium „Krzywa uczenia się i złożoność operacyjna”: Podman ma stosunkowo łagodną krzywą wejścia, zwłaszcza dla osób znających Dockera, ponieważ…. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Główne zastosowanie i model pracy”: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w….",
+  "quickVerdict": "Podman będzie lepszy, gdy projekt stawia na kryterium „Krzywa uczenia się i złożoność operacyjna”: Podman ma stosunkowo łagodną krzywą wejścia, zwłaszcza dla osób znających Dockera, ponieważ udostępnia zbliżone polecenia i obsługuje obrazy OCI. Kubernetes sprawdzi się, gdy projekt stawia na kryterium „Główne zastosowanie i model pracy”: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w klastrze, z automatycznym rozmieszczaniem, skalowaniem i samonaprawianiem.",
   "tradeoffs": [
     {
       "category": "Główne zastosowanie i model pracy",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Podman\" },\n  });\n  await container.start();\n}",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Podman i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze główne zastosowanie i model pracy. Podman: Podman to narzędzie do uruchamiania i budowania kontenerów OCI, często używane jako lżejsza alternatywa dla Dockera w… Kubernetes: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w klastrze, z… Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo i model uprawnień”: Podman jest projektowany z myślą o pracy bez uprawnień roota (rootless) i domyślnie może działać w przestrzeni… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Podman i Kubernetes odpowiadają na podobną potrzebę, ale różnią się w obszarze główne zastosowanie i model pracy.  Podman: Podman to narzędzie do uruchamiania i budowania kontenerów OCI, często używane jako lżejsza alternatywa dla Dockera w trybie lokalnym i na pojedynczych serwerach.  Kubernetes: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w klastrze, z automatycznym rozmieszczaniem, skalowaniem i samonaprawianiem.  Kolejną istotną różnicę pokazuje kryterium „Bezpieczeństwo i model uprawnień”: Podman jest projektowany z myślą o pracy bez uprawnień roota (rootless) i domyślnie może działać w przestrzeni użytkownika, co ogranicza skutki ewentualnego przejęcia kontenera.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Krzywa uczenia się i złożoność operacyjna”: Podman ma stosunkowo łagodną krzywą wejścia, zwłaszcza dla osób znających Dockera, ponieważ…",
-    "toolB": "projekt stawia na kryterium „Główne zastosowanie i model pracy”: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w…"
+    "toolA": "projekt stawia na kryterium „Krzywa uczenia się i złożoność operacyjna”: Podman ma stosunkowo łagodną krzywą wejścia, zwłaszcza dla osób znających Dockera, ponieważ udostępnia zbliżone polecenia i obsługuje obrazy OCI.",
+    "toolB": "projekt stawia na kryterium „Główne zastosowanie i model pracy”: Kubernetes to platforma orkiestracji kontenerów przeznaczona do zarządzania wieloma usługami w klastrze, z automatycznym rozmieszczaniem, skalowaniem i samonaprawianiem."
   }
 }

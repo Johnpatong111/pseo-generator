@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-mysql",
   "meta": {
-    "title": "PostgreSQL vs MySQL: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare PostgreSQL and MySQL architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "PostgreSQL vs MySQL: Which to Choose in 2026?",
+    "description": "PostgreSQL vs MySQL comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between PostgreSQL and MySQL changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes sql standards and feature depth: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window…. MySQL is a stronger fit when your project prioritizes replication and high availability: MySQL has long-standing, widely deployed replication, including asynchronous and semi-synchronous….",
+  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes sql standards and feature depth: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window functions, common table expressions, full outer joins, lateral joins, range types, and set-returning functions. MySQL is a stronger fit when your project prioritizes replication and high availability: MySQL has long-standing, widely deployed replication, including asynchronous and semi-synchronous replication and Group Replication for multi-primary or high-availability topologies.",
   "tradeoffs": [
     {
       "category": "SQL standards and feature depth",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL and MySQL address a related need, but differ in sql standards and feature depth. PostgreSQL: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window functions, common table… MySQL: MySQL supports core SQL and has improved standards conformance over time, adding window functions and CTEs in MySQL 8.0. The json and semi-structured data criterion adds another practical distinction: PostgreSQL provides native JSON and JSONB types, with JSONB stored in a decomposed binary format that supports… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "PostgreSQL and MySQL address a related need, but differ in sql standards and feature depth. PostgreSQL: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window functions, common table expressions, full outer joins, lateral joins, range types, and set-returning functions. MySQL: MySQL supports core SQL and has improved standards conformance over time, adding window functions and CTEs in MySQL 8.0. The json and semi-structured data criterion adds another practical distinction: PostgreSQL provides native JSON and JSONB types, with JSONB stored in a decomposed binary format that supports indexing, containment operators, and path queries. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes sql standards and feature depth: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window…",
-    "toolB": "your project prioritizes replication and high availability: MySQL has long-standing, widely deployed replication, including asynchronous and semi-synchronous…"
+    "toolA": "your project prioritizes sql standards and feature depth: PostgreSQL adheres closely to SQL standards and offers a deep feature set, including window functions, common table expressions, full outer joins, lateral joins, range types, and set-returning functions.",
+    "toolB": "your project prioritizes replication and high availability: MySQL has long-standing, widely deployed replication, including asynchronous and semi-synchronous replication and Group Replication for multi-primary or high-availability topologies."
   }
 }

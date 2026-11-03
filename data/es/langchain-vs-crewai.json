@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-crewai",
   "meta": {
-    "title": "LangChain vs CrewAI: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara LangChain y CrewAI: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "LangChain vs CrewAI: ¿cuál elegir en 2026?",
+    "description": "Comparativa LangChain vs CrewAI: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "LangChain"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre LangChain y CrewAI cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "LangChain encaja mejor cuando tu proyecto prioriza ecosistema e integraciones: LangChain cuenta con un ecosistema amplio de integraciones con modelos, almacenes vectoriales,…. CrewAI es preferible cuando tu proyecto prioriza curva de aprendizaje y velocidad de puesta en marcha: CrewAI suele resultar más rápido para prototipos de equipos de agentes, ya que su API declarativa….",
+  "quickVerdict": "LangChain encaja mejor cuando tu proyecto prioriza ecosistema e integraciones: LangChain cuenta con un ecosistema amplio de integraciones con modelos, almacenes vectoriales, herramientas y servicios, distribuido en paquetes que conviene revisar según la versión. CrewAI es preferible cuando tu proyecto prioriza curva de aprendizaje y velocidad de puesta en marcha: CrewAI suele resultar más rápido para prototipos de equipos de agentes, ya que su API declarativa reduce el código de coordinación y hace explícitos los roles.",
   "tradeoffs": [
     {
       "category": "Modelo de orquestación y enfoque conceptual",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Genera una respuesta fundamentada sobre el catálogo: recupera registros relevantes y sintetiza solo los hechos del contexto. El ejemplo TypeScript llama a un adaptador HTTP propio para el framework de agentes; la implementación del agente se ejecuta en su entorno nativo.",
+    "scenario": "Genera una respuesta fundamentada sobre el catálogo: recupera registros relevantes y sintetiza solo los hechos del contexto.",
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  invoke(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.invoke({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype AgentAnswer = { answer: string };\n\nexport async function answerProductQuestion(\n  serviceUrl: string,\n  question: string,\n  categoryId: string,\n  products: readonly Product[],\n): Promise<string> {\n  const response = await fetch(new URL(\"/api/agents/crewai/answer\", serviceUrl), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", accept: \"application/json\" },\n    body: JSON.stringify({ question, categoryId, products }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Agent service failed: ${response.status}`);\n  const result = (await response.json()) as AgentAnswer;\n  if (!result.answer.trim()) throw new Error(\"The agent returned an empty answer\");\n  return result.answer;\n}"
+    "tech2Snippet": "from crewai import Agent, Crew, Process, Task\n\n\ncatalogue_agent = Agent(\n    role=\"Product catalogue analyst\",\n    goal=\"Answer questions using only the supplied product facts\",\n    backstory=\"You never invent products, prices, or availability.\",\n    allow_delegation=False,\n)\n\n\ndef answer_product_question(\n    question: str,\n    products: list[dict[str, object]],\n) -> str:\n    task = Task(\n        description=(\n            f\"Answer '{question}' using only this product data: {products}. \"\n            \"If the data is insufficient, say so explicitly.\"\n        ),\n        expected_output=\"A concise answer grounded in the supplied product data.\",\n        agent=catalogue_agent,\n    )\n    crew = Crew(\n        agents=[catalogue_agent],\n        tasks=[task],\n        process=Process.sequential,\n    )\n    return str(crew.kickoff()).strip()"
   },
-  "introduction": "LangChain y CrewAI responden a una necesidad similar, pero difieren en modelo de orquestación y enfoque conceptual. LangChain: LangChain ofrece una caja de herramientas modular para encadenar pasos, herramientas y agentes, con distintos patrones… CrewAI: CrewAI se centra en equipos de agentes con roles, objetivos y tareas asignadas, y coordina su colaboración mediante… El criterio de curva de aprendizaje y velocidad de puesta en marcha añade otra diferencia práctica: LangChain puede requerir más tiempo inicial porque hay que entender sus abstracciones, la gestión de estado y las… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "LangChain y CrewAI responden a una necesidad similar, pero difieren en modelo de orquestación y enfoque conceptual. LangChain: LangChain ofrece una caja de herramientas modular para encadenar pasos, herramientas y agentes, con distintos patrones de orquestación según la versión y los paquetes que se usen. CrewAI: CrewAI se centra en equipos de agentes con roles, objetivos y tareas asignadas, y coordina su colaboración mediante procesos configuráveis. El criterio de curva de aprendizaje y velocidad de puesta en marcha añade otra diferencia práctica: LangChain puede requerir más tiempo inicial porque hay que entender sus abstracciones, la gestión de estado y las distintas integraciones disponibles. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema e integraciones: LangChain cuenta con un ecosistema amplio de integraciones con modelos, almacenes vectoriales,…",
-    "toolB": "tu proyecto prioriza curva de aprendizaje y velocidad de puesta en marcha: CrewAI suele resultar más rápido para prototipos de equipos de agentes, ya que su API declarativa…"
+    "toolA": "tu proyecto prioriza ecosistema e integraciones: LangChain cuenta con un ecosistema amplio de integraciones con modelos, almacenes vectoriales, herramientas y servicios, distribuido en paquetes que conviene revisar según la versión.",
+    "toolB": "tu proyecto prioriza curva de aprendizaje y velocidad de puesta en marcha: CrewAI suele resultar más rápido para prototipos de equipos de agentes, ya que su API declarativa reduce el código de coordinación y hace explícitos los roles."
   }
 }

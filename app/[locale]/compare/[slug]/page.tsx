@@ -22,6 +22,7 @@ import {
   type Locale,
 } from "../../../../lib/comparisons";
 import { BRAND_NAME } from "../../../../lib/locales";
+import { getComparisonMeta } from "../../../../lib/seo.cjs";
 import {
   categoryCopy,
   getComparisonCategories,
@@ -43,7 +44,7 @@ const copy = {
     advantage: "Przewaga",
     tie: "Podobny poziom",
     decision: "Kiedy wybrać które rozwiązanie?",
-    chooseIf: "Wybierz, jeśli…",
+    chooseIf: "Wybierz, jeśli",
     noClearAdvantage:
       "Dostępne kryteria nie wskazują jednoznacznego zwycięzcy. Rozważ te konkretne różnice w kontekście swojego projektu:",
     context: "Kontekst techniczny i kompromisy",
@@ -108,7 +109,7 @@ const copy = {
     advantage: "Edge",
     tie: "Comparable",
     decision: "When to choose each option",
-    chooseIf: "Choose this option if…",
+    chooseIf: "Choose this option if",
     noClearAdvantage:
       "The available criteria do not establish a clear winner. Consider these specific differences in the context of your project:",
     context: "Technical context and trade-offs",
@@ -173,7 +174,7 @@ const copy = {
     advantage: "Ventaja",
     tie: "Nivel similar",
     decision: "Cuándo elegir cada opción",
-    chooseIf: "Elige esta opción si…",
+    chooseIf: "Elige esta opción si",
     noClearAdvantage:
       "Los criterios disponibles no señalan un ganador claro. Valora estas diferencias concretas según las necesidades de tu proyecto:",
     context: "Contexto técnico y compromisos",
@@ -238,7 +239,7 @@ const copy = {
     advantage: "Vorteil",
     tie: "Vergleichbar",
     decision: "Wann welche Option wählen?",
-    chooseIf: "Wähle diese Option, wenn …",
+    chooseIf: "Wähle diese Option, wenn",
     noClearAdvantage:
       "Die verfügbaren Kriterien zeigen keinen eindeutigen Sieger. Berücksichtige diese konkreten Unterschiede im Kontext deines Projekts:",
     context: "Technischer Kontext und Zielkonflikte",
@@ -303,7 +304,7 @@ const copy = {
     advantage: "Avantage",
     tie: "Comparable",
     decision: "Quand choisir chaque solution ?",
-    chooseIf: "Choisissez cette solution si…",
+    chooseIf: "Choisissez cette solution si",
     noClearAdvantage:
       "Les critères disponibles ne désignent pas de gagnant évident. Évaluez ces différences concrètes selon les besoins de votre projet :",
     context: "Contexte technique et compromis",
@@ -913,8 +914,13 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     return {};
   }
 
-  const title = getComparisonTitle(comparison, localeParam);
-  const seoTitle = `${comparison.meta.title} | ${BRAND_NAME}`;
+  const seo = getComparisonMeta(
+    comparison.toolA.name,
+    comparison.toolB.name,
+    getComparisonCategories(slug)[0] ?? "general",
+    localeParam,
+  );
+  const seoTitle = seo.documentTitle;
   const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
     LOCALES.flatMap((locale) => {
@@ -928,7 +934,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 
   return {
     title: { absolute: seoTitle },
-    description: comparison.meta.description,
+    description: seo.description,
     authors: [
       {
         name: "SnippetsLibrary Team",
@@ -947,7 +953,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     },
     openGraph: {
       title: seoTitle,
-      description: comparison.meta.description,
+      description: seo.description,
       url: canonical,
       siteName: BRAND_NAME,
       type: "article",
@@ -956,7 +962,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     twitter: {
       card: "summary",
       title: seoTitle,
-      description: comparison.meta.description,
+      description: seo.description,
     },
   };
 }
@@ -969,8 +975,14 @@ function getStructuredData(
 ) {
   const pageUrl = absoluteSiteUrl(getComparisonUrl(locale, comparison.slug));
   const text = copy[locale];
-  const title = comparison.meta.title || getComparisonTitle(comparison, locale);
   const categories = getComparisonCategories(comparison.slug);
+  const seo = getComparisonMeta(
+    comparison.toolA.name,
+    comparison.toolB.name,
+    categories[0] ?? "general",
+    locale,
+  );
+  const title = seo.title;
   const keywords = [
     comparison.toolA.name,
     comparison.toolB.name,
@@ -983,11 +995,18 @@ function getStructuredData(
     "@graph": [
       {
         "@type": "TechArticle",
+        "@id": `${pageUrl}#article`,
         headline: title,
-        description: comparison.meta.description,
+        description: seo.description,
         abstract: comparison.heroSubtitle ?? comparison.introduction ?? comparison.verdict,
+        url: pageUrl,
         inLanguage: locale,
-        mainEntityOfPage: pageUrl,
+        isAccessibleForFree: true,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": pageUrl,
+          url: pageUrl,
+        },
         about: [comparison.toolA.name, comparison.toolB.name],
         articleSection: categories,
         keywords,
@@ -1257,7 +1276,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
           <section
             id="quick-verdict"
             aria-labelledby="quick-verdict-heading"
-            className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-4 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
+            className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-200 bg-linear-to-br from-indigo-50 via-white to-violet-50 p-4 shadow-sm sm:p-8 dark:border-indigo-900 dark:from-indigo-950/60 dark:via-slate-900 dark:to-violet-950/40"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="inline-flex items-center rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
@@ -1397,7 +1416,7 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
                   {text.details}
                 </h2>
                 <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 dark:border-slate-800">
-                  <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
+                  <table className="w-full min-w-2xl border-collapse text-left text-sm">
                     <thead className="bg-slate-100 dark:bg-slate-900">
                       <tr>
                         <th scope="col" className="p-3 font-semibold sm:p-4">

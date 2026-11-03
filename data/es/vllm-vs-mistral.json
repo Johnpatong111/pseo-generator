@@ -1,8 +1,8 @@
 {
   "slug": "vllm-vs-mistral",
   "meta": {
-    "title": "vLLM vs Mistral: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara vLLM y Mistral: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "vLLM vs Mistral: ¿cuál elegir en 2026?",
+    "description": "Comparativa vLLM vs Mistral: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "vLLM"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre vLLM y Mistral cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "vLLM encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el…. Mistral es preferible cuando tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones….",
+  "quickVerdict": "vLLM encaja mejor cuando tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el servicio de modelos, con gestión de memoria de la caché KV y batching avanzado. Mistral es preferible cuando tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones especializadas.",
   "tradeoffs": [
     {
       "category": "Naturaleza y propósito de la herramienta",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import OpenAI from \"openai\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst client = new OpenAI({\n  baseURL: process.env.LLM_BASE_URL ?? \"http://localhost:8000/v1\",\n  apiKey: process.env.LLM_API_KEY ?? \"local-development\",\n});\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.chat.completions.create({\n    model: process.env.LLM_MODEL ?? \"local-model\",\n    temperature: 0.2,\n    messages: [\n      { role: \"system\", content: \"Summarize only facts present in the supplied product data.\" },\n      { role: \"user\", content: JSON.stringify(products) },\n    ],\n  });\n  const summary = response.choices[0]?.message.content?.trim();\n  if (!summary) throw new Error(\"The model returned an empty summary\");\n  return summary;\n}",
     "tech2Snippet": "import { Mistral } from \"@mistralai/mistralai\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst apiKey = process.env.MISTRAL_API_KEY;\nif (!apiKey) throw new Error(\"MISTRAL_API_KEY is required\");\nconst client = new Mistral({ apiKey });\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.chat.complete({\n    model: process.env.MISTRAL_MODEL ?? \"mistral-small-latest\",\n    temperature: 0.2,\n    messages: [\n      { role: \"system\", content: \"Summarize only facts present in the supplied product data.\" },\n      { role: \"user\", content: JSON.stringify(products) },\n    ],\n  });\n  const summary = response.choices?.[0]?.message?.content;\n  if (typeof summary !== \"string\" || !summary.trim()) {\n    throw new Error(\"The model returned an empty summary\");\n  }\n  return summary.trim();\n}"
   },
-  "introduction": "vLLM y Mistral responden a una necesidad similar, pero difieren en naturaleza y propósito de la herramienta. vLLM: vLLM es un motor de inferencia de código abierto, centrado en servir modelos de lenguaje de forma eficiente mediante… Mistral: Mistral es una empresa que desarrolla familias de modelos (por ejemplo, Mistral, Mixtral o Ministral, según la gama… El criterio de rendimiento y eficiencia en inferencia añade otra diferencia práctica: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el servicio de modelos, con… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "vLLM y Mistral responden a una necesidad similar, pero difieren en naturaleza y propósito de la herramienta.  vLLM: vLLM es un motor de inferencia de código abierto, centrado en servir modelos de lenguaje de forma eficiente mediante técnicas como PagedAttention y el procesamiento continuo de peticiones (continuous batching).  Mistral: Mistral es una empresa que desarrolla familias de modelos (por ejemplo, Mistral, Mixtral o Ministral, según la gama vigente) y ofrece una plataforma con API, servicios gestionados y opciones de despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el…",
-    "toolB": "tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones…"
+    "toolA": "tu proyecto prioriza rendimiento y eficiencia en inferencia: vLLM está diseñado específicamente para maximizar el rendimiento y reducir la latencia en el servicio de modelos, con gestión de memoria de la caché KV y batching avanzado.",
+    "toolB": "tu proyecto prioriza modelos disponibles y flexibilidad: Mistral ofrece sus propios modelos, con distintas gamas y tamaños, además de versiones especializadas."
   }
 }

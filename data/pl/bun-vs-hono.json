@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-hono",
   "meta": {
-    "title": "Bun vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Bun i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Bun vs Hono: co wybrać w 2026?",
+    "description": "Porównanie Bun vs Hono: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Bun a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek…. Hono sprawdzi się, gdy projekt stawia na kryterium „Przenośność i zgodność ze środowiskami”: Hono powstało z myślą o przenośności między środowiskami opartymi na standardach webowych, m.in.",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek npm; poziom zgodności z ekosystemem Node.js zależy od wersji i konkretnej biblioteki. Hono sprawdzi się, gdy projekt stawia na kryterium „Przenośność i zgodność ze środowiskami”: Hono powstało z myślą o przenośności między środowiskami opartymi na standardach webowych, m.in.",
   "tradeoffs": [
     {
       "category": "Rola w stosie technologicznym (środowisko vs framework)",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "Bun i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze rola w stosie technologicznym (środowisko vs framework). Bun: Bun jest środowiskiem uruchomieniowym JavaScript/TypeScript oraz zestawem narzędzi: menedżerem pakietów, bundlerem i… Hono: Hono jest lekkim frameworkiem HTTP skupionym na routingu, middleware i obsłudze żądań/odpowiedzi. Kolejną istotną różnicę pokazuje kryterium „Wydajność i charakterystyka obciążenia”: Bun reklamuje wysoką wydajność startu i wykonywania kodu dzięki własnemu silnikowi JavaScriptCore; rzeczywiste wyniki… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Bun i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze rola w stosie technologicznym (środowisko vs framework). Bun: Bun jest środowiskiem uruchomieniowym JavaScript/TypeScript oraz zestawem narzędzi: menedżerem pakietów, bundlerem i test runnerem. Hono: Hono jest lekkim frameworkiem HTTP skupionym na routingu, middleware i obsłudze żądań/odpowiedzi. Kolejną istotną różnicę pokazuje kryterium „Wydajność i charakterystyka obciążenia”: Bun reklamuje wysoką wydajność startu i wykonywania kodu dzięki własnemu silnikowi JavaScriptCore; rzeczywiste wyniki zależą od wersji, sprzętu, rodzaju obciążenia i konfiguracji. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek…",
+    "toolA": "projekt stawia na kryterium „Ekosystem, biblioteki i dojrzałość”: Bun oferuje własny menedżer pakietów i narzędzia, a także wsparcie dla wielu popularnych bibliotek npm; poziom zgodności z ekosystemem Node.js zależy od wersji i konkretnej biblioteki.",
     "toolB": "projekt stawia na kryterium „Przenośność i zgodność ze środowiskami”: Hono powstało z myślą o przenośności między środowiskami opartymi na standardach webowych, m.in."
   }
 }

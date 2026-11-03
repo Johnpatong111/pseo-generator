@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-cassandra",
   "meta": {
-    "title": "PostgreSQL vs Apache Cassandra: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare PostgreSQL and Apache Cassandra architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "PostgreSQL vs Apache Cassandra: Which to Choose in 2026?",
+    "description": "PostgreSQL vs Apache Cassandra comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between PostgreSQL and Apache Cassandra changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes data model and query language: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys,…. Apache Cassandra is a stronger fit when your project prioritizes horizontal scalability and write throughput: Cassandra is built for linear horizontal scale: adding nodes increases capacity and throughput,….",
+  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes data model and query language: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys, views, stored procedures, and rich types including JSONB, arrays, ranges, and geospatial via PostGIS. Apache Cassandra is a stronger fit when your project prioritizes horizontal scalability and write throughput: Cassandra is built for linear horizontal scale: adding nodes increases capacity and throughput, and every node can accept writes.",
   "tradeoffs": [
     {
       "category": "Data model and query language",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "PostgreSQL and Apache Cassandra address a related need, but differ in data model and query language. PostgreSQL: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys, views, stored… Apache Cassandra: Cassandra is a wide-column, partitioned row store queried with CQL, which resembles SQL but lacks joins and subqueries. The horizontal scalability and write throughput criterion adds another practical distinction: PostgreSQL scales primarily vertically, with streaming replication, logical replication, and partitioning for larger… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "PostgreSQL and Apache Cassandra address a related need, but differ in data model and query language. PostgreSQL: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys, views, stored procedures, and rich types including JSONB, arrays, ranges, and geospatial via PostGIS. Apache Cassandra: Cassandra is a wide-column, partitioned row store queried with CQL, which resembles SQL but lacks joins and subqueries. The horizontal scalability and write throughput criterion adds another practical distinction: PostgreSQL scales primarily vertically, with streaming replication, logical replication, and partitioning for larger datasets. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes data model and query language: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys,…",
-    "toolB": "your project prioritizes horizontal scalability and write throughput: Cassandra is built for linear horizontal scale: adding nodes increases capacity and throughput,…"
+    "toolA": "your project prioritizes data model and query language: PostgreSQL is a relational database with strong SQL support, ACID transactions, foreign keys, views, stored procedures, and rich types including JSONB, arrays, ranges, and geospatial via PostGIS.",
+    "toolB": "your project prioritizes horizontal scalability and write throughput: Cassandra is built for linear horizontal scale: adding nodes increases capacity and throughput, and every node can accept writes."
   }
 }

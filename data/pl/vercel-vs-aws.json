@@ -1,8 +1,8 @@
 {
   "slug": "vercel-vs-aws",
   "meta": {
-    "title": "Vercel vs AWS: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Vercel i AWS: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Vercel vs AWS: co wybrać w 2026?",
+    "description": "Porównanie Vercel vs AWS: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Vercel"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Vercel a AWS zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Vercel będzie lepszy, gdy projekt stawia na kryterium „Model usług i zakres odpowiedzialności (hosting zarządzany a chmura IaaS/PaaS)”: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z…. AWS sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo, zgodność i kontrola”: AWS dysponuje szerokim zestawem usług bezpieczeństwa, narzędzi zarządzania tożsamością i kontroli….",
+  "quickVerdict": "Vercel będzie lepszy, gdy projekt stawia na kryterium „Model usług i zakres odpowiedzialności (hosting zarządzany a chmura IaaS/PaaS)”: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z automatycznymi wdrożeniami z repozytorium, podglądami zmian i globalną siecią dostarczania. AWS sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo, zgodność i kontrola”: AWS dysponuje szerokim zestawem usług bezpieczeństwa, narzędzi zarządzania tożsamością i kontroli sieci, a także licznymi certyfikacjami zgodności dostępnymi w wybranych regionach.",
   "tradeoffs": [
     {
       "category": "Model usług i zakres odpowiedzialności (hosting zarządzany a chmura IaaS/PaaS)",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.vercel.com/v13/deployments\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Vercel i AWS odpowiadają na podobną potrzebę, ale różnią się w obszarze model usług i zakres odpowiedzialności (hosting zarządzany a chmura iaas/paas). Vercel: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z automatycznymi wdrożeniami… AWS: AWS to rozbudowana chmura oferująca usługi obliczeniowe, bazodanowe, sieciowe, storage i analityczne, które można… Kolejną istotną różnicę pokazuje kryterium „Wsparcie dla frameworków i doświadczenie deweloperskie”: Vercel jest silnie zoptymalizowany pod Next.js i inne popularne frameworki frontendowe, oferując gotowe konwencje… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Vercel i AWS odpowiadają na podobną potrzebę, ale różnią się w obszarze model usług i zakres odpowiedzialności (hosting zarządzany a chmura iaas/paas).  Vercel: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z automatycznymi wdrożeniami z repozytorium, podglądami zmian i globalną siecią dostarczania.  AWS: AWS to rozbudowana chmura oferująca usługi obliczeniowe, bazodanowe, sieciowe, storage i analityczne, które można łączyć w dowolne architektury.  Kolejną istotną różnicę pokazuje kryterium „Wsparcie dla frameworków i doświadczenie deweloperskie”: Vercel jest silnie zoptymalizowany pod Next. js i inne popularne frameworki frontendowe, oferując gotowe konwencje wdrożeń, funkcje serverless i integrację z systemem kontroli wersji.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model usług i zakres odpowiedzialności (hosting zarządzany a chmura IaaS/PaaS)”: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z…",
-    "toolB": "projekt stawia na kryterium „Bezpieczeństwo, zgodność i kontrola”: AWS dysponuje szerokim zestawem usług bezpieczeństwa, narzędzi zarządzania tożsamością i kontroli…"
+    "toolA": "projekt stawia na kryterium „Model usług i zakres odpowiedzialności (hosting zarządzany a chmura IaaS/PaaS)”: Vercel to platforma zarządzana skupiona na wdrażaniu aplikacji frontendowych i fullstack, z automatycznymi wdrożeniami z repozytorium, podglądami zmian i globalną siecią dostarczania.",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo, zgodność i kontrola”: AWS dysponuje szerokim zestawem usług bezpieczeństwa, narzędzi zarządzania tożsamością i kontroli sieci, a także licznymi certyfikacjami zgodności dostępnymi w wybranych regionach."
   }
 }

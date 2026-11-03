@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-qdrant",
   "meta": {
-    "title": "LlamaIndex vs Qdrant: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara LlamaIndex y Qdrant: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "LlamaIndex vs Qdrant: ¿cuál elegir en 2026?",
+    "description": "Comparativa LlamaIndex vs Qdrant: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre LlamaIndex y Qdrant cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "LlamaIndex encaja mejor cuando tu proyecto prioriza facilidad de inicio y curva de aprendizaje: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas…. Qdrant es preferible cuando tu proyecto prioriza rendimiento y escalabilidad en búsqueda vectorial: Qdrant está diseñado específicamente para búsquedas por similitud eficientes y escalables, con….",
+  "quickVerdict": "LlamaIndex encaja mejor cuando tu proyecto prioriza facilidad de inicio y curva de aprendizaje: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas líneas de código, aunque dominar sus módulos avanzados requiere tiempo. Qdrant es preferible cuando tu proyecto prioriza rendimiento y escalabilidad en búsqueda vectorial: Qdrant está diseñado específicamente para búsquedas por similitud eficientes y escalables, con soporte de índices y filtrado.",
   "tradeoffs": [
     {
       "category": "Naturaleza y propósito de la herramienta",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  query(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.query({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "LlamaIndex y Qdrant responden a una necesidad similar, pero difieren en naturaleza y propósito de la herramienta. LlamaIndex: LlamaIndex es un framework de código abierto orientado a conectar modelos de lenguaje con fuentes de datos externas… Qdrant: Qdrant es un motor de base de datos vectorial especializado en almacenar embeddings y realizar búsquedas por similitud… El criterio de facilidad de inicio y curva de aprendizaje añade otra diferencia práctica: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas líneas de código,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "LlamaIndex y Qdrant responden a una necesidad similar, pero difieren en naturaleza y propósito de la herramienta.  LlamaIndex: LlamaIndex es un framework de código abierto orientado a conectar modelos de lenguaje con fuentes de datos externas para construir aplicaciones como RAG, agentes o pipelines de consulta.  Qdrant: Qdrant es un motor de base de datos vectorial especializado en almacenar embeddings y realizar búsquedas por similitud a gran escala.  El criterio de facilidad de inicio y curva de aprendizaje añade otra diferencia práctica: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas líneas de código, aunque dominar sus módulos avanzados requiere tiempo.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza facilidad de inicio y curva de aprendizaje: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas…",
-    "toolB": "tu proyecto prioriza rendimiento y escalabilidad en búsqueda vectorial: Qdrant está diseñado específicamente para búsquedas por similitud eficientes y escalables, con…"
+    "toolA": "tu proyecto prioriza facilidad de inicio y curva de aprendizaje: LlamaIndex ofrece abstracciones de alto nivel que permiten montar un pipeline RAG básico con pocas líneas de código, aunque dominar sus módulos avanzados requiere tiempo.",
+    "toolB": "tu proyecto prioriza rendimiento y escalabilidad en búsqueda vectorial: Qdrant está diseñado específicamente para búsquedas por similitud eficientes y escalables, con soporte de índices y filtrado."
   }
 }

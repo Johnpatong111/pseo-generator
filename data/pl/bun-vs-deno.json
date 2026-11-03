@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-deno",
   "meta": {
-    "title": "Bun vs Deno: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Bun i Deno: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Bun vs Deno: co wybrać w 2026?",
+    "description": "Porównanie Bun vs Deno: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Bun a Deno zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych…. Deno sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych….",
+  "quickVerdict": "Bun będzie lepszy, gdy projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych modułów, choć nie wszystkie działają bezproblemowo. Deno sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych środowiskowych, chyba że zostanie on jawnie przyznany.",
   "tradeoffs": [
     {
       "category": "Wydajność i szybkość uruchamiania",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nDeno.serve(async (request: Request): Promise<Response> => {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId?.trim()) {\n    return Response.json({ error: \"category is required\" }, { status: 400 });\n  }\n  const upstream = new URL(\"/products\", Deno.env.get(\"PRODUCTS_API_URL\")!);\n  upstream.searchParams.set(\"category\", categoryId);\n  upstream.searchParams.set(\"active\", \"true\");\n  upstream.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(upstream);\n  if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n  const payload = (await response.json()) as { products: Product[] };\n  return Response.json({ products: payload.products });\n});"
   },
-  "introduction": "Bun i Deno odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i szybkość uruchamiania. Bun: Bun został zaprojektowany z myślą o wysokiej wydajności dzięki silnikowi JavaScriptCore i natywnej implementacji wielu… Deno: Deno opiera się na silniku V8 i kładzie nacisk na szybkość dzięki optymalizacjom wbudowanych narzędzi oraz wydajnemu… Kolejną istotną różnicę pokazuje kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych modułów, choć nie… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Bun i Deno odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i szybkość uruchamiania. Bun: Bun został zaprojektowany z myślą o wysokiej wydajności dzięki silnikowi JavaScriptCore i natywnej implementacji wielu narzędzi, co często przekłada się na szybki start i niskie zużycie pamięci w typowych scenariuszach. Deno: Deno opiera się na silniku V8 i kładzie nacisk na szybkość dzięki optymalizacjom wbudowanych narzędzi oraz wydajnemu zarządzaniu modułami. Kolejną istotną różnicę pokazuje kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych modułów, choć nie wszystkie działają bezproblemowo. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych…",
-    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych…"
+    "toolA": "projekt stawia na kryterium „Kompatybilność z ekosystemem Node.js i npm”: Bun dąży do wysokiej zgodności z Node.js i obsługuje wiele pakietów npm, w tym część natywnych modułów, choć nie wszystkie działają bezproblemowo.",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Deno ma wbudowany model uprawnień, który domyślnie blokuje dostęp do plików, sieci i zmiennych środowiskowych, chyba że zostanie on jawnie przyznany."
   }
 }

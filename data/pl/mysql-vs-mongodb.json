@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj MySQL i MongoDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "MySQL vs MongoDB: co wybrać w 2026?",
+    "description": "Porównanie MySQL vs MongoDB: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między MySQL a MongoDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC,…. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie….",
+  "quickVerdict": "MySQL będzie lepszy, gdy projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC, co jest dobrze udokumentowane i szeroko stosowane w systemach finansowych i biznesowych. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie poziome dużych zbiorów danych.",
   "tradeoffs": [
     {
       "category": "Model danych i schemat",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
-  "introduction": "MySQL i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i schemat. MySQL: MySQL to relacyjna baza danych oparta na tabelach, wierszach i kolumnach, z reguły ze zdefiniowanym schematem, choć… MongoDB: MongoDB przechowuje dane jako dokumenty w formacie podobnym do JSON (BSON), zwykle w kolekcjach o zróżnicowanej… Kolejną istotną różnicę pokazuje kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC, co jest dobrze… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "MySQL i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i schemat. MySQL: MySQL to relacyjna baza danych oparta na tabelach, wierszach i kolumnach, z reguły ze zdefiniowanym schematem, choć dostępne są też typy JSON i elastyczne warianty. MongoDB: MongoDB przechowuje dane jako dokumenty w formacie podobnym do JSON (BSON), zwykle w kolekcjach o zróżnicowanej strukturze. Kolejną istotną różnicę pokazuje kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC, co jest dobrze udokumentowane i szeroko stosowane w systemach finansowych i biznesowych. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC,…",
-    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie…"
+    "toolA": "projekt stawia na kryterium „Spójność transakcyjna i właściwości ACID”: MySQL z silnikiem InnoDB oferuje transakcje ACID, izolację poziomów i mechanizmy blokad oraz MVCC, co jest dobrze udokumentowane i szeroko stosowane w systemach finansowych i biznesowych.",
+    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie”: MongoDB ma wbudowany sharding i replikację jako element architektury, co ułatwia skalowanie poziome dużych zbiorów danych."
   }
 }

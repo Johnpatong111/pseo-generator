@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-fastapi",
   "meta": {
-    "title": "NestJS vs FastAPI: welches 2026 wählen — APIs, Leistung und Bereitstellung",
-    "description": "Vergleiche NestJS und FastAPI: Bewerte Architekturkompromisse bei API-Design, Laufzeitverhalten und Anfrageverarbeitung und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
+    "title": "NestJS vs FastAPI: Was wählen in 2026?",
+    "description": "Vergleich NestJS vs FastAPI: Leistung, Routing, Nebenläufigkeit und Architekturkompromisse für Backend-Entwickler."
   },
   "toolA": {
     "name": "NestJS"
@@ -62,9 +62,9 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Verarbeite eine gefilterte HTTP-Anfrage für aktive Produkte, validiere die Kategorie und begrenze die Ergebnisse. Da eines der Backends nicht auf TypeScript basiert, zeigt das Beispiel einen typisierten HTTP-Client; der Server bleibt in der nativen Sprache des Frameworks.",
+    "scenario": "Verarbeite eine gefilterte HTTP-Anfrage für aktive Produkte, validiere die Kategorie und begrenze die Ergebnisse.",
     "tech1Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromFastapi(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`fastapi product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}"
+    "tech2Snippet": "from fastapi import FastAPI, HTTPException, Query\nfrom pydantic import BaseModel\n\nfrom app.repositories.products import product_repository\n\n\nclass Product(BaseModel):\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\napp = FastAPI()\n\n\n@app.get(\"/api/products\", response_model=list[Product])\nasync def list_products(\n    category: str = Query(min_length=1),\n    limit: int = Query(default=50, ge=1, le=50),\n) -> list[Product]:\n    products = await product_repository.list_active_by_category(\n        category_id=category,\n        limit=limit,\n    )\n    if products is None:\n        raise HTTPException(status_code=500, detail=\"could not load products\")\n    return products"
   },
   "faq": [
     {
@@ -101,7 +101,7 @@
     }
   ],
   "heroSubtitle": "Die Wahl zwischen NestJS und FastAPI verändert den Umgang mit Laufzeitverhalten und Anfrageverarbeitung; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
-  "quickVerdict": "NestJS passt besser, wenn dein Projekt priorisiert Architektur und Strukturvorgaben: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das…. FastAPI ist geeigneter, wenn dein Projekt priorisiert Automatische API-Dokumentation: FastAPI erzeugt aus den Typannotationen automatisch ein OpenAPI-Schema und stellt eine interaktive….",
+  "quickVerdict": "NestJS passt besser, wenn dein Projekt priorisiert Architektur und Strukturvorgaben: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das große Teams und lange Projektlaufzeiten unterstützt. FastAPI ist geeigneter, wenn dein Projekt priorisiert Automatische API-Dokumentation: FastAPI erzeugt aus den Typannotationen automatisch ein OpenAPI-Schema und stellt eine interaktive Dokumentationsoberfläche bereit.",
   "tradeoffs": [
     {
       "category": "Programmiersprache und Typsystem",
@@ -134,9 +134,9 @@
       "toolB": "Die Sicherheit hängt vom konkreten Aufbau ab und nicht allein vom Framework."
     }
   ],
-  "introduction": "NestJS und FastAPI lösen ein ähnliches Problem, unterscheiden sich jedoch bei programmiersprache und typsystem. NestJS: NestJS baut auf TypeScript auf und nutzt dessen Typsystem intensiv, etwa für Decorators, Dependency Injection und DTOs. FastAPI: FastAPI setzt auf Python und nutzt Typannotationen zusammen mit Pydantic für Validierung und Serialisierung. Das Kriterium architektur und strukturvorgaben zeigt einen weiteren praktischen Unterschied: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das große Teams und lange… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "introduction": "NestJS und FastAPI lösen ein ähnliches Problem, unterscheiden sich jedoch bei programmiersprache und typsystem. NestJS: NestJS baut auf TypeScript auf und nutzt dessen Typsystem intensiv, etwa für Decorators, Dependency Injection und DTOs. FastAPI: FastAPI setzt auf Python und nutzt Typannotationen zusammen mit Pydantic für Validierung und Serialisierung. Das Kriterium architektur und strukturvorgaben zeigt einen weiteren praktischen Unterschied: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das große Teams und lange Projektlaufzeiten unterstützt. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
   "decisionFramework": {
-    "toolA": "dein Projekt priorisiert Architektur und Strukturvorgaben: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das…",
-    "toolB": "dein Projekt priorisiert Automatische API-Dokumentation: FastAPI erzeugt aus den Typannotationen automatisch ein OpenAPI-Schema und stellt eine interaktive…"
+    "toolA": "dein Projekt priorisiert Architektur und Strukturvorgaben: NestJS gibt mit Modulen, Controllern, Providern und Services ein recht striktes Gerüst vor, das große Teams und lange Projektlaufzeiten unterstützt.",
+    "toolB": "dein Projekt priorisiert Automatische API-Dokumentation: FastAPI erzeugt aus den Typannotationen automatisch ein OpenAPI-Schema und stellt eine interaktive Dokumentationsoberfläche bereit."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "go-gin-vs-nestjs",
   "meta": {
-    "title": "Gin vs NestJS: lequel choisir en 2026 — API, performances et déploiement",
-    "description": "Comparez Gin et NestJS : évaluez les compromis architecturaux liés à conception d’API, environnement d’exécution et requêtes et consultez des exemples TypeScript pour choisir le bon stack."
+    "title": "Gin vs NestJS : que choisir en 2026 ?",
+    "description": "Comparatif Gin vs NestJS : performances, routage, concurrence et compromis d’architecture pour les développeurs backend."
   },
   "toolA": {
     "name": "Gin"
@@ -62,8 +62,8 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Traitez une requête HTTP filtrée de produits actifs, validez la catégorie et limitez les résultats. Comme l’un des backends n’est pas basé sur TypeScript, l’exemple montre un client HTTP typé ; le serveur reste écrit dans le langage natif du framework.",
-    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromGoGin(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`Go Gin product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}",
+    "scenario": "Traitez une requête HTTP filtrée de produits actifs, validez la catégorie et limitez les résultats.",
+    "tech1Snippet": "package main\n\nimport (\n\t\"database/sql\"\n\t\"net/http\"\n\t\"strconv\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\ntype Product struct {\n\tID         string `json:\"id\"`\n\tName       string `json:\"name\"`\n\tPriceCents int64  `json:\"priceCents\"`\n}\n\nfunc listActiveProducts(db *sql.DB, categoryID string, limit int) ([]Product, error) {\n\trows, err := db.Query(\n\t\t\"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active ORDER BY name LIMIT $2\",\n\t\tcategoryID,\n\t\tlimit,\n\t)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tdefer rows.Close()\n\n\tproducts := make([]Product, 0, limit)\n\tfor rows.Next() {\n\t\tvar product Product\n\t\tif err := rows.Scan(&product.ID, &product.Name, &product.PriceCents); err != nil {\n\t\t\treturn nil, err\n\t\t}\n\t\tproducts = append(products, product)\n\t}\n\treturn products, rows.Err()\n}\n\nfunc registerProductRoutes(router *gin.Engine, db *sql.DB) {\n\trouter.GET(\"/api/products\", func(c *gin.Context) {\n\t\tcategoryID := c.Query(\"category\")\n\t\tif categoryID == \"\" {\n\t\t\tc.JSON(http.StatusBadRequest, gin.H{\"error\": \"category is required\"})\n\t\t\treturn\n\t\t}\n\t\tlimit, err := strconv.Atoi(c.DefaultQuery(\"limit\", \"50\"))\n\t\tif err != nil || limit < 1 || limit > 50 {\n\t\t\tc.JSON(http.StatusBadRequest, gin.H{\"error\": \"limit must be between 1 and 50\"})\n\t\t\treturn\n\t\t}\n\t\tproducts, err := listActiveProducts(db, categoryID, limit)\n\t\tif err != nil {\n\t\t\tc.JSON(http.StatusInternalServerError, gin.H{\"error\": \"could not load products\"})\n\t\t\treturn\n\t\t}\n\t\tc.JSON(http.StatusOK, gin.H{\"products\": products})\n\t})\n}",
     "tech2Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}"
   },
   "faq": [
@@ -101,7 +101,7 @@
     }
   ],
   "heroSubtitle": "Choisir entre Gin et NestJS modifie la manière de gérer l’environnement d’exécution et le traitement des requêtes ; les besoins en données, les compétences de l’équipe et le déploiement sont donc déterminants.",
-  "quickVerdict": "Gin convient mieux lorsque votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec…. NestJS est préférable lorsque votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et….",
+  "quickVerdict": "Gin convient mieux lorsque votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec une consommation mémoire généralement contenue. NestJS est préférable lorsque votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et injection de dépendances.",
   "tradeoffs": [
     {
       "category": "Langage et courbe d’apprentissage",
@@ -134,9 +134,9 @@
       "toolB": "La CLI propose un mode watch natif, mais les tests complets restent tributaires de la qualité de la configuration du projet."
     }
   ],
-  "introduction": "Gin et NestJS répondent à un besoin proche, mais diffèrent sur langage et courbe d’apprentissage. Gin : Gin repose sur Go, un langage compilé au typage statique et à la syntaxe volontairement réduite. NestJS : NestJS s’écrit en TypeScript ou en JavaScript et s’inspire fortement d’Angular : modules, décorateurs, services… Le critère « Architecture et structuration du code » met en évidence une autre différence pratique : Gin fournit un routeur HTTP et des utilitaires de contexte, mais laisse l’organisation du projet entièrement à l’équipe. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
+  "introduction": "Gin et NestJS répondent à un besoin proche, mais diffèrent sur langage et courbe d’apprentissage. Gin : Gin repose sur Go, un langage compilé au typage statique et à la syntaxe volontairement réduite. NestJS : NestJS s’écrit en TypeScript ou en JavaScript et s’inspire fortement d’Angular : modules, décorateurs, services injectables et contrôleurs. Le critère « Architecture et structuration du code » met en évidence une autre différence pratique : Gin fournit un routeur HTTP et des utilitaires de contexte, mais laisse l’organisation du projet entièrement à l’équipe. Le choix dépend de la charge, de l’architecture existante et des contraintes de déploiement.",
   "decisionFramework": {
-    "toolA": "votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec…",
-    "toolB": "votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et…"
+    "toolA": "votre projet privilégie performances et empreinte à l’exécution : Go compile en binaire natif et Gin est réputé pour son routage léger basé sur un arbre radix, avec une consommation mémoire généralement contenue.",
+    "toolB": "votre projet privilégie architecture et structuration du code : NestJS impose par défaut une architecture modulaire avec modules, contrôleurs, providers et injection de dépendances."
   }
 }

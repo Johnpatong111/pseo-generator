@@ -1,8 +1,8 @@
 {
   "slug": "astro-vs-gatsby",
   "meta": {
-    "title": "Astro vs Gatsby: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara Astro y Gatsby: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Astro vs Gatsby: ¿cuál elegir en 2026?",
+    "description": "Comparativa Astro vs Gatsby: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "Astro"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Astro y Gatsby cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Astro encaja mejor cuando tu proyecto prioriza modelo de renderizado y entrega: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan…. Gatsby es preferible cuando tu proyecto prioriza ecosistema, plugins e integraciones: Gatsby tiene un ecosistema consolidado de plugins y temas, especialmente útil para proyectos que….",
+  "quickVerdict": "Astro encaja mejor cuando tu proyecto prioriza modelo de renderizado y entrega: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan explícitamente como islas, lo que reduce el JavaScript enviado al navegador. Gatsby es preferible cuando tu proyecto prioriza ecosistema, plugins e integraciones: Gatsby tiene un ecosistema consolidado de plugins y temas, especialmente útil para proyectos que dependen de fuentes de datos integradas mediante GraphQL.",
   "tradeoffs": [
     {
       "category": "Modelo de renderizado y entrega",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { GetStaticPaths } from \"astro\";\nimport { productRepository } from \"../lib/products\";\n\nexport const getStaticPaths: GetStaticPaths = async () => {\n  const categories = await productRepository.listCategories();\n  return Promise.all(\n    categories.map(async ({ id }) => ({\n      params: { category: id },\n      props: {\n        products: await productRepository.listActiveByCategory({\n          categoryId: id,\n          orderBy: \"name\",\n          limit: 50,\n        }),\n      },\n    })),\n  );\n};",
     "tech2Snippet": "import type { GetServerData } from \"gatsby\";\nimport { productRepository } from \"../models/products.server\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport const getServerData: GetServerData = async ({ query }) => {\n  const categoryId = typeof query.category === \"string\" ? query.category : \"\";\n  if (!categoryId) return { status: 400, props: { products: [] as Product[] } };\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { props: { products } };\n};"
   },
-  "introduction": "Astro y Gatsby responden a una necesidad similar, pero difieren en modelo de renderizado y entrega. Astro: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan explícitamente como… Gatsby: Gatsby se basa en la generación de sitios estáticos con React y una capa de datos GraphQL, y admite funciones del lado… El criterio de interactividad y arquitectura de componentes añade otra diferencia práctica: Astro permite usar componentes de React, Vue, Svelte, Solid u otros frameworks dentro del mismo proyecto, y su modelo… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Astro y Gatsby responden a una necesidad similar, pero difieren en modelo de renderizado y entrega.  Astro: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan explícitamente como islas, lo que reduce el JavaScript enviado al navegador.  Gatsby: Gatsby se basa en la generación de sitios estáticos con React y una capa de datos GraphQL, y admite funciones del lado del servidor y renderizado diferido según el plan de alojamiento y la configuración.  El criterio de interactividad y arquitectura de componentes añade otra diferencia práctica: Astro permite usar componentes de React, Vue, Svelte, Solid u otros frameworks dentro del mismo proyecto, y su modelo de islas define qué partes se hidratan y con qué estrategia.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de renderizado y entrega: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan…",
-    "toolB": "tu proyecto prioriza ecosistema, plugins e integraciones: Gatsby tiene un ecosistema consolidado de plugins y temas, especialmente útil para proyectos que…"
+    "toolA": "tu proyecto prioriza modelo de renderizado y entrega: Astro genera HTML estático por defecto y solo hidrata los componentes interactivos que se marcan explícitamente como islas, lo que reduce el JavaScript enviado al navegador.",
+    "toolB": "tu proyecto prioriza ecosistema, plugins e integraciones: Gatsby tiene un ecosistema consolidado de plugins y temas, especialmente útil para proyectos que dependen de fuentes de datos integradas mediante GraphQL."
   }
 }

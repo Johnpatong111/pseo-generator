@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-pulumi",
   "meta": {
-    "title": "Terraform vs Pulumi: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Terraform i Pulumi: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Terraform vs Pulumi: co wybrać w 2026?",
+    "description": "Porównanie Terraform vs Pulumi: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Terraform"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Terraform a Pulumi zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Terraform będzie lepszy, gdy projekt stawia na kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne,…. Pulumi sprawdzi się, gdy projekt stawia na kryterium „Język konfiguracji i krzywa uczenia się”: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje….",
+  "quickVerdict": "Terraform będzie lepszy, gdy projekt stawia na kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne, narzędzia SaaS i systemy lokalne. Pulumi sprawdzi się, gdy projekt stawia na kryterium „Język konfiguracji i krzywa uczenia się”: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje istniejące umiejętności programistów.",
   "tradeoffs": [
     {
       "category": "Język konfiguracji i krzywa uczenia się",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { App, TerraformStack } from \"cdktf\";\nimport { S3Bucket } from \"@cdktf/provider-aws/lib/s3-bucket\";\nimport { S3BucketPublicAccessBlock } from \"@cdktf/provider-aws/lib/s3-bucket-public-access-block\";\nimport { Construct } from \"constructs\";\n\nclass ProductMediaStack extends TerraformStack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n    const bucket = new S3Bucket(this, \"productImages\", {\n      bucketPrefix: \"product-catalog-images-\",\n      forceDestroy: false,\n    });\n    new S3BucketPublicAccessBlock(this, \"privateImages\", {\n      bucket: bucket.id,\n      blockPublicAcls: true,\n      blockPublicPolicy: true,\n      ignorePublicAcls: true,\n      restrictPublicBuckets: true,\n    });\n  }\n}\n\nnew ProductMediaStack(new App(), \"product-media\");",
     "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Terraform i Pulumi odpowiadają na podobną potrzebę, ale różnią się w obszarze język konfiguracji i krzywa uczenia się. Terraform: Terraform używa deklaratywnego HCL, który jest stosunkowo prosty dla osób znających infrastrukturę, ale ogranicza… Pulumi: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje istniejące umiejętności… Kolejną istotną różnicę pokazuje kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne, narzędzia SaaS i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Terraform i Pulumi odpowiadają na podobną potrzebę, ale różnią się w obszarze język konfiguracji i krzywa uczenia się. Terraform: Terraform używa deklaratywnego HCL, który jest stosunkowo prosty dla osób znających infrastrukturę, ale ogranicza pętle, warunki i abstrakcje do konstrukcji języka. Pulumi: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje istniejące umiejętności programistów. Kolejną istotną różnicę pokazuje kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne, narzędzia SaaS i systemy lokalne. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne,…",
-    "toolB": "projekt stawia na kryterium „Język konfiguracji i krzywa uczenia się”: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje…"
+    "toolA": "projekt stawia na kryterium „Ekosystem dostawców i pokrycie usług chmurowych”: Terraform ma bardzo szeroki ekosystem providerów i rejestr modułów, obejmujący chmury publiczne, narzędzia SaaS i systemy lokalne.",
+    "toolB": "projekt stawia na kryterium „Język konfiguracji i krzywa uczenia się”: Pulumi pozwala pisać infrastrukturę w TypeScript, Pythonie, Go, C# i Java, co wykorzystuje istniejące umiejętności programistów."
   }
 }

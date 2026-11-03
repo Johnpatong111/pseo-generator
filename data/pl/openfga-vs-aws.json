@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj OpenFGA i AWS: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "OpenFGA vs AWS: co wybrać w 2026?",
+    "description": "Porównanie OpenFGA vs AWS: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między OpenFGA a AWS zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "OpenFGA będzie lepszy, gdy projekt stawia na kryterium „Model uprawnień i wyrazistość polityk”: OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar. AWS sprawdzi się, gdy projekt stawia na kryterium „Integracja z ekosystemem chmurowym”: AWS zapewnia natywną integrację z IAM, Cognito, organizacjami i wieloma usługami, co upraszcza….",
+  "quickVerdict": "OpenFGA będzie lepszy, gdy projekt stawia na kryterium „Model uprawnień i wyrazistość polityk”: OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar. AWS sprawdzi się, gdy projekt stawia na kryterium „Integracja z ekosystemem chmurowym”: AWS zapewnia natywną integrację z IAM, Cognito, organizacjami i wieloma usługami, co upraszcza zarządzanie tożsamością i politykami w obrębie chmury.",
   "tradeoffs": [
     {
       "category": "Model uprawnień i wyrazistość polityk",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { OpenFgaClient } from \"@openfga/sdk\";\n\nconst authorization = new OpenFgaClient({\n  apiUrl: process.env.OPENFGA_API_URL!,\n  storeId: process.env.OPENFGA_STORE_ID!,\n  authorizationModelId: process.env.OPENFGA_MODEL_ID!,\n});\n\nexport async function canListProducts(userId: string, categoryId: string): Promise<boolean> {\n  const result = await authorization.check({\n    user: `user:${userId}`,\n    relation: \"viewer\",\n    object: `category:${categoryId}`,\n  });\n  return result.allowed;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n});\nconst accessPolicy = new aws.iam.Policy(\"product-image-reader\", {\n  description: \"Allow the product catalogue service to read product images\",\n  policy: productImages.arn.apply((bucketArn) => JSON.stringify({\n    Version: \"2012-10-17\",\n    Statement: [{\n      Effect: \"Allow\",\n      Action: [\"s3:GetObject\"],\n      Resource: [`${bucketArn}/*`],\n    }],\n  })),\n});\nexport const productImagePolicyArn = accessPolicy.arn;"
   },
-  "introduction": "OpenFGA i AWS odpowiadają na podobną potrzebę, ale różnią się w obszarze model uprawnień i wyrazistość polityk. OpenFGA: OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar. AWS: AWS oferuje wiele mechanizmów autoryzacji: polityki IAM, polityki zasobowe, role, uprawnienia w usługach typu S3 czy… Kolejną istotną różnicę pokazuje kryterium „Integracja z ekosystemem chmurowym”: OpenFGA jest projektem otwartoźródłowym i może działać na dowolnej infrastrukturze — lokalnie, w kontenerach, na… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "OpenFGA i AWS odpowiadają na podobną potrzebę, ale różnią się w obszarze model uprawnień i wyrazistość polityk. OpenFGA: OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar. AWS: AWS oferuje wiele mechanizmów autoryzacji: polityki IAM, polityki zasobowe, role, uprawnienia w usługach typu S3 czy API Gateway oraz usługi zarządzania tożsamością. Kolejną istotną różnicę pokazuje kryterium „Integracja z ekosystemem chmurowym”: OpenFGA jest projektem otwartoźródłowym i może działać na dowolnej infrastrukturze — lokalnie, w kontenerach, na Kubernetes lub jako usługa zarządzana oferowana przez dostawców. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
     "toolA": "projekt stawia na kryterium „Model uprawnień i wyrazistość polityk”: OpenFGA implementuje model autoryzacji oparty na relacjach (ReBAC) inspirowany systemem Zanzibar.",
-    "toolB": "projekt stawia na kryterium „Integracja z ekosystemem chmurowym”: AWS zapewnia natywną integrację z IAM, Cognito, organizacjami i wieloma usługami, co upraszcza…"
+    "toolB": "projekt stawia na kryterium „Integracja z ekosystemem chmurowym”: AWS zapewnia natywną integrację z IAM, Cognito, organizacjami i wieloma usługami, co upraszcza zarządzanie tożsamością i politykami w obrębie chmury."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "terraform-vs-pulumi",
   "meta": {
-    "title": "Terraform vs Pulumi: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
-    "description": "Compare Terraform and Pulumi architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
+    "title": "Terraform vs Pulumi: Which to Choose in 2026?",
+    "description": "Terraform vs Pulumi comparison: deployment, scaling, cost, and architecture trade-offs for platform teams."
   },
   "toolA": {
     "name": "Terraform"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Terraform and Pulumi changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Terraform is the better fit when your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS…. Pulumi is a stronger fit when your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on….",
+  "quickVerdict": "Terraform is the better fit when your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche services, with a long history of community contributions. Pulumi is a stronger fit when your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on resource properties, which fits naturally into existing test suites and CI pipelines.",
   "tradeoffs": [
     {
       "category": "Configuration language and learning curve",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { App, TerraformStack } from \"cdktf\";\nimport { S3Bucket } from \"@cdktf/provider-aws/lib/s3-bucket\";\nimport { S3BucketPublicAccessBlock } from \"@cdktf/provider-aws/lib/s3-bucket-public-access-block\";\nimport { Construct } from \"constructs\";\n\nclass ProductMediaStack extends TerraformStack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n    const bucket = new S3Bucket(this, \"productImages\", {\n      bucketPrefix: \"product-catalog-images-\",\n      forceDestroy: false,\n    });\n    new S3BucketPublicAccessBlock(this, \"privateImages\", {\n      bucket: bucket.id,\n      blockPublicAcls: true,\n      blockPublicPolicy: true,\n      ignorePublicAcls: true,\n      restrictPublicBuckets: true,\n    });\n  }\n}\n\nnew ProductMediaStack(new App(), \"product-media\");",
     "tech2Snippet": "import * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst config = new pulumi.Config();\nconst region = config.require(\"region\");\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", region },\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Terraform and Pulumi address a related need, but differ in configuration language and learning curve. Terraform: Terraform uses HCL, a purpose-built declarative language with a small surface area that is easy to read and review. Pulumi: Pulumi lets you write infrastructure in general-purpose languages such as TypeScript, Python, Go, C#, and Java, so… The provider and ecosystem breadth criterion adds another practical distinction: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Terraform and Pulumi address a related need, but differ in configuration language and learning curve. Terraform: Terraform uses HCL, a purpose-built declarative language with a small surface area that is easy to read and review. Pulumi: Pulumi lets you write infrastructure in general-purpose languages such as TypeScript, Python, Go, C#, and Java, so teams can reuse existing skills, libraries, and tooling. The provider and ecosystem breadth criterion adds another practical distinction: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche services, with a long history of community contributions. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS…",
-    "toolB": "your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on…"
+    "toolA": "your project prioritizes provider and ecosystem breadth: Terraform has the largest ecosystem of providers and public modules, covering major clouds, SaaS products, and niche services, with a long history of community contributions.",
+    "toolB": "your project prioritizes testing, validation, and software engineering practices: Pulumi supports unit testing in the host language, including mocking providers and asserting on resource properties, which fits naturally into existing test suites and CI pipelines."
   }
 }

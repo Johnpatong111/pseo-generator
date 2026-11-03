@@ -1,8 +1,8 @@
 {
   "slug": "chroma-vs-qdrant",
   "meta": {
-    "title": "Chroma vs Qdrant: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Chroma i Qdrant: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Chroma vs Qdrant: co wybrać w 2026?",
+    "description": "Porównanie Chroma vs Qdrant: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Chroma"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Chroma a Qdrant zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Chroma będzie lepszy, gdy projekt stawia na kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz…. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Architektura i model uruchomienia”: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub….",
+  "quickVerdict": "Chroma będzie lepszy, gdy projekt stawia na kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz dodać dokumenty w kilku linijkach kodu. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Architektura i model uruchomienia”: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub usługa zarządzana Qdrant Cloud.",
   "tradeoffs": [
     {
       "category": "Architektura i model uruchomienia",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "Chroma i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i model uruchomienia. Chroma: Chroma działa jako lekka biblioteka wbudowana w proces Pythona lub jako samodzielny serwer uruchamiany lokalnie bądź w… Qdrant: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub usługa zarządzana Qdrant… Kolejną istotną różnicę pokazuje kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz dodać dokumenty w kilku… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Chroma i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze architektura i model uruchomienia. Chroma: Chroma działa jako lekka biblioteka wbudowana w proces Pythona lub jako samodzielny serwer uruchamiany lokalnie bądź w kontenerze. Qdrant: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub usługa zarządzana Qdrant Cloud. Kolejną istotną różnicę pokazuje kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz dodać dokumenty w kilku linijkach kodu. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz…",
-    "toolB": "projekt stawia na kryterium „Architektura i model uruchomienia”: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub…"
+    "toolA": "projekt stawia na kryterium „Łatwość rozpoczęcia pracy”: Dzięki interfejsowi w Pythonie i minimalnej konfiguracji Chroma pozwala utworzyć kolekcję oraz dodać dokumenty w kilku linijkach kodu.",
+    "toolB": "projekt stawia na kryterium „Architektura i model uruchomienia”: Qdrant to samodzielny silnik wektorowy napisany w Rust, uruchamiany jako serwer, kontener lub usługa zarządzana Qdrant Cloud."
   }
 }

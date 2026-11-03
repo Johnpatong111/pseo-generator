@@ -1,8 +1,8 @@
 {
   "slug": "qdrant-vs-weaviate",
   "meta": {
-    "title": "Qdrant vs Weaviate: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Qdrant i Weaviate: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Qdrant vs Weaviate: co wybrać w 2026?",
+    "description": "Porównanie Qdrant vs Weaviate: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Qdrant"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Qdrant a Weaviate zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Qdrant będzie lepszy, gdy projekt stawia na kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki…. Weaviate sprawdzi się, gdy projekt stawia na kryterium „Wyszukiwanie hybrydowe i łączenie metod”: Weaviate ma wbudowane podejście hybrydowe, które łączy wyniki wyszukiwania wektorowego z….",
+  "quickVerdict": "Qdrant będzie lepszy, gdy projekt stawia na kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki łączone, a także mechanizmy planowania zapytań, które mają ograniczać wpływ filtrów na jakość wyszukiwania. Weaviate sprawdzi się, gdy projekt stawia na kryterium „Wyszukiwanie hybrydowe i łączenie metod”: Weaviate ma wbudowane podejście hybrydowe, które łączy wyniki wyszukiwania wektorowego z wyszukiwaniem po słowach kluczowych, z konfigurowalnymi wagami i metodami łączenia.",
   "tradeoffs": [
     {
       "category": "Model danych i sposób przechowywania wektorów",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}",
     "tech2Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}"
   },
-  "introduction": "Qdrant i Weaviate odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i sposób przechowywania wektorów. Qdrant: Qdrant przechowuje punkty z wektorem i dowolnym ładunkiem JSON, a kolekcje definiuje się wraz z parametrami wektorów,… Weaviate: Weaviate organizuje dane w klasy z właściwościami i wektorami, a schemat można definiować ręcznie lub częściowo… Kolejną istotną różnicę pokazuje kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki łączone, a także mechanizmy… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Qdrant i Weaviate odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i sposób przechowywania wektorów.  Qdrant: Qdrant przechowuje punkty z wektorem i dowolnym ładunkiem JSON, a kolekcje definiuje się wraz z parametrami wektorów, takimi jak wymiar i metryka odległości.  Weaviate: Weaviate organizuje dane w klasy z właściwościami i wektorami, a schemat można definiować ręcznie lub częściowo automatycznie.  Kolejną istotną różnicę pokazuje kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki łączone, a także mechanizmy planowania zapytań, które mają ograniczać wpływ filtrów na jakość wyszukiwania.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki…",
-    "toolB": "projekt stawia na kryterium „Wyszukiwanie hybrydowe i łączenie metod”: Weaviate ma wbudowane podejście hybrydowe, które łączy wyniki wyszukiwania wektorowego z…"
+    "toolA": "projekt stawia na kryterium „Filtrowanie metadanych i precyzja wyników”: Qdrant mocno rozwinął filtrowanie po ładunku, w tym filtry zagnieżdżone, zakresy i warunki łączone, a także mechanizmy planowania zapytań, które mają ograniczać wpływ filtrów na jakość wyszukiwania.",
+    "toolB": "projekt stawia na kryterium „Wyszukiwanie hybrydowe i łączenie metod”: Weaviate ma wbudowane podejście hybrydowe, które łączy wyniki wyszukiwania wektorowego z wyszukiwaniem po słowach kluczowych, z konfigurowalnymi wagami i metodami łączenia."
   }
 }

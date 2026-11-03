@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik: co wybrać w 2026 — funkcje, wydajność i ekosystem",
-    "description": "Porównaj SolidJS i Qwik: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "SolidJS vs Qwik: co wybrać w 2026?",
+    "description": "Porównanie SolidJS vs Qwik: rendering, routing, zarządzanie stanem i kompromisy architektoniczne dla programistów frontendu."
   },
   "toolA": {
     "name": "SolidJS"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między SolidJS a Qwik zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "SolidJS będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: SolidJS ma zwarte API i składnię zbliżoną do Reacta, co ułatwia start osobom znającym JSX. Qwik sprawdzi się, gdy projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest….",
+  "quickVerdict": "SolidJS będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: SolidJS ma zwarte API i składnię zbliżoną do Reacta, co ułatwia start osobom znającym JSX. Qwik sprawdzi się, gdy projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest serializowany i odtwarzany bez ponownego uruchamiania całego kodu.",
   "tradeoffs": [
     {
       "category": "Model reaktywności i sposób aktualizacji interfejsu",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createResource } from \"solid-js\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nasync function loadProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50&sort=name`,\n  );\n  if (!response.ok) throw new Error(`Product request failed: ${response.status}`);\n  return (await response.json()) as Product[];\n}\n\nexport function createCategoryProducts(categoryId: () => string) {\n  return createResource(categoryId, loadProducts);\n}",
     "tech2Snippet": "import { routeLoader$ } from \"@builder.io/qwik-city\";\nimport { productRepository } from \"~/models/products\";\n\nexport const useCategoryProducts = routeLoader$(async ({ url, status }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) {\n    status(400);\n    return { products: [] };\n  }\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n});"
   },
-  "introduction": "SolidJS i Qwik odpowiadają na podobną potrzebę, ale różnią się w obszarze model reaktywności i sposób aktualizacji interfejsu. SolidJS: SolidJS opiera się na drobnoziarnistej reaktywności z sygnałami; aktualizacje trafiają bezpośrednio do węzłów DOM bez… Qwik: Qwik również korzysta z sygnałów, ale łączy je z podejściem opartym na „leniwym” wczytywaniu kodu i wznawianiu stanu… Kolejną istotną różnicę pokazuje kryterium „Hydratacja i czas do interaktywności”: SolidJS stosuje klasyczną hydratację, ale dzięki brakowi wirutalnego DOM-u jest ona relatywnie lekka. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "SolidJS i Qwik odpowiadają na podobną potrzebę, ale różnią się w obszarze model reaktywności i sposób aktualizacji interfejsu. SolidJS: SolidJS opiera się na drobnoziarnistej reaktywności z sygnałami; aktualizacje trafiają bezpośrednio do węzłów DOM bez wirutalnego DOM-u. Qwik: Qwik również korzysta z sygnałów, ale łączy je z podejściem opartym na „leniwym” wczytywaniu kodu i wznawianiu stanu po stronie klienta. Kolejną istotną różnicę pokazuje kryterium „Hydratacja i czas do interaktywności”: SolidJS stosuje klasyczną hydratację, ale dzięki brakowi wirutalnego DOM-u jest ona relatywnie lekka. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
     "toolA": "projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: SolidJS ma zwarte API i składnię zbliżoną do Reacta, co ułatwia start osobom znającym JSX.",
-    "toolB": "projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest…"
+    "toolB": "projekt stawia na kryterium „Hydratacja i czas do interaktywności”: Qwik projektowano z myślą o „wznawianiu” (resumability) zamiast hydratacji: stan aplikacji jest serializowany i odtwarzany bez ponownego uruchamiania całego kodu."
   }
 }

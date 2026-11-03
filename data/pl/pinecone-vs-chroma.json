@@ -1,8 +1,8 @@
 {
   "slug": "pinecone-vs-chroma",
   "meta": {
-    "title": "Pinecone vs Chroma: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Pinecone i Chroma: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Pinecone vs Chroma: co wybrać w 2026?",
+    "description": "Porównanie Pinecone vs Chroma: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Pinecone"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Pinecone a Chroma zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Pinecone będzie lepszy, gdy projekt stawia na kryterium „Model hostingu i zarządzania”: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem…. Chroma sprawdzi się, gdy projekt stawia na kryterium „Łatwość rozpoczęcia i ergonomia pracy”: Chroma jest ceniona za prostotę uruchomienia lokalnego i intuicyjne API przypominające pracę z….",
+  "quickVerdict": "Pinecone będzie lepszy, gdy projekt stawia na kryterium „Model hostingu i zarządzania”: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem zajmuje się dostawca, a użytkownik koncentruje się na API i indeksach. Chroma sprawdzi się, gdy projekt stawia na kryterium „Łatwość rozpoczęcia i ergonomia pracy”: Chroma jest ceniona za prostotę uruchomienia lokalnego i intuicyjne API przypominające pracę z bazą dokumentów, co ułatwia prototypowanie i eksperymenty.",
   "tradeoffs": [
     {
       "category": "Model hostingu i zarządzania",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}",
     "tech2Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}"
   },
-  "introduction": "Pinecone i Chroma odpowiadają na podobną potrzebę, ale różnią się w obszarze model hostingu i zarządzania. Pinecone: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem zajmuje się dostawca, a… Chroma: Chroma działa przede wszystkim jako biblioteka i serwer uruchamiany we własnym środowisku, co daje pełną kontrolę nad… Kolejną istotną różnicę pokazuje kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Pinecone projektowano z myślą o obsłudze dużych zbiorów wektorów i ruchu produkcyjnego, a skalowanie odbywa się po… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Pinecone i Chroma odpowiadają na podobną potrzebę, ale różnią się w obszarze model hostingu i zarządzania.  Pinecone: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem zajmuje się dostawca, a użytkownik koncentruje się na API i indeksach.  Chroma: Chroma działa przede wszystkim jako biblioteka i serwer uruchamiany we własnym środowisku, co daje pełną kontrolę nad danymi i infrastrukturą, ale przenosi odpowiedzialność za utrzymanie, kopie zapasowe i dostępność na zespół.  Kolejną istotną różnicę pokazuje kryterium „Skalowanie i wydajność przy dużym obciążeniu”: Pinecone projektowano z myślą o obsłudze dużych zbiorów wektorów i ruchu produkcyjnego, a skalowanie odbywa się po stronie usługi w ramach wybranego planu i konfiguracji indeksu.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model hostingu i zarządzania”: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem…",
-    "toolB": "projekt stawia na kryterium „Łatwość rozpoczęcia i ergonomia pracy”: Chroma jest ceniona za prostotę uruchomienia lokalnego i intuicyjne API przypominające pracę z…"
+    "toolA": "projekt stawia na kryterium „Model hostingu i zarządzania”: Pinecone to w pełni zarządzana usługa chmurowa — infrastrukturą, aktualizacjami i skalowaniem zajmuje się dostawca, a użytkownik koncentruje się na API i indeksach.",
+    "toolB": "projekt stawia na kryterium „Łatwość rozpoczęcia i ergonomia pracy”: Chroma jest ceniona za prostotę uruchomienia lokalnego i intuicyjne API przypominające pracę z bazą dokumentów, co ułatwia prototypowanie i eksperymenty."
   }
 }

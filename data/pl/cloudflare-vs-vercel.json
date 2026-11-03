@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-vercel",
   "meta": {
-    "title": "Cloudflare vs Vercel: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Cloudflare i Vercel: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Cloudflare vs Vercel: co wybrać w 2026?",
+    "description": "Porównanie Cloudflare vs Vercel: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Cloudflare a Vercel zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Cloudflare będzie lepszy, gdy projekt stawia na kryterium „Model cenowy i przewidywalność kosztów”: Cloudflare często oferuje korzystne warunki cenowe dla ruchu i usług sieciowych, a wiele…. Vercel sprawdzi się, gdy projekt stawia na kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Vercel stawia na bardzo płynny proces wdrożeń, automatyczne podglądy dla gałęzi i integrację z….",
+  "quickVerdict": "Cloudflare będzie lepszy, gdy projekt stawia na kryterium „Model cenowy i przewidywalność kosztów”: Cloudflare często oferuje korzystne warunki cenowe dla ruchu i usług sieciowych, a wiele komponentów ma osobne limity i plany. Vercel sprawdzi się, gdy projekt stawia na kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Vercel stawia na bardzo płynny proces wdrożeń, automatyczne podglądy dla gałęzi i integrację z popularnymi repozytoriami.",
   "tradeoffs": [
     {
       "category": "Zakres usług i pozycjonowanie platformy",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;",
     "tech2Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.vercel.com/v13/deployments\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}"
   },
-  "introduction": "Cloudflare i Vercel odpowiadają na podobną potrzebę, ale różnią się w obszarze zakres usług i pozycjonowanie platformy. Cloudflare: Cloudflare to przede wszystkim globalna sieć edge z usługami CDN, DNS, ochrony przed atakami, Workers, R2, D1, Queues… Vercel: Vercel koncentruje się na hostingu aplikacji frontendowych i full-stack, ze szczególnym naciskiem na frameworki takie… Kolejną istotną różnicę pokazuje kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Cloudflare udostępnia narzędzia CLI, integracje z repozytoriami i frameworkami oraz możliwość konfiguracji przez pliki… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Cloudflare i Vercel odpowiadają na podobną potrzebę, ale różnią się w obszarze zakres usług i pozycjonowanie platformy. Cloudflare: Cloudflare to przede wszystkim globalna sieć edge z usługami CDN, DNS, ochrony przed atakami, Workers, R2, D1, Queues i innymi komponentami, które można łączyć elastycznie. Vercel: Vercel koncentruje się na hostingu aplikacji frontendowych i full-stack, ze szczególnym naciskiem na frameworki takie jak Next.js oraz na gotowy workflow wdrożeń. Kolejną istotną różnicę pokazuje kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Cloudflare udostępnia narzędzia CLI, integracje z repozytoriami i frameworkami oraz możliwość konfiguracji przez pliki i panel. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model cenowy i przewidywalność kosztów”: Cloudflare często oferuje korzystne warunki cenowe dla ruchu i usług sieciowych, a wiele…",
-    "toolB": "projekt stawia na kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Vercel stawia na bardzo płynny proces wdrożeń, automatyczne podglądy dla gałęzi i integrację z…"
+    "toolA": "projekt stawia na kryterium „Model cenowy i przewidywalność kosztów”: Cloudflare często oferuje korzystne warunki cenowe dla ruchu i usług sieciowych, a wiele komponentów ma osobne limity i plany.",
+    "toolB": "projekt stawia na kryterium „Doświadczenie deweloperskie i workflow wdrożeń”: Vercel stawia na bardzo płynny proces wdrożeń, automatyczne podglądy dla gałęzi i integrację z popularnymi repozytoriami."
   }
 }

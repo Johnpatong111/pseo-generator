@@ -1,8 +1,8 @@
 {
   "slug": "redis-vs-memcached",
   "meta": {
-    "title": "Redis vs Memcached: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj Redis i Memcached: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Redis vs Memcached: co wybrać w 2026?",
+    "description": "Porównanie Redis vs Memcached: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "Redis"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Redis a Memcached zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Redis będzie lepszy, gdy projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe,…. Memcached sprawdzi się, gdy projekt stawia na kryterium „Wydajność i model wątków”: Memcached jest wielowątkowy i dobrze wykorzystuje wiele rdzeni przy prostych operacjach get/set.",
+  "quickVerdict": "Redis będzie lepszy, gdy projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe, strumienie, hiperloglogi i inne struktury, co pozwala realizować kolejki, rankingi i liczniki bez dodatkowej warstwy. Memcached sprawdzi się, gdy projekt stawia na kryterium „Wydajność i model wątków”: Memcached jest wielowątkowy i dobrze wykorzystuje wiele rdzeni przy prostych operacjach get/set.",
   "tradeoffs": [
     {
       "category": "Model danych i dostępne struktury",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}",
     "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\ntype MemcachedReader = {\n  get(key: string): Promise<string | null>;\n};\n\nexport async function listProducts(cache: MemcachedReader, productIds: readonly string[], categoryId: string) {\n  const values = await Promise.all(\n    productIds.slice(0, 50).map((id) => cache.get(`product:${id}`)),\n  );\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "Redis i Memcached odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i dostępne struktury. Redis: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe, strumienie, hiperloglogi i… Memcached: Memcached udostępnia prosty model klucz-wartość z wartościami binarnymi i tekstowymi, bez natywnych struktur złożonych. Kolejną istotną różnicę pokazuje kryterium „Trwałość i odtwarzanie danych”: Redis oferuje mechanizmy trwałości, takie jak snapshoty RDB i dziennik AOF, których dostępność i konfiguracja zależą… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Redis i Memcached odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i dostępne struktury. Redis: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe, strumienie, hiperloglogi i inne struktury, co pozwala realizować kolejki, rankingi i liczniki bez dodatkowej warstwy. Memcached: Memcached udostępnia prosty model klucz-wartość z wartościami binarnymi i tekstowymi, bez natywnych struktur złożonych. Kolejną istotną różnicę pokazuje kryterium „Trwałość i odtwarzanie danych”: Redis oferuje mechanizmy trwałości, takie jak snapshoty RDB i dziennik AOF, których dostępność i konfiguracja zależą od wersji oraz planu wdrożenia. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe,…",
+    "toolA": "projekt stawia na kryterium „Model danych i dostępne struktury”: Redis oferuje nie tylko klucz-wartość, ale też listy, zbiory, zbiory posortowane, hashe, strumienie, hiperloglogi i inne struktury, co pozwala realizować kolejki, rankingi i liczniki bez dodatkowej warstwy.",
     "toolB": "projekt stawia na kryterium „Wydajność i model wątków”: Memcached jest wielowątkowy i dobrze wykorzystuje wiele rdzeni przy prostych operacjach get/set."
   }
 }

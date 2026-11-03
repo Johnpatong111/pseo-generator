@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-fastify",
   "meta": {
-    "title": "Node.js vs Fastify: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Node.js y Fastify: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Node.js vs Fastify: ¿cuál elegir en 2026?",
+    "description": "Comparativa Node.js vs Fastify: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Node.js"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Node.js y Fastify cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza ecosistema y madurez: Node.js cuenta con un ecosistema inmenso: npm alberga cientos de miles de paquetes y la mayoría de…. Fastify es preferible cuando tu proyecto prioriza rendimiento y eficiencia: Fastify se ha diseñado con la eficiencia como objetivo declarado, con un enrutador propio,….",
+  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza ecosistema y madurez: Node.js cuenta con un ecosistema inmenso: npm alberga cientos de miles de paquetes y la mayoría de librerías y frameworks del ecosistema JavaScript asumen compatibilidad con Node.js. Fastify es preferible cuando tu proyecto prioriza rendimiento y eficiencia: Fastify se ha diseñado con la eficiencia como objetivo declarado, con un enrutador propio, serialización de esquemas y un modelo de plugins que reduce sobrecarga.",
   "tradeoffs": [
     {
       "category": "Naturaleza y rol en el stack",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));",
     "tech2Snippet": "import Fastify from \"fastify\";\nimport { productRepository } from \"./products\";\n\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\n  \"/api/products\",\n  async (request, reply) => {\n    const categoryId = request.query.category;\n    if (!categoryId?.trim()) {\n      return reply.code(400).send({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return { products };\n  },\n);"
   },
-  "introduction": "Node.js y Fastify responden a una necesidad similar, pero difieren en naturaleza y rol en el stack. Node.js: Node.js es un entorno de ejecución de JavaScript del lado del servidor basado en el motor V8, no un framework web. Fastify: Fastify es un framework web para Node.js que se apoya en el propio entorno para ofrecer enrutamiento, hooks,… El criterio de rendimiento y eficiencia añade otra diferencia práctica: El rendimiento de una aplicación Node.js depende enormemente del framework, la configuración y la carga de trabajo; el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Node.js y Fastify responden a una necesidad similar, pero difieren en naturaleza y rol en el stack. Node.js: Node.js es un entorno de ejecución de JavaScript del lado del servidor basado en el motor V8, no un framework web. Fastify: Fastify es un framework web para Node.js que se apoya en el propio entorno para ofrecer enrutamiento, hooks, validación de esquemas y serialización optimizada. El criterio de rendimiento y eficiencia añade otra diferencia práctica: El rendimiento de una aplicación Node.js depende enormemente del framework, la configuración y la carga de trabajo; el runtime por sí solo no garantiza cifras concretas. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema y madurez: Node.js cuenta con un ecosistema inmenso: npm alberga cientos de miles de paquetes y la mayoría de…",
-    "toolB": "tu proyecto prioriza rendimiento y eficiencia: Fastify se ha diseñado con la eficiencia como objetivo declarado, con un enrutador propio,…"
+    "toolA": "tu proyecto prioriza ecosistema y madurez: Node.js cuenta con un ecosistema inmenso: npm alberga cientos de miles de paquetes y la mayoría de librerías y frameworks del ecosistema JavaScript asumen compatibilidad con Node.js.",
+    "toolB": "tu proyecto prioriza rendimiento y eficiencia: Fastify se ha diseñado con la eficiencia como objetivo declarado, con un enrutador propio, serialización de esquemas y un modelo de plugins que reduce sobrecarga."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-memcached",
   "meta": {
-    "title": "SQLite vs Memcached: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj SQLite i Memcached: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "SQLite vs Memcached: co wybrać w 2026?",
+    "description": "Porównanie SQLite vs Memcached: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "SQLite"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między SQLite a Memcached zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "SQLite będzie lepszy, gdy projekt stawia na kryterium „Model przechowywania danych i trwałość”: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom…. Memcached sprawdzi się, gdy projekt stawia na kryterium „Wydajność i opóźnienia”: Memcached jest zoptymalizowany pod kątem bardzo szybkich operacji get/set w pamięci, często….",
+  "quickVerdict": "SQLite będzie lepszy, gdy projekt stawia na kryterium „Model przechowywania danych i trwałość”: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom ACID. Memcached sprawdzi się, gdy projekt stawia na kryterium „Wydajność i opóźnienia”: Memcached jest zoptymalizowany pod kątem bardzo szybkich operacji get/set w pamięci, często osiągając czasy odpowiedzi rzędu mikrosekund w sieci lokalnej.",
   "tradeoffs": [
     {
       "category": "Model przechowywania danych i trwałość",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}",
     "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\ntype MemcachedReader = {\n  get(key: string): Promise<string | null>;\n};\n\nexport async function listProducts(cache: MemcachedReader, productIds: readonly string[], categoryId: string) {\n  const values = await Promise.all(\n    productIds.slice(0, 50).map((id) => cache.get(`product:${id}`)),\n  );\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .filter((product) => product.active && product.categoryId === categoryId)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "SQLite i Memcached odpowiadają na podobną potrzebę, ale różnią się w obszarze model przechowywania danych i trwałość. SQLite: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom ACID. Memcached: Memcached przechowuje dane wyłącznie w pamięci RAM, co zapewnia bardzo szybki dostęp, ale dane są ulotne i znikają po… Kolejną istotną różnicę pokazuje kryterium „Wydajność i opóźnienia”: SQLite działa w procesie aplikacji, co eliminuje narzut sieciowy i pozwala na bardzo niskie opóźnienia odczytu,… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "SQLite i Memcached odpowiadają na podobną potrzebę, ale różnią się w obszarze model przechowywania danych i trwałość. SQLite: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom ACID. Memcached: Memcached przechowuje dane wyłącznie w pamięci RAM, co zapewnia bardzo szybki dostęp, ale dane są ulotne i znikają po restarcie lub awarii. Kolejną istotną różnicę pokazuje kryterium „Wydajność i opóźnienia”: SQLite działa w procesie aplikacji, co eliminuje narzut sieciowy i pozwala na bardzo niskie opóźnienia odczytu, zwłaszcza przy indeksach i pamięci podręcznej systemu operacyjnego. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model przechowywania danych i trwałość”: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom…",
-    "toolB": "projekt stawia na kryterium „Wydajność i opóźnienia”: Memcached jest zoptymalizowany pod kątem bardzo szybkich operacji get/set w pamięci, często…"
+    "toolA": "projekt stawia na kryterium „Model przechowywania danych i trwałość”: SQLite przechowuje dane w pliku na dysku, zapewniając trwałość i integralność dzięki transakcjom ACID.",
+    "toolB": "projekt stawia na kryterium „Wydajność i opóźnienia”: Memcached jest zoptymalizowany pod kątem bardzo szybkich operacji get/set w pamięci, często osiągając czasy odpowiedzi rzędu mikrosekund w sieci lokalnej."
   }
 }

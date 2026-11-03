@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare PostgreSQL and SQLite architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "PostgreSQL vs SQLite: Which to Choose in 2026?",
+    "description": "PostgreSQL vs SQLite comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between PostgreSQL and SQLite changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes data types and sql feature support: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric…. SQLite is a stronger fit when your project prioritizes operational complexity and administration: SQLite is a serverless, zero-configuration library that stores the entire database in a single file.",
+  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes data types and sql feature support: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric types, and user-defined types. SQLite is a stronger fit when your project prioritizes operational complexity and administration: SQLite is a serverless, zero-configuration library that stores the entire database in a single file.",
   "tradeoffs": [
     {
       "category": "Data Types and SQL Feature Support",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL and SQLite address a related need, but differ in data types and sql feature support. PostgreSQL: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric types, and user-defined… SQLite: SQLite supports a more limited set of storage classes: NULL, INTEGER, REAL, TEXT, and BLOB, with dynamic typing. The concurrency and locking criterion adds another practical distinction: PostgreSQL uses a multi-version concurrency control (MVCC) model that allows multiple readers and writers to operate… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "PostgreSQL and SQLite address a related need, but differ in data types and sql feature support. PostgreSQL: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric types, and user-defined types. SQLite: SQLite supports a more limited set of storage classes: NULL, INTEGER, REAL, TEXT, and BLOB, with dynamic typing. The concurrency and locking criterion adds another practical distinction: PostgreSQL uses a multi-version concurrency control (MVCC) model that allows multiple readers and writers to operate concurrently without blocking each other in most cases. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes data types and sql feature support: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric…",
+    "toolA": "your project prioritizes data types and sql feature support: PostgreSQL offers a rich set of native data types, including JSONB, arrays, ranges, geometric types, and user-defined types.",
     "toolB": "your project prioritizes operational complexity and administration: SQLite is a serverless, zero-configuration library that stores the entire database in a single file."
   }
 }

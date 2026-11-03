@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-nestjs",
   "meta": {
-    "title": "Fastify vs NestJS: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Fastify i NestJS: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Fastify vs NestJS: co wybrać w 2026?",
+    "description": "Porównanie Fastify vs NestJS: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Fastify"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Fastify a NestJS zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Wydajność i narzut frameworka”: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na…. NestJS sprawdzi się, gdy projekt stawia na kryterium „Architektura i spójność projektu”: NestJS dostarcza gotowy zestaw wzorców: moduły, kontrolery, providery, wstrzykiwanie zależności….",
+  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Wydajność i narzut frameworka”: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na lekkich schematach i minimalnej liczbie warstw pośrednich. NestJS sprawdzi się, gdy projekt stawia na kryterium „Architektura i spójność projektu”: NestJS dostarcza gotowy zestaw wzorców: moduły, kontrolery, providery, wstrzykiwanie zależności oraz dekoratory, co sprzyja przewidywalnej strukturze.",
   "tradeoffs": [
     {
       "category": "Wydajność i narzut frameworka",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Fastify from \"fastify\";\nimport { productRepository } from \"./products\";\n\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\n  \"/api/products\",\n  async (request, reply) => {\n    const categoryId = request.query.category;\n    if (!categoryId?.trim()) {\n      return reply.code(400).send({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return { products };\n  },\n);",
     "tech2Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}"
   },
-  "introduction": "Fastify i NestJS odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i narzut frameworka. Fastify: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na lekkich schematach i… NestJS: NestJS działa domyślnie na warstwie abstrakcji i mechanizmach wstrzykiwania zależności, które zwiększają narzut… Kolejną istotną różnicę pokazuje kryterium „Architektura i spójność projektu”: Fastify narzuca niewiele reguł i pozostawia organizację kodu zespołowi, oferując przy tym system pluginów oraz… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Fastify i NestJS odpowiadają na podobną potrzebę, ale różnią się w obszarze wydajność i narzut frameworka. Fastify: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na lekkich schematach i minimalnej liczbie warstw pośrednich. NestJS: NestJS działa domyślnie na warstwie abstrakcji i mechanizmach wstrzykiwania zależności, które zwiększają narzut względem bezpośredniego użycia frameworka HTTP, choć można go uruchomić na adapterze Fastify. Kolejną istotną różnicę pokazuje kryterium „Architektura i spójność projektu”: Fastify narzuca niewiele reguł i pozostawia organizację kodu zespołowi, oferując przy tym system pluginów oraz enkapsulację kontekstu. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wydajność i narzut frameworka”: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na…",
-    "toolB": "projekt stawia na kryterium „Architektura i spójność projektu”: NestJS dostarcza gotowy zestaw wzorców: moduły, kontrolery, providery, wstrzykiwanie zależności…"
+    "toolA": "projekt stawia na kryterium „Wydajność i narzut frameworka”: Fastify powstał z myślą o niskim narzucie i wydajnym routingu, a jego konstrukcja opiera się na lekkich schematach i minimalnej liczbie warstw pośrednich.",
+    "toolB": "projekt stawia na kryterium „Architektura i spójność projektu”: NestJS dostarcza gotowy zestaw wzorców: moduły, kontrolery, providery, wstrzykiwanie zależności oraz dekoratory, co sprzyja przewidywalnej strukturze."
   }
 }

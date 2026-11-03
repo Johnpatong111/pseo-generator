@@ -1,8 +1,8 @@
 {
   "slug": "deno-vs-hono",
   "meta": {
-    "title": "Deno vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Deno y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Deno vs Hono: ¿cuál elegir en 2026?",
+    "description": "Comparativa Deno vs Hono: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Deno"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Deno y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Deno encaja mejor cuando tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de…. Hono es preferible cuando tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en….",
+  "quickVerdict": "Deno encaja mejor cuando tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de archivos, variables de entorno o subprocesos salvo que se conceda mediante indicadores al ejecutar. Hono es preferible cuando tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en gran medida del runtime sobre el que se ejecute, ya sea Deno, Node.js, Bun o un entorno edge.",
   "tradeoffs": [
     {
       "category": "Naturaleza y propósito de cada herramienta: no compiten en la misma capa del",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nDeno.serve(async (request: Request): Promise<Response> => {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId?.trim()) {\n    return Response.json({ error: \"category is required\" }, { status: 400 });\n  }\n  const upstream = new URL(\"/products\", Deno.env.get(\"PRODUCTS_API_URL\")!);\n  upstream.searchParams.set(\"category\", categoryId);\n  upstream.searchParams.set(\"active\", \"true\");\n  upstream.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(upstream);\n  if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n  const payload = (await response.json()) as { products: Product[] };\n  return Response.json({ products: payload.products });\n});",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "Deno y Hono responden a una necesidad similar, pero difieren en naturaleza y propósito de cada herramienta: no compiten en la misma capa del. Deno: Deno es un runtime de JavaScript y TypeScript, comparable a Node.js, que incluye gestor de dependencias, formateador,… Hono: Hono es un framework web ligero, con un enrutador basado en patrones de rutas y middleware, diseñado para ejecutarse… El criterio de rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas añade otra diferencia práctica: El rendimiento de Deno depende de la versión, del motor V8 subyacente y de la carga de trabajo concreta; el proyecto… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Deno y Hono responden a una necesidad similar, pero difieren en naturaleza y propósito de cada herramienta: no compiten en la misma capa del.  Deno: Deno es un runtime de JavaScript y TypeScript, comparable a Node. js, que incluye gestor de dependencias, formateador, linter y ejecutor de pruebas en un solo binario.  Hono: Hono es un framework web ligero, con un enrutador basado en patrones de rutas y middleware, diseñado para ejecutarse sobre múltiples runtimes como Deno, Node. js, Bun y plataformas edge.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de…",
-    "toolB": "tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en…"
+    "toolA": "tu proyecto prioriza seguridad y modelo de permisos: Deno aplica un modelo de permisos explícitos por defecto: el código no accede a red, sistema de archivos, variables de entorno o subprocesos salvo que se conceda mediante indicadores al ejecutar.",
+    "toolB": "tu proyecto prioriza rendimiento y huella en memoria: ambos priorizan la ligereza, pero en capas: Hono se caracteriza por un núcleo pequeño y un enrutador eficiente, y su rendimiento depende en gran medida del runtime sobre el que se ejecute, ya sea Deno, Node.js, Bun o un entorno edge."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express: Which one to choose in 2026? (APIs, performance & deployment & code compared)",
-    "description": "Compare Bun and Express architectural trade-offs, API design, runtime behavior, and request handling, and review side-by-side TypeScript to choose the right stack."
+    "title": "Bun vs Express: Which to Choose in 2026?",
+    "description": "Bun vs Express comparison: performance, routing, concurrency, and architecture trade-offs for backend developers."
   },
   "toolA": {
     "name": "Bun"
@@ -128,7 +128,7 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
-  "introduction": "Bun and Express address a related need, but differ in performance and runtime architecture. Bun: Bun is a JavaScript runtime built on JavaScriptCore, designed for speed. Express: Express is a minimal web framework that runs on Node.js (and can run on Bun). The ecosystem and middleware availability criterion adds another practical distinction: Bun aims to be compatible with many Node.js APIs and npm packages, but some packages may not work perfectly due to… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Bun and Express address a related need, but differ in performance and runtime architecture. Bun: Bun is a JavaScript runtime built on JavaScriptCore, designed for speed. Express: Express is a minimal web framework that runs on Node.js (and can run on Bun). The ecosystem and middleware availability criterion adds another practical distinction: Bun aims to be compatible with many Node.js APIs and npm packages, but some packages may not work perfectly due to runtime differences. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
     "toolA": "your project prioritizes performance and runtime architecture: Bun is a JavaScript runtime built on JavaScriptCore, designed for speed.",
     "toolB": "your project prioritizes ecosystem and middleware availability: Express has a vast, mature ecosystem of middleware and plugins accumulated over many years."

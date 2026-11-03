@@ -1,8 +1,8 @@
 {
   "slug": "kubernetes-vs-nomad",
   "meta": {
-    "title": "Kubernetes vs Nomad: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Kubernetes y Nomad: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Kubernetes vs Nomad: ¿cuál elegir en 2026?",
+    "description": "Comparativa Kubernetes vs Nomad: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Kubernetes"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Kubernetes y Nomad cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Kubernetes encaja mejor cuando tu proyecto prioriza ecosistema, integraciones y comunidad: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas…. Nomad es preferible cuando tu proyecto prioriza curva de aprendizaje y complejidad operativa: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de….",
+  "quickVerdict": "Kubernetes encaja mejor cuando tu proyecto prioriza ecosistema, integraciones y comunidad: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas de observabilidad, políticas y servicios gestionados en múltiples proveedores. Nomad es preferible cuando tu proyecto prioriza curva de aprendizaje y complejidad operativa: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de servidores y clientes que resulta más directa de asimilar para equipos pequeños.",
   "tradeoffs": [
     {
       "category": "Curva de aprendizaje y complejidad operativa",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;",
     "tech2Snippet": "type NomadJob = {\n  Job: {\n    ID: string;\n    Type: \"service\";\n    TaskGroups: Array<{ Name: string; Count: number; Tasks: Array<{ Name: string; Driver: \"docker\" }> }>;\n  };\n};\n\nexport async function registerProductCatalogJob(address: string, token: string) {\n  const job: NomadJob = {\n    Job: {\n      ID: \"product-catalog\",\n      Type: \"service\",\n      TaskGroups: [{\n        Name: \"api\",\n        Count: 2,\n        Tasks: [{ Name: \"catalog\", Driver: \"docker\" }],\n      }],\n    },\n  };\n  const response = await fetch(new URL(\"/v1/jobs\", address), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", \"X-Nomad-Token\": token },\n    body: JSON.stringify(job),\n  });\n  if (!response.ok) throw new Error(`Nomad job registration failed: ${response.status}`);\n  return response.json();\n}"
   },
-  "introduction": "Kubernetes y Nomad responden a una necesidad similar, pero difieren en curva de aprendizaje y complejidad operativa. Kubernetes: Kubernetes tiene una superficie de configuración amplia: objetos como Deployments, Services, Ingress, políticas de red… Nomad: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de servidores y clientes que… El criterio de ecosistema, integraciones y comunidad añade otra diferencia práctica: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas de observabilidad,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Kubernetes y Nomad responden a una necesidad similar, pero difieren en curva de aprendizaje y complejidad operativa.  Kubernetes: Kubernetes tiene una superficie de configuración amplia: objetos como Deployments, Services, Ingress, políticas de red y controladores de admisión son potentes, pero exigen formación y disciplina operativa.  Nomad: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de servidores y clientes que resulta más directa de asimilar para equipos pequeños.  El criterio de ecosistema, integraciones y comunidad añade otra diferencia práctica: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas de observabilidad, políticas y servicios gestionados en múltiples proveedores.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema, integraciones y comunidad: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas…",
-    "toolB": "tu proyecto prioriza curva de aprendizaje y complejidad operativa: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de…"
+    "toolA": "tu proyecto prioriza ecosistema, integraciones y comunidad: Kubernetes concentra un ecosistema muy extenso: operadores, controladores de Ingress, herramientas de observabilidad, políticas y servicios gestionados en múltiples proveedores.",
+    "toolB": "tu proyecto prioriza curva de aprendizaje y complejidad operativa: Nomad presenta un modelo más compacto, con trabajos declarativos y una única arquitectura de servidores y clientes que resulta más directa de asimilar para equipos pequeños."
   }
 }

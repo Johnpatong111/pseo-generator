@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj PostgreSQL i SQLite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "PostgreSQL vs SQLite: co wybrać w 2026?",
+    "description": "Porównanie PostgreSQL vs SQLite: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Wybór między PostgreSQL a SQLite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać…. SQLite sprawdzi się, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą….",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym konflikty zapisów są rozwiązywane przez blokady na poziomie wiersza. SQLite sprawdzi się, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą współistnieć dzięki trybowi WAL, jeśli jest włączony i odpowiednio skonfigurowany.",
   "tradeoffs": [
     {
       "category": "Model architektury i sposób wdrożenia",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób wdrożenia. PostgreSQL: PostgreSQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć, zwykle protokołem… SQLite: SQLite to biblioteka osadzana w aplikacji, a cała baza przechowywana jest zwykle w jednym pliku na dysku, bez… Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "PostgreSQL i SQLite odpowiadają na podobną potrzebę, ale różnią się w obszarze model architektury i sposób wdrożenia. PostgreSQL: PostgreSQL działa jako niezależny serwer bazy danych, z którym aplikacje łączą się przez sieć, zwykle protokołem klient-serwer. SQLite: SQLite to biblioteka osadzana w aplikacji, a cała baza przechowywana jest zwykle w jednym pliku na dysku, bez odrębnego procesu serwera. Kolejną istotną różnicę pokazuje kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym konflikty zapisów są rozwiązywane przez blokady na poziomie wiersza. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać…",
-    "toolB": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą…"
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: PostgreSQL stosuje wielowersyjność (MVCC) i pozwala wielu sesjom równocześnie czytać i zapisywać dane, przy czym konflikty zapisów są rozwiązywane przez blokady na poziomie wiersza.",
+    "toolB": "projekt stawia na kryterium „Współbieżność i obsługa wielu zapisów”: SQLite w klasycznym trybie zapisu pozwala na jeden zapis w danym momencie, a odczyty mogą współistnieć dzięki trybowi WAL, jeśli jest włączony i odpowiednio skonfigurowany."
   }
 }

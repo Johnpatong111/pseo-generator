@@ -1,8 +1,8 @@
 {
   "slug": "nextjs-vs-gatsby",
   "meta": {
-    "title": "Next.js vs Gatsby: Which one to choose in 2026? (features, performance & ecosystem & code compared)",
-    "description": "Compare Next.js and Gatsby architectural trade-offs, rendering, routing, and data loading, and review side-by-side TypeScript to choose the right stack."
+    "title": "Next.js vs Gatsby: Which to Choose in 2026?",
+    "description": "Next.js vs Gatsby comparison: rendering, routing, state management, and architecture trade-offs for frontend developers."
   },
   "toolA": {
     "name": "Next.js"
@@ -86,7 +86,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Next.js and Gatsby changes how a project handles interface rendering and data loading, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Next.js is the better fit when your project prioritizes rendering models and page strategy: Next.js supports static site generation (SSG), server-side rendering (SSR), incremental static…. Gatsby is a stronger fit when your project prioritizes data layer and content integration: Gatsby ships with a GraphQL data layer that normalizes content from plugins and sources, enabling….",
+  "quickVerdict": "Next.js is the better fit when your project prioritizes rendering models and page strategy: Next.js supports static site generation (SSG), server-side rendering (SSR), incremental static regeneration (ISR), and client-side rendering, with the App Router adding React Server Components. Gatsby is a stronger fit when your project prioritizes data layer and content integration: Gatsby ships with a GraphQL data layer that normalizes content from plugins and sources, enabling a unified query interface across CMSs and files.",
   "tradeoffs": [
     {
       "category": "Rendering Models and Page Strategy",
@@ -124,9 +124,9 @@
     "tech1Snippet": "import { notFound } from \"next/navigation\";\nimport { productRepository } from \"@/lib/products\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport default async function CategoryPage({\n  searchParams,\n}: {\n  searchParams: Promise<{ category?: string }>;\n}) {\n  const { category } = await searchParams;\n  if (!category) notFound();\n\n  const products: Product[] = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
     "tech2Snippet": "import type { GetServerData } from \"gatsby\";\nimport { productRepository } from \"../models/products.server\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nexport const getServerData: GetServerData = async ({ query }) => {\n  const categoryId = typeof query.category === \"string\" ? query.category : \"\";\n  if (!categoryId) return { status: 400, props: { products: [] as Product[] } };\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { props: { products } };\n};"
   },
-  "introduction": "Next.js and Gatsby address a related need, but differ in rendering models and page strategy. Next.js: Next.js supports static site generation (SSG), server-side rendering (SSR), incremental static regeneration (ISR), and… Gatsby: Gatsby primarily generates static pages at build time using its GraphQL data layer, with options such as Deferred… The data layer and content integration criterion adds another practical distinction: Next.js does not impose a specific data layer; developers fetch data directly in server components, route handlers, or… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Next. js and Gatsby address a related need, but differ in rendering models and page strategy.  Next. js: Next. js supports static site generation (SSG), server-side rendering (SSR), incremental static regeneration (ISR), and client-side rendering, with the App Router adding React Server Components.  Gatsby: Gatsby primarily generates static pages at build time using its GraphQL data layer, with options such as Deferred Static Generation (DSG) and server-side rendering via Gatsby Functions in supported setups.  The data layer and content integration criterion adds another practical distinction: Next. js does not impose a specific data layer; developers fetch data directly in server components, route handlers, or via libraries like fetch, GraphQL clients, or ORMs.",
   "decisionFramework": {
-    "toolA": "your project prioritizes rendering models and page strategy: Next.js supports static site generation (SSG), server-side rendering (SSR), incremental static…",
-    "toolB": "your project prioritizes data layer and content integration: Gatsby ships with a GraphQL data layer that normalizes content from plugins and sources, enabling…"
+    "toolA": "your project prioritizes rendering models and page strategy: Next.js supports static site generation (SSG), server-side rendering (SSR), incremental static regeneration (ISR), and client-side rendering, with the App Router adding React Server Components.",
+    "toolB": "your project prioritizes data layer and content integration: Gatsby ships with a GraphQL data layer that normalizes content from plugins and sources, enabling a unified query interface across CMSs and files."
   }
 }

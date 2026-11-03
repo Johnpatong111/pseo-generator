@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-hono",
   "meta": {
-    "title": "Fastify vs Hono: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Fastify y Hono: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Fastify vs Hono: ¿cuál elegir en 2026?",
+    "description": "Comparativa Fastify vs Hono: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Fastify"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Fastify y Hono cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Fastify encaja mejor cuando tu proyecto prioriza ecosistema y plugins: Fastify cuenta con un ecosistema maduro de plugins oficiales y comunitarios para validación,…. Hono es preferible cuando tu proyecto prioriza compatibilidad de runtimes y portabilidad: Hono se diseñó desde el inicio para ejecutarse sobre APIs web estándar, lo que facilita….",
+  "quickVerdict": "Fastify encaja mejor cuando tu proyecto prioriza ecosistema y plugins: Fastify cuenta con un ecosistema maduro de plugins oficiales y comunitarios para validación, autenticación, bases de datos, logging y documentación de OpenAPI. Hono es preferible cuando tu proyecto prioriza compatibilidad de runtimes y portabilidad: Hono se diseñó desde el inicio para ejecutarse sobre APIs web estándar, lo que facilita desplegarlo en plataformas de borde y en distintos runtimes.",
   "tradeoffs": [
     {
       "category": "Rendimiento y modelo de ejecución",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Fastify from \"fastify\";\nimport { productRepository } from \"./products\";\n\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\n  \"/api/products\",\n  async (request, reply) => {\n    const categoryId = request.query.category;\n    if (!categoryId?.trim()) {\n      return reply.code(400).send({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return { products };\n  },\n);",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "Fastify y Hono responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Fastify: Fastify está diseñado para Node.js con un enfoque en rendimiento mediante enrutado optimizado y serialización de… Hono: Hono es un framework ultraligero basado en Web Standards que funciona en múltiples runtimes, incluidos Node, Bun, Deno… El criterio de compatibilidad de runtimes y portabilidad añade otra diferencia práctica: Fastify está orientado principalmente a Node.js, aunque existen adaptadores comunitarios para otros entornos. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Fastify y Hono responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Fastify: Fastify está diseñado para Node.js con un enfoque en rendimiento mediante enrutado optimizado y serialización de esquemas JSON. Hono: Hono es un framework ultraligero basado en Web Standards que funciona en múltiples runtimes, incluidos Node, Bun, Deno y entornos de borde. El criterio de compatibilidad de runtimes y portabilidad añade otra diferencia práctica: Fastify está orientado principalmente a Node.js, aunque existen adaptadores comunitarios para otros entornos. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema y plugins: Fastify cuenta con un ecosistema maduro de plugins oficiales y comunitarios para validación,…",
-    "toolB": "tu proyecto prioriza compatibilidad de runtimes y portabilidad: Hono se diseñó desde el inicio para ejecutarse sobre APIs web estándar, lo que facilita…"
+    "toolA": "tu proyecto prioriza ecosistema y plugins: Fastify cuenta con un ecosistema maduro de plugins oficiales y comunitarios para validación, autenticación, bases de datos, logging y documentación de OpenAPI.",
+    "toolB": "tu proyecto prioriza compatibilidad de runtimes y portabilidad: Hono se diseñó desde el inicio para ejecutarse sobre APIs web estándar, lo que facilita desplegarlo en plataformas de borde y en distintos runtimes."
   }
 }

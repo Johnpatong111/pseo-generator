@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-sqlite",
   "meta": {
-    "title": "PostgreSQL vs SQLite: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara PostgreSQL y SQLite: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "PostgreSQL vs SQLite: ¿cuál elegir en 2026?",
+    "description": "Comparativa PostgreSQL vs SQLite: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -86,7 +86,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre PostgreSQL y SQLite cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de…. SQLite es preferible cuando tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único….",
+  "quickVerdict": "PostgreSQL encaja mejor cuando tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y escritura, con control de concurrencia multiversión (MVCC) que reduce los bloqueos entre transacciones. SQLite es preferible cuando tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de datos, sin proceso servidor ni configuración de red.",
   "tradeoffs": [
     {
       "category": "Arquitectura y modelo de ejecución",
@@ -124,9 +124,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de ejecución. PostgreSQL: PostgreSQL es un sistema gestor de bases de datos relacional cliente-servidor que se ejecuta como un proceso… SQLite: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de… El criterio de rendimiento y concurrencia añade otra diferencia práctica: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "PostgreSQL y SQLite responden a una necesidad similar, pero difieren en arquitectura y modelo de ejecución.  PostgreSQL: PostgreSQL es un sistema gestor de bases de datos relacional cliente-servidor que se ejecuta como un proceso independiente y atiende a múltiples clientes a través de la red.  SQLite: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de datos, sin proceso servidor ni configuración de red.  El criterio de rendimiento y concurrencia añade otra diferencia práctica: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y escritura, con control de concurrencia multiversión (MVCC) que reduce los bloqueos entre transacciones.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de…",
-    "toolB": "tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único…"
+    "toolA": "tu proyecto prioriza rendimiento y concurrencia: PostgreSQL está diseñado para manejar muchas conexiones concurrentes y cargas de trabajo mixtas de lectura y escritura, con control de concurrencia multiversión (MVCC) que reduce los bloqueos entre transacciones.",
+    "toolB": "tu proyecto prioriza arquitectura y modelo de ejecución: SQLite es una biblioteca embebida que se enlaza directamente con la aplicación y accede a un único archivo de base de datos, sin proceso servidor ni configuración de red."
   }
 }

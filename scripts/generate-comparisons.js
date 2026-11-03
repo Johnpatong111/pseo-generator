@@ -4,6 +4,10 @@ const { loadEnvConfig } = require("@next/env");
 const OpenAI = require("openai");
 const { categories, comparisonSlugs } = require("./topics");
 const { createCodeExamples } = require("../lib/snippet-catalog.cjs");
+const {
+  getComparisonSeoDescription,
+  getComparisonSeoTitle,
+} = require("../lib/seo.cjs");
 
 const projectRoot = path.resolve(__dirname, "..");
 loadEnvConfig(projectRoot);
@@ -374,19 +378,7 @@ function getApiClient() {
 }
 
 function getComparisonTitle(slug, toolA, toolB, locale) {
-  const suffix = {
-    pl: `: porównanie ${currentYear}`,
-    en: `: ${currentYear} comparison`,
-    es: `: comparativa ${currentYear}`,
-    de: `: Vergleich ${currentYear}`,
-    fr: ` : comparatif ${currentYear}`,
-  }[locale];
-  const title = `${toolA} vs ${toolB}${suffix}`;
-  if (title.length <= 60) return title;
-
-  const compactTitle = `${toolA} vs ${toolB}`;
-  if (compactTitle.length <= 60) return compactTitle;
-  throw new RangeError(`Comparison title exceeds 60 characters for "${slug}".`);
+  return getComparisonSeoTitle(toolA, toolB, locale);
 }
 
 function getCategoryId(slug) {
@@ -420,67 +412,7 @@ function getCategoryId(slug) {
 }
 
 function getMetaDescription(slug, toolA, toolB, locale) {
-  const categoryId = getCategoryId(slug);
-  const focus = {
-    pl: {
-      frontend: "rendering, routingu i ładowania danych",
-      backend: "projektowania API, runtime i obsługi żądań",
-      databases: "modelowania danych, zapytań i indeksowania",
-      "ai-models": "okna kontekstu, API modeli i integracji",
-      devops: "wdrażania, skalowania i infrastruktury",
-      css: "API komponentów, izolacji stylów i utrzymania",
-      general: "architektury, integracji i obsługi danych",
-    },
-    en: {
-      frontend: "rendering, routing, and data loading",
-      backend: "API design, runtime behavior, and request handling",
-      databases: "data modeling, query patterns, and indexing",
-      "ai-models": "context windows, model APIs, and integration",
-      devops: "deployment, scaling, and infrastructure",
-      css: "component APIs, style isolation, and maintenance",
-      general: "architecture, integration, and data handling",
-    },
-    es: {
-      frontend: "renderizado, enrutamiento y carga de datos",
-      backend: "diseño de API, runtime y gestión de solicitudes",
-      databases: "modelado de datos, consultas e indexación",
-      "ai-models": "ventanas de contexto, API de modelos e integración",
-      devops: "despliegue, escalabilidad e infraestructura",
-      css: "API de componentes, aislamiento de estilos y mantenimiento",
-      general: "arquitectura, integración y gestión de datos",
-    },
-    de: {
-      frontend: "Rendering, Routing und Datenladen",
-      backend: "API-Design, Laufzeitverhalten und Anfrageverarbeitung",
-      databases: "Datenmodellierung, Abfragen und Indizierung",
-      "ai-models": "Kontextfenster, Modell-APIs und Integration",
-      devops: "Bereitstellung, Skalierung und Infrastruktur",
-      css: "Komponenten-APIs, Style-Isolation und Wartung",
-      general: "Architektur, Integration und Datenverarbeitung",
-    },
-    fr: {
-      frontend: "rendu, routage et chargement des données",
-      backend: "conception d’API, environnement d’exécution et requêtes",
-      databases: "modélisation des données, requêtes et indexation",
-      "ai-models": "fenêtres de contexte, API des modèles et intégration",
-      devops: "déploiement, mise à l’échelle et infrastructure",
-      css: "API des composants, isolation des styles et maintenance",
-      general: "architecture, intégration et gestion des données",
-    },
-  }[locale][categoryId];
-  const templates = {
-    pl: `Porównaj ${toolA} i ${toolB}: oceń kompromisy architektoniczne w obszarze ${focus} i zobacz przykłady TypeScript, aby dobrać stack do projektu.`,
-    en: `Compare ${toolA} and ${toolB} architectural trade-offs, ${focus}, and review side-by-side TypeScript to choose the right stack.`,
-    es: `Compara ${toolA} y ${toolB}: evalúa sus compromisos arquitectónicos en ${focus} y revisa ejemplos TypeScript para elegir el stack adecuado.`,
-    de: `Vergleiche ${toolA} und ${toolB}: Bewerte Architekturkompromisse bei ${focus} und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen.`,
-    fr: `Comparez ${toolA} et ${toolB} : évaluez les compromis architecturaux liés à ${focus} et consultez des exemples TypeScript pour choisir le bon stack.`,
-  };
-  const description = templates[locale];
-  if (description.length <= 200) {
-    return description;
-  }
-  const shortened = description.slice(0, 199);
-  return `${shortened.slice(0, shortened.lastIndexOf(" "))}…`;
+  return getComparisonSeoDescription(toolA, toolB, getCategoryId(slug), locale);
 }
 
 function buildPrompt(slug, toolA, toolB, locale) {
@@ -562,7 +494,7 @@ ${aiModelRequirements}
 ${fableRequirements}
 ${astraDbRequirements}
 
-Write heroSubtitle as one precise sentence describing the architectural problem, quickVerdict as a distinct actionable choice rule for each tool, and 4–6 tradeoffs grounded in the comparison. Do not copy the same sentence between these fields or the introduction. Source-code examples are supplied from a reviewed, category-specific TypeScript catalog after content validation; do not generate code, greetings, or translated UI copy.`;
+Write heroSubtitle as one precise sentence describing the architectural problem, quickVerdict as a distinct actionable choice rule for each tool, and 4–6 tradeoffs grounded in the comparison. Do not copy the same sentence between these fields or the introduction. Source-code examples are supplied from a reviewed, category-specific native-language catalog after content validation; do not generate code, greetings, or translated UI copy.`;
 }
 
 function applyVerifiedFacts(slug, comparison, locale) {
@@ -641,9 +573,9 @@ function validateComparison(value, slug, toolA, toolB, locale) {
   }
   requireString(value.meta.description, "meta.description");
   const description = getMetaDescription(slug, toolA, toolB, locale);
-  if (description.length < 100 || description.length > 200) {
+  if (description.length < 100 || description.length > 155) {
     throw new Error(
-      `The meta description must be 100–200 characters (received ${description.length}).`,
+      `The meta description must be 100–155 characters (received ${description.length}).`,
     );
   }
 

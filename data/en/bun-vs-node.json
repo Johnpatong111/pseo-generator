@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-node",
   "meta": {
-    "title": "Bun vs Node: Which one to choose in 2026? (APIs, performance & deployment & code compared)",
-    "description": "Compare Bun and Node architectural trade-offs, API design, runtime behavior, and request handling, and review side-by-side TypeScript to choose the right stack."
+    "title": "Bun vs Node: Which to Choose in 2026?",
+    "description": "Bun vs Node comparison: performance, routing, concurrency, and architecture trade-offs for backend developers."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Bun and Node changes how a project handles runtime behavior and request handling, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Bun is the better fit when your project prioritizes runtime performance and startup: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly…. Node is a stronger fit when your project prioritizes node.js and npm compatibility: Node.js is the reference implementation for its own APIs, so compatibility is effectively complete….",
+  "quickVerdict": "Bun is the better fit when your project prioritizes runtime performance and startup: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly for scripts, CLIs, and I/O-heavy servers. Node is a stronger fit when your project prioritizes node.js and npm compatibility: Node.js is the reference implementation for its own APIs, so compatibility is effectively complete for packages built against it.",
   "tradeoffs": [
     {
       "category": "Runtime performance and startup",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));"
   },
-  "introduction": "Bun and Node address a related need, but differ in runtime performance and startup. Bun: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly for scripts, CLIs,… Node: Node.js uses V8 and has benefited from years of engine and runtime tuning, with stable performance across long-running… The node.js and npm compatibility criterion adds another practical distinction: Bun implements a large portion of the Node.js API surface, including many built-in modules and npm package resolution,… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Bun and Node address a related need, but differ in runtime performance and startup. Bun: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly for scripts, CLIs, and I/O-heavy servers. Node: Node.js uses V8 and has benefited from years of engine and runtime tuning, with stable performance across long-running server workloads. The node.js and npm compatibility criterion adds another practical distinction: Bun implements a large portion of the Node.js API surface, including many built-in modules and npm package resolution, and it aims to run most existing Node projects unmodified. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes runtime performance and startup: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly…",
-    "toolB": "your project prioritizes node.js and npm compatibility: Node.js is the reference implementation for its own APIs, so compatibility is effectively complete…"
+    "toolA": "your project prioritizes runtime performance and startup: Bun is built on JavaScriptCore and is designed for fast startup and high throughput, particularly for scripts, CLIs, and I/O-heavy servers.",
+    "toolB": "your project prioritizes node.js and npm compatibility: Node.js is the reference implementation for its own APIs, so compatibility is effectively complete for packages built against it."
   }
 }

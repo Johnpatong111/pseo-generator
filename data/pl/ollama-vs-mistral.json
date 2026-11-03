@@ -1,8 +1,8 @@
 {
   "slug": "ollama-vs-mistral",
   "meta": {
-    "title": "Ollama vs Mistral: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Ollama i Mistral: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Ollama vs Mistral: co wybrać w 2026?",
+    "description": "Porównanie Ollama vs Mistral: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Ollama"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Ollama a Mistral zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Ollama będzie lepszy, gdy projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym…. Mistral sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co….",
+  "quickVerdict": "Ollama będzie lepszy, gdy projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym sprzęcie, w tym na stacjach roboczych i serwerach z GPU lub CPU. Mistral sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co ułatwia budowę aplikacji produkcyjnych.",
   "tradeoffs": [
     {
       "category": "Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import OpenAI from \"openai\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst client = new OpenAI({\n  baseURL: process.env.LLM_BASE_URL ?? \"http://localhost:11434/v1\",\n  apiKey: process.env.LLM_API_KEY ?? \"local-development\",\n});\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.chat.completions.create({\n    model: process.env.LLM_MODEL ?? \"local-model\",\n    temperature: 0.2,\n    messages: [\n      { role: \"system\", content: \"Summarize only facts present in the supplied product data.\" },\n      { role: \"user\", content: JSON.stringify(products) },\n    ],\n  });\n  const summary = response.choices[0]?.message.content?.trim();\n  if (!summary) throw new Error(\"The model returned an empty summary\");\n  return summary;\n}",
     "tech2Snippet": "import { Mistral } from \"@mistralai/mistralai\";\n\ntype Product = { id: string; name: string; categoryId: string; priceCents: number };\nconst apiKey = process.env.MISTRAL_API_KEY;\nif (!apiKey) throw new Error(\"MISTRAL_API_KEY is required\");\nconst client = new Mistral({ apiKey });\n\nexport async function summarizeCatalogue(products: readonly Product[]) {\n  const response = await client.chat.complete({\n    model: process.env.MISTRAL_MODEL ?? \"mistral-small-latest\",\n    temperature: 0.2,\n    messages: [\n      { role: \"system\", content: \"Summarize only facts present in the supplied product data.\" },\n      { role: \"user\", content: JSON.stringify(products) },\n    ],\n  });\n  const summary = response.choices?.[0]?.message?.content;\n  if (typeof summary !== \"string\" || !summary.trim()) {\n    throw new Error(\"The model returned an empty summary\");\n  }\n  return summary.trim();\n}"
   },
-  "introduction": "Ollama i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze model działania i architektura: lokalne uruchamianie kontra platforma chmurowa. Ollama: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym sprzęcie, w tym na stacjach… Mistral: Mistral to przede wszystkim dostawca modeli udostępnianych przez zarządzane API w chmurze oraz rozwiązania dla firm. Kolejną istotną różnicę pokazuje kryterium „Prywatność i kontrola nad danymi”: Przy pracy lokalnej dane mogą pozostać w infrastrukturze organizacji, co bywa kluczowe przy materiałach wrażliwych. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Ollama i Mistral odpowiadają na podobną potrzebę, ale różnią się w obszarze model działania i architektura: lokalne uruchamianie kontra platforma chmurowa. Ollama: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym sprzęcie, w tym na stacjach roboczych i serwerach z GPU lub CPU. Mistral: Mistral to przede wszystkim dostawca modeli udostępnianych przez zarządzane API w chmurze oraz rozwiązania dla firm. Kolejną istotną różnicę pokazuje kryterium „Prywatność i kontrola nad danymi”: Przy pracy lokalnej dane mogą pozostać w infrastrukturze organizacji, co bywa kluczowe przy materiałach wrażliwych. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym…",
-    "toolB": "projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co…"
+    "toolA": "projekt stawia na kryterium „Model działania i architektura: lokalne uruchamianie kontra platforma chmurowa”: Ollama to lekki host modeli, który pozwala pobierać i uruchamiać modele otwarte na własnym sprzęcie, w tym na stacjach roboczych i serwerach z GPU lub CPU.",
+    "toolB": "projekt stawia na kryterium „Skalowanie i gotowość produkcyjna”: Mistral jako platforma zarządzana przenosi część odpowiedzialności za skalowanie na dostawcę, co ułatwia budowę aplikacji produkcyjnych."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj PostgreSQL i DuckDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "PostgreSQL vs DuckDB: co wybrać w 2026?",
+    "description": "Porównanie PostgreSQL vs DuckDB: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między PostgreSQL a DuckDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i…. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką….",
+  "quickVerdict": "PostgreSQL będzie lepszy, gdy projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i obsługę wielu sesji jednocześnie. DuckDB sprawdzi się, gdy projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką wydajność zapytań analitycznych na zbiorach mieszczących się na jednym węźle.",
   "tradeoffs": [
     {
       "category": "Model przetwarzania i główne zastosowanie",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model przetwarzania i główne zastosowanie. PostgreSQL: PostgreSQL jest relacyjną bazą danych OLTP przeznaczoną do obsługi wielu równoległych transakcji, typowo w… DuckDB: DuckDB to wbudowany silnik OLAP działający w procesie aplikacji, zaprojektowany do szybkiego przetwarzania zapytań… Kolejną istotną różnicę pokazuje kryterium „Wydajność zapytań analitycznych”: PostgreSQL radzi sobie z zapytaniami analitycznymi, zwłaszcza po zastosowaniu indeksów, partycjonowania i rozszerzeń… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "PostgreSQL i DuckDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model przetwarzania i główne zastosowanie. PostgreSQL: PostgreSQL jest relacyjną bazą danych OLTP przeznaczoną do obsługi wielu równoległych transakcji, typowo w architekturze klient-serwer. DuckDB: DuckDB to wbudowany silnik OLAP działający w procesie aplikacji, zaprojektowany do szybkiego przetwarzania zapytań analitycznych na danych lokalnych lub w plikach. Kolejną istotną różnicę pokazuje kryterium „Wydajność zapytań analitycznych”: PostgreSQL radzi sobie z zapytaniami analitycznymi, zwłaszcza po zastosowaniu indeksów, partycjonowania i rozszerzeń takich jak TimescaleDB czy Citus. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i…",
-    "toolB": "projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką…"
+    "toolA": "projekt stawia na kryterium „Współbieżność i obsługa wielu użytkowników”: PostgreSQL zapewnia zaawansowane mechanizmy współbieżności, w tym MVCC, izolację transakcji i obsługę wielu sesji jednocześnie.",
+    "toolB": "projekt stawia na kryterium „Wydajność zapytań analitycznych”: DuckDB wykorzystuje wektorowe przetwarzanie i kolumnowy format danych, co przekłada się na wysoką wydajność zapytań analitycznych na zbiorach mieszczących się na jednym węźle."
   }
 }

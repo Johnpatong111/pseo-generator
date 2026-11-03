@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-cassandra",
   "meta": {
-    "title": "MongoDB vs Apache Cassandra: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj MongoDB i Apache Cassandra: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "MongoDB vs Apache Cassandra: co wybrać w 2026?",
+    "description": "Porównanie MongoDB vs Apache Cassandra: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "MongoDB"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między MongoDB a Apache Cassandra zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "MongoDB będzie lepszy, gdy projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych…. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu….",
+  "quickVerdict": "MongoDB będzie lepszy, gdy projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych struktur aplikacyjnych i ewolucję schematu. Apache Cassandra sprawdzi się, gdy projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu awarii, z replikacją między centrami danych.",
   "tradeoffs": [
     {
       "category": "Model danych i sposób modelowania",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}",
     "tech2Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "MongoDB i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i sposób modelowania. MongoDB: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych struktur… Apache Cassandra: Apache Cassandra opiera się na szerokich wierszach w tabelach z kluczem partycjonowania i kluczami klastrowania, co… Kolejną istotną różnicę pokazuje kryterium „Skalowanie i rozproszenie geograficzne”: MongoDB obsługuje replikację przez replica sety oraz sharding poziomy, co pozwala skalować odczyty i zapisy w klastrze. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "MongoDB i Apache Cassandra odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i sposób modelowania. MongoDB: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych struktur aplikacyjnych i ewolucję schematu. Apache Cassandra: Apache Cassandra opiera się na szerokich wierszach w tabelach z kluczem partycjonowania i kluczami klastrowania, co wymusza modelowanie pod konkretne zapytania. Kolejną istotną różnicę pokazuje kryterium „Skalowanie i rozproszenie geograficzne”: MongoDB obsługuje replikację przez replica sety oraz sharding poziomy, co pozwala skalować odczyty i zapisy w klastrze. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych…",
-    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu…"
+    "toolA": "projekt stawia na kryterium „Model danych i sposób modelowania”: MongoDB przechowuje dane jako dokumenty BSON w kolekcjach, co ułatwia odwzorowanie zagnieżdżonych struktur aplikacyjnych i ewolucję schematu.",
+    "toolB": "projekt stawia na kryterium „Skalowanie i rozproszenie geograficzne”: Apache Cassandra została zaprojektowana jako rozproszona baza peer-to-peer bez pojedynczego punktu awarii, z replikacją między centrami danych."
   }
 }

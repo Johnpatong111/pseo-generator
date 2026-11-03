@@ -1,8 +1,8 @@
 {
   "slug": "llamaindex-vs-qdrant",
   "meta": {
-    "title": "LlamaIndex vs Qdrant: Which one to choose in 2026? (models, context & API pricing & code compared)",
-    "description": "Compare LlamaIndex and Qdrant architectural trade-offs, context windows, model APIs, and integration, and review side-by-side TypeScript to choose the right stack."
+    "title": "LlamaIndex vs Qdrant: Which to Choose in 2026?",
+    "description": "LlamaIndex vs Qdrant comparison: context windows, API pricing, latency, and architecture trade-offs for AI engineers."
   },
   "toolA": {
     "name": "LlamaIndex"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between LlamaIndex and Qdrant changes how a project handles context retrieval and model integration, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "LlamaIndex is the better fit when your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files,…. Qdrant is a stronger fit when your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as….",
+  "quickVerdict": "LlamaIndex is the better fit when your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and web sources, then split it into retrievable chunks. Qdrant is a stronger fit when your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as HNSW indexing, quantization, filtering, and horizontal scaling options depending on deployment.",
   "tradeoffs": [
     {
       "category": "Core purpose and category",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  query(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.query({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "LlamaIndex and Qdrant address a related need, but differ in core purpose and category. LlamaIndex: LlamaIndex is an open-source data framework for building retrieval-augmented generation, agents, and document-centric… Qdrant: Qdrant is a dedicated vector database and vector similarity search engine designed to store embeddings and payloads… The data ingestion and connectors criterion adds another practical distinction: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "LlamaIndex and Qdrant address a related need, but differ in core purpose and category. LlamaIndex: LlamaIndex is an open-source data framework for building retrieval-augmented generation, agents, and document-centric LLM applications. Qdrant: Qdrant is a dedicated vector database and vector similarity search engine designed to store embeddings and payloads and to serve fast nearest-neighbor queries at scale. The data ingestion and connectors criterion adds another practical distinction: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and web sources, then split it into retrievable chunks. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files,…",
-    "toolB": "your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as…"
+    "toolA": "your project prioritizes data ingestion and connectors: LlamaIndex provides extensive readers, parsers, and node parsers that load content from files, databases, APIs, and web sources, then split it into retrievable chunks.",
+    "toolB": "your project prioritizes performance and scalability of vector search: Qdrant is purpose-built for efficient approximate nearest-neighbor search, with features such as HNSW indexing, quantization, filtering, and horizontal scaling options depending on deployment."
   }
 }

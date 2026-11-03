@@ -1,8 +1,8 @@
 {
   "slug": "chroma-vs-weaviate",
   "meta": {
-    "title": "Chroma vs Weaviate: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Chroma y Weaviate: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Chroma vs Weaviate: ¿cuál elegir en 2026?",
+    "description": "Comparativa Chroma vs Weaviate: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Chroma"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Chroma y Weaviate cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Chroma encaja mejor cuando tu proyecto prioriza facilidad de configuración y uso inicial: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite…. Weaviate es preferible cuando tu proyecto prioriza rendimiento y escalabilidad: Weaviate está diseñado desde el inicio para escalado horizontal y despliegues distribuidos, con….",
+  "quickVerdict": "Chroma encaja mejor cuando tu proyecto prioriza facilidad de configuración y uso inicial: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite empezar a indexar y consultar vectores con pocas líneas de código. Weaviate es preferible cuando tu proyecto prioriza rendimiento y escalabilidad: Weaviate está diseñado desde el inicio para escalado horizontal y despliegues distribuidos, con replicación y sharding nativos.",
   "tradeoffs": [
     {
       "category": "Facilidad de configuración y uso inicial",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}",
     "tech2Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}"
   },
-  "introduction": "Chroma y Weaviate responden a una necesidad similar, pero difieren en facilidad de configuración y uso inicial. Chroma: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite empezar a indexar y… Weaviate: Weaviate también ofrece una configuración flexible mediante Docker o su servicio en la nube, pero requiere comprender… El criterio de rendimiento y escalabilidad añade otra diferencia práctica: Chroma está optimizado para cargas de trabajo de un solo nodo y puede manejar millones de vectores en memoria, pero su… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Chroma y Weaviate responden a una necesidad similar, pero difieren en facilidad de configuración y uso inicial.  Chroma: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite empezar a indexar y consultar vectores con pocas líneas de código.  Weaviate: Weaviate también ofrece una configuración flexible mediante Docker o su servicio en la nube, pero requiere comprender conceptos como esquemas y clases, lo que añade complejidad inicial.  El criterio de rendimiento y escalabilidad añade otra diferencia práctica: Chroma está optimizado para cargas de trabajo de un solo nodo y puede manejar millones de vectores en memoria, pero su arquitectura no está pensada para escalado horizontal automático.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza facilidad de configuración y uso inicial: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite…",
-    "toolB": "tu proyecto prioriza rendimiento y escalabilidad: Weaviate está diseñado desde el inicio para escalado horizontal y despliegues distribuidos, con…"
+    "toolA": "tu proyecto prioriza facilidad de configuración y uso inicial: Chroma destaca por su instalación sencilla mediante pip y su API minimalista, lo que permite empezar a indexar y consultar vectores con pocas líneas de código.",
+    "toolB": "tu proyecto prioriza rendimiento y escalabilidad: Weaviate está diseñado desde el inicio para escalado horizontal y despliegues distribuidos, con replicación y sharding nativos."
   }
 }

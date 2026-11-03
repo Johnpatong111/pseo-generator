@@ -1,8 +1,8 @@
 {
   "slug": "postgresql-vs-duckdb",
   "meta": {
-    "title": "PostgreSQL vs DuckDB: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare PostgreSQL and DuckDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "PostgreSQL vs DuckDB: Which to Choose in 2026?",
+    "description": "PostgreSQL vs DuckDB comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "PostgreSQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between PostgreSQL and DuckDB changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes concurrency and multi-user access: PostgreSQL is designed for high-concurrency, multi-user access with MVCC, row-level locking, and…. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB's columnar, vectorized execution engine is built for scanning large datasets and computing….",
+  "quickVerdict": "PostgreSQL is the better fit when your project prioritizes concurrency and multi-user access: PostgreSQL is designed for high-concurrency, multi-user access with MVCC, row-level locking, and configurable isolation levels, making it suitable for many application servers writing simultaneously. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB's columnar, vectorized execution engine is built for scanning large datasets and computing aggregations quickly on a single machine.",
   "tradeoffs": [
     {
       "category": "Core architecture and intended workload",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { Pool } from \"pg\";\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const result = await pool.query<ProductRow>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $1 AND active = $2 ORDER BY name LIMIT $3\",\n    [categoryId, true, 50],\n  );\n  return result.rows;\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "PostgreSQL and DuckDB address a related need, but differ in core architecture and intended workload. PostgreSQL: PostgreSQL is a client-server relational database management system with a separate server process that multiple… DuckDB: DuckDB is an embedded, in-process analytical database, similar in spirit to SQLite but columnar and vectorized. The analytical query performance criterion adds another practical distinction: PostgreSQL performs well for many analytical queries, especially with proper indexing, partitioning, and… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "PostgreSQL and DuckDB address a related need, but differ in core architecture and intended workload. PostgreSQL: PostgreSQL is a client-server relational database management system with a separate server process that multiple clients connect to over a network. DuckDB: DuckDB is an embedded, in-process analytical database, similar in spirit to SQLite but columnar and vectorized. The analytical query performance criterion adds another practical distinction: PostgreSQL performs well for many analytical queries, especially with proper indexing, partitioning, and configuration, and parallel query support has improved across versions. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes concurrency and multi-user access: PostgreSQL is designed for high-concurrency, multi-user access with MVCC, row-level locking, and…",
-    "toolB": "your project prioritizes analytical query performance: DuckDB's columnar, vectorized execution engine is built for scanning large datasets and computing…"
+    "toolA": "your project prioritizes concurrency and multi-user access: PostgreSQL is designed for high-concurrency, multi-user access with MVCC, row-level locking, and configurable isolation levels, making it suitable for many application servers writing simultaneously.",
+    "toolB": "your project prioritizes analytical query performance: DuckDB's columnar, vectorized execution engine is built for scanning large datasets and computing aggregations quickly on a single machine."
   }
 }

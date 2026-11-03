@@ -1,8 +1,8 @@
 {
   "slug": "cloudflare-vs-vercel",
   "meta": {
-    "title": "Cloudflare vs Vercel: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Cloudflare y Vercel: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Cloudflare vs Vercel: ¿cuál elegir en 2026?",
+    "description": "Comparativa Cloudflare vs Vercel: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Cloudflare"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Cloudflare y Vercel cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Cloudflare encaja mejor cuando tu proyecto prioriza rendimiento y red global: Cloudflare cuenta con una de las redes de borde más extensas del mercado, lo que puede favorecer…. Vercel es preferible cuando tu proyecto prioriza experiencia de desarrollo y despliegue: Vercel destaca por una experiencia muy pulida: conexión del repositorio, vistas previas por rama y….",
+  "quickVerdict": "Cloudflare encaja mejor cuando tu proyecto prioriza rendimiento y red global: Cloudflare cuenta con una de las redes de borde más extensas del mercado, lo que puede favorecer la latencia en regiones muy diversas. Vercel es preferible cuando tu proyecto prioriza experiencia de desarrollo y despliegue: Vercel destaca por una experiencia muy pulida: conexión del repositorio, vistas previas por rama y despliegues automáticos con pocos pasos.",
   "tradeoffs": [
     {
       "category": "Modelo de plataforma y enfoque principal",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import * as cloudflare from \"@pulumi/cloudflare\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst config = new pulumi.Config();\nconst accountId = config.require(\"accountId\");\nconst productImages = new cloudflare.R2Bucket(\"product-images\", {\n  accountId,\n  name: \"product-catalog-images\",\n  location: \"WNAM\",\n});\nexport const productImageBucketName = productImages.name;",
     "tech2Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.vercel.com/v13/deployments\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}"
   },
-  "introduction": "Cloudflare y Vercel responden a una necesidad similar, pero difieren en modelo de plataforma y enfoque principal. Cloudflare: Cloudflare es ante todo una red global de seguridad y rendimiento que ha ido ampliando su oferta hacia el desarrollo y… Vercel: Vercel nace como plataforma orientada al desarrollo frontend y al despliegue de aplicaciones web modernas, con… El criterio de experiencia de desarrollo y despliegue añade otra diferencia práctica: Cloudflare ofrece despliegues mediante Git en Pages y herramientas como Wrangler para Workers, con un flujo que puede… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Cloudflare y Vercel responden a una necesidad similar, pero difieren en modelo de plataforma y enfoque principal. Cloudflare: Cloudflare es ante todo una red global de seguridad y rendimiento que ha ido ampliando su oferta hacia el desarrollo y el cómputo en el edge. Vercel: Vercel nace como plataforma orientada al desarrollo frontend y al despliegue de aplicaciones web modernas, con especial cercanía a frameworks como Next.js. El criterio de experiencia de desarrollo y despliegue añade otra diferencia práctica: Cloudflare ofrece despliegues mediante Git en Pages y herramientas como Wrangler para Workers, con un flujo que puede requerir más configuración inicial. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y red global: Cloudflare cuenta con una de las redes de borde más extensas del mercado, lo que puede favorecer…",
-    "toolB": "tu proyecto prioriza experiencia de desarrollo y despliegue: Vercel destaca por una experiencia muy pulida: conexión del repositorio, vistas previas por rama y…"
+    "toolA": "tu proyecto prioriza rendimiento y red global: Cloudflare cuenta con una de las redes de borde más extensas del mercado, lo que puede favorecer la latencia en regiones muy diversas.",
+    "toolB": "tu proyecto prioriza experiencia de desarrollo y despliegue: Vercel destaca por una experiencia muy pulida: conexión del repositorio, vistas previas por rama y despliegues automáticos con pocos pasos."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nuxt-vs-remix",
   "meta": {
-    "title": "Nuxt vs Remix: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara Nuxt y Remix: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Nuxt vs Remix: ¿cuál elegir en 2026?",
+    "description": "Comparativa Nuxt vs Remix: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "Nuxt"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Nuxt y Remix cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Nuxt encaja mejor cuando tu proyecto prioriza renderizado y estrategias de entrega: Nuxt soporta renderizado en servidor, generación estática y modos híbridos por ruta, con opciones…. Remix es preferible cuando tu proyecto prioriza enrutado y estructura del proyecto: Remix también emplea enrutado por archivos, pero con rutas anidadas explícitas y una separación….",
+  "quickVerdict": "Nuxt encaja mejor cuando tu proyecto prioriza renderizado y estrategias de entrega: Nuxt soporta renderizado en servidor, generación estática y modos híbridos por ruta, con opciones de prerenderizado y caché configurables. Remix es preferible cuando tu proyecto prioriza enrutado y estructura del proyecto: Remix también emplea enrutado por archivos, pero con rutas anidadas explícitas y una separación clara entre componentes de ruta y loaders.",
   "tradeoffs": [
     {
       "category": "Framework base y lenguaje de componentes",
@@ -128,9 +128,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function useCategoryProducts(categoryId: string) {\n  if (!categoryId.trim()) throw new Error(\"category is required\");\n  return useAsyncData<Product[]>(\n    `products:${categoryId}`,\n    () => $fetch(\"/api/products\", {\n      query: { category: categoryId, active: true, limit: 50, sort: \"name\" },\n    }),\n  );\n}",
     "tech2Snippet": "import { json, type LoaderFunctionArgs } from \"@remix-run/node\";\nimport { useLoaderData } from \"@remix-run/react\";\nimport { productRepository } from \"~/models/products.server\";\n\nexport async function loader({ request }: LoaderFunctionArgs) {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId) throw new Response(\"category is required\", { status: 400 });\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return json({ products });\n}\n\nexport default function CategoryRoute() {\n  const { products } = useLoaderData<typeof loader>();\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}"
   },
-  "introduction": "Nuxt y Remix responden a una necesidad similar, pero difieren en framework base y lenguaje de componentes. Nuxt: Nuxt se construye sobre Vue 3 y aprovecha su sistema de componentes de archivo único, su reactividad y su ecosistema… Remix: Remix se apoya en React y en su modelo de componentes y hooks, con un enfoque notable en las APIs web del navegador. El criterio de enrutado y estructura del proyecto añade otra diferencia práctica: Nuxt usa enrutado basado en el sistema de archivos dentro del directorio de páginas, con rutas anidadas y layouts… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Nuxt y Remix responden a una necesidad similar, pero difieren en framework base y lenguaje de componentes. Nuxt: Nuxt se construye sobre Vue 3 y aprovecha su sistema de componentes de archivo único, su reactividad y su ecosistema de librerías. Remix: Remix se apoya en React y en su modelo de componentes y hooks, con un enfoque notable en las APIs web del navegador. El criterio de enrutado y estructura del proyecto añade otra diferencia práctica: Nuxt usa enrutado basado en el sistema de archivos dentro del directorio de páginas, con rutas anidadas y layouts definidos por convención. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza renderizado y estrategias de entrega: Nuxt soporta renderizado en servidor, generación estática y modos híbridos por ruta, con opciones…",
-    "toolB": "tu proyecto prioriza enrutado y estructura del proyecto: Remix también emplea enrutado por archivos, pero con rutas anidadas explícitas y una separación…"
+    "toolA": "tu proyecto prioriza renderizado y estrategias de entrega: Nuxt soporta renderizado en servidor, generación estática y modos híbridos por ruta, con opciones de prerenderizado y caché configurables.",
+    "toolB": "tu proyecto prioriza enrutado y estructura del proyecto: Remix también emplea enrutado por archivos, pero con rutas anidadas explícitas y una separación clara entre componentes de ruta y loaders."
   }
 }

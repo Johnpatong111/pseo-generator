@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare ScyllaDB and MongoDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "ScyllaDB vs MongoDB: Which to Choose in 2026?",
+    "description": "ScyllaDB vs MongoDB comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between ScyllaDB and MongoDB changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "ScyllaDB is the better fit when your project prioritizes performance and latency characteristics: ScyllaDB is built on a shard-per-core architecture with a shared-nothing design, which allows it…. MongoDB is a stronger fit when your project prioritizes data model and schema flexibility: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often….",
+  "quickVerdict": "ScyllaDB is the better fit when your project prioritizes performance and latency characteristics: ScyllaDB is built on a shard-per-core architecture with a shared-nothing design, which allows it to use modern multicore hardware efficiently and avoid many lock-contention issues. MongoDB is a stronger fit when your project prioritizes data model and schema flexibility: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often lives in a single record.",
   "tradeoffs": [
     {
       "category": "Data model and schema flexibility",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}",
     "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
-  "introduction": "ScyllaDB and MongoDB address a related need, but differ in data model and schema flexibility. ScyllaDB: ScyllaDB uses a wide-column model queried with CQL, which is close to SQL in syntax but requires designing tables… MongoDB: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often lives in a single… The query capabilities and aggregation criterion adds another practical distinction: CQL supports primary-key lookups, range scans on clustering columns, filtering with restrictions, and lightweight… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "ScyllaDB and MongoDB address a related need, but differ in data model and schema flexibility. ScyllaDB: ScyllaDB uses a wide-column model queried with CQL, which is close to SQL in syntax but requires designing tables around specific query patterns. MongoDB: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often lives in a single record. The query capabilities and aggregation criterion adds another practical distinction: CQL supports primary-key lookups, range scans on clustering columns, filtering with restrictions, and lightweight transactions, but it deliberately avoids joins and broad ad-hoc querying. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes performance and latency characteristics: ScyllaDB is built on a shard-per-core architecture with a shared-nothing design, which allows it…",
-    "toolB": "your project prioritizes data model and schema flexibility: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often…"
+    "toolA": "your project prioritizes performance and latency characteristics: ScyllaDB is built on a shard-per-core architecture with a shared-nothing design, which allows it to use modern multicore hardware efficiently and avoid many lock-contention issues.",
+    "toolB": "your project prioritizes data model and schema flexibility: MongoDB stores data as BSON documents that can nest arrays and subdocuments, so related data often lives in a single record."
   }
 }

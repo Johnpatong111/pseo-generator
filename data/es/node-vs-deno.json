@@ -1,8 +1,8 @@
 {
   "slug": "node-vs-deno",
   "meta": {
-    "title": "Node.js vs Deno: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Node.js y Deno: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Node.js vs Deno: ¿cuál elegir en 2026?",
+    "description": "Comparativa Node.js vs Deno: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Node.js"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Node.js y Deno cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza ecosistema de paquetes y librerías disponibles: Node.js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de…. Deno es preferible cuando tu proyecto prioriza modelo de seguridad y permisos: Deno aplica un modelo de permisos explícitos: por defecto, el código no puede acceder a archivos,….",
+  "quickVerdict": "Node.js encaja mejor cuando tu proyecto prioriza ecosistema de paquetes y librerías disponibles: Node.js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de librerías que cubren prácticamente cualquier caso de uso. Deno es preferible cuando tu proyecto prioriza modelo de seguridad y permisos: Deno aplica un modelo de permisos explícitos: por defecto, el código no puede acceder a archivos, red, variables de entorno ni subprocesos sin autorización del desarrollador.",
   "tradeoffs": [
     {
       "category": "Ecosistema de paquetes y librerías disponibles",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));",
     "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nDeno.serve(async (request: Request): Promise<Response> => {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId?.trim()) {\n    return Response.json({ error: \"category is required\" }, { status: 400 });\n  }\n  const upstream = new URL(\"/products\", Deno.env.get(\"PRODUCTS_API_URL\")!);\n  upstream.searchParams.set(\"category\", categoryId);\n  upstream.searchParams.set(\"active\", \"true\");\n  upstream.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(upstream);\n  if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n  const payload = (await response.json()) as { products: Product[] };\n  return Response.json({ products: payload.products });\n});"
   },
-  "introduction": "Node.js y Deno responden a una necesidad similar, pero difieren en ecosistema de paquetes y librerías disponibles. Node.js: Node.js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de librerías que cubren… Deno: Deno dispone de su propio registro de módulos (JSR) y puede importar paquetes desde URLs o desde npm mediante capas de… El criterio de modelo de seguridad y permisos añade otra diferencia práctica: Node.js ejecuta el código con los permisos del usuario del sistema por defecto, de modo que un paquete malicioso puede… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Node. js y Deno responden a una necesidad similar, pero difieren en ecosistema de paquetes y librerías disponibles.  Node. js: Node. js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de librerías que cubren prácticamente cualquier caso de uso.  Deno: Deno dispone de su propio registro de módulos (JSR) y puede importar paquetes desde URLs o desde npm mediante capas de compatibilidad, aunque no todos los paquetes de npm funcionan sin ajustes.  El criterio de modelo de seguridad y permisos añade otra diferencia práctica: Node. js ejecuta el código con los permisos del usuario del sistema por defecto, de modo que un paquete malicioso puede acceder al sistema de archivos, a la red o a variables de entorno sin restricciones explícitas.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza ecosistema de paquetes y librerías disponibles: Node.js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de…",
-    "toolB": "tu proyecto prioriza modelo de seguridad y permisos: Deno aplica un modelo de permisos explícitos: por defecto, el código no puede acceder a archivos,…"
+    "toolA": "tu proyecto prioriza ecosistema de paquetes y librerías disponibles: Node.js cuenta con npm, uno de los registros de paquetes más grandes del mundo, con millones de librerías que cubren prácticamente cualquier caso de uso.",
+    "toolB": "tu proyecto prioriza modelo de seguridad y permisos: Deno aplica un modelo de permisos explícitos: por defecto, el código no puede acceder a archivos, red, variables de entorno ni subprocesos sin autorización del desarrollador."
   }
 }

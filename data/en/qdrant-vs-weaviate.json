@@ -1,8 +1,8 @@
 {
   "slug": "qdrant-vs-weaviate",
   "meta": {
-    "title": "Qdrant vs Weaviate: Which one to choose in 2026? (models, context & API pricing & code compared)",
-    "description": "Compare Qdrant and Weaviate architectural trade-offs, context windows, model APIs, and integration, and review side-by-side TypeScript to choose the right stack."
+    "title": "Qdrant vs Weaviate: Which to Choose in 2026?",
+    "description": "Qdrant vs Weaviate comparison: context windows, API pricing, latency, and architecture trade-offs for AI engineers."
   },
   "toolA": {
     "name": "Qdrant"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Qdrant and Weaviate changes how a project handles context retrieval and model integration, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Qdrant is the better fit when your project prioritizes filtering and payload query capabilities: Qdrant treats payload filtering as a first-class feature and integrates filters directly into the…. Weaviate is a stronger fit when your project prioritizes hybrid and keyword search: Weaviate includes built-in hybrid search that blends BM25 keyword scoring with vector similarity,….",
+  "quickVerdict": "Qdrant is the better fit when your project prioritizes filtering and payload query capabilities: Qdrant treats payload filtering as a first-class feature and integrates filters directly into the HNSW graph traversal, which helps maintain speed when combining vector search with attribute conditions. Weaviate is a stronger fit when your project prioritizes hybrid and keyword search: Weaviate includes built-in hybrid search that blends BM25 keyword scoring with vector similarity, and it exposes configurable fusion methods.",
   "tradeoffs": [
     {
       "category": "Core architecture and deployment model",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}",
     "tech2Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}"
   },
-  "introduction": "Qdrant and Weaviate address a related need, but differ in core architecture and deployment model. Qdrant: Qdrant is a purpose-built vector database written in Rust, distributed as a single binary and also available as a… Weaviate: Weaviate is a Go-based vector database with a modular architecture, available as open source, self-hosted via Docker… The vector indexing and search quality criterion adds another practical distinction: Qdrant supports HNSW-based approximate nearest neighbor search and offers quantization options such as scalar and… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Qdrant and Weaviate address a related need, but differ in core architecture and deployment model. Qdrant: Qdrant is a purpose-built vector database written in Rust, distributed as a single binary and also available as a managed cloud service. Weaviate: Weaviate is a Go-based vector database with a modular architecture, available as open source, self-hosted via Docker or Kubernetes, and as Weaviate Cloud. The vector indexing and search quality criterion adds another practical distinction: Qdrant supports HNSW-based approximate nearest neighbor search and offers quantization options such as scalar and binary quantization to reduce memory use, with configurable trade-offs between recall and speed. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes filtering and payload query capabilities: Qdrant treats payload filtering as a first-class feature and integrates filters directly into the…",
-    "toolB": "your project prioritizes hybrid and keyword search: Weaviate includes built-in hybrid search that blends BM25 keyword scoring with vector similarity,…"
+    "toolA": "your project prioritizes filtering and payload query capabilities: Qdrant treats payload filtering as a first-class feature and integrates filters directly into the HNSW graph traversal, which helps maintain speed when combining vector search with attribute conditions.",
+    "toolB": "your project prioritizes hybrid and keyword search: Weaviate includes built-in hybrid search that blends BM25 keyword scoring with vector similarity, and it exposes configurable fusion methods."
   }
 }

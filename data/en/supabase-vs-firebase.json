@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-firebase",
   "meta": {
-    "title": "Supabase vs Firebase: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare Supabase and Firebase architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "Supabase vs Firebase: Which to Choose in 2026?",
+    "description": "Supabase vs Firebase comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "Supabase"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Supabase and Firebase changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Supabase is the better fit when your project prioritizes database and data model: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance,…. Firebase is a stronger fit when your project prioritizes realtime capabilities: Firebase Realtime Database and Firestore both offer real-time synchronization, with offline….",
+  "quickVerdict": "Supabase is the better fit when your project prioritizes database and data model: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance, complex queries, and extensions like PostGIS. Firebase is a stronger fit when your project prioritizes realtime capabilities: Firebase Realtime Database and Firestore both offer real-time synchronization, with offline support and automatic conflict resolution.",
   "tradeoffs": [
     {
       "category": "Database and data model",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
     "tech2Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const productQuery = query(\n    collection(db, \"products\"),\n    where(\"categoryId\", \"==\", categoryId),\n    where(\"active\", \"==\", true),\n    orderBy(\"name\"),\n    limit(50),\n  );\n  const snapshot = await getDocs(productQuery);\n  return snapshot.docs.map((document) => {\n    const value = document.data();\n    return {\n      id: document.id,\n      name: String(value.name),\n      categoryId: String(value.categoryId),\n      active: value.active === true,\n      priceCents: Number(value.priceCents),\n    };\n  });\n}"
   },
-  "introduction": "Supabase and Firebase address a related need, but differ in database and data model. Supabase: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance, complex queries, and… Firebase: Firebase uses Firestore, a NoSQL document database, and the Realtime Database for low-latency sync. The authentication and user management criterion adds another practical distinction: Supabase provides built-in authentication with email/password, OAuth providers, and magic links, backed by Postgres… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Supabase and Firebase address a related need, but differ in database and data model. Supabase: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance, complex queries, and extensions like PostGIS. Firebase: Firebase uses Firestore, a NoSQL document database, and the Realtime Database for low-latency sync. The authentication and user management criterion adds another practical distinction: Supabase provides built-in authentication with email/password, OAuth providers, and magic links, backed by Postgres and row-level security. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes database and data model: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance,…",
-    "toolB": "your project prioritizes realtime capabilities: Firebase Realtime Database and Firestore both offer real-time synchronization, with offline…"
+    "toolA": "your project prioritizes database and data model: Supabase is built on PostgreSQL, a powerful relational database with strong ACID compliance, complex queries, and extensions like PostGIS.",
+    "toolB": "your project prioritizes realtime capabilities: Firebase Realtime Database and Firestore both offer real-time synchronization, with offline support and automatic conflict resolution."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "nomad-vs-podman",
   "meta": {
-    "title": "Nomad vs Podman: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Nomad i Podman: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Nomad vs Podman: co wybrać w 2026?",
+    "description": "Porównanie Nomad vs Podman: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Nomad"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Nomad a Podman zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Nomad będzie lepszy, gdy projekt stawia na kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji,…. Podman sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Podman kładzie nacisk na uruchamianie kontenerów bez demona i w trybie rootless, co ogranicza….",
+  "quickVerdict": "Nomad będzie lepszy, gdy projekt stawia na kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji, ograniczeń zasobów i rozmieszczania zadań na węzłach. Podman sprawdzi się, gdy projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Podman kładzie nacisk na uruchamianie kontenerów bez demona i w trybie rootless, co ogranicza zakres uprawnień procesów.",
   "tradeoffs": [
     {
       "category": "Model działania i architektura",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type NomadJob = {\n  Job: {\n    ID: string;\n    Type: \"service\";\n    TaskGroups: Array<{ Name: string; Count: number; Tasks: Array<{ Name: string; Driver: \"docker\" }> }>;\n  };\n};\n\nexport async function registerProductCatalogJob(address: string, token: string) {\n  const job: NomadJob = {\n    Job: {\n      ID: \"product-catalog\",\n      Type: \"service\",\n      TaskGroups: [{\n        Name: \"api\",\n        Count: 2,\n        Tasks: [{ Name: \"catalog\", Driver: \"docker\" }],\n      }],\n    },\n  };\n  const response = await fetch(new URL(\"/v1/jobs\", address), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", \"X-Nomad-Token\": token },\n    body: JSON.stringify(job),\n  });\n  if (!response.ok) throw new Error(`Nomad job registration failed: ${response.status}`);\n  return response.json();\n}",
     "tech2Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Podman\" },\n  });\n  await container.start();\n}"
   },
-  "introduction": "Nomad i Podman odpowiadają na podobną potrzebę, ale różnią się w obszarze model działania i architektura. Nomad: Nomad działa jako rozproszony orkiestrator z serwerami i klientami, przyjmując zadania w postaci jobów i przydzielając… Podman: Podman to narzędzie do zarządzania kontenerami i obrazami, które domyślnie działa bez długotrwałego demona i może… Kolejną istotną różnicę pokazuje kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji, ograniczeń zasobów i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Nomad i Podman odpowiadają na podobną potrzebę, ale różnią się w obszarze model działania i architektura. Nomad: Nomad działa jako rozproszony orkiestrator z serwerami i klientami, przyjmując zadania w postaci jobów i przydzielając je do węzłów. Podman: Podman to narzędzie do zarządzania kontenerami i obrazami, które domyślnie działa bez długotrwałego demona i może pracować w trybie rootless. Kolejną istotną różnicę pokazuje kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji, ograniczeń zasobów i rozmieszczania zadań na węzłach. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji,…",
-    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Podman kładzie nacisk na uruchamianie kontenerów bez demona i w trybie rootless, co ogranicza…"
+    "toolA": "projekt stawia na kryterium „Zakres orkiestracji i skalowanie”: Nomad jest zaprojektowany do orkiestracji wielu zadań w klastrze, z obsługą aktualizacji, ograniczeń zasobów i rozmieszczania zadań na węzłach.",
+    "toolB": "projekt stawia na kryterium „Bezpieczeństwo i model uprawnień”: Podman kładzie nacisk na uruchamianie kontenerów bez demona i w trybie rootless, co ogranicza zakres uprawnień procesów."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-nomad",
   "meta": {
-    "title": "Docker vs Nomad: co wybrać w 2026 — wdrożenie, skalowanie i koszty",
-    "description": "Porównaj Docker i Nomad: oceń kompromisy architektoniczne w obszarze wdrażania, skalowania i infrastruktury i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Docker vs Nomad: co wybrać w 2026?",
+    "description": "Porównanie Docker vs Nomad: wdrożenia, skalowanie, koszty i kompromisy architektoniczne dla zespołów platformowych."
   },
   "toolA": {
     "name": "Docker"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Docker a Nomad zmienia sposób podejścia do wdrażaniu i odpowiedzialności operacyjnej, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Docker będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i narzędzi towarzyszących”: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla…. Nomad sprawdzi się, gdy projekt stawia na kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Nomad został zaprojektowany jako harmonogram ogólnego przeznaczenia, który obsługuje kontenery….",
+  "quickVerdict": "Docker będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i narzędzi towarzyszących”: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla edytorów i ogromną bazę dokumentacji oraz gotowych obrazów. Nomad sprawdzi się, gdy projekt stawia na kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Nomad został zaprojektowany jako harmonogram ogólnego przeznaczenia, który obsługuje kontenery Dockera, zadania binarnych plików wykonywalnych, Java, QEMU oraz inne typy zadań w jednym klastrze.",
   "tradeoffs": [
     {
       "category": "Dojrzałość ekosystemu i narzędzi towarzyszących",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Docker\" },\n  });\n  await container.start();\n}",
     "tech2Snippet": "type NomadJob = {\n  Job: {\n    ID: string;\n    Type: \"service\";\n    TaskGroups: Array<{ Name: string; Count: number; Tasks: Array<{ Name: string; Driver: \"docker\" }> }>;\n  };\n};\n\nexport async function registerProductCatalogJob(address: string, token: string) {\n  const job: NomadJob = {\n    Job: {\n      ID: \"product-catalog\",\n      Type: \"service\",\n      TaskGroups: [{\n        Name: \"api\",\n        Count: 2,\n        Tasks: [{ Name: \"catalog\", Driver: \"docker\" }],\n      }],\n    },\n  };\n  const response = await fetch(new URL(\"/v1/jobs\", address), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", \"X-Nomad-Token\": token },\n    body: JSON.stringify(job),\n  });\n  if (!response.ok) throw new Error(`Nomad job registration failed: ${response.status}`);\n  return response.json();\n}"
   },
-  "introduction": "Docker i Nomad odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i narzędzi towarzyszących. Docker: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla edytorów i ogromną… Nomad: Nomad jest częścią rodziny HashiCorp i dobrze integruje się z Consul, Vault oraz Terraform, co ułatwia budowę spójnego… Kolejną istotną różnicę pokazuje kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Docker koncentruje się na konteneryzacji aplikacji i orkiestracji w ramach pojedynczego hosta lub klastra Docker… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Docker i Nomad odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i narzędzi towarzyszących.  Docker: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla edytorów i ogromną bazę dokumentacji oraz gotowych obrazów.  Nomad: Nomad jest częścią rodziny HashiCorp i dobrze integruje się z Consul, Vault oraz Terraform, co ułatwia budowę spójnego środowiska operacyjnego.  Kolejną istotną różnicę pokazuje kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Docker koncentruje się na konteneryzacji aplikacji i orkiestracji w ramach pojedynczego hosta lub klastra Docker Swarm, który jest prostszy niż bardziej rozbudowane systemy.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i narzędzi towarzyszących”: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla…",
-    "toolB": "projekt stawia na kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Nomad został zaprojektowany jako harmonogram ogólnego przeznaczenia, który obsługuje kontenery…"
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i narzędzi towarzyszących”: Docker ma bardzo szeroki ekosystem: rejestr obrazów, Docker Compose, BuildKit, rozszerzenia dla edytorów i ogromną bazę dokumentacji oraz gotowych obrazów.",
+    "toolB": "projekt stawia na kryterium „Zakres orkiestracji: kontenery i zadania niekontenerowe”: Nomad został zaprojektowany jako harmonogram ogólnego przeznaczenia, który obsługuje kontenery Dockera, zadania binarnych plików wykonywalnych, Java, QEMU oraz inne typy zadań w jednym klastrze."
   }
 }

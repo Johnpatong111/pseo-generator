@@ -1,8 +1,8 @@
 {
   "slug": "python-vs-javascript",
   "meta": {
-    "title": "Python vs JavaScript: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Python i JavaScript: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Python vs JavaScript: co wybrać w 2026?",
+    "description": "Porównanie Python vs JavaScript: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Python"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Python a JavaScript zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Python będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie…. JavaScript sprawdzi się, gdy projekt stawia na kryterium „Wydajność i model współbieżności”: JavaScript w przeglądarce i Node.js działa na maszynie wirtualnej z kompilacją JIT, a model….",
+  "quickVerdict": "Python będzie lepszy, gdy projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie prostych programów. JavaScript sprawdzi się, gdy projekt stawia na kryterium „Wydajność i model współbieżności”: JavaScript w przeglądarce i Node.js działa na maszynie wirtualnej z kompilacją JIT, a model asynchroniczny dobrze obsługuje wiele operacji wejścia-wyjścia.",
   "tradeoffs": [
     {
       "category": "Główne zastosowania i dojrzałość ekosystemu",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Obsłuż filtrowane żądanie HTTP dla aktywnych produktów z walidacją kategorii i ograniczeniem wyników. Ponieważ wybrany backend nie jest oparty na TypeScript, przykład pokazuje typowanego klienta HTTP; kod serwera pozostaje w języku danego frameworka.",
-    "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromPython(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`python product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}",
+    "scenario": "Obsłuż filtrowane żądanie HTTP dla aktywnych produktów z walidacją kategorii i ograniczeniem wyników.",
+    "tech1Snippet": "from dataclasses import dataclass\nfrom typing import Protocol\n\n\n@dataclass(frozen=True)\nclass Product:\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\nclass ProductRepository(Protocol):\n    async def list_active_by_category(\n        self, category_id: str, limit: int\n    ) -> list[Product]:\n        ...\n\n\nasync def list_products(\n    repository: ProductRepository,\n    category_id: str,\n    limit: int = 50,\n) -> list[Product]:\n    normalized_category = category_id.strip()\n    if not normalized_category:\n        raise ValueError(\"category is required\")\n    return await repository.list_active_by_category(\n        category_id=normalized_category,\n        limit=max(1, min(limit, 50)),\n    )",
     "tech2Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));"
   },
-  "introduction": "Python i JavaScript odpowiadają na podobną potrzebę, ale różnią się w obszarze główne zastosowania i dojrzałość ekosystemu. Python: Python ma szeroki ekosystem bibliotek do analizy danych, uczenia maszynowego, obliczeń naukowych, automatyzacji i… JavaScript: JavaScript jest językiem przeglądarek internetowych i dominuje w budowie interfejsów webowych, a dzięki Node.js… Kolejną istotną różnicę pokazuje kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie prostych programów. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Python i JavaScript odpowiadają na podobną potrzebę, ale różnią się w obszarze główne zastosowania i dojrzałość ekosystemu. Python: Python ma szeroki ekosystem bibliotek do analizy danych, uczenia maszynowego, obliczeń naukowych, automatyzacji i backendu, rozwijany od dekad. JavaScript: JavaScript jest językiem przeglądarek internetowych i dominuje w budowie interfejsów webowych, a dzięki Node.js obsługuje także backend i narzędzia deweloperskie. Kolejną istotną różnicę pokazuje kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie prostych programów. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie…",
-    "toolB": "projekt stawia na kryterium „Wydajność i model współbieżności”: JavaScript w przeglądarce i Node.js działa na maszynie wirtualnej z kompilacją JIT, a model…"
+    "toolA": "projekt stawia na kryterium „Krzywa nauki i czytelność kodu”: Składnia Pythona jest zwięzła i opiera się na wcięciach, co ułatwia początkującym czytanie prostych programów.",
+    "toolB": "projekt stawia na kryterium „Wydajność i model współbieżności”: JavaScript w przeglądarce i Node.js działa na maszynie wirtualnej z kompilacją JIT, a model asynchroniczny dobrze obsługuje wiele operacji wejścia-wyjścia."
   }
 }

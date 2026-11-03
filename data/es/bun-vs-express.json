@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-express",
   "meta": {
-    "title": "Bun vs Express: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Bun y Express: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Bun vs Express: ¿cuál elegir en 2026?",
+    "description": "Comparativa Bun vs Express: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Bun y Express cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele…. Express es preferible cuando tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y….",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele ofrecer cifras de arranque y throughput altas en comparativas públicas. Express es preferible cuando tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y ejemplos documentados.",
   "tradeoffs": [
     {
       "category": "Rendimiento y modelo de ejecución",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});"
   },
-  "introduction": "Bun y Express responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Bun: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele ofrecer cifras de… Express: Express es un framework minimalista que se ejecuta sobre Node.js y delega el rendimiento en el runtime subyacente. El criterio de madurez y ecosistema añade otra diferencia práctica: Bun ha ganado adopción con rapidez y mantiene compatibilidad con una parte importante de paquetes de npm, pero su… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Bun y Express responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Bun: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele ofrecer cifras de arranque y throughput altas en comparativas públicas. Express: Express es un framework minimalista que se ejecuta sobre Node.js y delega el rendimiento en el runtime subyacente. El criterio de madurez y ecosistema añade otra diferencia práctica: Bun ha ganado adopción con rapidez y mantiene compatibilidad con una parte importante de paquetes de npm, pero su ecosistema nativo aún es más joven y algunos módulos pueden requerir ajustes. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele…",
-    "toolB": "tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y…"
+    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Bun se apoya en JavaScriptCore y está escrito en Zig, con un servidor HTTP integrado que suele ofrecer cifras de arranque y throughput altas en comparativas públicas.",
+    "toolB": "tu proyecto prioriza madurez y ecosistema: Express cuenta con años de recorrido, una comunidad amplia y una gran cantidad de middleware y ejemplos documentados."
   }
 }

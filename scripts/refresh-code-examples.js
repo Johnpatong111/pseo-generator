@@ -5,6 +5,18 @@ const { createCodeExamples } = require("../lib/snippet-catalog.cjs");
 
 const dataDirectory = path.resolve(__dirname, "..", "data");
 const locales = ["en", "es", "de", "fr", "pl"];
+const categoryArgument = process.argv.find((argument) =>
+  argument.startsWith("--category="),
+);
+const categoryFilter = categoryArgument
+  ? categoryArgument.slice("--category=".length).trim()
+  : "";
+const matchArgument = process.argv.find((argument) =>
+  argument.startsWith("--match="),
+);
+const matchFilter = matchArgument
+  ? matchArgument.slice("--match=".length).trim()
+  : "";
 const boilerplatePattern =
   /\b(?:hello(?:\s*,?\s*world|\s+there)?|hallo(?:\s*,?\s*welt)?|witaj(?:\s*,?\s*świecie)?|hola(?:\s*,?\s*mundo)?|bonjour(?:\s*,?\s*le\s*monde)?|welcome(?:\s+to\s+.+)?|witaj\s+w(?:\s+.+)?)\b/i;
 const explicitAnyPattern = /:\s*any\b|<\s*any\s*>|\bas\s+any\b/;
@@ -61,6 +73,12 @@ function main() {
       }
 
       const category = getCategoryId(slug);
+      if (categoryFilter && category !== categoryFilter) {
+        continue;
+      }
+      if (matchFilter && !slug.includes(matchFilter)) {
+        continue;
+      }
       const codeExamples = createCodeExamples(slug, category, locale);
       assertCodeExamples(codeExamples, filePath);
       updates.push({
@@ -73,7 +91,7 @@ function main() {
   for (const update of updates) {
     writeFileSync(update.filePath, update.content, "utf8");
   }
-  console.log(`Refreshed TypeScript examples in ${updates.length} comparison files.`);
+  console.log(`Refreshed native-language code examples in ${updates.length} comparison files.`);
 }
 
 main();

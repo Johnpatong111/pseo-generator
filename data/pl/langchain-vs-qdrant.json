@@ -1,8 +1,8 @@
 {
   "slug": "langchain-vs-qdrant",
   "meta": {
-    "title": "LangChain vs Qdrant: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj LangChain i Qdrant: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "LangChain vs Qdrant: co wybrać w 2026?",
+    "description": "Porównanie LangChain vs Qdrant: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "LangChain"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między LangChain a Qdrant zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "LangChain będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma szeroki ekosystem integracji z modelami, bazami wektorowymi, narzędziami i…. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Skalowalność i wydajność wyszukiwania”: Qdrant jest projektowany pod kątem skalowania wyszukiwania wektorowego, m.in.",
+  "quickVerdict": "LangChain będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma szeroki ekosystem integracji z modelami, bazami wektorowymi, narzędziami i platformami chmurowymi. Qdrant sprawdzi się, gdy projekt stawia na kryterium „Skalowalność i wydajność wyszukiwania”: Qdrant jest projektowany pod kątem skalowania wyszukiwania wektorowego, m.in.",
   "tradeoffs": [
     {
       "category": "Rola i warstwa architektury",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  invoke(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.invoke({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "LangChain i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i warstwa architektury. LangChain: LangChain działa w warstwie orkiestracji aplikacji: łączy modele językowe, narzędzia, źródła danych i pamięć… Qdrant: Qdrant działa w warstwie przechowywania i wyszukiwania danych: to baza wektorowa z API do zapisu, indeksowania i… Kolejną istotną różnicę pokazuje kryterium „Główne zastosowanie w projektach AI”: LangChain sprawdza się przy budowie aplikacji wieloetapowych: agentów, systemów RAG, ekstrakcji danych i przepływów… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "LangChain i Qdrant odpowiadają na podobną potrzebę, ale różnią się w obszarze rola i warstwa architektury. LangChain: LangChain działa w warstwie orkiestracji aplikacji: łączy modele językowe, narzędzia, źródła danych i pamięć konwersacji w spójne łańcuchy i przepływy. Qdrant: Qdrant działa w warstwie przechowywania i wyszukiwania danych: to baza wektorowa z API do zapisu, indeksowania i zapytań o najbliższych sąsiadów. Kolejną istotną różnicę pokazuje kryterium „Główne zastosowanie w projektach AI”: LangChain sprawdza się przy budowie aplikacji wieloetapowych: agentów, systemów RAG, ekstrakcji danych i przepływów wymagających wywołań narzędzi. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma szeroki ekosystem integracji z modelami, bazami wektorowymi, narzędziami i…",
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: LangChain ma szeroki ekosystem integracji z modelami, bazami wektorowymi, narzędziami i platformami chmurowymi.",
     "toolB": "projekt stawia na kryterium „Skalowalność i wydajność wyszukiwania”: Qdrant jest projektowany pod kątem skalowania wyszukiwania wektorowego, m.in."
   }
 }

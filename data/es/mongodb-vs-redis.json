@@ -1,8 +1,8 @@
 {
   "slug": "mongodb-vs-redis",
   "meta": {
-    "title": "MongoDB vs Redis: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara MongoDB y Redis: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "MongoDB vs Redis: ¿cuál elegir en 2026?",
+    "description": "Comparativa MongoDB vs Redis: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "MongoDB"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre MongoDB y Redis cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "MongoDB encaja mejor cuando tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas…. Redis es preferible cuando tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un….",
+  "quickVerdict": "MongoDB encaja mejor cuando tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin migraciones rígidas. Redis es preferible cuando tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un rendimiento alto en operaciones simples.",
   "tradeoffs": [
     {
       "category": "Modelo de datos y flexibilidad",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}",
     "tech2Snippet": "import type { RedisClientType } from \"redis\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(client: RedisClientType, categoryId: string): Promise<Product[]> {\n  const ids = await client.sMembers(`category:${categoryId}:active-products`);\n  const values = await client.mGet(ids.slice(0, 50).map((id) => `product:${id}`));\n  return values\n    .filter((value): value is string => value !== null)\n    .map((value) => JSON.parse(value) as Product)\n    .sort((left, right) => left.name.localeCompare(right.name));\n}"
   },
-  "introduction": "MongoDB y Redis responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad. MongoDB: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin… Redis: Redis ofrece estructuras de datos especializadas como cadenas, listas, conjuntos, hashes, sorted sets, bitmaps,… El criterio de rendimiento y latencia añade otra diferencia práctica: MongoDB está diseñado para cargas transaccionales y analíticas moderadas, con latencias que dependen del… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "MongoDB y Redis responden a una necesidad similar, pero difieren en modelo de datos y flexibilidad. MongoDB: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin migraciones rígidas. Redis: Redis ofrece estructuras de datos especializadas como cadenas, listas, conjuntos, hashes, sorted sets, bitmaps, hiperloglogs y streams. El criterio de rendimiento y latencia añade otra diferencia práctica: MongoDB está diseñado para cargas transaccionales y analíticas moderadas, con latencias que dependen del almacenamiento en disco, índices y tamaño del working set. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas…",
-    "toolB": "tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un…"
+    "toolA": "tu proyecto prioriza modelo de datos y flexibilidad: MongoDB almacena documentos BSON con esquema flexible, lo que permite modelar entidades complejas y anidadas sin migraciones rígidas.",
+    "toolB": "tu proyecto prioriza rendimiento y latencia: Redis mantiene los datos en memoria principal, por lo que suele ofrecer latencias muy bajas y un rendimiento alto en operaciones simples."
   }
 }

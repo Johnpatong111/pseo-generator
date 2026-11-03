@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-firebase",
   "meta": {
-    "title": "Supabase vs Firebase: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj Supabase i Firebase: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Supabase vs Firebase: co wybrać w 2026?",
+    "description": "Porównanie Supabase vs Firebase: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "Supabase"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Supabase a Firebase zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL,…. Firebase sprawdzi się, gdy projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców….",
+  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL, transakcji ACID, widoków, funkcji i rozszerzeń. Firebase sprawdzi się, gdy projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców OAuth i logowanie anonimowe, z gotowymi SDK dla wielu platform.",
   "tradeoffs": [
     {
       "category": "Model danych i baza danych",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
     "tech2Snippet": "import { collection, getDocs, limit, orderBy, query, where } from \"firebase/firestore\";\nimport { db } from \"./firebase\";\n\ntype Product = { id: string; name: string; categoryId: string; active: boolean; priceCents: number };\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const productQuery = query(\n    collection(db, \"products\"),\n    where(\"categoryId\", \"==\", categoryId),\n    where(\"active\", \"==\", true),\n    orderBy(\"name\"),\n    limit(50),\n  );\n  const snapshot = await getDocs(productQuery);\n  return snapshot.docs.map((document) => {\n    const value = document.data();\n    return {\n      id: document.id,\n      name: String(value.name),\n      categoryId: String(value.categoryId),\n      active: value.active === true,\n      priceCents: Number(value.priceCents),\n    };\n  });\n}"
   },
-  "introduction": "Supabase i Firebase odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i baza danych. Supabase: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL, transakcji ACID, widoków,… Firebase: Firebase udostępnia bazę dokumentową Firestore oraz bazę czasu rzeczywistego, które dobrze sprawdzają się w modelach… Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Supabase Auth obsługuje logowanie hasłem, magią link, dostawców OAuth oraz uwierzytelnianie dwuskładnikowe, a wszystko… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Supabase i Firebase odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i baza danych.  Supabase: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL, transakcji ACID, widoków, funkcji i rozszerzeń.  Firebase: Firebase udostępnia bazę dokumentową Firestore oraz bazę czasu rzeczywistego, które dobrze sprawdzają się w modelach hierarchicznych i elastycznych schematach.  Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Supabase Auth obsługuje logowanie hasłem, magią link, dostawców OAuth oraz uwierzytelnianie dwuskładnikowe, a wszystko integruje się z politykami bezpieczeństwa na poziomie wiersza w PostgreSQL.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL,…",
-    "toolB": "projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców…"
+    "toolA": "projekt stawia na kryterium „Model danych i baza danych”: Supabase opiera się na PostgreSQL, oferując relacyjny model danych, pełne wsparcie dla SQL, transakcji ACID, widoków, funkcji i rozszerzeń.",
+    "toolB": "projekt stawia na kryterium „Uwierzytelnianie i zarządzanie użytkownikami”: Firebase Authentication zapewnia szeroki zestaw metod logowania, w tym hasło, telefon, dostawców OAuth i logowanie anonimowe, z gotowymi SDK dla wielu platform."
   }
 }

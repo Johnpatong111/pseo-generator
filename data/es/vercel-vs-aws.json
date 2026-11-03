@@ -1,8 +1,8 @@
 {
   "slug": "vercel-vs-aws",
   "meta": {
-    "title": "Vercel vs AWS: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Vercel y AWS: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Vercel vs AWS: ¿cuál elegir en 2026?",
+    "description": "Comparativa Vercel vs AWS: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Vercel"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Vercel y AWS cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Vercel encaja mejor cuando tu proyecto prioriza experiencia de desarrollo y flujo de despliegue: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada…. AWS es preferible cuando tu proyecto prioriza escalado, rendimiento y red global: AWS ofrece escalado automático en servicios como EC2 Auto Scaling, Lambda o ECS, y una red global….",
+  "quickVerdict": "Vercel encaja mejor cuando tu proyecto prioriza experiencia de desarrollo y flujo de despliegue: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada rama o pull request de forma prácticamente automática. AWS es preferible cuando tu proyecto prioriza escalado, rendimiento y red global: AWS ofrece escalado automático en servicios como EC2 Auto Scaling, Lambda o ECS, y una red global con CloudFront y múltiples regiones.",
   "tradeoffs": [
     {
       "category": "Experiencia de desarrollo y flujo de despliegue",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.vercel.com/v13/deployments\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Vercel y AWS responden a una necesidad similar, pero difieren en experiencia de desarrollo y flujo de despliegue. Vercel: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada rama o pull request… AWS: AWS permite construir flujos de despliegue muy personalizados con servicios como CodePipeline, CodeBuild o GitHub… El criterio de escalado, rendimiento y red global añade otra diferencia práctica: Vercel distribuye el contenido estático y las funciones por su red global y aplica optimizaciones automáticas como… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Vercel y AWS responden a una necesidad similar, pero difieren en experiencia de desarrollo y flujo de despliegue. Vercel: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada rama o pull request de forma prácticamente automática. AWS: AWS permite construir flujos de despliegue muy personalizados con servicios como CodePipeline, CodeBuild o GitHub Actions, además de herramientas como Amplify para frontend. El criterio de escalado, rendimiento y red global añade otra diferencia práctica: Vercel distribuye el contenido estático y las funciones por su red global y aplica optimizaciones automáticas como caché e imágenes optimizadas según el plan. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza experiencia de desarrollo y flujo de despliegue: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada…",
-    "toolB": "tu proyecto prioriza escalado, rendimiento y red global: AWS ofrece escalado automático en servicios como EC2 Auto Scaling, Lambda o ECS, y una red global…"
+    "toolA": "tu proyecto prioriza experiencia de desarrollo y flujo de despliegue: Vercel integra el despliegue con el repositorio Git y genera entornos de previsualización por cada rama o pull request de forma prácticamente automática.",
+    "toolB": "tu proyecto prioriza escalado, rendimiento y red global: AWS ofrece escalado automático en servicios como EC2 Auto Scaling, Lambda o ECS, y una red global con CloudFront y múltiples regiones."
   }
 }

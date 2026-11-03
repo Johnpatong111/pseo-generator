@@ -1,8 +1,8 @@
 {
   "slug": "remix-vs-astro",
   "meta": {
-    "title": "Remix vs Astro: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara Remix y Astro: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Remix vs Astro: ¿cuál elegir en 2026?",
+    "description": "Comparativa Remix vs Astro: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "Remix"
@@ -84,7 +84,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Remix y Astro cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Remix encaja mejor cuando tu proyecto prioriza formularios y manejo de datos en el servidor: Remix integra acciones de formulario en el propio enrutador, con validación en servidor y envío…. Astro es preferible cuando tu proyecto prioriza modelo de renderizado y arquitectura por defecto: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo….",
+  "quickVerdict": "Remix encaja mejor cuando tu proyecto prioriza formularios y manejo de datos en el servidor: Remix integra acciones de formulario en el propio enrutador, con validación en servidor y envío progresivo que funciona sin JavaScript en muchos casos. Astro es preferible cuando tu proyecto prioriza modelo de renderizado y arquitectura por defecto: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo necesitan mediante islas.",
   "tradeoffs": [
     {
       "category": "Modelo de renderizado y arquitectura por defecto",
@@ -122,9 +122,9 @@
     "tech1Snippet": "import { json, type LoaderFunctionArgs } from \"@remix-run/node\";\nimport { useLoaderData } from \"@remix-run/react\";\nimport { productRepository } from \"~/models/products.server\";\n\nexport async function loader({ request }: LoaderFunctionArgs) {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId) throw new Response(\"category is required\", { status: 400 });\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return json({ products });\n}\n\nexport default function CategoryRoute() {\n  const { products } = useLoaderData<typeof loader>();\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
     "tech2Snippet": "import type { GetStaticPaths } from \"astro\";\nimport { productRepository } from \"../lib/products\";\n\nexport const getStaticPaths: GetStaticPaths = async () => {\n  const categories = await productRepository.listCategories();\n  return Promise.all(\n    categories.map(async ({ id }) => ({\n      params: { category: id },\n      props: {\n        products: await productRepository.listActiveByCategory({\n          categoryId: id,\n          orderBy: \"name\",\n          limit: 50,\n        }),\n      },\n    })),\n  );\n};"
   },
-  "introduction": "Remix y Astro responden a una necesidad similar, pero difieren en modelo de renderizado y arquitectura por defecto. Remix: Remix se apoya en el renderizado en servidor con cargadores y acciones asociados a las rutas, y puede adaptarse a… Astro: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo necesitan mediante islas. El criterio de interactividad y cantidad de javascript enviado añade otra diferencia práctica: Remix hidrata la aplicación completa para gestionar la navegación y el estado del cliente, lo que facilita… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Remix y Astro responden a una necesidad similar, pero difieren en modelo de renderizado y arquitectura por defecto. Remix: Remix se apoya en el renderizado en servidor con cargadores y acciones asociados a las rutas, y puede adaptarse a despliegues estáticos o con servidor según el adaptador elegido. Astro: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo necesitan mediante islas. El criterio de interactividad y cantidad de javascript enviado añade otra diferencia práctica: Remix hidrata la aplicación completa para gestionar la navegación y el estado del cliente, lo que facilita experiencias muy dinámicas pero implica más JavaScript inicial. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza formularios y manejo de datos en el servidor: Remix integra acciones de formulario en el propio enrutador, con validación en servidor y envío…",
-    "toolB": "tu proyecto prioriza modelo de renderizado y arquitectura por defecto: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo…"
+    "toolA": "tu proyecto prioriza formularios y manejo de datos en el servidor: Remix integra acciones de formulario en el propio enrutador, con validación en servidor y envío progresivo que funciona sin JavaScript en muchos casos.",
+    "toolB": "tu proyecto prioriza modelo de renderizado y arquitectura por defecto: Astro está orientado a generar HTML estático por defecto y solo hidrata los componentes que lo necesitan mediante islas."
   }
 }

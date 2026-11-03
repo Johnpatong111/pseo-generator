@@ -1,8 +1,8 @@
 {
   "slug": "hono-vs-fastapi",
   "meta": {
-    "title": "Hono vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Hono y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Hono vs FastAPI: ¿cuál elegir en 2026?",
+    "description": "Comparativa Hono vs FastAPI: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Hono"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Hono y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Hono encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo…. FastAPI es preferible cuando tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de….",
+  "quickVerdict": "Hono encaja mejor cuando tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo que suele traducirse en un arranque rápido y un consumo de memoria reducido en runtimes como Cloudflare Workers, Deno o Bun. FastAPI es preferible cuando tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de datos, librerías de ciencia de datos, IA y tareas asíncronas.",
   "tradeoffs": [
     {
       "category": "Rendimiento y modelo de ejecución",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados. Como uno de los backends no usa TypeScript, su ejemplo es un cliente HTTP tipado; el servidor sigue escrito en el lenguaje nativo del framework.",
+    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados.",
     "tech1Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});",
-    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromFastapi(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`fastapi product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}"
+    "tech2Snippet": "from fastapi import FastAPI, HTTPException, Query\nfrom pydantic import BaseModel\n\nfrom app.repositories.products import product_repository\n\n\nclass Product(BaseModel):\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\napp = FastAPI()\n\n\n@app.get(\"/api/products\", response_model=list[Product])\nasync def list_products(\n    category: str = Query(min_length=1),\n    limit: int = Query(default=50, ge=1, le=50),\n) -> list[Product]:\n    products = await product_repository.list_active_by_category(\n        category_id=category,\n        limit=limit,\n    )\n    if products is None:\n        raise HTTPException(status_code=500, detail=\"could not load products\")\n    return products"
   },
-  "introduction": "Hono y FastAPI responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución. Hono: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo que suele traducirse… FastAPI: FastAPI se ejecuta sobre ASGI con servidores como Uvicorn o Hypercorn y puede combinar rutas síncronas y asíncronas;… El criterio de lenguaje, tipado y experiencia de desarrollo añade otra diferencia práctica: Hono está escrito en TypeScript y aprovecha el tipado estructural para definir rutas, middleware y validadores con… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Hono y FastAPI responden a una necesidad similar, pero difieren en rendimiento y modelo de ejecución.  Hono: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo que suele traducirse en un arranque rápido y un consumo de memoria reducido en runtimes como Cloudflare Workers, Deno o Bun.  FastAPI: FastAPI se ejecuta sobre ASGI con servidores como Uvicorn o Hypercorn y puede combinar rutas síncronas y asíncronas; las rutas asíncronas bien escritas escalan correctamente en cargas de E/S.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo…",
-    "toolB": "tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de…"
+    "toolA": "tu proyecto prioriza rendimiento y modelo de ejecución: Hono está diseñado para ser muy ligero y se apoya en las APIs estándar de Request y Response, lo que suele traducirse en un arranque rápido y un consumo de memoria reducido en runtimes como Cloudflare Workers, Deno o Bun.",
+    "toolB": "tu proyecto prioriza ecosistema y librerías disponibles: FastAPI se apoya en el enorme ecosistema de Python: ORMs como SQLAlchemy, clientes de bases de datos, librerías de ciencia de datos, IA y tareas asíncronas."
   }
 }

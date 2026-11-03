@@ -1,8 +1,8 @@
 {
   "slug": "supabase-vs-appwrite",
   "meta": {
-    "title": "Supabase vs Appwrite: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj Supabase i Appwrite: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Supabase vs Appwrite: co wybrać w 2026?",
+    "description": "Porównanie Supabase vs Appwrite: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "Supabase"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Supabase a Appwrite zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki,…. Appwrite sprawdzi się, gdy projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co….",
+  "quickVerdict": "Supabase będzie lepszy, gdy projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki, funkcje i rozszerzenia, w tym pgvector do wyszukiwania wektorowego. Appwrite sprawdzi się, gdy projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co ułatwia dodawanie logiki serwerowej bez zarządzania serwerami.",
   "tradeoffs": [
     {
       "category": "Model bazy danych i język zapytań",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createClient } from \"@supabase/supabase-js\";\n\ntype Product = { id: string; name: string; price_cents: number };\nconst databaseUrl = process.env.SUPABASE_URL;\nconst serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;\nif (!databaseUrl || !serviceKey) throw new Error(\"Supabase server credentials are required\");\nconst database = createClient(databaseUrl, serviceKey);\n\nexport async function listProducts(categoryId: string): Promise<Product[]> {\n  const { data, error } = await database\n    .from(\"products\")\n    .select(\"id, name, price_cents\")\n    .eq(\"category_id\", categoryId)\n    .eq(\"active\", true)\n    .order(\"name\")\n    .limit(50);\n  if (error) throw new Error(`Product query failed: ${error.message}`);\n  return data ?? [];\n}",
     "tech2Snippet": "import { Query, TablesDB } from \"node-appwrite\";\n\ntype Product = { $id: string; name: string; priceCents: number; active: boolean };\n\nexport async function listProducts(database: TablesDB, databaseId: string, categoryId: string) {\n  const result = await database.listRows<Product>({\n    databaseId,\n    tableId: \"products\",\n    queries: [\n      Query.equal(\"categoryId\", categoryId),\n      Query.equal(\"active\", true),\n      Query.orderAsc(\"name\"),\n      Query.limit(50),\n    ],\n  });\n  return result.rows;\n}"
   },
-  "introduction": "Supabase i Appwrite odpowiadają na podobną potrzebę, ale różnią się w obszarze model bazy danych i język zapytań. Supabase: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki, funkcje i… Appwrite: Appwrite udostępnia warstwę abstrakcji nad bazą dokumentową z kolekcjami, atrybutami i zapytaniami w stylu API, co… Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie tożsamością”: Supabase Auth obsługuje logowanie hasłem, przez magiczny link, OAuth oraz dostawców zewnętrznych, a tożsamość… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Supabase i Appwrite odpowiadają na podobną potrzebę, ale różnią się w obszarze model bazy danych i język zapytań.  Supabase: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki, funkcje i rozszerzenia, w tym pgvector do wyszukiwania wektorowego.  Appwrite: Appwrite udostępnia warstwę abstrakcji nad bazą dokumentową z kolekcjami, atrybutami i zapytaniami w stylu API, co upraszcza start i pasuje do danych o luźnej strukturze.  Kolejną istotną różnicę pokazuje kryterium „Uwierzytelnianie i zarządzanie tożsamością”: Supabase Auth obsługuje logowanie hasłem, przez magiczny link, OAuth oraz dostawców zewnętrznych, a tożsamość użytkownika integruje się z politykami Row Level Security w PostgreSQL.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki,…",
-    "toolB": "projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co…"
+    "toolA": "projekt stawia na kryterium „Model bazy danych i język zapytań”: Supabase opiera się na zarządzanym PostgreSQL, więc dostępny jest pełny SQL, transakcje, widoki, funkcje i rozszerzenia, w tym pgvector do wyszukiwania wektorowego.",
+    "toolB": "projekt stawia na kryterium „Gotowość backendu i funkcje serverless”: Appwrite dostarcza Functions w wielu środowiskach uruchomieniowych oraz zadania zaplanowane, co ułatwia dodawanie logiki serwerowej bez zarządzania serwerami."
   }
 }

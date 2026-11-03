@@ -1,8 +1,8 @@
 {
   "slug": "fastify-vs-hono",
   "meta": {
-    "title": "Fastify vs Hono: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Fastify i Hono: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Fastify vs Hono: co wybrać w 2026?",
+    "description": "Porównanie Fastify vs Hono: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Fastify"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Fastify a Hono zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych…. Hono sprawdzi się, gdy projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono projektowano jako framework wielośrodowiskowy, działający m.in.",
+  "quickVerdict": "Fastify będzie lepszy, gdy projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych pluginów, m.in. Hono sprawdzi się, gdy projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono projektowano jako framework wielośrodowiskowy, działający m.in.",
   "tradeoffs": [
     {
       "category": "Dojrzałość ekosystemu i integracje",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Fastify from \"fastify\";\nimport { productRepository } from \"./products\";\n\nconst app = Fastify();\n\napp.get<{ Querystring: { category?: string } }>(\n  \"/api/products\",\n  async (request, reply) => {\n    const categoryId = request.query.category;\n    if (!categoryId?.trim()) {\n      return reply.code(400).send({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return { products };\n  },\n);",
     "tech2Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});"
   },
-  "introduction": "Fastify i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i integracje. Fastify: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych pluginów, m.in. Hono: Hono rozwija się szybko i oferuje zestaw middleware'ów obejmujących typowe potrzeby API, takie jak CORS,… Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Fastify jest projektowany z myślą o wysokiej przepustowości w Node.js, m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Fastify i Hono odpowiadają na podobną potrzebę, ale różnią się w obszarze dojrzałość ekosystemu i integracje. Fastify: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych pluginów, m.in. Hono: Hono rozwija się szybko i oferuje zestaw middleware'ów obejmujących typowe potrzeby API, takie jak CORS, uwierzytelnianie czy kompresja. Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Fastify jest projektowany z myślą o wysokiej przepustowości w Node.js, m.in. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych…",
+    "toolA": "projekt stawia na kryterium „Dojrzałość ekosystemu i integracje”: Fastify ma długą historię rozwoju i rozbudowany zestaw oficjalnych oraz społecznościowych pluginów, m.in.",
     "toolB": "projekt stawia na kryterium „Wsparcie środowisk uruchomieniowych”: Hono projektowano jako framework wielośrodowiskowy, działający m.in."
   }
 }

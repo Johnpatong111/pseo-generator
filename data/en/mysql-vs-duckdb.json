@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare MySQL and DuckDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "MySQL vs DuckDB: Which to Choose in 2026?",
+    "description": "MySQL vs DuckDB comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between MySQL and DuckDB changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "MySQL is the better fit when your project prioritizes concurrency and multi-user access: MySQL is built for many concurrent client connections and supports transaction isolation levels,…. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB's columnar engine, vectorized execution, and compression are designed for analytical speed….",
+  "quickVerdict": "MySQL is the better fit when your project prioritizes concurrency and multi-user access: MySQL is built for many concurrent client connections and supports transaction isolation levels, row-level locking in InnoDB, and replication for read scaling and failover. DuckDB is a stronger fit when your project prioritizes analytical query performance: DuckDB's columnar engine, vectorized execution, and compression are designed for analytical speed on a single node, often outperforming row stores on scan-heavy aggregations.",
   "tradeoffs": [
     {
       "category": "Architecture and deployment model",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "MySQL and DuckDB address a related need, but differ in architecture and deployment model. MySQL: MySQL is a client-server relational database management system. DuckDB: DuckDB is an embedded, in-process analytical database that runs inside your application, much like SQLite but columnar… The workload fit: oltp versus olap criterion adds another practical distinction: MySQL is optimized for online transaction processing: many small, short reads and writes, row-oriented storage, and… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "MySQL and DuckDB address a related need, but differ in architecture and deployment model. MySQL: MySQL is a client-server relational database management system. DuckDB: DuckDB is an embedded, in-process analytical database that runs inside your application, much like SQLite but columnar and vectorized. The workload fit: oltp versus olap criterion adds another practical distinction: MySQL is optimized for online transaction processing: many small, short reads and writes, row-oriented storage, and indexed point lookups. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes concurrency and multi-user access: MySQL is built for many concurrent client connections and supports transaction isolation levels,…",
-    "toolB": "your project prioritizes analytical query performance: DuckDB's columnar engine, vectorized execution, and compression are designed for analytical speed…"
+    "toolA": "your project prioritizes concurrency and multi-user access: MySQL is built for many concurrent client connections and supports transaction isolation levels, row-level locking in InnoDB, and replication for read scaling and failover.",
+    "toolB": "your project prioritizes analytical query performance: DuckDB's columnar engine, vectorized execution, and compression are designed for analytical speed on a single node, often outperforming row stores on scan-heavy aggregations."
   }
 }

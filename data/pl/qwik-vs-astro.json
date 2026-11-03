@@ -1,8 +1,8 @@
 {
   "slug": "qwik-vs-astro",
   "meta": {
-    "title": "Qwik vs Astro: co wybrać w 2026 — funkcje, wydajność i ekosystem",
-    "description": "Porównaj Qwik i Astro: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Qwik vs Astro: co wybrać w 2026?",
+    "description": "Porównanie Qwik vs Astro: rendering, routing, zarządzanie stanem i kompromisy architektoniczne dla programistów frontendu."
   },
   "toolA": {
     "name": "Qwik"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Qwik a Astro zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Qwik będzie lepszy, gdy projekt stawia na kryterium „Model hydratacji i czas do interaktywności”: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane…. Astro sprawdzi się, gdy projekt stawia na kryterium „Renderowanie i strategie wyjścia”: Astro kładzie nacisk na statyczne generowanie stron i domyślnie tworzy wyjście statyczne, a tryby….",
+  "quickVerdict": "Qwik będzie lepszy, gdy projekt stawia na kryterium „Model hydratacji i czas do interaktywności”: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane na serwerze, więc przeglądarka nie musi ponownie wykonywać kodu komponentów przy starcie. Astro sprawdzi się, gdy projekt stawia na kryterium „Renderowanie i strategie wyjścia”: Astro kładzie nacisk na statyczne generowanie stron i domyślnie tworzy wyjście statyczne, a tryby serwerowe oraz hybrydowe realizuje przez adaptery dla konkretnych platform hostingowych.",
   "tradeoffs": [
     {
       "category": "Model hydratacji i czas do interaktywności",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { routeLoader$ } from \"@builder.io/qwik-city\";\nimport { productRepository } from \"~/models/products\";\n\nexport const useCategoryProducts = routeLoader$(async ({ url, status }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) {\n    status(400);\n    return { products: [] };\n  }\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n});",
     "tech2Snippet": "import type { GetStaticPaths } from \"astro\";\nimport { productRepository } from \"../lib/products\";\n\nexport const getStaticPaths: GetStaticPaths = async () => {\n  const categories = await productRepository.listCategories();\n  return Promise.all(\n    categories.map(async ({ id }) => ({\n      params: { category: id },\n      props: {\n        products: await productRepository.listActiveByCategory({\n          categoryId: id,\n          orderBy: \"name\",\n          limit: 50,\n        }),\n      },\n    })),\n  );\n};"
   },
-  "introduction": "Qwik i Astro odpowiadają na podobną potrzebę, ale różnią się w obszarze model hydratacji i czas do interaktywności. Qwik: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane na serwerze, więc… Astro: Astro domyślnie wysyła do przeglądarki statyczny HTML bez hydratacji całej strony, a interaktywność dodaje punktowo… Kolejną istotną różnicę pokazuje kryterium „Zakres zastosowań i typ projektów”: Qwik jest projektowany przede wszystkim pod aplikacje z dużą ilością interakcji, takie jak panele, aplikacje biznesowe… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Qwik i Astro odpowiadają na podobną potrzebę, ale różnią się w obszarze model hydratacji i czas do interaktywności.  Qwik: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane na serwerze, więc przeglądarka nie musi ponownie wykonywać kodu komponentów przy starcie.  Astro: Astro domyślnie wysyła do przeglądarki statyczny HTML bez hydratacji całej strony, a interaktywność dodaje punktowo przez wyspy z dyrektywami ładowania, takimi jak client:load czy client:visible.  Kolejną istotną różnicę pokazuje kryterium „Zakres zastosowań i typ projektów”: Qwik jest projektowany przede wszystkim pod aplikacje z dużą ilością interakcji, takie jak panele, aplikacje biznesowe czy złożone formularze, gdzie liczy się szybka gotowość do działania.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model hydratacji i czas do interaktywności”: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane…",
-    "toolB": "projekt stawia na kryterium „Renderowanie i strategie wyjścia”: Astro kładzie nacisk na statyczne generowanie stron i domyślnie tworzy wyjście statyczne, a tryby…"
+    "toolA": "projekt stawia na kryterium „Model hydratacji i czas do interaktywności”: Qwik opiera się na resumowalności: stan aplikacji i kolejność odtwarzania zdarzeń są serializowane na serwerze, więc przeglądarka nie musi ponownie wykonywać kodu komponentów przy starcie.",
+    "toolB": "projekt stawia na kryterium „Renderowanie i strategie wyjścia”: Astro kładzie nacisk na statyczne generowanie stron i domyślnie tworzy wyjście statyczne, a tryby serwerowe oraz hybrydowe realizuje przez adaptery dla konkretnych platform hostingowych."
   }
 }

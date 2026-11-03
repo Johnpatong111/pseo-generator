@@ -1,8 +1,8 @@
 {
   "slug": "docker-vs-kubernetes",
   "meta": {
-    "title": "Docker vs Kubernetes: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
-    "description": "Compare Docker and Kubernetes architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
+    "title": "Docker vs Kubernetes: Which to Choose in 2026?",
+    "description": "Docker vs Kubernetes comparison: deployment, scaling, cost, and architecture trade-offs for platform teams."
   },
   "toolA": {
     "name": "Docker"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between Docker and Kubernetes changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "Docker is the better fit when your project prioritizes learning curve and operational complexity: Docker's core commands and Compose files are approachable for developers, and a single container…. Kubernetes is a stronger fit when your project prioritizes scaling and high availability: Kubernetes is designed for horizontal scaling and resilience, with ReplicaSets, Deployments, and….",
+  "quickVerdict": "Docker is the better fit when your project prioritizes learning curve and operational complexity: Docker's core commands and Compose files are approachable for developers, and a single container can be running within minutes of installation. Kubernetes is a stronger fit when your project prioritizes scaling and high availability: Kubernetes is designed for horizontal scaling and resilience, with ReplicaSets, Deployments, and probes that restart or reschedule unhealthy pods.",
   "tradeoffs": [
     {
       "category": "Primary purpose and scope",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Docker from \"dockerode\";\n\nconst runtime = new Docker({\n  socketPath: process.env.CONTAINER_SOCKET ?? \"/var/run/docker.sock\",\n});\n\nexport async function runProductImageWorker(): Promise<void> {\n  const container = await runtime.createContainer({\n    Image: \"registry.example.com/product-image-worker:1.0.0\",\n    Env: [\"NODE_ENV=production\"],\n    HostConfig: {\n      ReadonlyRootfs: true,\n      NetworkMode: \"product-catalog\",\n      Memory: 268_435_456,\n      NanoCpus: 500_000_000,\n    },\n    Labels: { \"app.name\": \"product-catalog\", \"app.runtime\": \"Docker\" },\n  });\n  await container.start();\n}",
     "tech2Snippet": "import * as k8s from \"@pulumi/kubernetes\";\n\nconst appLabels = { app: \"product-catalog\" };\nconst deployment = new k8s.apps.v1.Deployment(\"product-catalog\", {\n  spec: {\n    replicas: 2,\n    selector: { matchLabels: appLabels },\n    template: {\n      metadata: { labels: appLabels },\n      spec: {\n        containers: [{\n          name: \"catalog\",\n          image: \"registry.example.com/product-catalog:1.0.0\",\n          ports: [{ containerPort: 8080 }],\n          resources: { requests: { cpu: \"100m\", memory: \"128Mi\" } },\n          readinessProbe: { httpGet: { path: \"/health\", port: 8080 } },\n        }],\n      },\n    },\n  },\n});\nexport const productCatalogDeployment = deployment.metadata.name;"
   },
-  "introduction": "Docker and Kubernetes address a related need, but differ in primary purpose and scope. Docker: Docker is a containerization platform centered on building images and running containers, typically on a single host… Kubernetes: Kubernetes is a container orchestrator that schedules workloads across a cluster of machines and continuously… The learning curve and operational complexity criterion adds another practical distinction: Docker's core commands and Compose files are approachable for developers, and a single container can be running within… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "Docker and Kubernetes address a related need, but differ in primary purpose and scope. Docker: Docker is a containerization platform centered on building images and running containers, typically on a single host or a small number of hosts. Kubernetes: Kubernetes is a container orchestrator that schedules workloads across a cluster of machines and continuously reconciles actual state with desired state. The learning curve and operational complexity criterion adds another practical distinction: Docker's core commands and Compose files are approachable for developers, and a single container can be running within minutes of installation. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes learning curve and operational complexity: Docker's core commands and Compose files are approachable for developers, and a single container…",
-    "toolB": "your project prioritizes scaling and high availability: Kubernetes is designed for horizontal scaling and resilience, with ReplicaSets, Deployments, and…"
+    "toolA": "your project prioritizes learning curve and operational complexity: Docker's core commands and Compose files are approachable for developers, and a single container can be running within minutes of installation.",
+    "toolB": "your project prioritizes scaling and high availability: Kubernetes is designed for horizontal scaling and resilience, with ReplicaSets, Deployments, and probes that restart or reschedule unhealthy pods."
   }
 }

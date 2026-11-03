@@ -1,8 +1,8 @@
 {
   "slug": "openfga-vs-aws",
   "meta": {
-    "title": "OpenFGA vs AWS: Which one to choose in 2026? (deployment, scaling & costs & code compared)",
-    "description": "Compare OpenFGA and AWS architectural trade-offs, deployment, scaling, and infrastructure, and review side-by-side TypeScript to choose the right stack."
+    "title": "OpenFGA vs AWS: Which to Choose in 2026?",
+    "description": "OpenFGA vs AWS comparison: deployment, scaling, cost, and architecture trade-offs for platform teams."
   },
   "toolA": {
     "name": "OpenFGA"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Choosing between OpenFGA and AWS changes how a project handles deployment and operational ownership, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "OpenFGA is the better fit when your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed…. AWS is a stronger fit when your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations,….",
+  "quickVerdict": "OpenFGA is the better fit when your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which suits complex multi-tenant and hierarchical permissions. AWS is a stronger fit when your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations, and mature operational tooling.",
   "tradeoffs": [
     {
       "category": "Core purpose and scope",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { OpenFgaClient } from \"@openfga/sdk\";\n\nconst authorization = new OpenFgaClient({\n  apiUrl: process.env.OPENFGA_API_URL!,\n  storeId: process.env.OPENFGA_STORE_ID!,\n  authorizationModelId: process.env.OPENFGA_MODEL_ID!,\n});\n\nexport async function canListProducts(userId: string, categoryId: string): Promise<boolean> {\n  const result = await authorization.check({\n    user: `user:${userId}`,\n    relation: \"viewer\",\n    object: `category:${categoryId}`,\n  });\n  return result.allowed;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n});\nconst accessPolicy = new aws.iam.Policy(\"product-image-reader\", {\n  description: \"Allow the product catalogue service to read product images\",\n  policy: productImages.arn.apply((bucketArn) => JSON.stringify({\n    Version: \"2012-10-17\",\n    Statement: [{\n      Effect: \"Allow\",\n      Action: [\"s3:GetObject\"],\n      Resource: [`${bucketArn}/*`],\n    }],\n  })),\n});\nexport const productImagePolicyArn = accessPolicy.arn;"
   },
-  "introduction": "OpenFGA and AWS address a related need, but differ in core purpose and scope. OpenFGA: OpenFGA is an open-source authorization engine implementing fine-grained relationship-based access control (ReBAC)… AWS: AWS is a broad cloud platform covering compute, storage, databases, networking, identity, and more. The authorization model expressiveness criterion adds another practical distinction: OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "OpenFGA and AWS address a related need, but differ in core purpose and scope. OpenFGA: OpenFGA is an open-source authorization engine implementing fine-grained relationship-based access control (ReBAC) inspired by Google Zanzibar. AWS: AWS is a broad cloud platform covering compute, storage, databases, networking, identity, and more. The authorization model expressiveness criterion adds another practical distinction: OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which suits complex multi-tenant and hierarchical permissions. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed…",
-    "toolB": "your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations,…"
+    "toolA": "your project prioritizes authorization model expressiveness: OpenFGA lets you define authorization models with relations, unions, intersections, and computed relationships, which suits complex multi-tenant and hierarchical permissions.",
+    "toolB": "your project prioritizes hosting and operational model: AWS offers fully managed services with regional availability, built-in monitoring integrations, and mature operational tooling."
   }
 }

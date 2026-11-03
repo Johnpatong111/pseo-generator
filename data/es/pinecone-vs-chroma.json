@@ -1,8 +1,8 @@
 {
   "slug": "pinecone-vs-chroma",
   "meta": {
-    "title": "Pinecone vs Chroma: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Pinecone y Chroma: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Pinecone vs Chroma: ¿cuál elegir en 2026?",
+    "description": "Comparativa Pinecone vs Chroma: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Pinecone"
@@ -86,7 +86,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Pinecone y Chroma cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Pinecone encaja mejor cuando tu proyecto prioriza modelo de despliegue y gestión operativa: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el…. Chroma es preferible cuando tu proyecto prioriza facilidad de uso y curva de aprendizaje: Chroma destaca por una API sencilla y una integración muy directa con Python, lo que permite tener….",
+  "quickVerdict": "Pinecone encaja mejor cuando tu proyecto prioriza modelo de despliegue y gestión operativa: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el proveedor se encarga del aprovisionamiento, las actualizaciones y la disponibilidad de la infraestructura. Chroma es preferible cuando tu proyecto prioriza facilidad de uso y curva de aprendizaje: Chroma destaca por una API sencilla y una integración muy directa con Python, lo que permite tener una colección vectorial funcionando en pocas líneas de código.",
   "tradeoffs": [
     {
       "category": "Modelo de despliegue y gestión operativa",
@@ -124,9 +124,9 @@
     "tech1Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}",
     "tech2Snippet": "import type { Collection } from \"chromadb\";\n\nexport async function findCategoryProducts(collection: Collection, categoryId: string, embedding: number[]) {\n  const result = await collection.query({\n    queryEmbeddings: [embedding],\n    nResults: 50,\n    where: { categoryId, active: true },\n    include: [\"metadatas\", \"distances\"],\n  });\n  return result.ids[0]?.map((id, index) => ({\n    id,\n    metadata: result.metadatas?.[0]?.[index],\n    distance: result.distances?.[0]?.[index],\n  })) ?? [];\n}"
   },
-  "introduction": "Pinecone y Chroma responden a una necesidad similar, pero difieren en modelo de despliegue y gestión operativa. Pinecone: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el proveedor se encarga del… Chroma: Chroma se distribuye como biblioteca de código abierto que puede ejecutarse en local o embebida en la aplicación,… El criterio de escalado y rendimiento en producción añade otra diferencia práctica: Pinecone está diseñado para cargas de producción y su arquitectura separa el almacenamiento del cómputo, lo que… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Pinecone y Chroma responden a una necesidad similar, pero difieren en modelo de despliegue y gestión operativa.  Pinecone: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el proveedor se encarga del aprovisionamiento, las actualizaciones y la disponibilidad de la infraestructura.  Chroma: Chroma se distribuye como biblioteca de código abierto que puede ejecutarse en local o embebida en la aplicación, además de ofrecer opciones de despliegue en servidor y un servicio alojado.  El criterio de escalado y rendimiento en producción añade otra diferencia práctica: Pinecone está diseñado para cargas de producción y su arquitectura separa el almacenamiento del cómputo, lo que permite ajustar recursos según la carga de trabajo.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de despliegue y gestión operativa: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el…",
-    "toolB": "tu proyecto prioriza facilidad de uso y curva de aprendizaje: Chroma destaca por una API sencilla y una integración muy directa con Python, lo que permite tener…"
+    "toolA": "tu proyecto prioriza modelo de despliegue y gestión operativa: Pinecone es una base de datos vectoriales ofrecida como servicio gestionado en la nube: el proveedor se encarga del aprovisionamiento, las actualizaciones y la disponibilidad de la infraestructura.",
+    "toolB": "tu proyecto prioriza facilidad de uso y curva de aprendizaje: Chroma destaca por una API sencilla y una integración muy directa con Python, lo que permite tener una colección vectorial funcionando en pocas líneas de código."
   }
 }

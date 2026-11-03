@@ -1,8 +1,8 @@
 {
   "slug": "remix-vs-astro",
   "meta": {
-    "title": "Remix vs Astro: co wybrać w 2026 — funkcje, wydajność i ekosystem",
-    "description": "Porównaj Remix i Astro: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Remix vs Astro: co wybrać w 2026?",
+    "description": "Porównanie Remix vs Astro: rendering, routing, zarządzanie stanem i kompromisy architektoniczne dla programistów frontendu."
   },
   "toolA": {
     "name": "Remix"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Remix a Astro zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Remix będzie lepszy, gdy projekt stawia na kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co…. Astro sprawdzi się, gdy projekt stawia na kryterium „Model renderowania i domyślna ilość JavaScriptu”: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne,….",
+  "quickVerdict": "Remix będzie lepszy, gdy projekt stawia na kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co dobrze pasuje do aplikacji z wieloma poziomami nawigacji i zależnościami danych między widokami. Astro sprawdzi się, gdy projekt stawia na kryterium „Model renderowania i domyślna ilość JavaScriptu”: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne, dzięki czemu strony treściowe mogą wysyłać znacznie mniej JavaScriptu.",
   "tradeoffs": [
     {
       "category": "Model renderowania i domyślna ilość JavaScriptu",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { json, type LoaderFunctionArgs } from \"@remix-run/node\";\nimport { useLoaderData } from \"@remix-run/react\";\nimport { productRepository } from \"~/models/products.server\";\n\nexport async function loader({ request }: LoaderFunctionArgs) {\n  const categoryId = new URL(request.url).searchParams.get(\"category\");\n  if (!categoryId) throw new Response(\"category is required\", { status: 400 });\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return json({ products });\n}\n\nexport default function CategoryRoute() {\n  const { products } = useLoaderData<typeof loader>();\n  return <ul>{products.map((product) => <li key={product.id}>{product.name}</li>)}</ul>;\n}",
     "tech2Snippet": "import type { GetStaticPaths } from \"astro\";\nimport { productRepository } from \"../lib/products\";\n\nexport const getStaticPaths: GetStaticPaths = async () => {\n  const categories = await productRepository.listCategories();\n  return Promise.all(\n    categories.map(async ({ id }) => ({\n      params: { category: id },\n      props: {\n        products: await productRepository.listActiveByCategory({\n          categoryId: id,\n          orderBy: \"name\",\n          limit: 50,\n        }),\n      },\n    })),\n  );\n};"
   },
-  "introduction": "Remix i Astro odpowiadają na podobną potrzebę, ale różnią się w obszarze model renderowania i domyślna ilość javascriptu. Remix: Remix opiera się na renderowaniu po stronie serwera z hydratacją całej aplikacji, co zapewnia spójne zachowanie… Astro: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne, dzięki czemu strony… Kolejną istotną różnicę pokazuje kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co dobrze pasuje do… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Remix i Astro odpowiadają na podobną potrzebę, ale różnią się w obszarze model renderowania i domyślna ilość javascriptu.  Remix: Remix opiera się na renderowaniu po stronie serwera z hydratacją całej aplikacji, co zapewnia spójne zachowanie interaktywnych elementów, ale domyślnie dostarcza do przeglądarki więcej kodu JavaScript.  Astro: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne, dzięki czemu strony treściowe mogą wysyłać znacznie mniej JavaScriptu.  Kolejną istotną różnicę pokazuje kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co dobrze pasuje do aplikacji z wieloma poziomami nawigacji i zależnościami danych między widokami.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co…",
-    "toolB": "projekt stawia na kryterium „Model renderowania i domyślna ilość JavaScriptu”: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne,…"
+    "toolA": "projekt stawia na kryterium „Routing i organizacja aplikacji”: Remix wykorzystuje routing oparty na plikach z zagnieżdżonymi trasami, loaderami i akcjami, co dobrze pasuje do aplikacji z wieloma poziomami nawigacji i zależnościami danych między widokami.",
+    "toolB": "projekt stawia na kryterium „Model renderowania i domyślna ilość JavaScriptu”: Astro domyślnie generuje statyczny HTML i hydratuje wyłącznie oznaczone komponenty interaktywne, dzięki czemu strony treściowe mogą wysyłać znacznie mniej JavaScriptu."
   }
 }

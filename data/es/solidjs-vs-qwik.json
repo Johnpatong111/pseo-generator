@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-qwik",
   "meta": {
-    "title": "SolidJS vs Qwik: cuál elegir en 2026 — funciones, rendimiento y ecosistema",
-    "description": "Compara SolidJS y Qwik: evalúa sus compromisos arquitectónicos en renderizado, enrutamiento y carga de datos y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "SolidJS vs Qwik: ¿cuál elegir en 2026?",
+    "description": "Comparativa SolidJS vs Qwik: renderizado, enrutamiento, gestión de estado y compromisos de arquitectura para desarrolladores frontend."
   },
   "toolA": {
     "name": "SolidJS"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre SolidJS y Qwik cambia cómo se aborda el renderizado de la interfaz y la carga de datos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la…. Qwik es preferible cuando tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a….",
+  "quickVerdict": "SolidJS encaja mejor cuando tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la reactividad por señales y la ejecución única del componente exigen desaprender hábitos de re-renderizado. Qwik es preferible cuando tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a demanda cuando el usuario interactúa o el elemento entra en el viewport.",
   "tradeoffs": [
     {
       "category": "Modelo de reactividad y actualización de la interfaz",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import { createResource } from \"solid-js\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nasync function loadProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50&sort=name`,\n  );\n  if (!response.ok) throw new Error(`Product request failed: ${response.status}`);\n  return (await response.json()) as Product[];\n}\n\nexport function createCategoryProducts(categoryId: () => string) {\n  return createResource(categoryId, loadProducts);\n}",
     "tech2Snippet": "import { routeLoader$ } from \"@builder.io/qwik-city\";\nimport { productRepository } from \"~/models/products\";\n\nexport const useCategoryProducts = routeLoader$(async ({ url, status }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) {\n    status(400);\n    return { products: [] };\n  }\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n});"
   },
-  "introduction": "SolidJS y Qwik responden a una necesidad similar, pero difieren en modelo de reactividad y actualización de la interfaz. SolidJS: SolidJS emplea un sistema de reactividad fina basado en señales y efectos, donde los componentes se ejecutan una seule… Qwik: Qwik se apoya en señales y en una granularidad similar a nivel de estado, pero su rasgo distintivo es la reanudación:… El criterio de estrategia de hidratación y tiempo hasta la interactividad añade otra diferencia práctica: SolidJS hidrata el HTML generado en el servidor ejecutando de nuevo los componentes para reconstruir el grafo… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "SolidJS y Qwik responden a una necesidad similar, pero difieren en modelo de reactividad y actualización de la interfaz.  SolidJS: SolidJS emplea un sistema de reactividad fina basado en señales y efectos, donde los componentes se ejecutan una seule vez y las actualizaciones se propagan por dependencias granulares sin re-renderizar árboles completos.  Qwik: Qwik se apoya en señales y en una granularidad similar a nivel de estado, pero su rasgo distintivo es la reanudación: el estado serializado se reanuda en el cliente sin repetir la ejecución de los componentes.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la…",
-    "toolB": "tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a…"
+    "toolA": "tu proyecto prioriza curva de aprendizaje y modelo mental: SolidJS resulta familiar para quien viene de React porque usa JSX y componentes, pero la reactividad por señales y la ejecución única del componente exigen desaprender hábitos de re-renderizado.",
+    "toolB": "tu proyecto prioriza estrategia de hidratación y tiempo hasta la interactividad: Qwik evita la hidratación tradicional mediante la reanudación y descarga de controladores a demanda cuando el usuario interactúa o el elemento entra en el viewport."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "bun-vs-node",
   "meta": {
-    "title": "Bun vs Node: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Bun y Node: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Bun vs Node: ¿cuál elegir en 2026?",
+    "description": "Comparativa Bun vs Node: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Bun"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Bun y Node cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente…. Node es preferible cuando tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas….",
+  "quickVerdict": "Bun encaja mejor cuando tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente en cargas típicas de servidor. Node es preferible cuando tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas del ecosistema JavaScript.",
   "tradeoffs": [
     {
       "category": "Rendimiento de ejecución y arranque",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport default {\n  async fetch(request: Request): Promise<Response> {\n    const url = new URL(request.url);\n    const categoryId = url.searchParams.get(\"category\");\n    if (!categoryId?.trim()) {\n      return Response.json({ error: \"category is required\" }, { status: 400 });\n    }\n    const response = await fetch(\n      `${process.env.PRODUCTS_API_URL}/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50`,\n    );\n    if (!response.ok) return new Response(\"Upstream request failed\", { status: 502 });\n    const payload = (await response.json()) as { products: Product[] };\n    return Response.json({ products: payload.products });\n  },\n};",
     "tech2Snippet": "import { createServer } from \"node:http\";\nimport { parse } from \"node:url\";\nimport { productRepository } from \"./products\";\n\ncreateServer(async (request, response) => {\n  const categoryId = parse(request.url ?? \"\", true).query.category;\n  if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n    response.writeHead(400, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"category is required\" }));\n    return;\n  }\n  try {\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    response.writeHead(200, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ products }));\n  } catch {\n    response.writeHead(500, { \"content-type\": \"application/json\" });\n    response.end(JSON.stringify({ error: \"Could not load products\" }));\n  }\n}).listen(Number(process.env.PORT ?? 3000));"
   },
-  "introduction": "Bun y Node responden a una necesidad similar, pero difieren en rendimiento de ejecución y arranque. Bun: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente en cargas típicas de… Node: Node.js se apoya en V8 y ha incorporado mejoras continuas de rendimiento en sus versiones recientes. El criterio de compatibilidad con el ecosistema de node y npm añade otra diferencia práctica: Bun busca ser compatible con una gran parte del ecosistema de Node, incluyendo paquetes de npm y APIs habituales,… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Bun y Node responden a una necesidad similar, pero difieren en rendimiento de ejecución y arranque. Bun: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente en cargas típicas de servidor. Node: Node.js se apoya en V8 y ha incorporado mejoras continuas de rendimiento en sus versiones recientes. El criterio de compatibilidad con el ecosistema de node y npm añade otra diferencia práctica: Bun busca ser compatible con una gran parte del ecosistema de Node, incluyendo paquetes de npm y APIs habituales, aunque no garantiza una compatibilidad total con todas las dependencias ni con todos los módulos nativos. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente…",
-    "toolB": "tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas…"
+    "toolA": "tu proyecto prioriza rendimiento de ejecución y arranque: Bun está construido sobre JavaScriptCore y prioriza un arranque rápido y una ejecución eficiente en cargas típicas de servidor.",
+    "toolB": "tu proyecto prioriza compatibilidad con el ecosistema de node y npm: Node.js es el entorno de referencia para el que se diseñaron la mayoría de paquetes y herramientas del ecosistema JavaScript."
   }
 }

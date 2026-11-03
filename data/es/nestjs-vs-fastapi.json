@@ -1,8 +1,8 @@
 {
   "slug": "nestjs-vs-fastapi",
   "meta": {
-    "title": "NestJS vs FastAPI: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara NestJS y FastAPI: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "NestJS vs FastAPI: ¿cuál elegir en 2026?",
+    "description": "Comparativa NestJS vs FastAPI: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "NestJS"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre NestJS y FastAPI cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "NestJS encaja mejor cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de…. FastAPI es preferible cuando tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los….",
+  "quickVerdict": "NestJS encaja mejor cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de dependencias, controladores y servicios bien delimitados. FastAPI es preferible cuando tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los tipos y modelos de Pydantic.",
   "tradeoffs": [
     {
       "category": "Lenguaje y tipado",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados. Como uno de los backends no usa TypeScript, su ejemplo es un cliente HTTP tipado; el servidor sigue escrito en el lenguaje nativo del framework.",
+    "scenario": "Gestiona una petición HTTP filtrada de productos activos, valida la categoría y limita los resultados.",
     "tech1Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}",
-    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromFastapi(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`fastapi product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}"
+    "tech2Snippet": "from fastapi import FastAPI, HTTPException, Query\nfrom pydantic import BaseModel\n\nfrom app.repositories.products import product_repository\n\n\nclass Product(BaseModel):\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\napp = FastAPI()\n\n\n@app.get(\"/api/products\", response_model=list[Product])\nasync def list_products(\n    category: str = Query(min_length=1),\n    limit: int = Query(default=50, ge=1, le=50),\n) -> list[Product]:\n    products = await product_repository.list_active_by_category(\n        category_id=category,\n        limit=limit,\n    )\n    if products is None:\n        raise HTTPException(status_code=500, detail=\"could not load products\")\n    return products"
   },
-  "introduction": "NestJS y FastAPI responden a una necesidad similar, pero difieren en lenguaje y tipado. NestJS: NestJS se construye sobre TypeScript por defecto y aprovecha su sistema de tipos, decoradores y metadatos para definir… FastAPI: FastAPI está escrito en Python y se apoya en anotaciones de tipo estándar junto con Pydantic para validar y serializar… El criterio de arquitectura y estructura del proyecto añade otra diferencia práctica: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de dependencias, controladores y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "NestJS y FastAPI responden a una necesidad similar, pero difieren en lenguaje y tipado. NestJS: NestJS se construye sobre TypeScript por defecto y aprovecha su sistema de tipos, decoradores y metadatos para definir controladores, servicios y módulos. FastAPI: FastAPI está escrito en Python y se apoya en anotaciones de tipo estándar junto con Pydantic para validar y serializar datos. El criterio de arquitectura y estructura del proyecto añade otra diferencia práctica: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de dependencias, controladores y servicios bien delimitados. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de…",
-    "toolB": "tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los…"
+    "toolA": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura opinada inspirada en Angular, con módulos, inyección de dependencias, controladores y servicios bien delimitados.",
+    "toolB": "tu proyecto prioriza documentación y validación de la api: FastAPI genera documentación interactiva OpenAPI y Swagger UI de forma automática a partir de los tipos y modelos de Pydantic."
   }
 }

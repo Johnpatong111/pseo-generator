@@ -1,8 +1,8 @@
 {
   "slug": "weaviate-vs-pinecone",
   "meta": {
-    "title": "Weaviate vs Pinecone: co wybrać w 2026 — modele, kontekst i koszty API",
-    "description": "Porównaj Weaviate i Pinecone: oceń kompromisy architektoniczne w obszarze okna kontekstu, API modeli i integracji i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Weaviate vs Pinecone: co wybrać w 2026?",
+    "description": "Porównanie Weaviate vs Pinecone: okna kontekstu, ceny API, opóźnienia i kompromisy architektoniczne dla inżynierów AI."
   },
   "toolA": {
     "name": "Weaviate"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Weaviate a Pinecone zmienia sposób podejścia do pobieraniu kontekstu i integracji z modelami, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Weaviate będzie lepszy, gdy projekt stawia na kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a…. Pinecone sprawdzi się, gdy projekt stawia na kryterium „Model wdrożenia i zarządzanie infrastrukturą”: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb….",
+  "quickVerdict": "Weaviate będzie lepszy, gdy projekt stawia na kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a także filtry atrybutów i zapytania GraphQL oraz REST. Pinecone sprawdzi się, gdy projekt stawia na kryterium „Model wdrożenia i zarządzanie infrastrukturą”: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb bezserwerowy.",
   "tradeoffs": [
     {
       "category": "Model wdrożenia i zarządzanie infrastrukturą",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { WeaviateClient } from \"weaviate-client\";\n\nexport async function findCategoryProducts(client: WeaviateClient, categoryId: string, embedding: number[]) {\n  const collection = client.collections.get(\"Product\");\n  const result = await collection.query.nearVector(embedding, {\n    filters: collection.filter\n      .byProperty(\"categoryId\").equal(categoryId)\n      .and(collection.filter.byProperty(\"active\").equal(true)),\n    limit: 50,\n    returnMetadata: [\"distance\"],\n  });\n  return result.objects.map(({ uuid, properties, metadata }) => ({ uuid, properties, metadata }));\n}",
     "tech2Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}"
   },
-  "introduction": "Weaviate i Pinecone odpowiadają na podobną potrzebę, ale różnią się w obszarze model wdrożenia i zarządzanie infrastrukturą. Weaviate: Weaviate można uruchomić samodzielnie (kontener, Kubernetes) lub w zarządzanej chmurze Weaviate Cloud. Pinecone: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb bezserwerowy. Kolejną istotną różnicę pokazuje kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a także filtry… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Weaviate i Pinecone odpowiadają na podobną potrzebę, ale różnią się w obszarze model wdrożenia i zarządzanie infrastrukturą. Weaviate: Weaviate można uruchomić samodzielnie (kontener, Kubernetes) lub w zarządzanej chmurze Weaviate Cloud. Pinecone: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb bezserwerowy. Kolejną istotną różnicę pokazuje kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a także filtry atrybutów i zapytania GraphQL oraz REST. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a…",
-    "toolB": "projekt stawia na kryterium „Model wdrożenia i zarządzanie infrastrukturą”: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb…"
+    "toolA": "projekt stawia na kryterium „Wyszukiwanie hybrydowe i funkcje wyszukiwania”: Weaviate natywnie obsługuje wyszukiwanie hybrydowe łączące wektory i wyszukiwanie pełnotekstowe, a także filtry atrybutów i zapytania GraphQL oraz REST.",
+    "toolB": "projekt stawia na kryterium „Model wdrożenia i zarządzanie infrastrukturą”: Pinecone działa jako w pełni zarządzana usługa w chmurze, a w nowszych wersjach oferuje tryb bezserwerowy."
   }
 }

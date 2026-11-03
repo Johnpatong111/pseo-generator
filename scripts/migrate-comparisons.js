@@ -84,12 +84,20 @@ function getSentence(value, limit = 140) {
   const sentence = value.trim().split(/(?<=[.!?])\s+/u)[0];
   if (!sentence) throw new Error("Cannot derive editorial content from empty text.");
   if (sentence.length <= limit) return sentence;
-  const shortened = sentence.slice(0, limit - 1);
-  return `${shortened.slice(0, shortened.lastIndexOf(" "))}…`;
+
+  // Never cut editorial copy mid-sentence: prefer the complete first sentence
+  // over an ellipsis that leaves the user with a dangling clause.
+  return sentence.endsWith(".") || sentence.endsWith("!") || sentence.endsWith("?")
+    ? sentence
+    : `${sentence}.`;
 }
 
 function getCriterionLabel(value) {
-  return getSentence(value, 80).replace(/[.!?…]\s*$/u, "");
+  const label = getSentence(value, 80).replace(/[.!?…]\s*$/u, "");
+  if (label.length <= 80) return label;
+
+  const shortened = label.slice(0, 81);
+  return shortened.slice(0, shortened.lastIndexOf(" ")).trim();
 }
 
 function getDecisionFramework(comparison, locale) {

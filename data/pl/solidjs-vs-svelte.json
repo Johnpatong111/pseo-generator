@@ -1,8 +1,8 @@
 {
   "slug": "solidjs-vs-svelte",
   "meta": {
-    "title": "SolidJS vs Svelte: co wybrać w 2026 — funkcje, wydajność i ekosystem",
-    "description": "Porównaj SolidJS i Svelte: oceń kompromisy architektoniczne w obszarze rendering, routingu i ładowania danych i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "SolidJS vs Svelte: co wybrać w 2026?",
+    "description": "Porównanie SolidJS vs Svelte: rendering, routing, zarządzanie stanem i kompromisy architektoniczne dla programistów frontendu."
   },
   "toolA": {
     "name": "SolidJS"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Wybór między SolidJS a Svelte zmienia sposób podejścia do renderowaniu interfejsu i pobieraniu danych, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "SolidJS będzie lepszy, gdy projekt stawia na kryterium „Model reaktywności i sposób śledzenia zależności”: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w…. Svelte sprawdzi się, gdy projekt stawia na kryterium „Krzywa uczenia i czytelność kodu dla zespołu”: Svelte jest często wskazywany jako łagodniejszy na starcie, ponieważ składnia komponentów jest….",
+  "quickVerdict": "SolidJS będzie lepszy, gdy projekt stawia na kryterium „Model reaktywności i sposób śledzenia zależności”: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w czasie wykonania, a aktualizacje trafiają precyzyjnie do konkretnych węzłów DOM. Svelte sprawdzi się, gdy projekt stawia na kryterium „Krzywa uczenia i czytelność kodu dla zespołu”: Svelte jest często wskazywany jako łagodniejszy na starcie, ponieważ składnia komponentów jest zbliżona do HTML, a logika reaktywna bywa intuicyjna.",
   "tradeoffs": [
     {
       "category": "Model reaktywności i sposób śledzenia zależności",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import { createResource } from \"solid-js\";\n\ntype Product = { id: string; name: string; priceCents: number };\n\nasync function loadProducts(categoryId: string): Promise<Product[]> {\n  const response = await fetch(\n    `/api/products?category=${encodeURIComponent(categoryId)}&active=true&limit=50&sort=name`,\n  );\n  if (!response.ok) throw new Error(`Product request failed: ${response.status}`);\n  return (await response.json()) as Product[];\n}\n\nexport function createCategoryProducts(categoryId: () => string) {\n  return createResource(categoryId, loadProducts);\n}",
     "tech2Snippet": "import type { PageServerLoad } from \"./$types\";\nimport { productRepository } from \"$lib/server/products\";\n\nexport const load: PageServerLoad = async ({ url }) => {\n  const categoryId = url.searchParams.get(\"category\");\n  if (!categoryId) return { products: [], error: \"category is required\" };\n\n  const products = await productRepository.listActiveByCategory({\n    categoryId,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return { products };\n};"
   },
-  "introduction": "SolidJS i Svelte odpowiadają na podobną potrzebę, ale różnią się w obszarze model reaktywności i sposób śledzenia zależności. SolidJS: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w czasie wykonania, a… Svelte: Svelte kompiluje komponenty do kodu imperatywnego, a w wersji 4 reaktywność opierała się na oznaczeniach zmiennych i… Kolejną istotną różnicę pokazuje kryterium „Wydajność renderowania i rozmiar wynikowego pakietu”: SolidJS tworzy bezpośrednie powiązania między sygnałami a węzłami DOM, rezygnując z wirtualnego DOM-u, co w wielu… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "SolidJS i Svelte odpowiadają na podobną potrzebę, ale różnią się w obszarze model reaktywności i sposób śledzenia zależności.  SolidJS: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w czasie wykonania, a aktualizacje trafiają precyzyjnie do konkretnych węzłów DOM.  Svelte: Svelte kompiluje komponenty do kodu imperatywnego, a w wersji 4 reaktywność opierała się na oznaczeniach zmiennych i przypisaniach; w Svelte 5 wprowadzono runy, czyli jawny model sygnałów i efektów.  Kolejną istotną różnicę pokazuje kryterium „Wydajność renderowania i rozmiar wynikowego pakietu”: SolidJS tworzy bezpośrednie powiązania między sygnałami a węzłami DOM, rezygnując z wirtualnego DOM-u, co w wielu scenariuszach ogranicza narzut na aktualizacje.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Model reaktywności i sposób śledzenia zależności”: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w…",
-    "toolB": "projekt stawia na kryterium „Krzywa uczenia i czytelność kodu dla zespołu”: Svelte jest często wskazywany jako łagodniejszy na starcie, ponieważ składnia komponentów jest…"
+    "toolA": "projekt stawia na kryterium „Model reaktywności i sposób śledzenia zależności”: SolidJS opiera się na drobnoziarnistych sygnałach i efektach, w których zależności są śledzone w czasie wykonania, a aktualizacje trafiają precyzyjnie do konkretnych węzłów DOM.",
+    "toolB": "projekt stawia na kryterium „Krzywa uczenia i czytelność kodu dla zespołu”: Svelte jest często wskazywany jako łagodniejszy na starcie, ponieważ składnia komponentów jest zbliżona do HTML, a logika reaktywna bywa intuicyjna."
   }
 }

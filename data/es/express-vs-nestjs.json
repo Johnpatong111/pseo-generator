@@ -1,8 +1,8 @@
 {
   "slug": "express-vs-nestjs",
   "meta": {
-    "title": "Express vs NestJS: cuál elegir en 2026 — API, rendimiento e implementación",
-    "description": "Compara Express y NestJS: evalúa sus compromisos arquitectónicos en diseño de API, runtime y gestión de solicitudes y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Express vs NestJS: ¿cuál elegir en 2026?",
+    "description": "Comparativa Express vs NestJS: rendimiento, enrutamiento, concurrencia y compromisos de arquitectura para desarrolladores backend."
   },
   "toolA": {
     "name": "Express"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Express y NestJS cambia cómo se aborda el runtime y la gestión de solicitudes; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Express encaja mejor cuando tu proyecto prioriza curva de aprendizaje y experiencia del desarrollador: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de…. NestJS es preferible cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores,….",
+  "quickVerdict": "Express encaja mejor cuando tu proyecto prioriza curva de aprendizaje y experiencia del desarrollador: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de Node.js y HTTP puede crear rutas funcionales en poco tiempo. NestJS es preferible cuando tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores, servicios, guards, interceptores y pipes como piezas bien definidas.",
   "tradeoffs": [
     {
       "category": "Arquitectura y estructura del proyecto",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import express, { type NextFunction, type Request, type Response } from \"express\";\nimport { productRepository } from \"./products\";\n\nconst app = express();\n\napp.get(\"/api/products\", async (request: Request, response: Response, next: NextFunction) => {\n  try {\n    const categoryId = request.query.category;\n    if (typeof categoryId !== \"string\" || !categoryId.trim()) {\n      return response.status(400).json({ error: \"category is required\" });\n    }\n    const products = await productRepository.listActiveByCategory({\n      categoryId,\n      orderBy: \"name\",\n      limit: 50,\n    });\n    return response.json({ products });\n  } catch (error) {\n    return next(error);\n  }\n});",
     "tech2Snippet": "import { BadRequestException, Controller, Get, Query } from \"@nestjs/common\";\nimport { ProductService } from \"./product.service\";\n\n@Controller(\"api/products\")\nexport class ProductsController {\n  constructor(private readonly products: ProductService) {}\n\n  @Get()\n  async list(@Query(\"category\") category?: string) {\n    if (!category?.trim()) throw new BadRequestException(\"category is required\");\n    return {\n      products: await this.products.listActiveByCategory({\n        categoryId: category,\n        orderBy: \"name\",\n        limit: 50,\n      }),\n    };\n  }\n}"
   },
-  "introduction": "Express y NestJS responden a una necesidad similar, pero difieren en arquitectura y estructura del proyecto. Express: Express no impone una arquitectura concreta: ofrece enrutamiento y middleware, y deja en manos del equipo organizar… NestJS: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores, servicios, guards,… El criterio de curva de aprendizaje y experiencia del desarrollador añade otra diferencia práctica: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de Node.js y HTTP puede… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Express y NestJS responden a una necesidad similar, pero difieren en arquitectura y estructura del proyecto. Express: Express no impone una arquitectura concreta: ofrece enrutamiento y middleware, y deja en manos del equipo organizar carpetas, capas y patrones. NestJS: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores, servicios, guards, interceptores y pipes como piezas bien definidas. El criterio de curva de aprendizaje y experiencia del desarrollador añade otra diferencia práctica: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de Node.js y HTTP puede crear rutas funcionales en poco tiempo. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza curva de aprendizaje y experiencia del desarrollador: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de…",
-    "toolB": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores,…"
+    "toolA": "tu proyecto prioriza curva de aprendizaje y experiencia del desarrollador: Express tiene una API pequeña y conceptualmente sencilla, por lo que alguien con conocimientos de Node.js y HTTP puede crear rutas funcionales en poco tiempo.",
+    "toolB": "tu proyecto prioriza arquitectura y estructura del proyecto: NestJS propone una arquitectura modular inspirada en Angular, con módulos, controladores, servicios, guards, interceptores y pipes como piezas bien definidas."
   }
 }

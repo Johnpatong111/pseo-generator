@@ -1,8 +1,8 @@
 {
   "slug": "scylladb-vs-mongodb",
   "meta": {
-    "title": "ScyllaDB vs MongoDB: co wybrać w 2026 — modele danych, wydajność i zastosowania",
-    "description": "Porównaj ScyllaDB i MongoDB: oceń kompromisy architektoniczne w obszarze modelowania danych, zapytań i indeksowania i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "ScyllaDB vs MongoDB: co wybrać w 2026?",
+    "description": "Porównanie ScyllaDB vs MongoDB: wydajność zapytań, modelowanie danych, skalowanie i kompromisy architektoniczne dla inżynierów danych."
   },
   "toolA": {
     "name": "ScyllaDB"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między ScyllaDB a MongoDB zmienia sposób podejścia do modelowaniu danych i sposobie dostępu do nich, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "ScyllaDB będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki…. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój….",
+  "quickVerdict": "ScyllaDB będzie lepszy, gdy projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki architekturze współdzielonej pamięci i unikaniu blokad, co może przekładać się na stabilne czasy odpowiedzi pod dużym obciążeniem. MongoDB sprawdzi się, gdy projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój i modelowanie zagnieżdżonych struktur.",
   "tradeoffs": [
     {
       "category": "Model danych i elastyczność schematu",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Client } from \"cassandra-driver\";\n\ntype ProductRow = { id: string; name: string; category_id: string; price_cents: number };\n\nexport async function listProducts(client: Client, categoryId: string) {\n  const result = await client.execute<ProductRow>(\n    \"SELECT id, name, category_id, price_cents FROM products_by_category WHERE category_id = ? AND active = ? LIMIT 50\",\n    [categoryId, true],\n    { prepare: true },\n  );\n  return result.rows.sort((left, right) => left.name.localeCompare(right.name));\n}",
     "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
-  "introduction": "ScyllaDB i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu. ScyllaDB: ScyllaDB opiera się na modelu szerokich kolumn zgodnym z API Cassandry, z tabelami, partycjami i kluczami… MongoDB: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój i modelowanie… Kolejną istotną różnicę pokazuje kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki architekturze… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "ScyllaDB i MongoDB odpowiadają na podobną potrzebę, ale różnią się w obszarze model danych i elastyczność schematu.  ScyllaDB: ScyllaDB opiera się na modelu szerokich kolumn zgodnym z API Cassandry, z tabelami, partycjami i kluczami klastrowania, co wymaga projektowania schematu pod konkretne zapytania.  MongoDB: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój i modelowanie zagnieżdżonych struktur.  Kolejną istotną różnicę pokazuje kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki architekturze współdzielonej pamięci i unikaniu blokad, co może przekładać się na stabilne czasy odpowiedzi pod dużym obciążeniem.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki…",
-    "toolB": "projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój…"
+    "toolA": "projekt stawia na kryterium „Wydajność i przewidywalność opóźnień”: ScyllaDB jest zaprojektowana z myślą o wysokiej przepustowości i niskich opóźnieniach dzięki architekturze współdzielonej pamięci i unikaniu blokad, co może przekładać się na stabilne czasy odpowiedzi pod dużym obciążeniem.",
+    "toolB": "projekt stawia na kryterium „Model danych i elastyczność schematu”: MongoDB przechowuje dane jako dokumenty BSON o elastycznym schemacie, co ułatwia iteracyjny rozwój i modelowanie zagnieżdżonych struktur."
   }
 }

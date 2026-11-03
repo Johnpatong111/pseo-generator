@@ -1,8 +1,8 @@
 {
   "slug": "hono-vs-fastapi",
   "meta": {
-    "title": "Hono vs FastAPI: co wybrać w 2026 — API, wydajność i wdrożenie",
-    "description": "Porównaj Hono i FastAPI: oceń kompromisy architektoniczne w obszarze projektowania API, runtime i obsługi żądań i zobacz przykłady TypeScript, aby dobrać stack do projektu."
+    "title": "Hono vs FastAPI: co wybrać w 2026?",
+    "description": "Porównanie Hono vs FastAPI: wydajność, routing, współbieżność i kompromisy architektoniczne dla programistów backendu."
   },
   "toolA": {
     "name": "Hono"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Wybór między Hono a FastAPI zmienia sposób podejścia do modelu runtime'u i obsłudze żądań, dlatego kluczowe są wymagania dotyczące danych, zespołu i wdrożenia.",
-  "quickVerdict": "Hono będzie lepszy, gdy projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia…. FastAPI sprawdzi się, gdy projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i….",
+  "quickVerdict": "Hono będzie lepszy, gdy projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia wdrażanie na platformach brzegowych i w środowiskach serverless. FastAPI sprawdzi się, gdy projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i serializacji danych.",
   "tradeoffs": [
     {
       "category": "Język, typowanie i spójność z zespołem",
@@ -130,13 +130,13 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Obsłuż filtrowane żądanie HTTP dla aktywnych produktów z walidacją kategorii i ograniczeniem wyników. Ponieważ wybrany backend nie jest oparty na TypeScript, przykład pokazuje typowanego klienta HTTP; kod serwera pozostaje w języku danego frameworka.",
+    "scenario": "Obsłuż filtrowane żądanie HTTP dla aktywnych produktów z walidacją kategorii i ograniczeniem wyników.",
     "tech1Snippet": "import { Hono } from \"hono\";\nimport { z } from \"zod\";\nimport { zValidator } from \"@hono/zod-validator\";\nimport { productRepository } from \"./products\";\n\nconst app = new Hono();\nconst querySchema = z.object({ category: z.string().trim().min(1) });\n\napp.get(\"/api/products\", zValidator(\"query\", querySchema), async (context) => {\n  const { category } = context.req.valid(\"query\");\n  const products = await productRepository.listActiveByCategory({\n    categoryId: category,\n    orderBy: \"name\",\n    limit: 50,\n  });\n  return context.json({ products });\n});",
-    "tech2Snippet": "type Product = { id: string; name: string; priceCents: number };\n\nexport async function listProductsFromFastapi(\n  apiBaseUrl: string,\n  categoryId: string,\n  signal?: AbortSignal,\n): Promise<Product[]> {\n  const url = new URL(\"/api/products\", apiBaseUrl);\n  url.searchParams.set(\"category\", categoryId);\n  url.searchParams.set(\"active\", \"true\");\n  url.searchParams.set(\"sort\", \"name\");\n  url.searchParams.set(\"limit\", \"50\");\n  const response = await fetch(url, {\n    headers: { accept: \"application/json\" },\n    signal: signal ?? AbortSignal.timeout(5_000),\n  });\n  if (!response.ok) throw new Error(`fastapi product API returned ${response.status}`);\n  const payload = (await response.json()) as { products: Product[] };\n  return payload.products;\n}"
+    "tech2Snippet": "from fastapi import FastAPI, HTTPException, Query\nfrom pydantic import BaseModel\n\nfrom app.repositories.products import product_repository\n\n\nclass Product(BaseModel):\n    id: str\n    name: str\n    category_id: str\n    price_cents: int\n\n\napp = FastAPI()\n\n\n@app.get(\"/api/products\", response_model=list[Product])\nasync def list_products(\n    category: str = Query(min_length=1),\n    limit: int = Query(default=50, ge=1, le=50),\n) -> list[Product]:\n    products = await product_repository.list_active_by_category(\n        category_id=category,\n        limit=limit,\n    )\n    if products is None:\n        raise HTTPException(status_code=500, detail=\"could not load products\")\n    return products"
   },
-  "introduction": "Hono i FastAPI odpowiadają na podobną potrzebę, ale różnią się w obszarze język, typowanie i spójność z zespołem. Hono: Hono powstało w TypeScripcie i jest rozwijane w tym języku, a typy żądań i odpowiedzi można wiązać z walidatorami… FastAPI: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i serializacji danych. Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Hono jest lekkim frameworkiem projektowanym pod środowiska oparte na standardach webowych, w tym runtime'y brzegowe i… Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
+  "introduction": "Hono i FastAPI odpowiadają na podobną potrzebę, ale różnią się w obszarze język, typowanie i spójność z zespołem. Hono: Hono powstało w TypeScripcie i jest rozwijane w tym języku, a typy żądań i odpowiedzi można wiązać z walidatorami takimi jak Zod czy Valibot. FastAPI: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i serializacji danych. Kolejną istotną różnicę pokazuje kryterium „Wydajność i narzut frameworka”: Hono jest lekkim frameworkiem projektowanym pod środowiska oparte na standardach webowych, w tym runtime'y brzegowe i serverless. Wybór zależy od obciążenia, istniejącej architektury i ograniczeń konkretnego wdrożenia.",
   "decisionFramework": {
-    "toolA": "projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia…",
-    "toolB": "projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i…"
+    "toolA": "projekt stawia na kryterium „Wdrażanie i przenośność między środowiskami”: Hono wyróżnia się przenośnością między runtime'ami opartymi na standardach webowych, co ułatwia wdrażanie na platformach brzegowych i w środowiskach serverless.",
+    "toolB": "projekt stawia na kryterium „Język, typowanie i spójność z zespołem”: FastAPI opiera się na Pythonie i wykorzystuje adnotacje typów oraz Pydantic do walidacji i serializacji danych."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-mongodb",
   "meta": {
-    "title": "MySQL vs MongoDB: Which one to choose in 2026? (data models, performance & use cases & code compared)",
-    "description": "Compare MySQL and MongoDB architectural trade-offs, data modeling, query patterns, and indexing, and review side-by-side TypeScript to choose the right stack."
+    "title": "MySQL vs MongoDB: Which to Choose in 2026?",
+    "description": "MySQL vs MongoDB comparison: query performance, data modeling, scaling, and architecture trade-offs for data engineers."
   },
   "toolA": {
     "name": "MySQL"
@@ -90,7 +90,7 @@
     }
   ],
   "heroSubtitle": "Choosing between MySQL and MongoDB changes how a project handles data modeling and access patterns, so data requirements, team skills, and deployment constraints matter.",
-  "quickVerdict": "MySQL is the better fit when your project prioritizes query language and expressiveness: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins,…. MongoDB is a stronger fit when your project prioritizes data model and schema flexibility: MongoDB is a document database that stores BSON documents in collections, and documents in the….",
+  "quickVerdict": "MySQL is the better fit when your project prioritizes query language and expressiveness: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins, subqueries, window functions, CTEs, and aggregation in modern versions such as MySQL 8.x. MongoDB is a stronger fit when your project prioritizes data model and schema flexibility: MongoDB is a document database that stores BSON documents in collections, and documents in the same collection can have different fields.",
   "tradeoffs": [
     {
       "category": "Data model and schema flexibility",
@@ -128,9 +128,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import { ProductModel } from \"./models/product\";\n\nexport async function listProducts(categoryId: string) {\n  return ProductModel.find({ categoryId, active: true })\n    .select({ name: 1, priceCents: 1 })\n    .sort({ name: 1 })\n    .limit(50)\n    .lean()\n    .exec();\n}"
   },
-  "introduction": "MySQL and MongoDB address a related need, but differ in data model and schema flexibility. MySQL: MySQL is a relational database that stores data in tables with rows and columns, and it enforces a schema you define… MongoDB: MongoDB is a document database that stores BSON documents in collections, and documents in the same collection can… The query language and expressiveness criterion adds another practical distinction: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins, subqueries, window… The right choice depends on workload, existing architecture, and deployment constraints.",
+  "introduction": "MySQL and MongoDB address a related need, but differ in data model and schema flexibility. MySQL: MySQL is a relational database that stores data in tables with rows and columns, and it enforces a schema you define up front, although ALTER TABLE and JSON column support add some flexibility. MongoDB: MongoDB is a document database that stores BSON documents in collections, and documents in the same collection can have different fields. The query language and expressiveness criterion adds another practical distinction: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins, subqueries, window functions, CTEs, and aggregation in modern versions such as MySQL 8.x. The right choice depends on workload, existing architecture, and deployment constraints.",
   "decisionFramework": {
-    "toolA": "your project prioritizes query language and expressiveness: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins,…",
-    "toolB": "your project prioritizes data model and schema flexibility: MongoDB is a document database that stores BSON documents in collections, and documents in the…"
+    "toolA": "your project prioritizes query language and expressiveness: MySQL uses SQL, a declarative standard language with decades of tooling, and it supports joins, subqueries, window functions, CTEs, and aggregation in modern versions such as MySQL 8.x.",
+    "toolB": "your project prioritizes data model and schema flexibility: MongoDB is a document database that stores BSON documents in collections, and documents in the same collection can have different fields."
   }
 }

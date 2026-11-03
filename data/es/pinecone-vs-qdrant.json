@@ -1,8 +1,8 @@
 {
   "slug": "pinecone-vs-qdrant",
   "meta": {
-    "title": "Pinecone vs Qdrant: cuál elegir en 2026 — modelos, contexto y costes de API",
-    "description": "Compara Pinecone y Qdrant: evalúa sus compromisos arquitectónicos en ventanas de contexto, API de modelos e integración y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Pinecone vs Qdrant: ¿cuál elegir en 2026?",
+    "description": "Comparativa Pinecone vs Qdrant: ventanas de contexto, precios de API, latencia y compromisos de arquitectura para ingenieros de IA."
   },
   "toolA": {
     "name": "Pinecone"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Pinecone y Qdrant cambia cómo se aborda la recuperación de contexto y la integración de modelos; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Pinecone encaja mejor cuando tu proyecto prioriza modelo de despliegue y operación: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra…. Qdrant es preferible cuando tu proyecto prioriza búsqueda vectorial y modelos de similitud: Qdrant implementa búsqueda vectorial con métricas habituales y permite ajustar parámetros como el….",
+  "quickVerdict": "Pinecone encaja mejor cuando tu proyecto prioriza modelo de despliegue y operación: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra servidores, parches ni clústeres, y consume el servicio mediante API y SDK oficiales. Qdrant es preferible cuando tu proyecto prioriza búsqueda vectorial y modelos de similitud: Qdrant implementa búsqueda vectorial con métricas habituales y permite ajustar parámetros como el tamaño de los segmentos, la indexación HNSW y la cuantización para equilibrar latencia, precisión y memoria.",
   "tradeoffs": [
     {
       "category": "Modelo de despliegue y operación",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import type { Index } from \"@pinecone-database/pinecone\";\n\ntype ProductMatch = { id: string; score?: number; metadata?: Record<string, string | number | boolean> };\n\nexport async function findCategoryProducts(index: Index, categoryId: string, embedding: number[]) {\n  const result = await index.query({\n    vector: embedding,\n    topK: 50,\n    filter: { categoryId: { $eq: categoryId }, active: { $eq: true } },\n    includeMetadata: true,\n  });\n  return (result.matches ?? []) as ProductMatch[];\n}",
     "tech2Snippet": "import type { QdrantClient } from \"@qdrant/js-client-rest\";\n\nexport async function findCategoryProducts(client: QdrantClient, categoryId: string, embedding: number[]) {\n  const result = await client.search(\"products\", {\n    vector: embedding,\n    limit: 50,\n    filter: {\n      must: [\n        { key: \"categoryId\", match: { value: categoryId } },\n        { key: \"active\", match: { value: true } },\n      ],\n    },\n    with_payload: true,\n  });\n  return result.map(({ id, score, payload }) => ({ id, score, payload }));\n}"
   },
-  "introduction": "Pinecone y Qdrant responden a una necesidad similar, pero difieren en modelo de despliegue y operación. Pinecone: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra servidores, parches… Qdrant: Qdrant puede desplegarse como servicio gestionado en Qdrant Cloud o autoalojarse con Docker, Kubernetes o binarios, lo… El criterio de búsqueda vectorial y modelos de similitud añade otra diferencia práctica: Pinecone ofrece índices vectoriales optimizados para búsqueda por similitud con métricas como coseno, producto interno… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Pinecone y Qdrant responden a una necesidad similar, pero difieren en modelo de despliegue y operación.  Pinecone: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra servidores, parches ni clústeres, y consume el servicio mediante API y SDK oficiales.  Qdrant: Qdrant puede desplegarse como servicio gestionado en Qdrant Cloud o autoalojarse con Docker, Kubernetes o binarios, lo que da control total sobre la infraestructura y los datos.  El criterio de búsqueda vectorial y modelos de similitud añade otra diferencia práctica: Pinecone ofrece índices vectoriales optimizados para búsqueda por similitud con métricas como coseno, producto interno y distancia euclidiana, además de soporte para distintos tipos de índices según el caso de uso.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza modelo de despliegue y operación: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra…",
-    "toolB": "tu proyecto prioriza búsqueda vectorial y modelos de similitud: Qdrant implementa búsqueda vectorial con métricas habituales y permite ajustar parámetros como el…"
+    "toolA": "tu proyecto prioriza modelo de despliegue y operación: Pinecone es una base de datos vectorial totalmente gestionada en la nube: el usuario no administra servidores, parches ni clústeres, y consume el servicio mediante API y SDK oficiales.",
+    "toolB": "tu proyecto prioriza búsqueda vectorial y modelos de similitud: Qdrant implementa búsqueda vectorial con métricas habituales y permite ajustar parámetros como el tamaño de los segmentos, la indexación HNSW y la cuantización para equilibrar latencia, precisión y memoria."
   }
 }

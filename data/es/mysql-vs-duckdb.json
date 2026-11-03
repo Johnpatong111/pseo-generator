@@ -1,8 +1,8 @@
 {
   "slug": "mysql-vs-duckdb",
   "meta": {
-    "title": "MySQL vs DuckDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara MySQL y DuckDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "MySQL vs DuckDB: ¿cuál elegir en 2026?",
+    "description": "Comparativa MySQL vs DuckDB: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "MySQL"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre MySQL y DuckDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos…. DuckDB es preferible cuando tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa….",
+  "quickVerdict": "MySQL encaja mejor cuando tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos niveles de aislamiento y control de concurrencia maduro. DuckDB es preferible cuando tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa desde la CLI, sin servidor que gestionar.",
   "tradeoffs": [
     {
       "category": "Modelo de arquitectura y despliegue",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import mysql from \"mysql2/promise\";\n\nconst databaseUrl = process.env.DATABASE_URL;\nif (!databaseUrl) throw new Error(\"DATABASE_URL is required\");\nconst pool = mysql.createPool(databaseUrl);\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport async function listProducts(categoryId: string) {\n  const [rows] = await pool.execute<mysql.RowDataPacket[]>(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = ? ORDER BY name LIMIT ?\",\n    [categoryId, true, 50],\n  );\n  return rows as ProductRow[];\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "MySQL y DuckDB responden a una necesidad similar, pero difieren en modelo de arquitectura y despliegue. MySQL: MySQL es un sistema gestor relacional cliente-servidor: se ejecuta como proceso o servicio independiente y los… DuckDB: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa desde la CLI, sin… El criterio de rendimiento en consultas analíticas añade otra diferencia práctica: MySQL está optimizado para cargas transaccionales OLTP y para consultas puntuales con índices, y ha mejorado el… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "MySQL y DuckDB responden a una necesidad similar, pero difieren en modelo de arquitectura y despliegue. MySQL: MySQL es un sistema gestor relacional cliente-servidor: se ejecuta como proceso o servicio independiente y los clientes se conectan por red mediante protocolos estándar. DuckDB: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa desde la CLI, sin servidor que gestionar. El criterio de rendimiento en consultas analíticas añade otra diferencia práctica: MySQL está optimizado para cargas transaccionales OLTP y para consultas puntuales con índices, y ha mejorado el soporte analítico con funcionalidades como las CTE y las funciones de ventana. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos…",
-    "toolB": "tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa…"
+    "toolA": "tu proyecto prioriza cargas transaccionales y concurrencia multiusuario: MySQL está diseñado para soportar muchas conexiones simultáneas, transacciones ACID con distintos niveles de aislamiento y control de concurrencia maduro.",
+    "toolB": "tu proyecto prioriza modelo de arquitectura y despliegue: DuckDB es un motor embebido en proceso: se enlaza como biblioteca dentro de la aplicación o se usa desde la CLI, sin servidor que gestionar."
   }
 }

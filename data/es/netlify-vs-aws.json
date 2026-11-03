@@ -1,8 +1,8 @@
 {
   "slug": "netlify-vs-aws",
   "meta": {
-    "title": "Netlify vs AWS: cuál elegir en 2026 — despliegue, escalabilidad y costes",
-    "description": "Compara Netlify y AWS: evalúa sus compromisos arquitectónicos en despliegue, escalabilidad e infraestructura y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "Netlify vs AWS: ¿cuál elegir en 2026?",
+    "description": "Comparativa Netlify vs AWS: despliegue, escalado, costes y compromisos de arquitectura para equipos de plataforma."
   },
   "toolA": {
     "name": "Netlify"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre Netlify y AWS cambia cómo se aborda el despliegue y la responsabilidad operativa; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "Netlify encaja mejor cuando tu proyecto prioriza facilidad de despliegue y experiencia de desarrollo: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas,…. AWS es preferible cuando tu proyecto prioriza escalabilidad y rendimiento: AWS ofrece una gama amplia de servicios escalables, como EC2, Lambda, ECS o CloudFront, que….",
+  "quickVerdict": "Netlify encaja mejor cuando tu proyecto prioriza facilidad de despliegue y experiencia de desarrollo: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas, con integración continua incluida en su modelo de producto. AWS es preferible cuando tu proyecto prioriza escalabilidad y rendimiento: AWS ofrece una gama amplia de servicios escalables, como EC2, Lambda, ECS o CloudFront, que permiten diseñar arquitecturas adaptadas a cargas muy variables.",
   "tradeoffs": [
     {
       "category": "Facilidad de despliegue y experiencia de desarrollo",
@@ -134,9 +134,9 @@
     "tech1Snippet": "type Deployment = { id: string; url?: string; state?: string };\n\nexport async function deployProductCatalog(): Promise<Deployment> {\n  const token = process.env.DEPLOY_TOKEN;\n  if (!token) throw new Error(\"DEPLOY_TOKEN is required\");\n  const response = await fetch(\"https://api.netlify.com/api/v1/sites\", {\n    method: \"POST\",\n    headers: {\n      authorization: `Bearer ${token}`,\n      \"content-type\": \"application/json\",\n    },\n    body: JSON.stringify({\n      name: \"product-catalog\",\n      target: \"production\",\n      source: { type: \"git\", ref: process.env.GIT_COMMIT_SHA },\n    }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Deployment request failed: ${response.status}`);\n  return (await response.json()) as Deployment;\n}",
     "tech2Snippet": "import * as aws from \"@pulumi/aws\";\n\nconst productImages = new aws.s3.BucketV2(\"product-images\", {\n  forceDestroy: false,\n  tags: { application: \"product-catalog\", dataClass: \"public-media\" },\n});\nnew aws.s3.BucketPublicAccessBlock(\"product-images-public-access\", {\n  bucket: productImages.id,\n  blockPublicAcls: true,\n  blockPublicPolicy: true,\n  ignorePublicAcls: true,\n  restrictPublicBuckets: true,\n});\nexport const productImageBucketName = productImages.bucket;"
   },
-  "introduction": "Netlify y AWS responden a una necesidad similar, pero difieren en facilidad de despliegue y experiencia de desarrollo. Netlify: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas, con integración… AWS: AWS permite automatizar despliegues con servicios como CodePipeline, CodeBuild o GitHub Actions, pero requiere… El criterio de modelo de precios y previsibilidad del coste añade otra diferencia práctica: Netlify estructura su oferta en planes que incluyen consumo de ancho de banda, minutos de compilación y funciones… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "Netlify y AWS responden a una necesidad similar, pero difieren en facilidad de despliegue y experiencia de desarrollo. Netlify: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas, con integración continua incluida en su modelo de producto. AWS: AWS permite automatizar despliegues con servicios como CodePipeline, CodeBuild o GitHub Actions, pero requiere configurar roles, artefactos y entornos. El criterio de modelo de precios y previsibilidad del coste añade otra diferencia práctica: Netlify estructura su oferta en planes que incluyen consumo de ancho de banda, minutos de compilación y funciones según el nivel contratado. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza facilidad de despliegue y experiencia de desarrollo: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas,…",
-    "toolB": "tu proyecto prioriza escalabilidad y rendimiento: AWS ofrece una gama amplia de servicios escalables, como EC2, Lambda, ECS o CloudFront, que…"
+    "toolA": "tu proyecto prioriza facilidad de despliegue y experiencia de desarrollo: Netlify ofrece un flujo muy directo: conectas un repositorio, defines la compilación y publicas, con integración continua incluida en su modelo de producto.",
+    "toolB": "tu proyecto prioriza escalabilidad y rendimiento: AWS ofrece una gama amplia de servicios escalables, como EC2, Lambda, ECS o CloudFront, que permiten diseñar arquitecturas adaptadas a cargas muy variables."
   }
 }

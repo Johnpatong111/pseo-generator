@@ -1,8 +1,8 @@
 {
   "slug": "crewai-vs-llamaindex",
   "meta": {
-    "title": "CrewAI vs LlamaIndex: welches 2026 wählen — Modelle, Kontext und API-Kosten",
-    "description": "Vergleiche CrewAI und LlamaIndex: Bewerte Architekturkompromisse bei Kontextfenster, Modell-APIs und Integration und prüfe TypeScript-Beispiele, um den passenden Stack zu wählen."
+    "title": "CrewAI vs LlamaIndex: Was wählen in 2026?",
+    "description": "Vergleich CrewAI vs LlamaIndex: Kontextfenster, API-Preise, Latenz und Architekturkompromisse für AI-Engineers."
   },
   "toolA": {
     "name": "CrewAI"
@@ -62,8 +62,8 @@
     }
   ],
   "codeExamples": {
-    "scenario": "Erstelle eine beleggestützte Katalogantwort: Rufe passende Datensätze ab und fasse nur Fakten aus dem Kontext zusammen. Das TypeScript-Beispiel ruft einen eigenen HTTP-Adapter für das Agenten-Framework auf; die Agentenimplementierung läuft in dessen nativer Umgebung.",
-    "tech1Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype AgentAnswer = { answer: string };\n\nexport async function answerProductQuestion(\n  serviceUrl: string,\n  question: string,\n  categoryId: string,\n  products: readonly Product[],\n): Promise<string> {\n  const response = await fetch(new URL(\"/api/agents/crewai/answer\", serviceUrl), {\n    method: \"POST\",\n    headers: { \"content-type\": \"application/json\", accept: \"application/json\" },\n    body: JSON.stringify({ question, categoryId, products }),\n    signal: AbortSignal.timeout(15_000),\n  });\n  if (!response.ok) throw new Error(`Agent service failed: ${response.status}`);\n  const result = (await response.json()) as AgentAnswer;\n  if (!result.answer.trim()) throw new Error(\"The agent returned an empty answer\");\n  return result.answer;\n}",
+    "scenario": "Erstelle eine beleggestützte Katalogantwort: Rufe passende Datensätze ab und fasse nur Fakten aus dem Kontext zusammen.",
+    "tech1Snippet": "from crewai import Agent, Crew, Process, Task\n\n\ncatalogue_agent = Agent(\n    role=\"Product catalogue analyst\",\n    goal=\"Answer questions using only the supplied product facts\",\n    backstory=\"You never invent products, prices, or availability.\",\n    allow_delegation=False,\n)\n\n\ndef answer_product_question(\n    question: str,\n    products: list[dict[str, object]],\n) -> str:\n    task = Task(\n        description=(\n            f\"Answer '{question}' using only this product data: {products}. \"\n            \"If the data is insufficient, say so explicitly.\"\n        ),\n        expected_output=\"A concise answer grounded in the supplied product data.\",\n        agent=catalogue_agent,\n    )\n    crew = Crew(\n        agents=[catalogue_agent],\n        tasks=[task],\n        process=Process.sequential,\n    )\n    return str(crew.kickoff()).strip()",
     "tech2Snippet": "type Product = { id: string; name: string; categoryId: string; priceCents: number };\ntype CatalogueQuestion = {\n  query(input: { question: string; filter: { categoryId: string }; topK: number }): Promise<{ answer: string }>;\n};\n\nexport async function answerCategoryQuestion(\n  retriever: CatalogueQuestion,\n  categoryId: string,\n  question: string,\n): Promise<string> {\n  const result = await retriever.query({\n    question,\n    filter: { categoryId },\n    topK: 5,\n  });\n  return result.answer;\n}"
   },
   "faq": [
@@ -101,7 +101,7 @@
     }
   ],
   "heroSubtitle": "Die Wahl zwischen CrewAI und LlamaIndex verändert den Umgang mit Kontextabruf und Modellintegration; daher sind Datenanforderungen, Teamkenntnisse und Bereitstellung wichtig.",
-  "quickVerdict": "CrewAI passt besser, wenn dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt…. LlamaIndex ist geeigneter, wenn dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser,….",
+  "quickVerdict": "CrewAI passt besser, wenn dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt und Rollen definiert werden. LlamaIndex ist geeigneter, wenn dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser, Indexstrukturen, Retriever und Query-Engines bereit.",
   "tradeoffs": [
     {
       "category": "Kernphilosophie und Abstraktionsmodell",
@@ -134,9 +134,9 @@
       "toolB": "Sicherheit und Mandantentrennung sind ebenfalls Anwendungsaufgaben und nicht allein durch das Framework garantiert."
     }
   ],
-  "introduction": "CrewAI und LlamaIndex lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernphilosophie und abstraktionsmodell. CrewAI: CrewAI modelliert ein System als Team aus Agenten mit Rolle, Ziel und Hintergrund sowie Aufgaben, die ein Prozess… LlamaIndex: LlamaIndex modelliert ein System rund um Daten: Dokumente werden geladen, transformiert, indexiert und über… Das Kriterium retrieval-augmented generation (rag) und datenkonnektoren zeigt einen weiteren praktischen Unterschied: CrewAI bietet Werkzeuge und Integrationen, mit denen Agenten auf externe Daten zugreifen können, doch RAG ist nicht… Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
+  "introduction": "CrewAI und LlamaIndex lösen ein ähnliches Problem, unterscheiden sich jedoch bei kernphilosophie und abstraktionsmodell. CrewAI: CrewAI modelliert ein System als Team aus Agenten mit Rolle, Ziel und Hintergrund sowie Aufgaben, die ein Prozess koordiniert. LlamaIndex: LlamaIndex modelliert ein System rund um Daten: Dokumente werden geladen, transformiert, indexiert und über Abfrage-Engines oder Agenten zugänglich gemacht. Das Kriterium retrieval-augmented generation (rag) und datenkonnektoren zeigt einen weiteren praktischen Unterschied: CrewAI bietet Werkzeuge und Integrationen, mit denen Agenten auf externe Daten zugreifen können, doch RAG ist nicht der primäre Kern des Frameworks. Die passende Wahl hängt von Arbeitslast, bestehender Architektur und Bereitstellungsvorgaben ab.",
   "decisionFramework": {
-    "toolA": "dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt…",
-    "toolB": "dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser,…"
+    "toolA": "dein Projekt priorisiert Multi-Agenten-Orchestrierung und Delegation: CrewAI stellt Agenten, Tasks und Crews sowie Prozessmodelle bereit, mit denen Aufgaben verteilt und Rollen definiert werden.",
+    "toolB": "dein Projekt priorisiert Retrieval-Augmented Generation (RAG) und Datenkonnektoren: LlamaIndex ist ausdrücklich für RAG aufgebaut und stellt zahlreiche Loader, Parser, Indexstrukturen, Retriever und Query-Engines bereit."
   }
 }

@@ -1,8 +1,8 @@
 {
   "slug": "sqlite-vs-duckdb",
   "meta": {
-    "title": "SQLite vs DuckDB: cuál elegir en 2026 — modelos de datos, rendimiento y usos",
-    "description": "Compara SQLite y DuckDB: evalúa sus compromisos arquitectónicos en modelado de datos, consultas e indexación y revisa ejemplos TypeScript para elegir el stack adecuado."
+    "title": "SQLite vs DuckDB: ¿cuál elegir en 2026?",
+    "description": "Comparativa SQLite vs DuckDB: rendimiento de consultas, modelado de datos, escalado y compromisos de arquitectura para ingenieros de datos."
   },
   "toolA": {
     "name": "SQLite"
@@ -96,7 +96,7 @@
     }
   ],
   "heroSubtitle": "Elegir entre SQLite y DuckDB cambia cómo se aborda el modelado de datos y los patrones de acceso; por eso importan los requisitos de datos, el equipo y el despliegue.",
-  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones,…. DuckDB es preferible cuando tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes….",
+  "quickVerdict": "SQLite encaja mejor cuando tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones, actualizaciones y consultas por clave. DuckDB es preferible cuando tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes volúmenes de datos de forma eficiente.",
   "tradeoffs": [
     {
       "category": "Modelo de almacenamiento y diseño",
@@ -134,9 +134,9 @@
     "tech1Snippet": "import Database from \"better-sqlite3\";\n\nconst database = new Database(process.env.SQLITE_PATH ?? \"catalog.db\", {\n  fileMustExist: true,\n});\ntype ProductRow = { id: string; name: string; price_cents: number };\n\nexport function listProducts(categoryId: string): ProductRow[] {\n  return database\n    .prepare(\n      \"SELECT id, name, price_cents FROM products WHERE category_id = ? AND active = 1 ORDER BY name LIMIT ?\",\n    )\n    .all(categoryId, 50) as ProductRow[];\n}",
     "tech2Snippet": "import { DuckDBInstance } from \"@duckdb/node-api\";\n\ntype ProductRow = { id: string; name: string; price_cents: number };\nconst instance = await DuckDBInstance.create(\":memory:\");\nconst connection = await instance.connect();\n\nexport async function listProducts(categoryId: string): Promise<ProductRow[]> {\n  const statement = await connection.prepare(\n    \"SELECT id, name, price_cents FROM products WHERE category_id = $categoryId AND active = true ORDER BY name LIMIT 50\",\n  );\n  statement.bindVarchar(\"categoryId\", categoryId);\n  const reader = await statement.runAndReadAll();\n  return reader.getRowObjects() as ProductRow[];\n}"
   },
-  "introduction": "SQLite y DuckDB responden a una necesidad similar, pero difieren en modelo de almacenamiento y diseño. SQLite: SQLite utiliza un formato de archivo único en disco con almacenamiento orientado a filas, optimizado para lecturas y… DuckDB: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes volúmenes de datos de… El criterio de rendimiento en cargas transaccionales (oltp) añade otra diferencia práctica: SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones, actualizaciones y… La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
+  "introduction": "SQLite y DuckDB responden a una necesidad similar, pero difieren en modelo de almacenamiento y diseño. SQLite: SQLite utiliza un formato de archivo único en disco con almacenamiento orientado a filas, optimizado para lecturas y escrituras puntuales. DuckDB: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes volúmenes de datos de forma eficiente. El criterio de rendimiento en cargas transaccionales (oltp) añade otra diferencia práctica: SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones, actualizaciones y consultas por clave. La elección depende de la carga, la arquitectura existente y las restricciones del despliegue.",
   "decisionFramework": {
-    "toolA": "tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones,…",
-    "toolB": "tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes…"
+    "toolA": "tu proyecto prioriza rendimiento en cargas transaccionales (oltp): SQLite está diseñado para operaciones transaccionales rápidas con latencias bajas en inserciones, actualizaciones y consultas por clave.",
+    "toolB": "tu proyecto prioriza modelo de almacenamiento y diseño: DuckDB emplea un formato columnar en memoria y en disco, pensado para escanear y agregar grandes volúmenes de datos de forma eficiente."
   }
 }
