@@ -4,8 +4,9 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import type { SearchCategory, SearchComparison } from "../../components/CommandMenu";
 import { getComparisons, isLocale, LOCALES, type Locale } from "../../lib/comparisons";
+import { INDEXABLE_LOCALES, isIndexableLocale } from "../../lib/indexing";
 import { BRAND_DESCRIPTION, BRAND_NAME, BRAND_TAGLINE } from "../../lib/locales";
-import { absoluteSiteUrl, SITE_URL } from "../../lib/site-url";
+import { absoluteSiteUrl, canonicalSiteUrl, SITE_URL } from "../../lib/site-url";
 import { CATEGORY_IDS, categoryCopy } from "../../lib/taxonomy";
 import "../globals.css";
 
@@ -19,14 +20,14 @@ const comparisonSlugsByLocale = Object.fromEntries(
     comparisonsByLocale[option].map(({ slug }) => slug),
   ]),
 ) as Record<Locale, string[]>;
-const searchComparisons: SearchComparison[] = LOCALES.flatMap((option) =>
+const searchComparisons: SearchComparison[] = INDEXABLE_LOCALES.flatMap((option) =>
   comparisonsByLocale[option].map(({ slug, toolA, toolB }) => ({
     slug,
     label: `${toolA.name} vs ${toolB.name}`,
     locale: option,
   })),
 );
-const searchCategories: SearchCategory[] = LOCALES.flatMap((option) =>
+const searchCategories: SearchCategory[] = INDEXABLE_LOCALES.flatMap((option) =>
   CATEGORY_IDS.map((id) => ({
     id,
     label: categoryCopy[option][id].name,
@@ -55,13 +56,20 @@ export async function generateMetadata({
     },
     description: BRAND_DESCRIPTION[locale],
     metadataBase: SITE_URL,
+    robots: isIndexableLocale(locale)
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
     verification: {
       google: "lym6T1Z2Y7UtjQHUfUw2h55uj4kV-x5QdHIkh7-ykV8",
     },
     alternates: {
+      canonical: canonicalSiteUrl(`/${locale}`),
       languages: {
         ...Object.fromEntries(
-          LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}`)]),
+          INDEXABLE_LOCALES.map((option) => [
+            option,
+            canonicalSiteUrl(`/${option}`),
+          ]),
         ),
         "x-default": absoluteSiteUrl("/en"),
       },

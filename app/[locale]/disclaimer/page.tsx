@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { isLocale, LOCALES, type Locale } from "../../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../../lib/indexing";
 import { BRAND_NAME } from "../../../lib/locales";
-import { absoluteSiteUrl } from "../../../lib/site-url";
+import { canonicalSiteUrl } from "../../../lib/site-url";
 
 const content: Record<Locale, { title: string; description: string; body: string[] }> = {
   en: {
@@ -66,9 +67,12 @@ export async function generateMetadata({
     title: `${content[locale].title} | ${BRAND_NAME}`,
     description: content[locale].description,
     alternates: {
-      canonical: absoluteSiteUrl(`/${locale}/disclaimer`),
+      canonical: canonicalSiteUrl(`/${locale}/disclaimer`),
       languages: Object.fromEntries(
-        LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}/disclaimer`)]),
+        INDEXABLE_LOCALES.map((option) => [
+          option,
+          canonicalSiteUrl(`/${option}/disclaimer`),
+        ]),
       ),
     },
   };

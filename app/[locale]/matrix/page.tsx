@@ -11,9 +11,10 @@ import {
   LOCALES,
   type Locale,
 } from "../../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../../lib/indexing";
 import { BRAND_NAME } from "../../../lib/locales";
 import { CATEGORY_IDS, categoryCopy, getComparisonCategories } from "../../../lib/taxonomy";
-import { absoluteSiteUrl } from "../../../lib/site-url";
+import { absoluteSiteUrl, canonicalSiteUrl } from "../../../lib/site-url";
 
 interface MatrixPageProps {
   params: Promise<{ locale: string }>;
@@ -149,12 +150,12 @@ export async function generateMetadata({ params }: MatrixPageProps): Promise<Met
     title: text.title,
     description: text.description,
     alternates: {
-      canonical: absoluteSiteUrl(`/${localeParam}/matrix`),
+      canonical: canonicalSiteUrl(`/${localeParam}/matrix`),
       languages: {
         ...Object.fromEntries(
-          LOCALES.map((locale) => [
+          INDEXABLE_LOCALES.map((locale) => [
             locale,
-            absoluteSiteUrl(`/${locale}/matrix`),
+            canonicalSiteUrl(`/${locale}/matrix`),
           ]),
         ),
         "x-default": absoluteSiteUrl("/en/matrix"),

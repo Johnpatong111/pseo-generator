@@ -8,13 +8,14 @@ import {
   LOCALES,
   type Locale,
 } from "../../../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../../../lib/indexing";
 import {
   CATEGORY_IDS,
   categoryCopy,
   getComparisonCategories,
   type CategoryId,
 } from "../../../../lib/taxonomy";
-import { absoluteSiteUrl } from "../../../../lib/site-url";
+import { absoluteSiteUrl, canonicalSiteUrl } from "../../../../lib/site-url";
 
 interface CategoryPageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -81,14 +82,14 @@ export async function generateMetadata({
     title: `${category.name} — ${category.description.split(".")[0]}`,
     description: category.description,
     alternates: {
-      canonical: absoluteSiteUrl(
+      canonical: canonicalSiteUrl(
         `/${localeParam}/category/${categoryParam}`,
       ),
       languages: {
         ...Object.fromEntries(
-          LOCALES.map((locale) => [
+          INDEXABLE_LOCALES.map((locale) => [
             locale,
-            absoluteSiteUrl(`/${locale}/category/${categoryParam}`),
+            canonicalSiteUrl(`/${locale}/category/${categoryParam}`),
           ]),
         ),
         "x-default": absoluteSiteUrl(`/en/category/${categoryParam}`),

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BRAND_DESCRIPTION, BRAND_NAME, BRAND_TAGLINE } from "../../lib/locales";
-import { SITE_URL } from "../../lib/site-url";
+import { canonicalSiteUrl, SITE_URL } from "../../lib/site-url";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   },
   description: BRAND_DESCRIPTION.en,
   metadataBase: SITE_URL,
+  robots: {
+    index: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: canonicalSiteUrl("/en"),
+  },
   verification: {
     google: "lym6T1Z2Y7UtjQHUfUw2h55uj4kV-x5QdHIkh7-ykV8",
   },

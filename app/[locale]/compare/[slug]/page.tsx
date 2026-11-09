@@ -21,6 +21,7 @@ import {
   type ComparisonFaq,
   type Locale,
 } from "../../../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../../../lib/indexing";
 import { BRAND_NAME } from "../../../../lib/locales";
 import { getComparisonMeta } from "../../../../lib/seo.cjs";
 import {
@@ -28,7 +29,7 @@ import {
   getComparisonCategories,
   type CategoryId,
 } from "../../../../lib/taxonomy";
-import { absoluteSiteUrl } from "../../../../lib/site-url";
+import { absoluteSiteUrl, canonicalSiteUrl } from "../../../../lib/site-url";
 
 interface ComparisonPageProps {
   params: Promise<{
@@ -921,9 +922,9 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     localeParam,
   );
   const seoTitle = seo.documentTitle;
-  const canonical = absoluteSiteUrl(getComparisonUrl(localeParam, slug));
+  const canonical = canonicalSiteUrl(getComparisonUrl(localeParam, slug));
   const languages = Object.fromEntries(
-    LOCALES.flatMap((locale) => {
+    INDEXABLE_LOCALES.flatMap((locale) => {
       const translatedSlug = getLocalizedSlug(locale, slug);
       return translatedSlug
         ? [[locale, absoluteSiteUrl(getComparisonUrl(locale, translatedSlug))]]

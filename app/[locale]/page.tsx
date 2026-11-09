@@ -5,11 +5,11 @@ import StackWizard from "../../components/StackWizard";
 import {
   getComparisons,
   isLocale,
-  LOCALES,
   type Locale,
 } from "../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../lib/indexing";
 import { BRAND_DESCRIPTION } from "../../lib/locales";
-import { absoluteSiteUrl } from "../../lib/site-url";
+import { absoluteSiteUrl, canonicalSiteUrl } from "../../lib/site-url";
 
 const copy = {
   pl: {
@@ -137,10 +137,13 @@ export async function generateMetadata({
     title: copy[locale].title,
     description: BRAND_DESCRIPTION[locale],
     alternates: {
-      canonical: absoluteSiteUrl(`/${locale}`),
+      canonical: canonicalSiteUrl(`/${locale}`),
       languages: {
         ...Object.fromEntries(
-          LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}`)]),
+          INDEXABLE_LOCALES.map((option) => [
+            option,
+            canonicalSiteUrl(`/${option}`),
+          ]),
         ),
         "x-default": absoluteSiteUrl("/en"),
       },

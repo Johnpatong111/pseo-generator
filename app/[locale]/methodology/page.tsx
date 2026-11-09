@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { isLocale, LOCALES, type Locale } from "../../../lib/comparisons";
+import { INDEXABLE_LOCALES } from "../../../lib/indexing";
 import { BRAND_NAME } from "../../../lib/locales";
-import { absoluteSiteUrl } from "../../../lib/site-url";
+import { canonicalSiteUrl } from "../../../lib/site-url";
 
 const copy = {
   en: {
@@ -89,9 +90,12 @@ export async function generateMetadata({
     title: `${copy[locale].title} | ${BRAND_NAME}`,
     description: copy[locale].description,
     alternates: {
-      canonical: absoluteSiteUrl(`/${locale}/methodology`),
+      canonical: canonicalSiteUrl(`/${locale}/methodology`),
       languages: Object.fromEntries(
-        LOCALES.map((option) => [option, absoluteSiteUrl(`/${option}/methodology`)]),
+        INDEXABLE_LOCALES.map((option) => [
+          option,
+          canonicalSiteUrl(`/${option}/methodology`),
+        ]),
       ),
     },
   };

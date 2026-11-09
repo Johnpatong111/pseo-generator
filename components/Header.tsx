@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   BRAND_NAME,
   BRAND_TAGLINE,
-  LOCALES,
   type Locale,
 } from "../lib/locales";
+import { INDEXABLE_LOCALES } from "../lib/indexing";
 import { CATEGORY_IDS, categoryCopy } from "../lib/taxonomy";
 import CommandMenu, {
   type SearchCategory,
@@ -100,7 +100,7 @@ export default function Header({
           aria-label={languageLabels[locale]}
           className="scrollbar-none flex max-w-[40vw] shrink-0 items-center gap-0.5 overflow-x-auto rounded-xl border border-slate-200 bg-slate-100/80 p-1 sm:max-w-none sm:gap-1 dark:border-slate-800 dark:bg-slate-900"
         >
-          {LOCALES.map((option) => {
+          {INDEXABLE_LOCALES.map((option) => {
             const localizedSlugs = comparisonSlugsByLocale[option];
             const targetSlug = comparisonSlug
               ? localizedSlugs.includes(comparisonSlug)
