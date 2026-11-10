@@ -8,10 +8,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/api/products"],
         disallow: [
           // No API routes are part of the static export; keep bots away from them.
-          "/api",
           "/api/",
           // Query-string URLs are duplicates of the clean canonical URLs.
           "/*?",
