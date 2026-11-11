@@ -123,6 +123,22 @@ const copy = {
   }
 >;
 
+function getCardSummary(verdict: string): string {
+  const first = verdict.trim().split(/(?<=[.!?])\s+/u)[0] ?? verdict.trim();
+  if (first.length <= 220) return first;
+
+  const window = first.slice(0, 221);
+  const boundaries = [", ", "; ", " — ", " - "]
+    .map((delimiter) => window.lastIndexOf(delimiter))
+    .filter((index) => index > 0);
+  const boundary = boundaries.length
+    ? Math.max(...boundaries)
+    : window.lastIndexOf(" ");
+
+  if (boundary <= 0) return `${first.slice(0, 220).trim()}.`;
+  return `${first.slice(0, boundary).replace(/[\s,;:\-]+$/u, "")}.`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -164,6 +180,12 @@ export default async function LocalizedHomePage({
   const locale = localeParam;
   const text = copy[locale];
   const comparisons = getComparisons(locale);
+  const cardComparisons = comparisons.map(({ slug, toolA, toolB, verdict }) => ({
+    slug,
+    toolA,
+    toolB,
+    verdict: getCardSummary(verdict),
+  }));
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-8 sm:py-24">
@@ -201,7 +223,11 @@ export default async function LocalizedHomePage({
           </p>
         </div>
 
-        <ComparisonSearch comparisons={comparisons} locale={locale} text={text} />
+        <ComparisonSearch
+          comparisons={cardComparisons}
+          locale={locale}
+          text={text}
+        />
       </section>
     </main>
   );
