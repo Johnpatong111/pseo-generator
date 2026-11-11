@@ -4,7 +4,7 @@ import type { Locale } from "./locales";
  * Languages that are allowed to appear in sitemap.xml, hreflang and indexable
  * metadata. Add a locale here when its translated content is ready for search.
  */
-export const INDEXABLE_LOCALES = ["en"] as const;
+export const INDEXABLE_LOCALES = ["en", "es", "de", "fr", "pl"] as const;
 
 export type IndexableLocale = (typeof INDEXABLE_LOCALES)[number];
 
