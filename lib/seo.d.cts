@@ -29,6 +29,7 @@ export function getComparisonMeta(
   toolB: string,
   category?: string,
   locale?: Locale,
+  slug?: string,
 ): {
   title: string;
   documentTitle: string;

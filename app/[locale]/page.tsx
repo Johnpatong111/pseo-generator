@@ -31,9 +31,9 @@ const copy = {
     notFound: "Nie znaleziono porównania:",
   },
   en: {
-    title: "Compare backend technologies and databases",
+    title: "Technology comparisons for developers",
     description:
-      "Explore detailed comparisons of databases, frameworks, and backend platforms. Find the technologies that fit your project.",
+      "Independent comparisons of backend frameworks, databases, and AI tools: performance, trade-offs, and code examples for developers.",
     eyebrow: "Practical comparisons for developers",
     heading: "Choose the right technologies for your project",
     intro: "Compare the features, performance, ecosystems, and use cases of popular tools.",

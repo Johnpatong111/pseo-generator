@@ -47,6 +47,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: "yearly" as const,
         priority: 0.3,
       })),
+      ...(locale === "en"
+        ? [
+            {
+              url: canonicalSiteUrl("/en/alternatives/hono"),
+              lastModified: buildDate,
+              changeFrequency: "monthly" as const,
+              priority: 0.6,
+            },
+          ]
+        : []),
       ...availableCategories.map((category) => ({
         url: canonicalSiteUrl(`/${locale}/category/${category}`),
         lastModified: buildDate,

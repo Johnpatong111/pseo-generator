@@ -920,6 +920,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     comparison.toolB.name,
     getComparisonCategories(slug)[0] ?? "general",
     localeParam,
+    slug,
   );
   const seoTitle = seo.documentTitle;
   const canonical = canonicalSiteUrl(getComparisonUrl(localeParam, slug));
@@ -982,6 +983,7 @@ function getStructuredData(
     comparison.toolB.name,
     categories[0] ?? "general",
     locale,
+    comparison.slug,
   );
   const title = seo.title;
   const keywords = [
@@ -1495,6 +1497,20 @@ export default async function LocalizedComparisonPage({ params }: ComparisonPage
               <div className="grid gap-5 md:grid-cols-2">{decisionCards()}</div>
               <div className="mt-6">{renderMatcher()}</div>
             </section>
+
+            {locale === "en" &&
+              /\bhono\b/iu.test(
+                `${comparison.toolA.name} ${comparison.toolB.name}`,
+              ) && (
+                <p className="mb-10 rounded-xl border border-indigo-200 bg-indigo-50/60 px-5 py-4 text-sm text-slate-700 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-slate-200">
+                  <Link
+                    href="/en/alternatives/hono"
+                    className="font-semibold text-indigo-700 underline-offset-4 hover:underline dark:text-indigo-300"
+                  >
+                    Compare all Hono alternatives →
+                  </Link>
+                </p>
+              )}
 
             <ArchitectureDiagram
               toolA={comparison.toolA.name}
