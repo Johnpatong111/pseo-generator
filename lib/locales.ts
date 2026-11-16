@@ -12,9 +12,9 @@ export const BRAND_TAGLINE: Record<Locale, string> = {
 };
 
 export const BRAND_DESCRIPTION: Record<Locale, string> = {
-  pl: "SnippetsLibrary łączy praktyczne przykłady kodu, diagramy architektury i porównania modeli AI oraz technologii, pomagając programistom podejmować trafne decyzje.",
-  en: "SnippetsLibrary brings together practical code examples, architecture diagrams, and comparisons of AI models and technologies to help developers make informed decisions.",
-  es: "SnippetsLibrary reúne ejemplos prácticos de código, diagramas de arquitectura y comparativas de modelos de IA y tecnologías para ayudar a los desarrolladores a tomar decisiones informadas.",
-  de: "SnippetsLibrary vereint praktische Codebeispiele, Architekturdiagramme und Vergleiche von KI-Modellen und Technologien, damit Entwickler fundierte Entscheidungen treffen können.",
-  fr: "SnippetsLibrary réunit des exemples de code pratiques, des diagrammes d’architecture et des comparatifs de modèles d’IA et de technologies pour aider les développeurs à faire des choix éclairés.",
+  pl: "Praktyczne przykłady kodu, diagramy architektury i porównania modeli AI — wszystko, by podejmować trafne decyzje techniczne.",
+  en: "Practical code examples, architecture diagrams, and AI model comparisons to help developers make informed technical decisions.",
+  es: "Ejemplos prácticos de código, diagramas de arquitectura y comparativas de modelos de IA para decidir mejor.",
+  de: "Praktische Codebeispiele, Architekturdiagramme und KI-Modellvergleiche für fundierte technische Entscheidungen.",
+  fr: "Exemples de code, diagrammes d’architecture et comparatifs de modèles d’IA pour des choix techniques éclairés.",
 };

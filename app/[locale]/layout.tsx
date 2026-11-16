@@ -74,6 +74,28 @@ export async function generateMetadata({
         "x-default": absoluteSiteUrl("/en"),
       },
     },
+    openGraph: {
+      type: "website",
+      siteName: BRAND_NAME,
+      title: `${BRAND_NAME} — ${BRAND_TAGLINE[locale]}`,
+      description: BRAND_DESCRIPTION[locale],
+      url: canonicalSiteUrl(`/${locale}`),
+      locale,
+      images: [
+        {
+          url: absoluteSiteUrl("/og.png"),
+          width: 1200,
+          height: 630,
+          alt: BRAND_NAME,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${BRAND_NAME} — ${BRAND_TAGLINE[locale]}`,
+      description: BRAND_DESCRIPTION[locale],
+      images: [absoluteSiteUrl("/og.png")],
+    },
   };
 }
 
@@ -89,9 +111,22 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: BRAND_NAME,
+    url: canonicalSiteUrl(`/${locale}`),
+    description: BRAND_DESCRIPTION[locale],
+    inLanguage: locale,
+  };
+
   return (
     <html lang={locale}>
       <body className="min-h-screen bg-slate-50 text-slate-950 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Header
           locale={locale}
           comparisonSlugsByLocale={comparisonSlugsByLocale}
