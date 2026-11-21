@@ -8,14 +8,13 @@ import {
   type Locale,
 } from "../../lib/comparisons";
 import { INDEXABLE_LOCALES } from "../../lib/indexing";
-import { BRAND_DESCRIPTION } from "../../lib/locales";
 import { absoluteSiteUrl, canonicalSiteUrl } from "../../lib/site-url";
 
 const copy = {
   pl: {
-    title: "Porównaj technologie backendowe i bazy danych",
+    title: "SnippetsLibrary — przykłady kodu i porównania technologii",
     description:
-      "Sprawdź szczegółowe porównania baz danych, frameworków i platform backendowych. Wybierz technologie dopasowane do swojego projektu.",
+      "Przykłady kodu, wzorce architektury i porównania frameworków, baz danych oraz modeli AI. Wybierz technologię dopasowaną do projektu.",
     eyebrow: "Praktyczne porównania dla developerów",
     heading: "Wybierz technologie odpowiednie dla swojego projektu",
     intro: "Porównaj funkcje, wydajność, ekosystem i typowe zastosowania popularnych narzędzi.",
@@ -31,9 +30,9 @@ const copy = {
     notFound: "Nie znaleziono porównania:",
   },
   en: {
-    title: "Technology comparisons for developers",
+    title: "SnippetsLibrary — code snippets & tech comparisons",
     description:
-      "Independent comparisons of backend frameworks, databases, and AI tools: performance, trade-offs, and code examples for developers.",
+      "Copy practical code snippets and compare backend frameworks, databases, and AI tools: performance, trade-offs, and code examples for developers.",
     eyebrow: "Practical comparisons for developers",
     heading: "Choose the right technologies for your project",
     intro: "Compare the features, performance, ecosystems, and use cases of popular tools.",
@@ -49,9 +48,9 @@ const copy = {
     notFound: "No comparison found:",
   },
   es: {
-    title: "Compara tecnologías backend y bases de datos",
+    title: "SnippetsLibrary — fragmentos de código y comparativas",
     description:
-      "Descubre comparativas detalladas de bases de datos, frameworks y plataformas backend. Encuentra las tecnologías adecuadas para tu proyecto.",
+      "Ejemplos de código, patrones de arquitectura y comparativas de frameworks, bases de datos y modelos de IA. Elige la tecnología para tu proyecto.",
     eyebrow: "Comparativas prácticas para desarrolladores",
     heading: "Elige las tecnologías adecuadas para tu proyecto",
     intro: "Compara las funciones, el rendimiento, los ecosistemas y los usos habituales de herramientas populares.",
@@ -67,9 +66,9 @@ const copy = {
     notFound: "No se encontró la comparativa:",
   },
   de: {
-    title: "Technologien für Backend und Datenbanken vergleichen",
+    title: "SnippetsLibrary — Codebeispiele und Technologievergleiche",
     description:
-      "Entdecke detaillierte Vergleiche von Datenbanken, Frameworks und Backend-Plattformen. Finde die passende Technologie für dein Projekt.",
+      "Codebeispiele, Architekturmuster und Vergleiche von Frameworks, Datenbanken und KI-Modellen. Finde die passende Technologie für dein Projekt.",
     eyebrow: "Praxisnahe Vergleiche für Entwickler",
     heading: "Finde die passenden Technologien für dein Projekt",
     intro: "Vergleiche Funktionen, Leistung, Ökosysteme und typische Einsatzbereiche beliebter Tools.",
@@ -85,9 +84,9 @@ const copy = {
     notFound: "Kein Vergleich gefunden:",
   },
   fr: {
-    title: "Comparez les technologies backend et les bases de données",
+    title: "SnippetsLibrary — exemples de code et comparatifs",
     description:
-      "Découvrez des comparatifs détaillés de bases de données, frameworks et plateformes backend. Trouvez les technologies adaptées à votre projet.",
+      "Exemples de code, modèles d’architecture et comparatifs de frameworks, bases de données et modèles d’IA. Choisissez la technologie adaptée à votre projet.",
     eyebrow: "Des comparatifs pratiques pour les développeurs",
     heading: "Choisissez les technologies adaptées à votre projet",
     intro: "Comparez les fonctionnalités, performances, écosystèmes et cas d’usage d’outils populaires.",
@@ -150,8 +149,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: copy[locale].title,
-    description: BRAND_DESCRIPTION[locale],
+    title: { absolute: copy[locale].title },
+    description: copy[locale].description,
     alternates: {
       canonical: canonicalSiteUrl(`/${locale}`),
       languages: {
