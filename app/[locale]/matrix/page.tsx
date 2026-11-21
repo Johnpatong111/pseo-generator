@@ -7,6 +7,7 @@ import MultiCompareMatrix, {
 } from "../../../components/MultiCompareMatrix";
 import {
   getComparisons,
+  isIndexableComparison,
   isLocale,
   LOCALES,
   type Locale,
@@ -76,7 +77,7 @@ function createMatrixData(locale: Locale): {
   const technologyMap = new Map<string, MatrixTechnology>();
   const pairMap = new Map<string, MatrixPair>();
 
-  for (const comparison of getComparisons(locale)) {
+  for (const comparison of getComparisons(locale).filter(isIndexableComparison)) {
     const [toolAId, toolBId] = comparison.slug.split("-vs-");
     if (!toolAId || !toolBId || toolAId === toolBId) {
       continue;

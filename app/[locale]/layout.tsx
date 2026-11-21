@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import type { SearchCategory, SearchComparison } from "../../components/CommandMenu";
-import { getComparisons, isLocale, LOCALES, type Locale } from "../../lib/comparisons";
+import { getComparisons, isIndexableComparison, isLocale, LOCALES, type Locale } from "../../lib/comparisons";
 import { INDEXABLE_LOCALES, isIndexableLocale } from "../../lib/indexing";
 import { BRAND_DESCRIPTION, BRAND_NAME, BRAND_TAGLINE } from "../../lib/locales";
 import { absoluteSiteUrl, canonicalSiteUrl, SITE_URL } from "../../lib/site-url";
@@ -12,7 +12,7 @@ import "../globals.css";
 
 const comparisonsByLocale: Record<Locale, ReturnType<typeof getComparisons>> =
   Object.fromEntries(
-    LOCALES.map((option) => [option, getComparisons(option)]),
+    LOCALES.map((option) => [option, getComparisons(option).filter(isIndexableComparison)]),
   ) as Record<Locale, ReturnType<typeof getComparisons>>;
 const comparisonSlugsByLocale = Object.fromEntries(
   LOCALES.map((option) => [
