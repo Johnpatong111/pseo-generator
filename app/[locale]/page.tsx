@@ -4,6 +4,7 @@ import ComparisonSearch from "../../components/ComparisonSearch";
 import StackWizard from "../../components/StackWizard";
 import {
   getComparisons,
+  isIndexableComparison,
   isLocale,
   type Locale,
 } from "../../lib/comparisons";
@@ -178,7 +179,7 @@ export default async function LocalizedHomePage({
 
   const locale = localeParam;
   const text = copy[locale];
-  const comparisons = getComparisons(locale);
+  const comparisons = getComparisons(locale).filter(isIndexableComparison);
   const cardComparisons = comparisons.map(({ slug, toolA, toolB, verdict }) => ({
     slug,
     toolA,

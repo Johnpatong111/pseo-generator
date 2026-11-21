@@ -14,6 +14,7 @@ import {
   getComparisonBySlug,
   getComparisons,
   getLocalizedComparisons,
+  isIndexableComparison,
   isLocale,
   LOCALES,
   type Comparison,
@@ -937,6 +938,9 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
   return {
     title: { absolute: seoTitle },
     description: seo.description,
+    robots: isIndexableComparison(comparison)
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
     authors: [
       {
         name: "SnippetsLibrary Team",

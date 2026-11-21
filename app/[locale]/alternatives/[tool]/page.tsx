@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getComparisons,
+  isIndexableComparison,
   isLocale,
   type Comparison,
 } from "../../../../lib/comparisons";
@@ -54,6 +55,7 @@ export const dynamicParams = false;
 
 function getAlternativeComparisons(): Comparison[] {
   return getComparisons("en")
+    .filter(isIndexableComparison)
     .filter((comparison) =>
       [comparison.toolA.name, comparison.toolB.name].some((name) =>
         /hono/iu.test(name),

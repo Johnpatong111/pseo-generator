@@ -3,11 +3,11 @@ import CommandMenu, {
   type SearchCategory,
   type SearchComparison,
 } from "../../components/CommandMenu";
-import { getComparisonBySlug, getComparisons, LOCALES } from "../../lib/comparisons";
+import { getComparisonBySlug, getComparisons, isIndexableComparison, LOCALES } from "../../lib/comparisons";
 import { CATEGORY_IDS, categoryCopy } from "../../lib/taxonomy";
 
 const comparisons: SearchComparison[] = LOCALES.flatMap((locale) =>
-  getComparisons(locale).map(({ slug, toolA, toolB }) => ({
+  getComparisons(locale).filter(isIndexableComparison).map(({ slug, toolA, toolB }) => ({
     slug,
     label: `${toolA.name} vs ${toolB.name}`,
     locale,

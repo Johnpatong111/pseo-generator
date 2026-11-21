@@ -4,6 +4,7 @@ import { createCodeExamples, scenarios } from "./snippet-catalog.cjs";
 import { validateComparisonData } from "./comparison-validation.cjs";
 import { getComparisonCategories } from "./taxonomy";
 import { LOCALES, type Locale } from "./locales";
+import { isCuratedComparison } from "./indexing";
 import { completeSentence } from "./text";
 
 export { LOCALES };
@@ -326,6 +327,7 @@ export function getComparisonBySlug(
 
 export function isIndexableComparison(comparison: Comparison): boolean {
   return (
+    isCuratedComparison(comparison.slug) &&
     comparison.meta.title.trim().length > 20 &&
     comparison.meta.description.trim().length >= 100 &&
     comparison.heroSubtitle.trim().length >= 60 &&
